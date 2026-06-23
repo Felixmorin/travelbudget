@@ -9,9 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { destinations, formatMoney } from "@/lib/data/destinations";
 import {
-  BudgetFitStatus,
-  CostBreakdown,
-  DestinationRecommendation,
+  type BudgetFitStatus,
+  type CostBreakdown,
+  type DestinationRecommendation,
+  type SupportedCurrency,
+  type TravelStyle,
   recommendDestinations,
 } from "@/lib/budget/recommend-destinations";
 
@@ -20,7 +22,44 @@ export const metadata: Metadata = {
   description: "Compare destinations based on your travel budget, trip length, travel style, and departure city.",
 };
 
+const supportedMonths = [
+  "january",
+  "february",
+  "march",
+  "april",
+  "may",
+  "june",
+  "july",
+  "august",
+  "september",
+  "october",
+  "november",
+  "december",
+] as const;
+const supportedCurrencies = ["CAD", "USD", "EUR"] as const;
+const supportedStyles = ["budget", "balanced", "comfort"] as const;
+
 type ResultsSearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
+type SupportedMonth = (typeof supportedMonths)[number];
+type ParsedSearch = {
+  budget: number;
+  currency: SupportedCurrency;
+  origin: string;
+  days: number;
+  month: SupportedMonth;
+  travelers: number;
+  style: TravelStyle;
+};
+
+const DEFAULT_SEARCH: ParsedSearch = {
+  budget: 2400,
+  currency: "CAD",
+  origin: "toronto",
+  days: 10,
+  month: "october",
+  travelers: 2,
+  style: "balanced",
+};
 
 const fitLabels: Record<BudgetFitStatus, string> = {
   "best-fit": "Best fit",
@@ -66,7 +105,7 @@ export default async function ResultsPage({ searchParams }: { searchParams: Resu
               <CardContent className="grid gap-3 pt-5 sm:grid-cols-3">
                 <Summary icon={WalletCards} label="Budget" value={formatMoney(search.budget, search.currency)} />
                 <Summary icon={CalendarDays} label="When" value={`${toTitleCase(search.month)}, ${search.days} days`} />
-                <Summary icon={Users} label="Travelers" value={`${search.travelers} ${search.style}`} />
+                <Summary icon={Users} label="Travelers" value={`${search.travelers} ${toTitleCase(search.style)}`} />
               </CardContent>
             </Card>
           </div>
@@ -147,7 +186,13 @@ function RecommendationCard({
     <Card className="overflow-hidden border-slate-200 bg-white shadow-lg shadow-slate-200/60">
       <div className="grid lg:grid-cols-[0.85fr_1.15fr]">
         <div className="relative min-h-72">
-          <Image src={destination.image} alt={`${destination.name} travel view`} fill className="object-cover" />
+          <Image
+            src={destination.image}
+            alt={`${destination.name} travel view`}
+            fill
+            sizes="(min-width: 1024px) 40vw, 100vw"
+            className="object-cover"
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/15 to-transparent" />
           <Badge className="absolute left-4 top-4 bg-white text-blue-600 shadow">#{rank} match</Badge>
           <div className="absolute bottom-4 left-4 right-4 text-white">
@@ -228,7 +273,7 @@ function CostBreakdownGrid({
       {rows.map((row) => {
         const value = costBreakdown[row.key];
         const Icon = row.icon;
-        const percent = Math.max(4, Math.round((value / total) * 100));
+        const percent = total > 0 ? Math.max(4, Math.round((value / total) * 100)) : 0;
 
         return (
           <div key={row.key} className="grid gap-2">
@@ -271,15 +316,19 @@ function Summary({
   );
 }
 
-function parseSearchParams(params: Awaited<ResultsSearchParams>) {
+function parseSearchParams(params: Awaited<ResultsSearchParams>): ParsedSearch {
   return {
-    budget: getPositiveNumber(getParam(params.budget), 2400),
-    currency: getParam(params.currency, "CAD").toUpperCase(),
-    origin: getParam(params.origin, "toronto"),
-    days: getPositiveInteger(getParam(params.days), 10),
-    month: getParam(params.month, "october"),
-    travelers: getPositiveInteger(getParam(params.travelers), 2),
-    style: getParam(params.style, "balanced"),
+    budget: getPositiveNumber(getParam(params.budget), DEFAULT_SEARCH.budget, 100, 250000),
+    currency: getSupportedValue(
+      supportedCurrencies,
+      getParam(params.currency).toUpperCase(),
+      DEFAULT_SEARCH.currency
+    ),
+    origin: getOrigin(getParam(params.origin, DEFAULT_SEARCH.origin)),
+    days: getPositiveInteger(getParam(params.days), DEFAULT_SEARCH.days, 1, 60),
+    month: getSupportedValue(supportedMonths, normalizeToken(getParam(params.month)), DEFAULT_SEARCH.month),
+    travelers: getPositiveInteger(getParam(params.travelers), DEFAULT_SEARCH.travelers, 1, 12),
+    style: getSupportedValue(supportedStyles, normalizeToken(getParam(params.style)), DEFAULT_SEARCH.style),
   };
 }
 
@@ -291,13 +340,36 @@ function getParam(value: string | string[] | undefined, fallback = "") {
   return value ?? fallback;
 }
 
-function getPositiveNumber(value: string, fallback: number) {
-  const parsed = Number(value);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+function getPositiveNumber(value: string, fallback: number, min: number, max: number) {
+  const parsed = Number(value.replace(/,/g, ""));
+
+  if (!Number.isFinite(parsed)) {
+    return fallback;
+  }
+
+  return Math.min(max, Math.max(min, Math.round(parsed)));
 }
 
-function getPositiveInteger(value: string, fallback: number) {
-  return Math.max(1, Math.round(getPositiveNumber(value, fallback)));
+function getPositiveInteger(value: string, fallback: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, Math.round(getPositiveNumber(value, fallback, min, max))));
+}
+
+function getOrigin(value: string) {
+  const normalized = value
+    .trim()
+    .replace(/\s+/g, " ")
+    .replace(/[^\p{L}\p{N}\s.'-]/gu, "")
+    .slice(0, 80);
+
+  return normalized || DEFAULT_SEARCH.origin;
+}
+
+function getSupportedValue<const T extends readonly string[]>(options: T, value: string, fallback: T[number]) {
+  return options.some((option) => option === value) ? (value as T[number]) : fallback;
+}
+
+function normalizeToken(value: string) {
+  return value.trim().toLowerCase();
 }
 
 function getStatusHeading(status: BudgetFitStatus) {

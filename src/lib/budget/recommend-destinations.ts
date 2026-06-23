@@ -1,6 +1,8 @@
 import type { Destination } from "@/lib/data/destinations";
 
 export type BudgetFitStatus = "best-fit" | "stretch" | "over-budget";
+export type SupportedCurrency = "CAD" | "USD" | "EUR";
+export type TravelStyle = "budget" | "balanced" | "comfort";
 
 export type CostBreakdown = {
   flights: number;
@@ -23,28 +25,34 @@ export type DestinationRecommendation = {
 export type RecommendDestinationsInput = {
   destinations: Destination[];
   budget: number;
-  currency: string;
+  currency: SupportedCurrency;
   origin: string;
   days: number;
   month: string;
   travelers: number;
-  style: string;
+  style: TravelStyle;
 };
 
 const BASE_DAYS = 10;
 const BASE_TRAVELERS = 2;
 const BASE_NIGHTS = BASE_DAYS - 1;
 
-const styleMultipliers: Record<string, number> = {
+const styleMultipliers: Record<TravelStyle, number> = {
   budget: 0.88,
   balanced: 1,
   comfort: 1.18,
 };
 
-const relatedStyles: Record<string, string[]> = {
+const relatedStyles: Record<TravelStyle, string[]> = {
   budget: ["backpacking", "food", "adventure", "relaxed"],
   balanced: ["culture", "food", "cities", "coast", "relaxed", "adventure"],
   comfort: ["culture", "cities", "coast", "relaxed"],
+};
+
+const currencyRatesFromCad: Record<SupportedCurrency, number> = {
+  CAD: 1,
+  USD: 0.73,
+  EUR: 0.67,
 };
 
 export function recommendDestinations({
@@ -58,12 +66,12 @@ export function recommendDestinations({
   style,
 }: RecommendDestinationsInput): DestinationRecommendation[] {
   const normalizedBudget = Math.max(0, budget);
-  const normalizedDays = Math.max(1, Math.round(days));
-  const normalizedTravelers = Math.max(1, Math.round(travelers));
+  const normalizedDays = clampInteger(days, 1, 60);
+  const normalizedTravelers = clampInteger(travelers, 1, 12);
 
   return destinations
     .map((destination) => {
-      const costBreakdown = buildCostBreakdown(destination, normalizedDays, normalizedTravelers, style);
+      const costBreakdown = buildCostBreakdown(destination, normalizedDays, normalizedTravelers, style, currency);
       const estimatedTotal = sumCostBreakdown(costBreakdown);
       const budgetRemaining = normalizedBudget - estimatedTotal;
       const budgetFitStatus = getBudgetFitStatus(estimatedTotal, normalizedBudget);
@@ -101,18 +109,24 @@ function buildCostBreakdown(
   destination: Destination,
   days: number,
   travelers: number,
-  style: string
+  style: TravelStyle,
+  currency: SupportedCurrency
 ): CostBreakdown {
   const nights = Math.max(1, days - 1);
   const rooms = Math.max(1, Math.ceil(travelers / 2));
-  const styleMultiplier = styleMultipliers[style.toLowerCase()] ?? styleMultipliers.balanced;
+  const styleMultiplier = styleMultipliers[style];
+  const currencyRate = currencyRatesFromCad[currency];
 
   return {
-    flights: roundCurrency((destination.flightCost / BASE_TRAVELERS) * travelers),
-    hotel: roundCurrency((destination.hotelCost / BASE_NIGHTS) * nights * rooms * styleMultiplier),
-    food: roundCurrency((destination.foodCost / BASE_DAYS / BASE_TRAVELERS) * days * travelers * styleMultiplier),
-    transport: roundCurrency((destination.transportCost / BASE_DAYS / BASE_TRAVELERS) * days * travelers * styleMultiplier),
-    activities: roundCurrency((destination.activitiesCost / BASE_DAYS / BASE_TRAVELERS) * days * travelers * styleMultiplier),
+    flights: roundCurrency((destination.flightCost / BASE_TRAVELERS) * travelers * currencyRate),
+    hotel: roundCurrency((destination.hotelCost / BASE_NIGHTS) * nights * rooms * styleMultiplier * currencyRate),
+    food: roundCurrency((destination.foodCost / BASE_DAYS / BASE_TRAVELERS) * days * travelers * styleMultiplier * currencyRate),
+    transport: roundCurrency(
+      (destination.transportCost / BASE_DAYS / BASE_TRAVELERS) * days * travelers * styleMultiplier * currencyRate
+    ),
+    activities: roundCurrency(
+      (destination.activitiesCost / BASE_DAYS / BASE_TRAVELERS) * days * travelers * styleMultiplier * currencyRate
+    ),
   };
 }
 
@@ -144,7 +158,7 @@ function getMatchScore({
   estimatedTotal: number;
   budget: number;
   month: string;
-  style: string;
+  style: TravelStyle;
   budgetFitStatus: BudgetFitStatus;
 }) {
   const budgetScore = getBudgetScore(estimatedTotal, budget);
@@ -174,8 +188,8 @@ function getBudgetScore(estimatedTotal: number, budget: number) {
   return Math.max(10, 36 - (ratio - 1) * 70);
 }
 
-function getStyleBonus(destination: Destination, style: string) {
-  const normalizedStyle = style.toLowerCase();
+function getStyleBonus(destination: Destination, style: TravelStyle) {
+  const normalizedStyle = style;
   const destinationStyles = destination.travelStyles.map((travelStyle) => travelStyle.toLowerCase());
 
   if (destinationStyles.includes(normalizedStyle)) {
@@ -199,8 +213,8 @@ function buildReasons({
   budgetFitStatus: BudgetFitStatus;
   budgetRemaining: number;
   month: string;
-  style: string;
-  currency: string;
+  style: TravelStyle;
+  currency: SupportedCurrency;
   origin: string;
 }) {
   const reasons: string[] = [];
@@ -221,7 +235,7 @@ function buildReasons({
     reasons.push(`Your ${style} style lines up with ${destination.travelStyles.slice(0, 2).join(" and ")} travel.`);
   }
 
-  reasons.push(`Flight and local-cost estimates are scaled from the mock ${origin.trim() || "your city"} baseline.`);
+  reasons.push(`Flight and local-cost estimates are scaled from the mock ${toTitleCase(origin.trim()) || "your city"} baseline.`);
 
   return reasons;
 }
@@ -234,18 +248,30 @@ function roundCurrency(amount: number) {
   return Math.round(amount);
 }
 
+function clampInteger(value: number, min: number, max: number) {
+  if (!Number.isFinite(value)) {
+    return min;
+  }
+
+  return Math.min(max, Math.max(min, Math.round(value)));
+}
+
 function clampScore(score: number) {
   return Math.max(0, Math.min(100, score));
 }
 
-function formatCompactMoney(amount: number, currency: string) {
+function formatCompactMoney(amount: number, currency: SupportedCurrency) {
   return new Intl.NumberFormat("en-CA", {
     style: "currency",
-    currency: currency.toUpperCase(),
+    currency,
     maximumFractionDigits: 0,
   }).format(amount);
 }
 
 function toTitleCase(value: string) {
-  return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+  return value
+    .split(/[\s-]+/)
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
 }

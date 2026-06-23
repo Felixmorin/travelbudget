@@ -10,25 +10,37 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
+const currencies = ["CAD", "USD", "EUR"] as const;
+const months = ["march", "june", "october"] as const;
+const travelerOptions = ["1", "2", "4"] as const;
+const dayOptions = ["7", "10", "14"] as const;
+const styles = ["budget", "balanced", "comfort"] as const;
+
+type Currency = (typeof currencies)[number];
+type Month = (typeof months)[number];
+type TravelerOption = (typeof travelerOptions)[number];
+type DayOption = (typeof dayOptions)[number];
+type TravelStyle = (typeof styles)[number];
+
 export function SearchCard() {
   const router = useRouter();
   const [budget, setBudget] = useState("2400");
-  const [currency, setCurrency] = useState("CAD");
+  const [currency, setCurrency] = useState<Currency>("CAD");
   const [origin, setOrigin] = useState("Toronto");
-  const [days, setDays] = useState("10");
-  const [month, setMonth] = useState("october");
-  const [travelers, setTravelers] = useState("2");
-  const [style, setStyle] = useState("balanced");
+  const [days, setDays] = useState<DayOption>("10");
+  const [month, setMonth] = useState<Month>("october");
+  const [travelers, setTravelers] = useState<TravelerOption>("2");
+  const [style, setStyle] = useState<TravelStyle>("balanced");
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const parsedBudget = Number(budget);
+    const parsedBudget = Number(budget.replace(/,/g, ""));
     const trimmedOrigin = origin.trim();
 
-    if (!Number.isFinite(parsedBudget) || parsedBudget <= 0) {
-      setError("Enter a positive budget to continue.");
+    if (!Number.isFinite(parsedBudget) || parsedBudget < 100 || parsedBudget > 250000) {
+      setError("Enter a budget between 100 and 250,000 to continue.");
       return;
     }
 
@@ -42,7 +54,7 @@ export function SearchCard() {
     const params = new URLSearchParams({
       budget: String(Math.round(parsedBudget)),
       currency,
-      origin: trimmedOrigin.toLowerCase(),
+      origin: trimmedOrigin.replace(/\s+/g, " ").slice(0, 80),
       days,
       month,
       travelers,
@@ -65,11 +77,13 @@ export function SearchCard() {
                 value={budget}
                 onChange={(event) => setBudget(event.target.value)}
                 inputMode="numeric"
+                min={100}
+                max={250000}
                 className="h-11 bg-white"
               />
             </Field>
             <Field label="Currency">
-              <Select value={currency} onValueChange={(value) => setCurrency(value ?? "CAD")}>
+              <Select value={currency} onValueChange={(value) => setCurrency(getOption(currencies, value, "CAD"))}>
                 <SelectTrigger className="h-11 w-full bg-white">
                   <SelectValue placeholder="Currency" />
                 </SelectTrigger>
@@ -84,7 +98,7 @@ export function SearchCard() {
               <Input value={origin} onChange={(event) => setOrigin(event.target.value)} className="h-11 bg-white" />
             </Field>
             <Field label="Duration" icon={<Calendar className="size-4" />}>
-              <Select value={days} onValueChange={(value) => setDays(value ?? "10")}>
+              <Select value={days} onValueChange={(value) => setDays(getOption(dayOptions, value, "10"))}>
                 <SelectTrigger className="h-11 w-full bg-white">
                   <SelectValue placeholder="Duration" />
                 </SelectTrigger>
@@ -96,7 +110,7 @@ export function SearchCard() {
               </Select>
             </Field>
             <Field label="Travel month">
-              <Select value={month} onValueChange={(value) => setMonth(value ?? "october")}>
+              <Select value={month} onValueChange={(value) => setMonth(getOption(months, value, "october"))}>
                 <SelectTrigger className="h-11 w-full bg-white">
                   <SelectValue placeholder="Travel month" />
                 </SelectTrigger>
@@ -108,7 +122,7 @@ export function SearchCard() {
               </Select>
             </Field>
             <Field label="Number of travelers" icon={<Users className="size-4" />}>
-              <Select value={travelers} onValueChange={(value) => setTravelers(value ?? "2")}>
+              <Select value={travelers} onValueChange={(value) => setTravelers(getOption(travelerOptions, value, "2"))}>
                 <SelectTrigger className="h-11 w-full bg-white">
                   <SelectValue placeholder="Travelers" />
                 </SelectTrigger>
@@ -120,7 +134,7 @@ export function SearchCard() {
               </Select>
             </Field>
             <Field label="Travel style">
-              <Select value={style} onValueChange={(value) => setStyle(value ?? "balanced")}>
+              <Select value={style} onValueChange={(value) => setStyle(getOption(styles, value, "balanced"))}>
                 <SelectTrigger className="h-11 w-full bg-white">
                   <SelectValue placeholder="Travel style" />
                 </SelectTrigger>
@@ -141,6 +155,10 @@ export function SearchCard() {
       </CardContent>
     </Card>
   );
+}
+
+function getOption<const T extends readonly string[]>(options: T, value: string | null | undefined, fallback: T[number]) {
+  return value && options.some((option) => option === value) ? (value as T[number]) : fallback;
 }
 
 function Field({
