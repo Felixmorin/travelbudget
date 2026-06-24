@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 
 const navItems = [
   { labelKey: "planTrip", href: "/", activePaths: ["/"] },
-  { labelKey: "destinations", href: "/results", activePaths: ["/results", "/destinations"] },
+  { labelKey: "destinations", href: "/destinations", activePaths: ["/destinations"] },
   { labelKey: "tools", href: "/tools", activePaths: ["/tools"] },
   { labelKey: "guides", href: "/guides", activePaths: ["/guides", "/guide"] },
   { labelKey: "about", href: "/about", activePaths: ["/about"] },

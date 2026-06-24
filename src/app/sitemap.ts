@@ -27,6 +27,11 @@ const staticRoutes: MetadataRoute.Sitemap = [
     priority: 0.9,
   },
   {
+    url: createCanonicalUrl("/destinations"),
+    changeFrequency: "weekly",
+    priority: 0.9,
+  },
+  {
     url: createCanonicalUrl("/about"),
     changeFrequency: "monthly",
     priority: 0.6,

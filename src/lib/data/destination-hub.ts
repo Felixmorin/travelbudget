@@ -1,0 +1,373 @@
+export type DestinationContinent =
+  | "Africa"
+  | "Asia"
+  | "Europe"
+  | "North America"
+  | "South America"
+  | "Oceania";
+
+export type VisaDifficulty = "Easy" | "Moderate" | "Check requirements";
+
+export type CityDestination = {
+  slug: string;
+  city: string;
+  country: string;
+  continent: DestinationContinent;
+  imageUrl: string;
+  imageAlt: string;
+  estimatedTotalCost: number;
+  currency: "CAD";
+  durationDays: number;
+  departureCity: string;
+  dailyBudgetEstimate: number;
+  flightEstimate: number;
+  stayEstimate: number;
+  foodEstimate: number;
+  localTransportEstimate: number;
+  activitiesEstimate: number;
+  bestMonths: string[];
+  travelStyles: string[];
+  tags: string[];
+  description: string;
+  badge?: string;
+  popularity?: number;
+  visaDifficulty?: VisaDifficulty;
+};
+
+export const destinationMonths = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+] as const;
+
+export const destinationDurations = [5, 7, 10, 14] as const;
+
+export const cityDestinations: CityDestination[] = [
+  {
+    slug: "lisbon",
+    city: "Lisbon",
+    country: "Portugal",
+    continent: "Europe",
+    imageUrl: "https://images.unsplash.com/photo-1548707309-dcebeab9ea9b?auto=format&fit=crop&w=1400&q=80",
+    imageAlt: "Lisbon skyline and colorful rooftops in Portugal",
+    estimatedTotalCost: 2180,
+    currency: "CAD",
+    durationDays: 7,
+    departureCity: "Montreal (YUL)",
+    dailyBudgetEstimate: 95,
+    flightEstimate: 760,
+    stayEstimate: 700,
+    foodEstimate: 315,
+    localTransportEstimate: 85,
+    activitiesEstimate: 320,
+    bestMonths: ["May", "June", "September", "October"],
+    travelStyles: ["Culture", "Food", "Romantic"],
+    tags: ["Culture Trip", "Best for food", "Walkable"],
+    description: "A charismatic Atlantic capital with tiled streets, seafood, viewpoints, and strong shoulder-season value.",
+    badge: "#1 Value Rank",
+    popularity: 96,
+    visaDifficulty: "Easy",
+  },
+  {
+    slug: "mexico-city",
+    city: "Mexico City",
+    country: "Mexico",
+    continent: "North America",
+    imageUrl: "https://images.unsplash.com/photo-1518659526054-190340b32735?auto=format&fit=crop&w=1400&q=80",
+    imageAlt: "Historic architecture and city streets in Mexico City",
+    estimatedTotalCost: 1750,
+    currency: "CAD",
+    durationDays: 7,
+    departureCity: "Montreal (YUL)",
+    dailyBudgetEstimate: 70,
+    flightEstimate: 520,
+    stayEstimate: 540,
+    foodEstimate: 245,
+    localTransportEstimate: 65,
+    activitiesEstimate: 380,
+    bestMonths: ["February", "March", "October", "November"],
+    travelStyles: ["Food", "Culture", "City Break"],
+    tags: ["Best for food", "Museums", "Lowest daily cost"],
+    description: "A world-class food and culture city where local costs can keep a weeklong trip highly competitive.",
+    badge: "Lowest daily cost",
+    popularity: 94,
+    visaDifficulty: "Easy",
+  },
+  {
+    slug: "tokyo",
+    city: "Tokyo",
+    country: "Japan",
+    continent: "Asia",
+    imageUrl: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1400&q=80",
+    imageAlt: "Tokyo city lights and busy crosswalk in Japan",
+    estimatedTotalCost: 3260,
+    currency: "CAD",
+    durationDays: 10,
+    departureCity: "Montreal (YUL)",
+    dailyBudgetEstimate: 145,
+    flightEstimate: 980,
+    stayEstimate: 1180,
+    foodEstimate: 520,
+    localTransportEstimate: 180,
+    activitiesEstimate: 400,
+    bestMonths: ["March", "April", "October", "November"],
+    travelStyles: ["Culture", "Food", "City Break"],
+    tags: ["Transit-friendly", "Food halls", "Culture"],
+    description: "A polished city trip with excellent transit, compact hotel options, and a wide range of food budgets.",
+    badge: "Top city break",
+    popularity: 98,
+    visaDifficulty: "Easy",
+  },
+  {
+    slug: "paris",
+    city: "Paris",
+    country: "France",
+    continent: "Europe",
+    imageUrl: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1400&q=80",
+    imageAlt: "Eiffel Tower and Paris skyline in France",
+    estimatedTotalCost: 2860,
+    currency: "CAD",
+    durationDays: 7,
+    departureCity: "Montreal (YUL)",
+    dailyBudgetEstimate: 155,
+    flightEstimate: 820,
+    stayEstimate: 980,
+    foodEstimate: 455,
+    localTransportEstimate: 95,
+    activitiesEstimate: 510,
+    bestMonths: ["April", "May", "September", "October"],
+    travelStyles: ["Romantic", "Culture", "Food"],
+    tags: ["Museums", "Romantic", "Classic Europe"],
+    description: "A classic Europe trip where timing, neighborhood choice, and museum planning can meaningfully change the budget.",
+    popularity: 99,
+    visaDifficulty: "Easy",
+  },
+  {
+    slug: "barcelona",
+    city: "Barcelona",
+    country: "Spain",
+    continent: "Europe",
+    imageUrl: "https://images.unsplash.com/photo-1583422409516-2895a77efded?auto=format&fit=crop&w=1400&q=80",
+    imageAlt: "Barcelona city view with Sagrada Familia in Spain",
+    estimatedTotalCost: 2470,
+    currency: "CAD",
+    durationDays: 7,
+    departureCity: "Montreal (YUL)",
+    dailyBudgetEstimate: 125,
+    flightEstimate: 780,
+    stayEstimate: 820,
+    foodEstimate: 385,
+    localTransportEstimate: 90,
+    activitiesEstimate: 395,
+    bestMonths: ["May", "June", "September", "October"],
+    travelStyles: ["Beach", "Food", "Culture"],
+    tags: ["Beach + city", "Architecture", "Tapas"],
+    description: "A beach-and-city destination with architecture, late dinners, and good value outside peak summer.",
+    popularity: 95,
+    visaDifficulty: "Easy",
+  },
+  {
+    slug: "bangkok",
+    city: "Bangkok",
+    country: "Thailand",
+    continent: "Asia",
+    imageUrl: "https://images.unsplash.com/photo-1563492065599-3520f775eeed?auto=format&fit=crop&w=1400&q=80",
+    imageAlt: "Bangkok skyline and temples in Thailand",
+    estimatedTotalCost: 2380,
+    currency: "CAD",
+    durationDays: 10,
+    departureCity: "Montreal (YUL)",
+    dailyBudgetEstimate: 72,
+    flightEstimate: 1080,
+    stayEstimate: 620,
+    foodEstimate: 300,
+    localTransportEstimate: 100,
+    activitiesEstimate: 280,
+    bestMonths: ["January", "February", "November", "December"],
+    travelStyles: ["Food", "Solo", "Warm Escape"],
+    tags: ["Street food", "Warm winter", "Night markets"],
+    description: "A long-haul city where low local costs can offset higher airfare, especially on longer stays.",
+    badge: "Best winter value",
+    popularity: 92,
+    visaDifficulty: "Easy",
+  },
+  {
+    slug: "rome",
+    city: "Rome",
+    country: "Italy",
+    continent: "Europe",
+    imageUrl: "https://images.unsplash.com/photo-1529154036614-a60975f5c760?auto=format&fit=crop&w=1400&q=80",
+    imageAlt: "Historic Roman ruins and skyline in Rome Italy",
+    estimatedTotalCost: 2640,
+    currency: "CAD",
+    durationDays: 7,
+    departureCity: "Montreal (YUL)",
+    dailyBudgetEstimate: 135,
+    flightEstimate: 840,
+    stayEstimate: 860,
+    foodEstimate: 420,
+    localTransportEstimate: 80,
+    activitiesEstimate: 440,
+    bestMonths: ["April", "May", "September", "October"],
+    travelStyles: ["Culture", "Food", "Family"],
+    tags: ["Ancient history", "Family-friendly", "Food"],
+    description: "A dense history-and-food trip with strong walkability and better comfort in shoulder months.",
+    popularity: 93,
+    visaDifficulty: "Easy",
+  },
+  {
+    slug: "bali",
+    city: "Bali",
+    country: "Indonesia",
+    continent: "Asia",
+    imageUrl: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1400&q=80",
+    imageAlt: "Rice terraces and tropical landscape in Bali Indonesia",
+    estimatedTotalCost: 2760,
+    currency: "CAD",
+    durationDays: 14,
+    departureCity: "Montreal (YUL)",
+    dailyBudgetEstimate: 82,
+    flightEstimate: 1180,
+    stayEstimate: 760,
+    foodEstimate: 420,
+    localTransportEstimate: 150,
+    activitiesEstimate: 250,
+    bestMonths: ["May", "June", "September", "October"],
+    travelStyles: ["Beach", "Nature", "Romantic"],
+    tags: ["Beach", "Nature", "Long stay"],
+    description: "A warm long-stay option with flexible lodging, scenic day trips, and many budget levels.",
+    popularity: 90,
+    visaDifficulty: "Moderate",
+  },
+  {
+    slug: "cartagena",
+    city: "Cartagena",
+    country: "Colombia",
+    continent: "South America",
+    imageUrl: "https://images.unsplash.com/photo-1583531352515-8884af319dc1?auto=format&fit=crop&w=1400&q=80",
+    imageAlt: "Colorful colonial street in Cartagena Colombia",
+    estimatedTotalCost: 2040,
+    currency: "CAD",
+    durationDays: 7,
+    departureCity: "Montreal (YUL)",
+    dailyBudgetEstimate: 88,
+    flightEstimate: 760,
+    stayEstimate: 580,
+    foodEstimate: 285,
+    localTransportEstimate: 70,
+    activitiesEstimate: 345,
+    bestMonths: ["January", "February", "March", "December"],
+    travelStyles: ["Beach", "Culture", "Romantic"],
+    tags: ["Caribbean", "Colorful streets", "Warm escape"],
+    description: "A colorful Caribbean city pairing colonial streets, nearby islands, and manageable daily costs.",
+    badge: "Warm escape",
+    popularity: 86,
+    visaDifficulty: "Easy",
+  },
+  {
+    slug: "new-york",
+    city: "New York",
+    country: "USA",
+    continent: "North America",
+    imageUrl: "https://images.unsplash.com/photo-1485871981521-5b1fd3805eee?auto=format&fit=crop&w=1400&q=80",
+    imageAlt: "New York City skyline and yellow taxi in the USA",
+    estimatedTotalCost: 2920,
+    currency: "CAD",
+    durationDays: 5,
+    departureCity: "Montreal (YUL)",
+    dailyBudgetEstimate: 310,
+    flightEstimate: 360,
+    stayEstimate: 1320,
+    foodEstimate: 520,
+    localTransportEstimate: 120,
+    activitiesEstimate: 600,
+    bestMonths: ["April", "May", "September", "December"],
+    travelStyles: ["City Break", "Family", "Food"],
+    tags: ["Short flight", "Museums", "High hotel cost"],
+    description: "A short-hop city break where flights can be reasonable but hotel timing drives much of the final budget.",
+    popularity: 97,
+    visaDifficulty: "Check requirements",
+  },
+  {
+    slug: "cancun",
+    city: "Cancun",
+    country: "Mexico",
+    continent: "North America",
+    imageUrl: "https://images.unsplash.com/photo-1552074284-5e88ef1aef18?auto=format&fit=crop&w=1400&q=80",
+    imageAlt: "Turquoise beach and resort coastline in Cancun Mexico",
+    estimatedTotalCost: 2320,
+    currency: "CAD",
+    durationDays: 7,
+    departureCity: "Montreal (YUL)",
+    dailyBudgetEstimate: 130,
+    flightEstimate: 520,
+    stayEstimate: 910,
+    foodEstimate: 390,
+    localTransportEstimate: 80,
+    activitiesEstimate: 420,
+    bestMonths: ["January", "February", "March", "November"],
+    travelStyles: ["Beach", "Family", "Warm Escape"],
+    tags: ["Beach", "Family-friendly", "Direct flights"],
+    description: "A convenient warm-weather beach trip with many package-style options and predictable seasonal swings.",
+    popularity: 91,
+    visaDifficulty: "Easy",
+  },
+  {
+    slug: "seoul",
+    city: "Seoul",
+    country: "South Korea",
+    continent: "Asia",
+    imageUrl: "https://images.unsplash.com/photo-1538485399081-7c8edcfb2377?auto=format&fit=crop&w=1400&q=80",
+    imageAlt: "Seoul city skyline and palace architecture in South Korea",
+    estimatedTotalCost: 2980,
+    currency: "CAD",
+    durationDays: 10,
+    departureCity: "Montreal (YUL)",
+    dailyBudgetEstimate: 122,
+    flightEstimate: 980,
+    stayEstimate: 960,
+    foodEstimate: 430,
+    localTransportEstimate: 150,
+    activitiesEstimate: 460,
+    bestMonths: ["April", "May", "September", "October"],
+    travelStyles: ["Food", "Culture", "Solo"],
+    tags: ["Food", "Transit-friendly", "Solo travel"],
+    description: "A highly connected city with excellent transit, street food, shopping districts, and efficient day planning.",
+    badge: "Solo-friendly",
+    popularity: 89,
+    visaDifficulty: "Easy",
+  },
+];
+
+export const destinationContinents = Array.from(
+  new Set(cityDestinations.map((destination) => destination.continent))
+).sort();
+
+export const destinationTravelStyles = Array.from(
+  new Set(cityDestinations.flatMap((destination) => destination.travelStyles))
+).sort();
+
+export const destinationDepartureCities = Array.from(
+  new Set(cityDestinations.map((destination) => destination.departureCity))
+).sort();
+
+export function formatDestinationMoney(amount: number, currency: CityDestination["currency"]) {
+  return new Intl.NumberFormat("en-CA", {
+    style: "currency",
+    currency,
+    maximumFractionDigits: 0,
+  }).format(amount);
+}
+
+export function getCityDestination(slug: string) {
+  return cityDestinations.find((destination) => destination.slug === slug);
+}

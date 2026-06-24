@@ -21,6 +21,12 @@ import {
   getDestinationTripEstimate,
   getOriginPricing,
 } from "@/lib/data/destinations";
+import {
+  cityDestinations,
+  formatDestinationMoney,
+  getCityDestination,
+  type CityDestination,
+} from "@/lib/data/destination-hub";
 import { createDestinationMetadata, createMetadata } from "@/lib/seo/metadata";
 import {
   createBreadcrumbSchema,
@@ -35,7 +41,10 @@ type DestinationPageProps = {
 };
 
 export function generateStaticParams() {
-  return destinations.map((destination) => ({ slug: destination.slug }));
+  return [
+    ...destinations.map((destination) => ({ slug: destination.slug })),
+    ...cityDestinations.map((destination) => ({ slug: destination.slug })),
+  ];
 }
 
 export async function generateMetadata({ params }: DestinationPageProps): Promise<Metadata> {
@@ -43,6 +52,18 @@ export async function generateMetadata({ params }: DestinationPageProps): Promis
   const destination = getDestination(slug);
 
   if (!destination) {
+    const cityDestination = getCityDestination(slug);
+
+    if (cityDestination) {
+      return createMetadata({
+        title: `${cityDestination.city}, ${cityDestination.country} Travel Budget`,
+        description: `See estimated travel costs for ${cityDestination.city}, including flights, stays, food, local transport, activities, and best months to visit.`,
+        path: `/destinations/${cityDestination.slug}`,
+        image: cityDestination.imageUrl,
+        imageAlt: cityDestination.imageAlt,
+      });
+    }
+
     return createMetadata({
       title: "Destination Not Found",
       description: "This TravelBudget.ai destination budget guide could not be found.",
@@ -59,6 +80,12 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
   const destination = getDestination(slug);
 
   if (!destination) {
+    const cityDestination = getCityDestination(slug);
+
+    if (cityDestination) {
+      return <CityDestinationPage destination={cityDestination} />;
+    }
+
     notFound();
   }
 
@@ -347,6 +374,225 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
       </main>
       <CTASection />
     </>
+  );
+}
+
+function CityDestinationPage({ destination }: { destination: CityDestination }) {
+  const planParams = new URLSearchParams({
+    destination: destination.slug,
+    budget: String(destination.estimatedTotalCost),
+    days: String(destination.durationDays),
+    from: destination.departureCity,
+  });
+
+  return (
+    <main className="bg-slate-50">
+      <section className="relative isolate min-h-[520px] overflow-hidden">
+        <Image
+          src={destination.imageUrl}
+          alt={destination.imageAlt}
+          fill
+          priority
+          sizes="100vw"
+          className="-z-10 object-cover"
+        />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-slate-950/80 via-slate-950/50 to-slate-950/10" />
+        <div className="mx-auto flex min-h-[520px] max-w-7xl items-end px-4 py-12 sm:px-6 lg:px-8">
+          <div className="max-w-3xl text-white">
+            <Badge className="mb-4 bg-white text-blue-600">
+              {destination.continent} budget guide
+            </Badge>
+            <h1 className="text-5xl font-semibold tracking-tight sm:text-6xl">
+              {destination.city}, {destination.country} travel budget
+            </h1>
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-white/85">
+              {destination.description}
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Button asChild size="lg" className="rounded-xl bg-orange-500 text-white hover:bg-orange-600">
+                <TrackedLink
+                  href={`/results?${planParams.toString()}`}
+                  eventName="cta_clicked"
+                  eventProperties={{
+                    page: `/destinations/${destination.slug}`,
+                    destinationName: destination.city,
+                    destinationSlug: destination.slug,
+                    label: `Plan this trip to ${destination.city}`,
+                    href: `/results?${planParams.toString()}`,
+                    ctaLocation: "city_destination_hero",
+                  }}
+                >
+                  Plan this trip
+                  <ArrowRight className="ml-2 size-4" />
+                </TrackedLink>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="rounded-xl bg-white/95 text-slate-950">
+                <TrackedLink
+                  href="/destinations"
+                  eventName="cta_clicked"
+                  eventProperties={{
+                    page: `/destinations/${destination.slug}`,
+                    destinationName: destination.city,
+                    destinationSlug: destination.slug,
+                    label: "Compare destinations",
+                    href: "/destinations",
+                    ctaLocation: "city_destination_hero",
+                  }}
+                >
+                  Compare destinations
+                  <Search className="ml-2 size-4" />
+                </TrackedLink>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1fr_360px] lg:px-8">
+        <div className="grid gap-8">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <Metric
+              icon={WalletCards}
+              label="Estimated total"
+              value={formatDestinationMoney(destination.estimatedTotalCost, destination.currency)}
+            />
+            <Metric
+              icon={CalendarDays}
+              label="Suggested duration"
+              value={`${destination.durationDays} days`}
+            />
+            <Metric
+              icon={Route}
+              label="Daily estimate"
+              value={formatDestinationMoney(destination.dailyBudgetEstimate, destination.currency)}
+            />
+            <Metric icon={Home} label="Departure baseline" value={destination.departureCity} />
+          </div>
+
+          <Card className="border-slate-200 bg-white shadow-lg shadow-slate-200/60">
+            <CardHeader>
+              <CardTitle className="text-xl text-slate-950">
+                Cost estimate for {destination.city}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-4 sm:grid-cols-2">
+              <CityCostLine label="Flights" value={destination.flightEstimate} />
+              <CityCostLine label="Stay" value={destination.stayEstimate} />
+              <CityCostLine label="Food" value={destination.foodEstimate} />
+              <CityCostLine label="Local transport" value={destination.localTransportEstimate} />
+              <CityCostLine label="Activities" value={destination.activitiesEstimate} />
+            </CardContent>
+          </Card>
+
+          <Card className="border-slate-200 bg-white shadow-lg shadow-slate-200/60">
+            <CardHeader>
+              <CardTitle className="text-xl text-slate-950">Best months and travel styles</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-5">
+              <div>
+                <p className="text-sm font-semibold text-slate-950">Best months</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {destination.bestMonths.map((month) => (
+                    <Badge key={month} className="bg-blue-50 text-blue-700">
+                      {month}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-slate-950">Styles</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {destination.travelStyles.map((style) => (
+                    <Badge key={style} className="bg-emerald-50 text-emerald-700">
+                      {style}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+              <p className="text-sm leading-6 text-slate-600">
+                Estimated costs may vary based on dates and availability. Read more about the assumptions behind
+                TravelBudget.ai estimates in our{" "}
+                <TrackedLink
+                  href="/methodology"
+                  eventName="cta_clicked"
+                  eventProperties={{
+                    page: `/destinations/${destination.slug}`,
+                    destinationName: destination.city,
+                    destinationSlug: destination.slug,
+                    label: "Methodology",
+                    href: "/methodology",
+                    ctaLocation: "city_destination_methodology_note",
+                  }}
+                  className="font-semibold text-blue-600 hover:underline"
+                >
+                  methodology
+                </TrackedLink>
+                .
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <aside className="grid gap-5">
+          <Card className="border-slate-200 bg-white shadow-lg shadow-slate-200/60">
+            <CardHeader>
+              <CardTitle className="text-xl text-slate-950">Plan this trip</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-4">
+              <div className="rounded-2xl bg-slate-950 p-5 text-white">
+                <p className="text-xs uppercase tracking-wide text-white/60">Planning estimate</p>
+                <p className="mt-2 text-3xl font-semibold">
+                  {formatDestinationMoney(destination.estimatedTotalCost, destination.currency)}
+                </p>
+                <p className="mt-2 text-sm text-white/70">
+                  From {destination.departureCity} for {destination.durationDays} days
+                </p>
+              </div>
+              <Button asChild className="h-11 rounded-xl bg-blue-600 text-white hover:bg-blue-700">
+                <TrackedLink
+                  href={`/results?${planParams.toString()}`}
+                  eventName="cta_clicked"
+                  eventProperties={{
+                    page: `/destinations/${destination.slug}`,
+                    destinationName: destination.city,
+                    destinationSlug: destination.slug,
+                    label: "Plan this trip",
+                    href: `/results?${planParams.toString()}`,
+                    ctaLocation: "city_destination_sidebar",
+                  }}
+                >
+                  Plan this trip
+                  <ArrowRight className="ml-2 size-4" />
+                </TrackedLink>
+              </Button>
+              <Button asChild variant="outline" className="h-11 rounded-xl">
+                <TrackedLink
+                  href="/destinations"
+                  eventName="destination_card_clicked"
+                  eventProperties={{
+                    page: `/destinations/${destination.slug}`,
+                    destinationName: destination.city,
+                    destinationSlug: destination.slug,
+                    source: "city_destination_sidebar",
+                  }}
+                >
+                  Back to destinations
+                </TrackedLink>
+              </Button>
+            </CardContent>
+          </Card>
+        </aside>
+      </section>
+    </main>
+  );
+}
+
+function CityCostLine({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="rounded-2xl bg-slate-50 p-4">
+      <p className="text-sm text-slate-500">{label}</p>
+      <p className="mt-1 text-xl font-semibold text-slate-950">{formatDestinationMoney(value, "CAD")}</p>
+    </div>
   );
 }
 
