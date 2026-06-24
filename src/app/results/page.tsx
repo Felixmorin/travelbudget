@@ -19,6 +19,7 @@ import {
   Utensils,
   Waves,
   Wifi,
+  type LucideIcon,
 } from "lucide-react";
 
 import { AnalyticsView } from "@/components/analytics/analytics-view";
@@ -31,11 +32,12 @@ import {
   type CostBreakdownItem,
 } from "@/components/site/cost-breakdown-card";
 import {
-  destinations as destinationData,
-  formatMoney,
-  getDestinationCostBreakdown,
-  getDestinationTripEstimate,
-} from "@/lib/data/destinations";
+  recommendDestinations,
+  type DestinationRecommendation,
+  type SupportedCurrency,
+  type TravelStyle,
+} from "@/lib/budget/recommend-destinations";
+import { destinations as destinationData, formatMoney } from "@/lib/data/destinations";
 import { createResultsMetadata } from "@/lib/seo/metadata";
 
 export const metadata = createResultsMetadata();
@@ -51,102 +53,115 @@ const categories = [
   { label: "Backpacker", icon: Compass },
 ];
 
-const legacyDestinations = [
-  {
-    rank: 1,
-    country: "Japon",
-    region: "Tokyo & Kyoto",
-    total: "2 420 $",
-    quality: "Excellent",
-    score: "9.6/10",
-    href: "/destinations/japan",
-    image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1600&q=80",
-    alt: "Temple japonais avec cerisiers en fleurs",
-  },
-  {
-    rank: 2,
-    country: "Portugal",
-    region: "Lisbon & Algarve",
-    total: "1 980 $",
-    quality: "Très bon",
-    score: "9.1/10",
-    href: "/destinations/portugal",
-    image: "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1600&q=80",
-    alt: "Cote portugaise avec falaises et ocean",
-  },
-  {
-    rank: 3,
-    country: "Vietnam",
-    region: "Hanoi & Ha Long",
-    total: "1 650 $",
-    quality: "Incroyable",
-    score: "9.3/10",
-    href: "/destinations/vietnam",
-    image: "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1600&q=80",
-    alt: "Baie d Ha Long au Vietnam",
-  },
-];
+type ResultsSearchParams = {
+  budget?: string | string[];
+  currency?: string | string[];
+  origin?: string | string[];
+  days?: string | string[];
+  month?: string | string[];
+  travelers?: string | string[];
+  style?: string | string[];
+};
 
-void legacyDestinations;
+type ResultsPageProps = {
+  searchParams: Promise<ResultsSearchParams>;
+};
 
-const destinations = destinationData.map((destination, index) => ({
-  rank: index + 1,
-  country: destination.name,
-  region: destination.travelStyles.slice(0, 2).join(" & "),
-  total: formatMoney(getDestinationTripEstimate(destination, { days: 10, originCode: "YUL", travelStyle: "midRange" })),
-  quality: destination.score >= 92 ? "Excellent" : "Very good",
-  score: `${(destination.score / 10).toFixed(1)}/10`,
-  href: `/destinations/${destination.slug}`,
-  image: destination.image,
-  alt: `${destination.name} travel view`,
-}));
+type ParsedSearchParams = {
+  budget: number;
+  currency: SupportedCurrency;
+  origin: string;
+  days: number;
+  month: string;
+  travelers: number;
+  style: TravelStyle;
+};
 
-const japan = destinationData[0];
-const japanBreakdown = getDestinationCostBreakdown(japan, { days: 10, originCode: "YUL", travelStyle: "midRange" });
+type ResultDestination = {
+  rank: number;
+  country: string;
+  region: string;
+  total: string;
+  flightCost: string;
+  dailyCost: string;
+  budgetRemaining: string;
+  budgetRemainingValue: number;
+  quality: string;
+  score: string;
+  href: string;
+  image: string;
+  alt: string;
+  duration: string;
+  style: string;
+  summary: string;
+};
 
-const budgetRows: CostBreakdownItem[] = [
-  { label: "Flights", amount: japanBreakdown.flights, currency: "CAD", color: "#2563eb" },
-  { label: "Accommodation", amount: japanBreakdown.accommodation, currency: "CAD", color: "#14b8a6" },
-  { label: "Food", amount: japanBreakdown.food, currency: "CAD", color: "#f97316" },
-  { label: "Transport", amount: japanBreakdown.localTransport, currency: "CAD", color: "#8b5cf6" },
-  { label: "Activities", amount: japanBreakdown.activities, currency: "CAD", color: "#a855f7" },
-  { label: "Misc", amount: japanBreakdown.misc, currency: "CAD", color: "#f59e0b" },
-];
+type Offer = {
+  title: string;
+  detail: string;
+  discount?: string;
+  action?: string;
+  icon: LucideIcon;
+  tone: string;
+};
 
-const offers = [
-  {
-    title: "Vols Flex",
-    detail: "Montréal -> Tokyo",
-    discount: "-30%",
-    icon: Plane,
-    tone: "from-blue-500 to-cyan-400",
-  },
-  {
-    title: "Hotels Top Pick",
-    detail: "Kyoto Ryokan Stay",
-    discount: "-40%",
-    icon: Hotel,
-    tone: "from-violet-500 to-fuchsia-400",
-  },
-  {
-    title: "Budget eSIM Finder",
-    detail: "Save up to $80 on roaming fees.",
-    action: "Compare eSIMs",
-    icon: Wifi,
-    tone: "from-emerald-500 to-teal-400",
-  },
-];
+const defaultSearchParams: ParsedSearchParams = {
+  budget: 2500,
+  currency: "CAD",
+  origin: "YUL",
+  days: 10,
+  month: "october",
+  travelers: 1,
+  style: "balanced",
+};
 
-export default function ResultsPage() {
+const currencyOptions = ["CAD", "USD", "EUR"] as const;
+
+const styleAliases: Record<string, TravelStyle> = {
+  budget: "budget",
+  balanced: "balanced",
+  midrange: "balanced",
+  "mid-range": "balanced",
+  comfort: "comfort",
+  luxury: "comfort",
+};
+
+export default async function ResultsPage({ searchParams }: ResultsPageProps) {
+  const parsedParams = parseSearchParams(await searchParams);
+  const recommendations = recommendDestinations({
+    destinations: destinationData,
+    budget: parsedParams.budget,
+    currency: parsedParams.currency,
+    origin: parsedParams.origin,
+    days: parsedParams.days,
+    month: parsedParams.month,
+    travelers: parsedParams.travelers,
+    style: parsedParams.style,
+  });
+  const destinations = recommendations.map((recommendation, index) =>
+    toResultDestination(recommendation, index, parsedParams)
+  );
+  const topRecommendation = recommendations[0];
+  const formattedBudget = formatMoney(parsedParams.budget, parsedParams.currency);
+  const resultSummary = `Found ${recommendations.length} ranked ${
+    recommendations.length === 1 ? "destination" : "destinations"
+  } from ${parsedParams.origin} for ${formattedBudget}, ${parsedParams.days} days, ${
+    parsedParams.travelers
+  } ${parsedParams.travelers === 1 ? "traveler" : "travelers"}, ${formatStyleLabel(parsedParams.style)} style.`;
+
   return (
     <main className="bg-[#f7f9fb] text-[#191c1e]">
       <AnalyticsView
         eventName="budget_result_viewed"
         eventProperties={{
           page: "/results",
-          currency: "CAD",
-          tripLength: 10,
-          resultsCount: destinations.length,
+          budget: parsedParams.budget,
+          currency: parsedParams.currency,
+          originCode: parsedParams.origin,
+          days: parsedParams.days,
+          travelers: parsedParams.travelers,
+          travelStyle: parsedParams.style,
+          resultCount: recommendations.length,
         }}
       />
       <section className="border-b border-[#c3c6d7]/35 bg-white/70">
@@ -159,9 +174,7 @@ export default function ResultsPage() {
             <h1 className="mt-3 text-4xl font-semibold tracking-tight text-[#191c1e] sm:text-6xl">
               Explore the World
             </h1>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-[#434655]">
-              Found 42 destinations matching your budget of $2,500 CAD for 10 days in October.
-            </p>
+            <p className="mt-4 max-w-2xl text-base leading-7 text-[#434655]">{resultSummary}</p>
           </div>
           <Button asChild className="h-12 rounded-full bg-[#004ac6] px-5 text-white shadow-lg shadow-blue-700/20 hover:bg-blue-700">
             <TrackedLink
@@ -185,24 +198,131 @@ export default function ResultsPage() {
         <div className="grid gap-8">
           <CategoryFilters />
 
-          <div className="grid gap-5 md:grid-cols-3">
-            {destinations.map((destination) => (
-              <DestinationCard key={destination.country} destination={destination} />
-            ))}
-          </div>
+          {destinations.length > 0 ? (
+            <div className="grid gap-5 md:grid-cols-3">
+              {destinations.map((destination) => (
+                <DestinationCard key={destination.href} destination={destination} />
+              ))}
+            </div>
+          ) : (
+            <EmptyResultsState />
+          )}
 
-          <BudgetBreakdownCard />
+          {topRecommendation ? (
+            <BudgetBreakdownCard
+              currency={parsedParams.currency}
+              days={parsedParams.days}
+              recommendation={topRecommendation}
+              style={parsedParams.style}
+            />
+          ) : null}
         </div>
 
         <aside className="grid h-fit gap-6 lg:sticky lg:top-24">
           <GlobalPriceIndexCard />
-          <OffersPanel />
+          <OffersPanel origin={parsedParams.origin} topDestination={topRecommendation?.destination.name} />
         </aside>
       </section>
 
       <CTASection />
     </main>
   );
+}
+
+function parseSearchParams(searchParams: ResultsSearchParams): ParsedSearchParams {
+  return {
+    budget: parseNumber(readSearchParam(searchParams.budget), defaultSearchParams.budget),
+    currency: parseCurrency(readSearchParam(searchParams.currency)),
+    origin: parseOrigin(readSearchParam(searchParams.origin)),
+    days: parseNumber(readSearchParam(searchParams.days), defaultSearchParams.days),
+    month: readSearchParam(searchParams.month)?.trim() || defaultSearchParams.month,
+    travelers: parseNumber(readSearchParam(searchParams.travelers), defaultSearchParams.travelers),
+    style: parseTravelStyle(readSearchParam(searchParams.style)),
+  };
+}
+
+function readSearchParam(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+function parseNumber(value: string | undefined, fallback: number): number {
+  if (!value) {
+    return fallback;
+  }
+
+  const parsedValue = Number(value.replace(/,/g, ""));
+  return Number.isFinite(parsedValue) && parsedValue > 0 ? Math.round(parsedValue) : fallback;
+}
+
+function parseCurrency(value: string | undefined): SupportedCurrency {
+  const normalizedValue = value?.trim().toUpperCase();
+  return currencyOptions.some((currency) => currency === normalizedValue)
+    ? (normalizedValue as SupportedCurrency)
+    : defaultSearchParams.currency;
+}
+
+function parseOrigin(value: string | undefined) {
+  return value?.trim().replace(/\s+/g, " ").slice(0, 80).toUpperCase() || defaultSearchParams.origin;
+}
+
+function parseTravelStyle(value: string | undefined): TravelStyle {
+  const normalizedValue = value?.trim().toLowerCase();
+  return normalizedValue ? styleAliases[normalizedValue] ?? defaultSearchParams.style : defaultSearchParams.style;
+}
+
+function toResultDestination(
+  recommendation: DestinationRecommendation,
+  index: number,
+  { budget, currency, days, style }: ParsedSearchParams
+): ResultDestination {
+  const { destination, costBreakdown } = recommendation;
+  const dailyCost =
+    recommendation.estimatedTotal > costBreakdown.flights
+      ? (recommendation.estimatedTotal - costBreakdown.flights) / days
+      : 0;
+
+  return {
+    rank: index + 1,
+    country: destination.name,
+    region: destination.travelStyles.slice(0, 2).join(" & "),
+    total: formatMoney(recommendation.estimatedTotal, currency),
+    flightCost: formatMoney(costBreakdown.flights, currency),
+    dailyCost: formatMoney(dailyCost, currency),
+    budgetRemaining: formatMoney(Math.abs(recommendation.budgetRemaining), currency),
+    budgetRemainingValue: recommendation.budgetRemaining,
+    quality: getFitLabel(recommendation.budgetFitStatus),
+    score: `${recommendation.matchScore}/100`,
+    href: `/destinations/${destination.slug}`,
+    image: destination.image,
+    alt: `${destination.name} travel view`,
+    duration: `${days} ${days === 1 ? "day" : "days"}`,
+    style: formatStyleLabel(style),
+    summary: recommendation.reasons[0] ?? `Estimated against a ${formatMoney(budget, currency)} budget.`,
+  };
+}
+
+function getFitLabel(status: DestinationRecommendation["budgetFitStatus"]) {
+  if (status === "best-fit") {
+    return "Best fit";
+  }
+
+  if (status === "stretch") {
+    return "Slight stretch";
+  }
+
+  return "Over budget";
+}
+
+function formatStyleLabel(style: TravelStyle) {
+  if (style === "comfort") {
+    return "Comfort";
+  }
+
+  if (style === "budget") {
+    return "Budget";
+  }
+
+  return "Balanced";
 }
 
 function CategoryFilters() {
@@ -230,7 +350,7 @@ function CategoryFilters() {
   );
 }
 
-function DestinationCard({ destination }: { destination: (typeof destinations)[number] }) {
+function DestinationCard({ destination }: { destination: ResultDestination }) {
   return (
     <article className="group overflow-hidden rounded-[24px] border border-[#c3c6d7]/35 bg-white shadow-[0_18px_45px_-24px_rgba(15,23,42,0.35)] transition-[transform,box-shadow] duration-400 ease-[cubic-bezier(0.175,0.885,0.32,1.275)] hover:-translate-y-2 hover:shadow-[0_24px_60px_-28px_rgba(15,23,42,0.5)]">
       <TrackedLink
@@ -258,7 +378,7 @@ function DestinationCard({ destination }: { destination: (typeof destinations)[n
           </Badge>
           <button
             type="button"
-            aria-label={`Ajouter ${destination.country} aux favoris`}
+            aria-label={`Add ${destination.country} to favorites`}
             className="absolute right-4 top-4 flex size-10 items-center justify-center rounded-full bg-white/90 text-slate-700 shadow-md backdrop-blur transition hover:bg-white hover:text-rose-500 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-white/70"
           >
             <Heart className="size-4" />
@@ -268,6 +388,7 @@ function DestinationCard({ destination }: { destination: (typeof destinations)[n
           <div>
             <p className="text-sm font-medium text-[#434655]">{destination.region}</p>
             <h2 className="mt-1 text-2xl font-semibold tracking-tight text-[#191c1e]">{destination.country}</h2>
+            <p className="mt-2 line-clamp-2 text-sm leading-6 text-[#434655]">{destination.summary}</p>
           </div>
           <div className="flex items-end justify-between gap-4">
             <div>
@@ -284,34 +405,87 @@ function DestinationCard({ destination }: { destination: (typeof destinations)[n
               {destination.quality}
             </span>
             <span className="inline-flex items-center gap-1 font-semibold text-blue-700">
-              Voir le détail
+              View details
               <ArrowRight className="size-4" />
             </span>
           </div>
+          <dl className="grid grid-cols-2 gap-3 border-t border-[#c3c6d7]/35 pt-4 text-sm">
+            <div>
+              <dt className="text-xs font-semibold uppercase tracking-wide text-[#434655]">Flights</dt>
+              <dd className="mt-1 font-semibold text-[#191c1e]">{destination.flightCost}</dd>
+            </div>
+            <div>
+              <dt className="text-xs font-semibold uppercase tracking-wide text-[#434655]">Daily</dt>
+              <dd className="mt-1 font-semibold text-[#191c1e]">{destination.dailyCost}</dd>
+            </div>
+            <div>
+              <dt className="text-xs font-semibold uppercase tracking-wide text-[#434655]">Duration</dt>
+              <dd className="mt-1 font-semibold text-[#191c1e]">{destination.duration}</dd>
+            </div>
+            <div>
+              <dt className="text-xs font-semibold uppercase tracking-wide text-[#434655]">
+                {destination.budgetRemainingValue >= 0 ? "Remaining" : "Over"}
+              </dt>
+              <dd className="mt-1 font-semibold text-[#191c1e]">{destination.budgetRemaining}</dd>
+            </div>
+          </dl>
+          <Badge className="w-fit rounded-full bg-blue-50 text-blue-700 ring-1 ring-blue-100">
+            {destination.style} style
+          </Badge>
         </div>
       </TrackedLink>
     </article>
   );
 }
 
-function BudgetBreakdownCard() {
-  const totalAmount = getDestinationTripEstimate(japan, { days: 10, originCode: "YUL", travelStyle: "midRange" });
+function EmptyResultsState() {
+  return (
+    <section className="rounded-[28px] border border-[#c3c6d7]/35 bg-white p-8 text-center shadow-[0_18px_45px_-26px_rgba(15,23,42,0.35)]">
+      <h2 className="text-2xl font-semibold tracking-tight text-[#191c1e]">No destinations match this search yet</h2>
+      <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-[#434655]">
+        Try increasing your budget, reducing the trip length, changing your travel style, or picking a different
+        departure city.
+      </p>
+    </section>
+  );
+}
+
+function BudgetBreakdownCard({
+  currency,
+  days,
+  recommendation,
+  style,
+}: {
+  currency: SupportedCurrency;
+  days: number;
+  recommendation: DestinationRecommendation;
+  style: TravelStyle;
+}) {
+  const budgetRows: CostBreakdownItem[] = [
+    { label: "Flights", amount: recommendation.costBreakdown.flights, currency, color: "#2563eb" },
+    { label: "Accommodation", amount: recommendation.costBreakdown.hotel, currency, color: "#14b8a6" },
+    { label: "Food", amount: recommendation.costBreakdown.food, currency, color: "#f97316" },
+    { label: "Transport", amount: recommendation.costBreakdown.transport, currency, color: "#8b5cf6" },
+    { label: "Activities", amount: recommendation.costBreakdown.activities, currency, color: "#a855f7" },
+    { label: "Misc", amount: recommendation.costBreakdown.misc, currency, color: "#f59e0b" },
+  ];
+  const totalAmount = recommendation.estimatedTotal;
 
   return (
     <section className="grid gap-8 rounded-[32px] border border-white/60 bg-white/70 p-6 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05)] backdrop-blur-xl md:grid-cols-[260px_1fr] md:p-8">
-      <CostBreakdownDonut centerLabel="Total budget" currency="CAD" items={budgetRows} totalAmount={totalAmount} />
+      <CostBreakdownDonut centerLabel="Total budget" currency={currency} items={budgetRows} totalAmount={totalAmount} />
 
       <div className="flex flex-col justify-center">
         <p className="text-sm font-semibold uppercase tracking-wide text-blue-700">Cost clarity</p>
         <h2 className="mt-2 text-3xl font-semibold tracking-tight text-[#191c1e]">
-          Budget breakdown - Japan
+          Budget breakdown - {recommendation.destination.name}
         </h2>
         <p className="mt-3 text-sm leading-6 text-[#434655]">
-          Based on a balanced selection for 10 days.
+          Based on a {formatStyleLabel(style).toLowerCase()} selection for {days} {days === 1 ? "day" : "days"}.
         </p>
         <CostBreakdownList
           className="mt-6 grid gap-3 sm:grid-cols-2"
-          currency="CAD"
+          currency={currency}
           itemClassName="rounded-2xl border border-[#c3c6d7]/35 bg-white/80 px-4 py-3"
           items={budgetRows}
           showBars={false}
@@ -332,7 +506,7 @@ function GlobalPriceIndexCard() {
 
       <div className="relative mt-5 aspect-square overflow-hidden rounded-[24px] border border-blue-100 bg-[#edf5ff]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_35%,rgba(37,99,235,0.18),transparent_24%),radial-gradient(circle_at_72%_52%,rgba(20,184,166,0.2),transparent_18%),radial-gradient(circle_at_55%_30%,rgba(249,115,22,0.14),transparent_20%)]" />
-        <svg viewBox="0 0 360 360" className="absolute inset-0 h-full w-full text-blue-900/25" aria-label="Carte du monde stylisee">
+        <svg viewBox="0 0 360 360" className="absolute inset-0 h-full w-full text-blue-900/25" aria-label="Stylized world map">
           <path d="M54 124c26-24 61-20 87-11 18 6 31 2 49-3 36-9 69 2 99 26 14 11 11 29-5 35-22 8-44-8-65-4-22 4-34 26-58 23-21-2-31-22-52-25-24-3-51 10-68-8-10-11-1-23 13-33Z" fill="currentColor" />
           <path d="M78 222c23-17 52-13 68 6 12 15 8 36-11 44-25 11-66-6-79-24-7-10 1-18 22-26Z" fill="currentColor" />
           <path d="M236 222c17-12 42-10 56 4 12 12 8 31-9 39-22 10-52-2-63-18-7-9 0-17 16-25Z" fill="currentColor" />
@@ -347,15 +521,39 @@ function GlobalPriceIndexCard() {
       <div className="mt-5">
         <div className="h-3 rounded-full bg-gradient-to-r from-emerald-400 via-yellow-300 via-orange-400 to-red-500" />
         <div className="mt-2 flex justify-between text-xs font-semibold text-[#434655]">
-          <span>Moins cher</span>
-          <span>Plus cher</span>
+          <span>Cheaper</span>
+          <span>Pricier</span>
         </div>
       </div>
     </section>
   );
 }
 
-function OffersPanel() {
+function OffersPanel({ origin, topDestination }: { origin: string; topDestination?: string }) {
+  const offers = [
+    {
+      title: "Flight watch",
+      detail: topDestination ? `${origin} -> ${topDestination}` : `Flights from ${origin}`,
+      discount: "Fare alerts",
+      icon: Plane,
+      tone: "from-blue-500 to-cyan-400",
+    },
+    {
+      title: "Hotels Top Pick",
+      detail: topDestination ? `${topDestination} stays under budget` : "Stays under budget",
+      discount: "Compare",
+      icon: Hotel,
+      tone: "from-violet-500 to-fuchsia-400",
+    },
+    {
+      title: "Budget eSIM Finder",
+      detail: "Save on roaming fees.",
+      action: "Compare eSIMs",
+      icon: Wifi,
+      tone: "from-emerald-500 to-teal-400",
+    },
+  ];
+
   return (
     <section>
       <h2 className="text-xl font-semibold text-[#191c1e]">Offers to maximize your budget</h2>
@@ -368,7 +566,7 @@ function OffersPanel() {
   );
 }
 
-function OfferCard({ offer }: { offer: (typeof offers)[number] }) {
+function OfferCard({ offer }: { offer: Offer }) {
   const Icon = offer.icon;
 
   return (
@@ -428,12 +626,12 @@ function CTASection() {
                 eventName="cta_clicked"
                 eventProperties={{
                   page: "/results",
-                  label: "Commencer maintenant",
+                  label: "Start now",
                   href: "/",
                   ctaLocation: "results_bottom_cta",
                 }}
               >
-                Commencer maintenant
+                Start now
                 <ArrowRight className="ml-2 size-4" />
               </TrackedLink>
             </Button>

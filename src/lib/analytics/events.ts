@@ -9,6 +9,7 @@ export type CommonAnalyticsProperties = {
   destinationName?: string;
   budget?: number;
   currency?: string;
+  days?: number;
   tripLength?: number;
   travelers?: number;
   travelStyle?: string;
@@ -39,6 +40,7 @@ export type AnalyticsEventProperties = {
     estimatedTotal?: number;
   };
   budget_result_viewed: CommonAnalyticsProperties & {
+    resultCount?: number;
     resultsCount?: number;
   };
   cta_clicked: CommonAnalyticsProperties & {
