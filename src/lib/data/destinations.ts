@@ -19,7 +19,7 @@ export type OriginPricing = Record<
   {
     originCity: string;
     originCountry: string;
-    currency: string;
+    currency: "CAD";
     flightEstimate: FlightEstimate;
     seasonalNotes?: string;
   }
@@ -37,7 +37,7 @@ export type TravelStyleCosts = {
 };
 
 export type DailyCosts = {
-  currency: string;
+  currency: "CAD";
   budget: TravelStyleCosts;
   midRange: TravelStyleCosts;
   luxury: TravelStyleCosts;
@@ -73,10 +73,490 @@ export type Destination = {
   }[];
 };
 
+type DestinationSeed = {
+  slug: string;
+  name: string;
+  countryCode: string;
+  image: string;
+  flightAverage: Record<"YUL" | "YYZ" | "YVR", number>;
+  dailyTotals: Record<TravelStyle, number>;
+  score: number;
+  bestMonths: string[];
+  travelStyles: string[];
+  weather: string;
+  dataConfidence: DataConfidence;
+  shortDescription: string;
+  itineraryPreview: string[];
+  seasonalNotes?: string;
+};
+
 const defaultOriginCode = "YUL";
 const defaultTravelStyle: TravelStyle = "midRange";
 const estimateDays = 10;
 const defaultTravelers = 1;
+const lastUpdated = "2026-06-24";
+
+const origins = {
+  YUL: { originCity: "Montreal", originCountry: "Canada" },
+  YYZ: { originCity: "Toronto", originCountry: "Canada" },
+  YVR: { originCity: "Vancouver", originCountry: "Canada" },
+} as const;
+
+const destinationSeeds: DestinationSeed[] = [
+  {
+    slug: "japan",
+    name: "Japan",
+    countryCode: "JP",
+    image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1600&q=80",
+    flightAverage: { YUL: 900, YYZ: 980, YVR: 880 },
+    dailyTotals: { budget: 122, midRange: 172, luxury: 490 },
+    score: 86,
+    bestMonths: ["March", "April", "October", "November"],
+    travelStyles: ["Culture", "Food", "Cities"],
+    weather: "Mild spring and crisp autumn",
+    dataConfidence: "medium",
+    shortDescription: "A polished city-and-culture trip with efficient transit, standout food, and strong value when flights are booked early.",
+    itineraryPreview: ["Tokyo neighborhoods, food halls, and skyline viewpoints", "Kyoto temples, tea houses, and bamboo walks", "Osaka markets, street food, and a Nara day trip"],
+    seasonalNotes: "Spring and autumn are strong value windows when booked early; cherry blossom weeks can price higher.",
+  },
+  {
+    slug: "portugal",
+    name: "Portugal",
+    countryCode: "PT",
+    image: "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1600&q=80",
+    flightAverage: { YUL: 730, YYZ: 790, YVR: 980 },
+    dailyTotals: { budget: 103, midRange: 151, luxury: 425 },
+    score: 91,
+    bestMonths: ["May", "June", "September", "October"],
+    travelStyles: ["Coast", "Food", "Relaxed"],
+    weather: "Sunny shoulder seasons",
+    dataConfidence: "high",
+    shortDescription: "A high-value European trip with coastlines, walkable cities, affordable food, and excellent shoulder-season pricing.",
+    itineraryPreview: ["Lisbon viewpoints, seafood, and tram rides", "Sintra castles and Atlantic coast day trips", "Porto river walks, wine cellars, and tiled streets"],
+    seasonalNotes: "Lisbon and Porto are often better value in spring and fall than in July and August.",
+  },
+  {
+    slug: "vietnam",
+    name: "Vietnam",
+    countryCode: "VN",
+    image: "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1600&q=80",
+    flightAverage: { YUL: 900, YYZ: 940, YVR: 820 },
+    dailyTotals: { budget: 65, midRange: 100, luxury: 320 },
+    score: 94,
+    bestMonths: ["February", "March", "April", "November"],
+    travelStyles: ["Adventure", "Food", "Backpacking"],
+    weather: "Warm with regional variation",
+    dataConfidence: "medium",
+    shortDescription: "A budget-friendly long-haul choice where low local costs, excellent food, and scenic routes stretch every dollar.",
+    itineraryPreview: ["Hanoi street food, old quarter stays, and coffee stops", "Ninh Binh limestone landscapes or Ha Long Bay", "Hoi An lantern nights, beaches, and markets"],
+    seasonalNotes: "Long-haul sale fares tend to be strongest outside winter holiday weeks.",
+  },
+  {
+    slug: "mexico",
+    name: "Mexico",
+    countryCode: "MX",
+    image: "https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?auto=format&fit=crop&w=1600&q=80",
+    flightAverage: { YUL: 560, YYZ: 520, YVR: 610 },
+    dailyTotals: { budget: 78, midRange: 132, luxury: 360 },
+    score: 90,
+    bestMonths: ["January", "February", "March", "November"],
+    travelStyles: ["Food", "Culture", "Beach", "Cities"],
+    weather: "Dry-season warmth in many regions",
+    dataConfidence: "high",
+    shortDescription: "A flexible Canada-friendly option with strong flight access, rich food culture, beaches, and budget-friendly inland cities.",
+    itineraryPreview: ["Mexico City museums, markets, and food neighborhoods", "Oaxaca culture, mezcal, and day trips", "Beach time on the Pacific or Caribbean coast"],
+  },
+  {
+    slug: "colombia",
+    name: "Colombia",
+    countryCode: "CO",
+    image: "https://images.unsplash.com/photo-1544989164-31dc3c645987?auto=format&fit=crop&w=1600&q=80",
+    flightAverage: { YUL: 720, YYZ: 680, YVR: 820 },
+    dailyTotals: { budget: 62, midRange: 108, luxury: 305 },
+    score: 88,
+    bestMonths: ["January", "February", "July", "August"],
+    travelStyles: ["Culture", "Food", "Adventure"],
+    weather: "Springlike cities and warm coasts",
+    dataConfidence: "medium",
+    shortDescription: "A high-value South American pick where vibrant cities, coffee country, and Caribbean coastlines keep daily spend manageable.",
+    itineraryPreview: ["Bogota museums and food markets", "Medellin neighborhoods and coffee day trips", "Cartagena walls, islands, and Caribbean evenings"],
+  },
+  {
+    slug: "guatemala",
+    name: "Guatemala",
+    countryCode: "GT",
+    image: "https://images.unsplash.com/photo-1562949644-efd55d5491e4?auto=format&fit=crop&w=1600&q=80",
+    flightAverage: { YUL: 720, YYZ: 700, YVR: 820 },
+    dailyTotals: { budget: 58, midRange: 96, luxury: 260 },
+    score: 84,
+    bestMonths: ["January", "February", "March", "November"],
+    travelStyles: ["Adventure", "Culture", "Backpacking"],
+    weather: "Dry-season highland comfort",
+    dataConfidence: "medium",
+    shortDescription: "A compact Central America trip with volcanoes, lakes, Maya sites, and excellent value for active travelers.",
+    itineraryPreview: ["Antigua streets, cafes, and volcano viewpoints", "Lake Atitlan villages and boat rides", "Tikal ruins and jungle lodges"],
+  },
+  {
+    slug: "peru",
+    name: "Peru",
+    countryCode: "PE",
+    image: "https://images.unsplash.com/photo-1526392060635-9d6019884377?auto=format&fit=crop&w=1600&q=80",
+    flightAverage: { YUL: 820, YYZ: 780, YVR: 920 },
+    dailyTotals: { budget: 70, midRange: 118, luxury: 330 },
+    score: 89,
+    bestMonths: ["May", "June", "September", "October"],
+    travelStyles: ["Adventure", "Culture", "Food"],
+    weather: "Dry Andes travel windows",
+    dataConfidence: "medium",
+    shortDescription: "A bucket-list destination where food, culture, and Andes scenery can fit a realistic budget if major tours are planned early.",
+    itineraryPreview: ["Lima food neighborhoods and coastal views", "Cusco acclimatization, markets, and ruins", "Sacred Valley and Machu Picchu planning days"],
+  },
+  {
+    slug: "morocco",
+    name: "Morocco",
+    countryCode: "MA",
+    image: "https://images.unsplash.com/photo-1489749798305-4fea3ae63d43?auto=format&fit=crop&w=1600&q=80",
+    flightAverage: { YUL: 760, YYZ: 820, YVR: 1050 },
+    dailyTotals: { budget: 68, midRange: 120, luxury: 330 },
+    score: 87,
+    bestMonths: ["March", "April", "October", "November"],
+    travelStyles: ["Culture", "Food", "Adventure"],
+    weather: "Warm days and cooler evenings",
+    dataConfidence: "medium",
+    shortDescription: "A sensory North Africa route with medinas, desert edges, and riads that can deliver strong value outside summer heat.",
+    itineraryPreview: ["Marrakesh souks, gardens, and rooftop meals", "Atlas foothills or desert-edge excursions", "Fes medina lanes and local craft stops"],
+  },
+  {
+    slug: "turkey",
+    name: "Turkey",
+    countryCode: "TR",
+    image: "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=1600&q=80",
+    flightAverage: { YUL: 870, YYZ: 890, YVR: 1120 },
+    dailyTotals: { budget: 82, midRange: 138, luxury: 365 },
+    score: 89,
+    bestMonths: ["April", "May", "September", "October"],
+    travelStyles: ["Culture", "Food", "Cities"],
+    weather: "Comfortable shoulder seasons",
+    dataConfidence: "medium",
+    shortDescription: "A strong value bridge between Europe and Asia with layered history, excellent food, and varied regional costs.",
+    itineraryPreview: ["Istanbul mosques, ferries, markets, and meze", "Cappadocia valleys and balloon-view mornings", "Aegean ruins, coast towns, and day trips"],
+  },
+  {
+    slug: "thailand",
+    name: "Thailand",
+    countryCode: "TH",
+    image: "https://images.unsplash.com/photo-1508009603885-50cf7c579365?auto=format&fit=crop&w=1600&q=80",
+    flightAverage: { YUL: 980, YYZ: 1020, YVR: 900 },
+    dailyTotals: { budget: 70, midRange: 120, luxury: 360 },
+    score: 93,
+    bestMonths: ["January", "February", "March", "November"],
+    travelStyles: ["Beach", "Food", "Backpacking", "Relaxed"],
+    weather: "Warm dry-season escapes",
+    dataConfidence: "medium",
+    shortDescription: "A classic budget-first long-haul trip with low daily costs, easy logistics, beaches, cities, and excellent food.",
+    itineraryPreview: ["Bangkok temples, food courts, and canal rides", "Chiang Mai markets and mountain day trips", "Island beaches, snorkeling, and relaxed stays"],
+  },
+  {
+    slug: "indonesia",
+    name: "Indonesia",
+    countryCode: "ID",
+    image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1600&q=80",
+    flightAverage: { YUL: 1120, YYZ: 1160, YVR: 980 },
+    dailyTotals: { budget: 68, midRange: 125, luxury: 390 },
+    score: 88,
+    bestMonths: ["May", "June", "September", "October"],
+    travelStyles: ["Beach", "Culture", "Adventure", "Relaxed"],
+    weather: "Dry-season island weather",
+    dataConfidence: "medium",
+    shortDescription: "A long-haul destination where the flight is the hurdle but daily costs can stay low across islands and guesthouse routes.",
+    itineraryPreview: ["Bali rice terraces, beaches, and cafes", "Java temples, trains, and volcano viewpoints", "Island hopping or snorkeling days"],
+  },
+  {
+    slug: "malaysia",
+    name: "Malaysia",
+    countryCode: "MY",
+    image: "https://images.unsplash.com/photo-1508964942454-1a56651d54ac?auto=format&fit=crop&w=1600&q=80",
+    flightAverage: { YUL: 1050, YYZ: 1080, YVR: 940 },
+    dailyTotals: { budget: 66, midRange: 112, luxury: 330 },
+    score: 86,
+    bestMonths: ["February", "March", "June", "July"],
+    travelStyles: ["Food", "Cities", "Nature"],
+    weather: "Tropical with regional dry windows",
+    dataConfidence: "medium",
+    shortDescription: "An underrated Asia value pick with excellent food, modern cities, island options, and manageable local costs.",
+    itineraryPreview: ["Kuala Lumpur food courts, towers, and transit-friendly stays", "Penang street food and heritage lanes", "Rainforest, island, or Cameron Highlands extensions"],
+  },
+  {
+    slug: "philippines",
+    name: "Philippines",
+    countryCode: "PH",
+    image: "https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?auto=format&fit=crop&w=1600&q=80",
+    flightAverage: { YUL: 1120, YYZ: 1160, YVR: 980 },
+    dailyTotals: { budget: 72, midRange: 125, luxury: 360 },
+    score: 84,
+    bestMonths: ["January", "February", "March", "April"],
+    travelStyles: ["Beach", "Adventure", "Relaxed"],
+    weather: "Dry-season island conditions",
+    dataConfidence: "medium",
+    shortDescription: "A beach-heavy trip with higher flight costs but good local value once island transfers are planned realistically.",
+    itineraryPreview: ["Manila arrival buffer and onward flight planning", "Palawan lagoons, beaches, and boat tours", "Cebu, Bohol, or Siargao island stays"],
+  },
+  {
+    slug: "cambodia",
+    name: "Cambodia",
+    countryCode: "KH",
+    image: "https://images.unsplash.com/photo-1559628233-100c798642d4?auto=format&fit=crop&w=1600&q=80",
+    flightAverage: { YUL: 1060, YYZ: 1080, YVR: 920 },
+    dailyTotals: { budget: 55, midRange: 90, luxury: 260 },
+    score: 82,
+    bestMonths: ["January", "February", "November", "December"],
+    travelStyles: ["Culture", "Backpacking", "Food"],
+    weather: "Dry and warm travel season",
+    dataConfidence: "medium",
+    shortDescription: "One of the lowest daily-cost options in the dataset, best for travelers who want culture and simple logistics after a long flight.",
+    itineraryPreview: ["Siem Reap temples, markets, and sunrise planning", "Phnom Penh history, riverfront walks, and cafes", "Kampot or island downtime if time allows"],
+  },
+  {
+    slug: "spain",
+    name: "Spain",
+    countryCode: "ES",
+    image: "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?auto=format&fit=crop&w=1600&q=80",
+    flightAverage: { YUL: 760, YYZ: 820, YVR: 1030 },
+    dailyTotals: { budget: 118, midRange: 185, luxury: 500 },
+    score: 90,
+    bestMonths: ["April", "May", "September", "October"],
+    travelStyles: ["Food", "Culture", "Cities", "Coast"],
+    weather: "Warm shoulder-season city weather",
+    dataConfidence: "high",
+    shortDescription: "A versatile Europe pick where shoulder-season flights, tapas cities, and train routes create strong budget control.",
+    itineraryPreview: ["Madrid museums, markets, and day trips", "Barcelona architecture and beach walks", "Andalusia cities, tapas, and historic neighborhoods"],
+  },
+  {
+    slug: "greece",
+    name: "Greece",
+    countryCode: "GR",
+    image: "https://images.unsplash.com/photo-1504512485720-7d83a16ee930?auto=format&fit=crop&w=1600&q=80",
+    flightAverage: { YUL: 890, YYZ: 920, YVR: 1160 },
+    dailyTotals: { budget: 120, midRange: 195, luxury: 560 },
+    score: 88,
+    bestMonths: ["May", "June", "September", "October"],
+    travelStyles: ["Beach", "Culture", "Relaxed"],
+    weather: "Sunny shoulder seasons",
+    dataConfidence: "medium",
+    shortDescription: "A culture-and-islands trip that becomes much more budget-friendly outside the peak summer island rush.",
+    itineraryPreview: ["Athens ruins, neighborhoods, and food stops", "Ferry planning for one or two islands", "Beach days, village walks, and sunset viewpoints"],
+  },
+  {
+    slug: "italy",
+    name: "Italy",
+    countryCode: "IT",
+    image: "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1600&q=80",
+    flightAverage: { YUL: 830, YYZ: 870, YVR: 1090 },
+    dailyTotals: { budget: 130, midRange: 210, luxury: 590 },
+    score: 92,
+    bestMonths: ["April", "May", "September", "October"],
+    travelStyles: ["Culture", "Food", "Cities"],
+    weather: "Comfortable spring and fall",
+    dataConfidence: "high",
+    shortDescription: "A premium-value classic where trains, regional food, and shoulder-season stays help manage a naturally higher Europe budget.",
+    itineraryPreview: ["Rome ruins, piazzas, and trattoria meals", "Florence art, markets, and Tuscan day trips", "Venice, Naples, or coastal add-ons depending on budget"],
+  },
+  {
+    slug: "france",
+    name: "France",
+    countryCode: "FR",
+    image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1600&q=80",
+    flightAverage: { YUL: 760, YYZ: 820, YVR: 1060 },
+    dailyTotals: { budget: 140, midRange: 230, luxury: 650 },
+    score: 90,
+    bestMonths: ["April", "May", "September", "October"],
+    travelStyles: ["Culture", "Food", "Cities"],
+    weather: "Mild shoulder-season touring",
+    dataConfidence: "high",
+    shortDescription: "A higher-cost Europe staple where value depends on timing, neighborhood choice, and balancing Paris with regional stops.",
+    itineraryPreview: ["Paris museums, cafes, and neighborhood walks", "Loire, Normandy, or Provence train extensions", "Markets, bakeries, and low-cost picnic meals"],
+  },
+  {
+    slug: "ireland",
+    name: "Ireland",
+    countryCode: "IE",
+    image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80",
+    flightAverage: { YUL: 720, YYZ: 780, YVR: 980 },
+    dailyTotals: { budget: 135, midRange: 220, luxury: 560 },
+    score: 83,
+    bestMonths: ["May", "June", "September"],
+    travelStyles: ["Nature", "Culture", "Road Trip"],
+    weather: "Green, mild, and changeable",
+    dataConfidence: "medium",
+    shortDescription: "A scenic but not cheap trip where flight access can be reasonable and daily costs need careful planning.",
+    itineraryPreview: ["Dublin history, pubs, and walkable neighborhoods", "Galway, Cliffs of Moher, and west-coast drives", "Small-town stays and castle or music stops"],
+  },
+  {
+    slug: "netherlands",
+    name: "Netherlands",
+    countryCode: "NL",
+    image: "https://images.unsplash.com/photo-1512470876302-972faa2aa9a4?auto=format&fit=crop&w=1600&q=80",
+    flightAverage: { YUL: 780, YYZ: 820, YVR: 1040 },
+    dailyTotals: { budget: 145, midRange: 235, luxury: 620 },
+    score: 82,
+    bestMonths: ["April", "May", "September"],
+    travelStyles: ["Cities", "Culture", "Food"],
+    weather: "Cool spring and early fall",
+    dataConfidence: "high",
+    shortDescription: "A compact, transit-friendly Europe option with high accommodation costs but efficient trip logistics.",
+    itineraryPreview: ["Amsterdam canals, museums, and markets", "Haarlem, Utrecht, or Delft day trips", "Bike routes, design shops, and casual food halls"],
+  },
+  {
+    slug: "croatia",
+    name: "Croatia",
+    countryCode: "HR",
+    image: "https://images.unsplash.com/photo-1555990538-c48dbe4d7d1b?auto=format&fit=crop&w=1600&q=80",
+    flightAverage: { YUL: 900, YYZ: 950, YVR: 1160 },
+    dailyTotals: { budget: 105, midRange: 175, luxury: 480 },
+    score: 86,
+    bestMonths: ["May", "June", "September", "October"],
+    travelStyles: ["Coast", "Culture", "Relaxed"],
+    weather: "Sunny Adriatic shoulder season",
+    dataConfidence: "medium",
+    shortDescription: "An Adriatic-value pick when visited outside peak summer, with coastal towns, ferries, and historic cities.",
+    itineraryPreview: ["Split waterfront, old town, and island day trips", "Dubrovnik walls and nearby beaches", "Plitvice or Istria if routing allows"],
+  },
+  {
+    slug: "czechia",
+    name: "Czechia",
+    countryCode: "CZ",
+    image: "https://images.unsplash.com/photo-1541849546-216549ae216d?auto=format&fit=crop&w=1600&q=80",
+    flightAverage: { YUL: 860, YYZ: 900, YVR: 1120 },
+    dailyTotals: { budget: 88, midRange: 148, luxury: 390 },
+    score: 85,
+    bestMonths: ["April", "May", "September", "October"],
+    travelStyles: ["Cities", "Culture", "Food"],
+    weather: "Cool and comfortable shoulder months",
+    dataConfidence: "medium",
+    shortDescription: "A Central Europe value destination where Prague and smaller towns offer strong culture at lower daily costs than Western Europe.",
+    itineraryPreview: ["Prague old town, river walks, and beer halls", "Cesky Krumlov or Kutna Hora day trips", "Local cafes, museums, and tram-friendly neighborhoods"],
+  },
+  {
+    slug: "hungary",
+    name: "Hungary",
+    countryCode: "HU",
+    image: "https://images.unsplash.com/photo-1549877452-9c387954fbc2?auto=format&fit=crop&w=1600&q=80",
+    flightAverage: { YUL: 850, YYZ: 900, YVR: 1120 },
+    dailyTotals: { budget: 82, midRange: 140, luxury: 370 },
+    score: 86,
+    bestMonths: ["April", "May", "September", "October"],
+    travelStyles: ["Cities", "Culture", "Food"],
+    weather: "Mild Danube shoulder seasons",
+    dataConfidence: "medium",
+    shortDescription: "A strong budget-minded Europe option centered on Budapest, thermal baths, food halls, and lower hotel costs.",
+    itineraryPreview: ["Budapest baths, markets, and Danube viewpoints", "Ruin bars, cafes, and tram routes", "Lake Balaton or wine-country day trips"],
+  },
+  {
+    slug: "south-korea",
+    name: "South Korea",
+    countryCode: "KR",
+    image: "https://images.unsplash.com/photo-1538485399081-7c8a5a6965d8?auto=format&fit=crop&w=1600&q=80",
+    flightAverage: { YUL: 980, YYZ: 1050, YVR: 900 },
+    dailyTotals: { budget: 105, midRange: 165, luxury: 450 },
+    score: 87,
+    bestMonths: ["April", "May", "October", "November"],
+    travelStyles: ["Cities", "Food", "Culture"],
+    weather: "Clear spring and autumn",
+    dataConfidence: "medium",
+    shortDescription: "A high-energy city-and-food trip with efficient transit, strong safety, and better value than many comparable developed markets.",
+    itineraryPreview: ["Seoul palaces, markets, cafes, and night views", "DMZ, Suwon, or hiking day trips", "Busan beaches, seafood, and coastal neighborhoods"],
+  },
+  {
+    slug: "taiwan",
+    name: "Taiwan",
+    countryCode: "TW",
+    image: "https://images.unsplash.com/photo-1470004914212-05527e49370b?auto=format&fit=crop&w=1600&q=80",
+    flightAverage: { YUL: 1030, YYZ: 1080, YVR: 920 },
+    dailyTotals: { budget: 82, midRange: 138, luxury: 380 },
+    score: 88,
+    bestMonths: ["March", "April", "October", "November"],
+    travelStyles: ["Food", "Cities", "Nature"],
+    weather: "Warm shoulder months",
+    dataConfidence: "medium",
+    shortDescription: "A compact, food-forward Asia pick where excellent transit and reasonable local costs make planning straightforward.",
+    itineraryPreview: ["Taipei night markets, temples, and tea houses", "Jiufen, hot springs, or coastal day trips", "Taroko, Tainan, or Alishan extensions"],
+  },
+  {
+    slug: "australia",
+    name: "Australia",
+    countryCode: "AU",
+    image: "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=1600&q=80",
+    flightAverage: { YUL: 1600, YYZ: 1650, YVR: 1350 },
+    dailyTotals: { budget: 160, midRange: 260, luxury: 700 },
+    score: 78,
+    bestMonths: ["March", "April", "October", "November"],
+    travelStyles: ["Nature", "Cities", "Beach"],
+    weather: "Mild shoulder-season touring",
+    dataConfidence: "medium",
+    shortDescription: "A premium long-haul trip where the experience is excellent but both flights and daily costs demand a larger budget.",
+    itineraryPreview: ["Sydney harbor, beaches, and neighborhoods", "Great Barrier Reef or coastal Queensland planning", "Melbourne food, laneways, and day trips"],
+  },
+  {
+    slug: "new-zealand",
+    name: "New Zealand",
+    countryCode: "NZ",
+    image: "https://images.unsplash.com/photo-1469521669194-babb45599def?auto=format&fit=crop&w=1600&q=80",
+    flightAverage: { YUL: 1700, YYZ: 1750, YVR: 1450 },
+    dailyTotals: { budget: 155, midRange: 255, luxury: 690 },
+    score: 77,
+    bestMonths: ["February", "March", "November", "December"],
+    travelStyles: ["Nature", "Adventure", "Road Trip"],
+    weather: "Long daylight and mild outdoors",
+    dataConfidence: "medium",
+    shortDescription: "A scenic, high-cost adventure trip best suited to travelers with a larger budget and enough days to justify the flight.",
+    itineraryPreview: ["Auckland arrival and North Island food stops", "Rotorua, geothermal areas, or Hobbiton day trips", "Queenstown, Fiordland, and South Island road planning"],
+  },
+  {
+    slug: "dominican-republic",
+    name: "Dominican Republic",
+    countryCode: "DO",
+    image: "https://images.unsplash.com/photo-1518552718888-4e5aa775efdb?auto=format&fit=crop&w=1600&q=80",
+    flightAverage: { YUL: 560, YYZ: 540, YVR: 760 },
+    dailyTotals: { budget: 85, midRange: 145, luxury: 390 },
+    score: 82,
+    bestMonths: ["January", "February", "March", "December"],
+    travelStyles: ["Beach", "Relaxed", "Food"],
+    weather: "Warm winter beach weather",
+    dataConfidence: "medium",
+    shortDescription: "A practical Caribbean escape with strong Canadian flight access and flexible hotel choices across budget levels.",
+    itineraryPreview: ["Santo Domingo culture and food stops", "Punta Cana or Samana beach base", "Waterfalls, boat trips, or relaxed resort days"],
+  },
+  {
+    slug: "costa-rica",
+    name: "Costa Rica",
+    countryCode: "CR",
+    image: "https://images.unsplash.com/photo-1518182170546-07661fd94144?auto=format&fit=crop&w=1600&q=80",
+    flightAverage: { YUL: 700, YYZ: 680, YVR: 820 },
+    dailyTotals: { budget: 105, midRange: 175, luxury: 480 },
+    score: 85,
+    bestMonths: ["January", "February", "March", "April"],
+    travelStyles: ["Nature", "Adventure", "Beach"],
+    weather: "Dry-season nature travel",
+    dataConfidence: "medium",
+    shortDescription: "A nature-first Central America trip with good flight access, higher local costs, and excellent wildlife and beach variety.",
+    itineraryPreview: ["Arenal volcano, hot springs, and hanging bridges", "Monteverde cloud forest walks", "Pacific or Caribbean beach stays"],
+  },
+  {
+    slug: "panama",
+    name: "Panama",
+    countryCode: "PA",
+    image: "https://images.unsplash.com/photo-1571771019784-3ff35f4f4277?auto=format&fit=crop&w=1600&q=80",
+    flightAverage: { YUL: 670, YYZ: 650, YVR: 800 },
+    dailyTotals: { budget: 82, midRange: 138, luxury: 380 },
+    score: 81,
+    bestMonths: ["January", "February", "March", "December"],
+    travelStyles: ["Cities", "Beach", "Nature"],
+    weather: "Dry-season tropical travel",
+    dataConfidence: "medium",
+    shortDescription: "A compact and practical warm-weather trip combining Panama City, beaches, rainforests, and manageable flight costs.",
+    itineraryPreview: ["Panama City skyline, Casco Viejo, and canal visit", "Rainforest, islands, or beach extensions", "Coffee highlands or Bocas del Toro if time allows"],
+  },
+];
 
 function sumTravelStyleCosts(costs: Partial<TravelStyleCosts> | undefined) {
   return (
@@ -112,6 +592,112 @@ function buildDestination(destination: Omit<Destination, "estimatedCost" | "curr
   };
 }
 
+function buildOriginPricing(seed: DestinationSeed): OriginPricing {
+  return Object.fromEntries(
+    Object.entries(seed.flightAverage).map(([originCode, average]) => [
+      originCode,
+      {
+        ...origins[originCode as keyof typeof origins],
+        currency: "CAD" as const,
+        flightEstimate: {
+          low: roundToNearest(average * 0.82, 10),
+          average,
+          high: roundToNearest(average * 1.38, 10),
+        },
+        seasonalNotes:
+          seed.seasonalNotes ??
+          "Seasonality, seat sales, and booking timing can move flight prices materially from these planning estimates.",
+      },
+    ])
+  ) as OriginPricing;
+}
+
+function buildDailyCosts(seed: DestinationSeed): DailyCosts {
+  return {
+    currency: "CAD",
+    budget: splitDailyTotal(seed.dailyTotals.budget),
+    midRange: splitDailyTotal(seed.dailyTotals.midRange),
+    luxury: splitDailyTotal(seed.dailyTotals.luxury),
+  };
+}
+
+function splitDailyTotal(total: number): TravelStyleCosts {
+  const accommodation = roundToNearest(total * 0.45, 5);
+  const food = roundToNearest(total * 0.24, 5);
+  const localTransport = roundToNearest(total * 0.1, 5);
+  const activities = roundToNearest(total * 0.15, 5);
+  const assigned = accommodation + food + localTransport + activities;
+
+  return {
+    accommodation,
+    food,
+    localTransport,
+    activities,
+    misc: Math.max(5, roundToNearest(total - assigned, 5)),
+  };
+}
+
+function buildAffiliateLinks(seed: DestinationSeed): AffiliateLink[] {
+  return [
+    {
+      type: "Flights",
+      title: `Compare flights to ${seed.name}`,
+      description: `Compare round-trip flight options from Montreal, Toronto, or Vancouver to ${seed.name}.`,
+      priceHint: `Avg. from YUL CAD ${seed.flightAverage.YUL}`,
+      href: `/results?origin=YUL&currency=CAD&style=balanced`,
+    },
+    {
+      type: "Hotels",
+      title: "Compare hotel options",
+      description: `Review stay options that fit a practical ${seed.name} travel budget.`,
+      priceHint: `Mid-range daily stay CAD ${splitDailyTotal(seed.dailyTotals.midRange).accommodation}`,
+      href: `/destinations/${seed.slug}`,
+    },
+    {
+      type: "eSIM",
+      title: "Plan mobile data",
+      description: `Estimate mobile data needs for maps, messaging, and bookings in ${seed.name}.`,
+      priceHint: "Plan before departure",
+      href: "/tools/travel-budget-calculator",
+    },
+    {
+      type: "Activities",
+      title: "Estimate activity costs",
+      description: `Use activity planning ranges to keep a ${seed.name} itinerary within budget.`,
+      priceHint: `Mid-range activities CAD ${splitDailyTotal(seed.dailyTotals.midRange).activities}/day`,
+      href: `/destinations/${seed.slug}`,
+    },
+    {
+      type: "Insurance",
+      title: "Check travel insurance options",
+      description: `Compare insurance needs for trip length, activities, and total prepaid cost.`,
+      priceHint: "Verify before booking",
+      href: "/tools/travel-budget-calculator",
+    },
+  ];
+}
+
+function buildFaqs(seed: DestinationSeed): Destination["faqs"] {
+  return [
+    {
+      question: `Is ${seed.name} realistic for a budget-conscious trip from Canada?`,
+      answer: `${seed.name} can be realistic when the flight estimate and daily-cost tier fit your total budget. Use these numbers as planning estimates, then verify live fares and lodging before booking.`,
+    },
+    {
+      question: `What usually changes the ${seed.name} trip estimate the most?`,
+      answer: `Flights from your Canadian origin, accommodation seasonality, trip length, and travel style usually have the biggest effect on the final cost.`,
+    },
+  ];
+}
+
+function buildSourceNotes(seed: DestinationSeed): string[] {
+  return [
+    "Uses directional planning estimates for departures from Montreal (YUL), Toronto (YYZ), and Vancouver (YVR).",
+    `Daily costs are modeled in CAD for budget, mid-range, and luxury travel styles in ${seed.name}.`,
+    "These estimates are not live prices or guarantees; actual fares, hotel rates, exchange rates, and availability can vary.",
+  ];
+}
+
 export function normalizeOriginCode(originCode: string | null | undefined): OriginCode {
   const normalized = originCode?.trim().toUpperCase();
 
@@ -145,7 +731,7 @@ export function getOriginPricing(destination: Pick<Partial<Destination>, "origin
     (fallbackCode ? destination.originPricing?.[fallbackCode] : undefined) ?? {
       originCity: "Montreal",
       originCountry: "Canada",
-      currency: "CAD",
+      currency: "CAD" as const,
       flightEstimate: {
         low: legacyFlightEstimate,
         average: legacyFlightEstimate,
@@ -278,311 +864,31 @@ function normalizePositiveInteger(value: number | null | undefined, fallback: nu
   return typeof value === "number" && Number.isFinite(value) ? Math.max(1, Math.round(value)) : fallback;
 }
 
-export const destinations: Destination[] = [
+function roundToNearest(value: number, nearest: number) {
+  return Math.round(value / nearest) * nearest;
+}
+
+export const destinations: Destination[] = destinationSeeds.map((seed) =>
   buildDestination({
-    slug: "japan",
-    name: "Japan",
-    countryCode: "JP",
-    image:
-      "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1600&q=80",
-    originPricing: {
-      YUL: {
-        originCity: "Montreal",
-        originCountry: "Canada",
-        currency: "CAD",
-        flightEstimate: { low: 780, average: 900, high: 1350 },
-        seasonalNotes: "Flights are usually cheaper in spring and fall when booked early.",
-      },
-      YYZ: {
-        originCity: "Toronto",
-        originCountry: "Canada",
-        currency: "CAD",
-        flightEstimate: { low: 820, average: 980, high: 1450 },
-      },
-      YVR: {
-        originCity: "Vancouver",
-        originCountry: "Canada",
-        currency: "CAD",
-        flightEstimate: { low: 700, average: 880, high: 1250 },
-      },
-    },
-    dailyCosts: {
-      currency: "CAD",
-      budget: { accommodation: 55, food: 28, localTransport: 13, activities: 18, misc: 8 },
-      midRange: { accommodation: 82, food: 34, localTransport: 18, activities: 26, misc: 12 },
-      luxury: { accommodation: 220, food: 95, localTransport: 45, activities: 90, misc: 40 },
-    },
-    score: 86,
-    bestMonths: ["March", "April", "October", "November"],
-    travelStyles: ["Culture", "Food", "Cities"],
-    weather: "Mild spring and crisp autumn",
-    dataConfidence: "medium",
-    lastUpdated: "2026-06-24",
-    sourceNotes: [
-      "Uses Montreal, Toronto, and Vancouver flight estimate baselines.",
-      "Daily costs are planning ranges for budget, mid-range, and comfort travel.",
-      "Seasonality and exchange-rate movement can materially change final booking costs.",
-    ],
-    shortDescription:
-      "A polished city-and-culture trip with efficient transit, standout food, and strong value when flights are booked early.",
-    itineraryPreview: [
-      "Tokyo neighborhoods, sushi counters, and skyline viewpoints",
-      "Kyoto temples, tea houses, and bamboo forest walks",
-      "Osaka street food, markets, and a day trip to Nara",
-    ],
-    affiliateLinks: [
-      {
-        type: "Flights",
-        title: "Track Tokyo fares",
-        description: "Set a planning alert for round-trip flights from Toronto.",
-        priceHint: "From CAD 980",
-        href: "/results",
-      },
-      {
-        type: "Hotels",
-        title: "Compact city hotels",
-        description: "Compare central stays near major train stations.",
-        priceHint: "CAD 95/night",
-        href: "/results",
-      },
-      {
-        type: "eSIM",
-        title: "Japan data plan",
-        description: "Stay connected for maps, transit, and bookings.",
-        priceHint: "From CAD 18",
-        href: "/results",
-      },
-      {
-        type: "Activities",
-        title: "Temple and food tours",
-        description: "Reserve flexible activities before prices rise.",
-        priceHint: "From CAD 42",
-        href: "/results",
-      },
-      {
-        type: "Insurance",
-        title: "Trip protection",
-        description: "Estimated quote for medical and cancellation coverage.",
-        priceHint: "From CAD 54",
-        href: "/results",
-      },
-    ],
-    faqs: [
-      {
-        question: "Is Japan affordable on a mid-range budget?",
-        answer:
-          "Yes. Rail, food, and business hotels can be very efficient, while flights are the biggest swing factor.",
-      },
-      {
-        question: "Where should first-time visitors stay?",
-        answer:
-          "Tokyo, Kyoto, and Osaka make a strong first route with easy train connections and varied daily costs.",
-      },
-    ],
-  }),
-  buildDestination({
-    slug: "portugal",
-    name: "Portugal",
-    countryCode: "PT",
-    image:
-      "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1600&q=80",
-    originPricing: {
-      YUL: {
-        originCity: "Montreal",
-        originCountry: "Canada",
-        currency: "CAD",
-        flightEstimate: { low: 600, average: 730, high: 1050 },
-        seasonalNotes: "Shoulder-season Lisbon and Porto fares are often meaningfully lower than July and August.",
-      },
-      YYZ: {
-        originCity: "Toronto",
-        originCountry: "Canada",
-        currency: "CAD",
-        flightEstimate: { low: 650, average: 790, high: 1100 },
-      },
-      YVR: {
-        originCity: "Vancouver",
-        originCountry: "Canada",
-        currency: "CAD",
-        flightEstimate: { low: 780, average: 980, high: 1400 },
-      },
-    },
-    dailyCosts: {
-      currency: "CAD",
-      budget: { accommodation: 45, food: 25, localTransport: 10, activities: 15, misc: 8 },
-      midRange: { accommodation: 65, food: 32, localTransport: 14, activities: 28, misc: 12 },
-      luxury: { accommodation: 190, food: 85, localTransport: 35, activities: 80, misc: 35 },
-    },
-    score: 91,
-    bestMonths: ["May", "June", "September", "October"],
-    travelStyles: ["Coast", "Food", "Relaxed"],
-    weather: "Sunny shoulder seasons",
-    dataConfidence: "high",
-    lastUpdated: "2026-06-24",
-    sourceNotes: [
-      "Uses Montreal, Toronto, and Vancouver flight estimate baselines.",
-      "Accommodation and daily costs reflect common Lisbon and Porto planning ranges.",
-      "Summer demand can raise flight and hotel costs above the estimates shown.",
-    ],
-    shortDescription:
-      "A high-value European trip with coastlines, walkable cities, affordable food, and excellent shoulder-season pricing.",
-    itineraryPreview: [
-      "Lisbon viewpoints, tram rides, and seafood dinners",
-      "Sintra castles and Atlantic coast day trips",
-      "Porto wine cellars, river walks, and tiled streets",
-    ],
-    affiliateLinks: [
-      {
-        type: "Flights",
-        title: "Lisbon flight watch",
-        description: "Estimated fare tracking for Portugal shoulder season.",
-        priceHint: "From CAD 720",
-        href: "/results",
-      },
-      {
-        type: "Hotels",
-        title: "Boutique guesthouses",
-        description: "Find walkable stays with breakfast included.",
-        priceHint: "CAD 82/night",
-        href: "/results",
-      },
-      {
-        type: "eSIM",
-        title: "EU data pass",
-        description: "One plan for Portugal and nearby countries.",
-        priceHint: "From CAD 15",
-        href: "/results",
-      },
-      {
-        type: "Activities",
-        title: "Food and coast tours",
-        description: "Book small-group experiences in Lisbon and Porto.",
-        priceHint: "From CAD 35",
-        href: "/results",
-      },
-      {
-        type: "Insurance",
-        title: "Europe coverage",
-        description: "Estimated travel policy for a 10-day Portugal trip.",
-        priceHint: "From CAD 49",
-        href: "/results",
-      },
-    ],
-    faqs: [
-      {
-        question: "What makes Portugal good value?",
-        answer:
-          "Food, local transit, and guesthouses often cost less than comparable Western European destinations.",
-      },
-      {
-        question: "Which month is best for budget travel?",
-        answer:
-          "May and October usually balance lower prices, good weather, and fewer peak-season crowds.",
-      },
-    ],
-  }),
-  buildDestination({
-    slug: "vietnam",
-    name: "Vietnam",
-    countryCode: "VN",
-    image:
-      "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1600&q=80",
-    originPricing: {
-      YUL: {
-        originCity: "Montreal",
-        originCountry: "Canada",
-        currency: "CAD",
-        flightEstimate: { low: 760, average: 900, high: 1300 },
-        seasonalNotes: "Long-haul sale fares tend to be strongest outside winter holiday weeks.",
-      },
-      YYZ: {
-        originCity: "Toronto",
-        originCountry: "Canada",
-        currency: "CAD",
-        flightEstimate: { low: 790, average: 940, high: 1350 },
-      },
-      YVR: {
-        originCity: "Vancouver",
-        originCountry: "Canada",
-        currency: "CAD",
-        flightEstimate: { low: 680, average: 820, high: 1180 },
-      },
-    },
-    dailyCosts: {
-      currency: "CAD",
-      budget: { accommodation: 25, food: 14, localTransport: 8, activities: 12, misc: 6 },
-      midRange: { accommodation: 40, food: 19, localTransport: 10, activities: 22, misc: 9 },
-      luxury: { accommodation: 140, food: 60, localTransport: 25, activities: 70, misc: 25 },
-    },
-    score: 94,
-    bestMonths: ["February", "March", "April", "November"],
-    travelStyles: ["Adventure", "Food", "Backpacking"],
-    weather: "Warm with regional variation",
-    dataConfidence: "medium",
-    lastUpdated: "2026-06-24",
-    sourceNotes: [
-      "Uses Canadian long-haul flight estimate baselines by origin city.",
-      "Daily costs reflect practical city-to-city planning ranges.",
-      "Regional routing, internal transfers, and travel style can shift total trip cost.",
-    ],
-    shortDescription:
-      "A budget-friendly long-haul choice where local costs are low, food is excellent, and scenic routes stretch every dollar.",
-    itineraryPreview: [
-      "Hanoi street food, old quarter stays, and coffee stops",
-      "Ha Long Bay cruise or Ninh Binh limestone landscapes",
-      "Hoi An lantern nights, beaches, and tailoring markets",
-    ],
-    affiliateLinks: [
-      {
-        type: "Flights",
-        title: "Hanoi and Ho Chi Minh fares",
-        description: "Compare estimated open-jaw long-haul routes.",
-        priceHint: "From CAD 910",
-        href: "/results",
-      },
-      {
-        type: "Hotels",
-        title: "Value stays",
-        description: "Guesthouses and boutique hotels under budget.",
-        priceHint: "CAD 45/night",
-        href: "/results",
-      },
-      {
-        type: "eSIM",
-        title: "Vietnam data pack",
-        description: "Maps and messaging for city-to-city travel.",
-        priceHint: "From CAD 12",
-        href: "/results",
-      },
-      {
-        type: "Activities",
-        title: "Cruises and cooking classes",
-        description: "Add memorable activities without breaking budget.",
-        priceHint: "From CAD 28",
-        href: "/results",
-      },
-      {
-        type: "Insurance",
-        title: "Adventure coverage",
-        description: "Estimated quote for long-haul travel protection.",
-        priceHint: "From CAD 57",
-        href: "/results",
-      },
-    ],
-    faqs: [
-      {
-        question: "Why is the total still high if Vietnam is cheap?",
-        answer:
-          "The flight is the main cost. Once there, hotels, food, and transport keep daily spend low.",
-      },
-      {
-        question: "How long should I stay?",
-        answer:
-          "Ten to fourteen days gives enough time to spread the flight cost across several regions.",
-      },
-    ],
-  }),
-];
+    slug: seed.slug,
+    name: seed.name,
+    countryCode: seed.countryCode,
+    image: seed.image,
+    originPricing: buildOriginPricing(seed),
+    dailyCosts: buildDailyCosts(seed),
+    score: seed.score,
+    bestMonths: seed.bestMonths,
+    travelStyles: seed.travelStyles,
+    weather: seed.weather,
+    dataConfidence: seed.dataConfidence,
+    lastUpdated,
+    sourceNotes: buildSourceNotes(seed),
+    shortDescription: seed.shortDescription,
+    itineraryPreview: seed.itineraryPreview,
+    affiliateLinks: buildAffiliateLinks(seed),
+    faqs: buildFaqs(seed),
+  })
+);
 
 export function getDestination(slug: string) {
   return destinations.find((destination) => destination.slug === slug);
