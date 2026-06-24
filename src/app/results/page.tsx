@@ -28,6 +28,12 @@ import {
   CostBreakdownList,
   type CostBreakdownItem,
 } from "@/components/site/cost-breakdown-card";
+import {
+  destinations as destinationData,
+  formatMoney,
+  getDestinationCostBreakdown,
+  getDestinationTripEstimate,
+} from "@/lib/data/destinations";
 import { createResultsMetadata } from "@/lib/seo/metadata";
 
 export const metadata = createResultsMetadata();
@@ -43,7 +49,7 @@ const categories = [
   { label: "Backpacker", icon: Compass },
 ];
 
-const destinations = [
+const legacyDestinations = [
   {
     rank: 1,
     country: "Japon",
@@ -79,11 +85,30 @@ const destinations = [
   },
 ];
 
+void legacyDestinations;
+
+const destinations = destinationData.map((destination, index) => ({
+  rank: index + 1,
+  country: destination.name,
+  region: destination.travelStyles.slice(0, 2).join(" & "),
+  total: formatMoney(getDestinationTripEstimate(destination, { days: 10, originCode: "YUL", travelStyle: "midRange" })),
+  quality: destination.score >= 92 ? "Excellent" : "Very good",
+  score: `${(destination.score / 10).toFixed(1)}/10`,
+  href: `/destinations/${destination.slug}`,
+  image: destination.image,
+  alt: `${destination.name} travel view`,
+}));
+
+const japan = destinationData[0];
+const japanBreakdown = getDestinationCostBreakdown(japan, { days: 10, originCode: "YUL", travelStyle: "midRange" });
+
 const budgetRows: CostBreakdownItem[] = [
-  { label: "Flights", amount: 1050, currency: "CAD", color: "#2563eb" },
-  { label: "Accommodation", amount: 720, currency: "CAD", color: "#14b8a6" },
-  { label: "Food", amount: 350, currency: "CAD", color: "#f97316" },
-  { label: "Transport", amount: 180, currency: "CAD", color: "#8b5cf6" },
+  { label: "Flights", amount: japanBreakdown.flights, currency: "CAD", color: "#2563eb" },
+  { label: "Accommodation", amount: japanBreakdown.accommodation, currency: "CAD", color: "#14b8a6" },
+  { label: "Food", amount: japanBreakdown.food, currency: "CAD", color: "#f97316" },
+  { label: "Transport", amount: japanBreakdown.localTransport, currency: "CAD", color: "#8b5cf6" },
+  { label: "Activities", amount: japanBreakdown.activities, currency: "CAD", color: "#a855f7" },
+  { label: "Misc", amount: japanBreakdown.misc, currency: "CAD", color: "#f59e0b" },
 ];
 
 const offers = [
@@ -240,7 +265,7 @@ function DestinationCard({ destination }: { destination: (typeof destinations)[n
 }
 
 function BudgetBreakdownCard() {
-  const totalAmount = 2420;
+  const totalAmount = getDestinationTripEstimate(japan, { days: 10, originCode: "YUL", travelStyle: "midRange" });
 
   return (
     <section className="grid gap-8 rounded-[32px] border border-white/60 bg-white/70 p-6 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05)] backdrop-blur-xl md:grid-cols-[260px_1fr] md:p-8">

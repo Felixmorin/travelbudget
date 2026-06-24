@@ -5,7 +5,7 @@ import { CTASection } from "@/components/site/cta-section";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { destinations, formatMoney } from "@/lib/data/destinations";
+import { destinations, formatMoney, getDestinationCostBreakdown, getDestinationTripEstimate } from "@/lib/data/destinations";
 import { createMetadata } from "@/lib/seo/metadata";
 
 export const metadata = createMetadata({
@@ -14,12 +14,17 @@ export const metadata = createMetadata({
   path: "/compare",
 });
 
+const referenceScenario = { days: 10, originCode: "YUL", travelStyle: "midRange" } as const;
+const referenceBreakdowns = destinations.map((destination) => getDestinationCostBreakdown(destination, referenceScenario));
+
 const rows = [
-  ["Total cost", (i: number) => formatMoney(destinations[i].estimatedCost)],
-  ["Flight cost", (i: number) => formatMoney(destinations[i].flightCost)],
-  ["Hotel cost", (i: number) => formatMoney(destinations[i].hotelCost)],
-  ["Food cost", (i: number) => formatMoney(destinations[i].foodCost)],
-  ["Activities", (i: number) => formatMoney(destinations[i].activitiesCost)],
+  ["Total cost", (i: number) => formatMoney(getDestinationTripEstimate(destinations[i], referenceScenario))],
+  ["Flight cost", (i: number) => formatMoney(referenceBreakdowns[i].flights)],
+  ["Accommodation", (i: number) => formatMoney(referenceBreakdowns[i].accommodation)],
+  ["Food", (i: number) => formatMoney(referenceBreakdowns[i].food)],
+  ["Local transport", (i: number) => formatMoney(referenceBreakdowns[i].localTransport)],
+  ["Activities", (i: number) => formatMoney(referenceBreakdowns[i].activities)],
+  ["Misc", (i: number) => formatMoney(referenceBreakdowns[i].misc)],
   ["Weather", (i: number) => destinations[i].weather],
   ["Value score", (i: number) => `${destinations[i].score}/100`],
 ] as const;

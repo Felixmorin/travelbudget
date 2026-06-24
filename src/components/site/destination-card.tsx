@@ -5,9 +5,12 @@ import { ArrowRight, CalendarDays, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Destination, formatMoney } from "@/lib/data/destinations";
+import { Destination, formatMoney, getDailyCostTotal, getDestinationTripEstimate } from "@/lib/data/destinations";
 
 export function DestinationCard({ destination, ranked = false }: { destination: Destination; ranked?: boolean }) {
+  const estimatedCost = getDestinationTripEstimate(destination, { days: 10, originCode: "YUL", travelStyle: "midRange" });
+  const dailyCost = getDailyCostTotal(destination, "midRange");
+
   return (
     <Card className="overflow-hidden border-slate-200 bg-white shadow-lg shadow-slate-200/60">
       <div className="relative h-56">
@@ -32,8 +35,9 @@ export function DestinationCard({ destination, ranked = false }: { destination: 
           <div>
             <p className="text-xs uppercase tracking-wide text-slate-500">Estimated cost</p>
             <p className="text-2xl font-semibold text-slate-950">
-              {formatMoney(destination.estimatedCost, destination.currency)}
+              {formatMoney(estimatedCost, destination.currency)}
             </p>
+            <p className="text-xs text-slate-500">{formatMoney(dailyCost, destination.currency)}/day mid-range</p>
           </div>
           <div className="rounded-full bg-teal-50 px-3 py-2 text-sm font-semibold text-teal-700">
             {destination.score}/100

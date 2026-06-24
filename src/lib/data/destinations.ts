@@ -6,11 +6,49 @@ export type AffiliateLink = {
   href: string;
 };
 
+export type OriginCode = "YUL" | "YYZ" | "YVR" | (string & {});
+
+export type FlightEstimate = {
+  low: number;
+  average: number;
+  high: number;
+};
+
+export type OriginPricing = Record<
+  OriginCode,
+  {
+    originCity: string;
+    originCountry: string;
+    currency: string;
+    flightEstimate: FlightEstimate;
+    seasonalNotes?: string;
+  }
+>;
+
+export type TravelStyle = "budget" | "midRange" | "luxury";
+
+export type TravelStyleCosts = {
+  accommodation: number;
+  food: number;
+  localTransport: number;
+  activities: number;
+  misc: number;
+};
+
+export type DailyCosts = {
+  currency: string;
+  budget: TravelStyleCosts;
+  midRange: TravelStyleCosts;
+  luxury: TravelStyleCosts;
+};
+
 export type Destination = {
   slug: string;
   name: string;
   countryCode: string;
   image: string;
+  originPricing: OriginPricing;
+  dailyCosts: DailyCosts;
   estimatedCost: number;
   currency: string;
   score: number;
@@ -31,21 +69,168 @@ export type Destination = {
   }[];
 };
 
-export const destinations: Destination[] = [
+const defaultOriginCode = "YUL";
+const defaultTravelStyle: TravelStyle = "midRange";
+const estimateDays = 10;
+
+function sumTravelStyleCosts(costs: Partial<TravelStyleCosts> | undefined) {
+  return (
+    (costs?.accommodation ?? 0) +
+    (costs?.food ?? 0) +
+    (costs?.localTransport ?? 0) +
+    (costs?.activities ?? 0) +
+    (costs?.misc ?? 0)
+  );
+}
+
+function getFirstOriginCode(originPricing: OriginPricing) {
+  return Object.keys(originPricing)[0] as OriginCode | undefined;
+}
+
+function buildDestination(destination: Omit<Destination, "estimatedCost" | "currency" | "flightCost" | "hotelCost" | "foodCost" | "transportCost" | "activitiesCost">): Destination {
+  const originPricing = getOriginPricing(destination, defaultOriginCode);
+  const dailyCosts = getTravelStyleCosts(destination, defaultTravelStyle);
+
+  return {
+    ...destination,
+    estimatedCost: getDestinationTripEstimate(destination, {
+      days: estimateDays,
+      originCode: defaultOriginCode,
+      travelStyle: defaultTravelStyle,
+    }),
+    currency: destination.dailyCosts.currency,
+    flightCost: originPricing.flightEstimate.average,
+    hotelCost: dailyCosts.accommodation * estimateDays,
+    foodCost: dailyCosts.food * estimateDays,
+    transportCost: dailyCosts.localTransport * estimateDays,
+    activitiesCost: dailyCosts.activities * estimateDays,
+  };
+}
+
+export function normalizeOriginCode(originCode: string | null | undefined): OriginCode {
+  const normalized = originCode?.trim().toUpperCase();
+
+  if (!normalized) {
+    return defaultOriginCode;
+  }
+
+  if (["MONTREAL", "MONTRÉAL"].includes(normalized)) {
+    return "YUL";
+  }
+
+  if (normalized === "TORONTO") {
+    return "YYZ";
+  }
+
+  if (normalized === "VANCOUVER") {
+    return "YVR";
+  }
+
+  return normalized as OriginCode;
+}
+
+export function getOriginPricing(destination: Pick<Destination, "originPricing">, originCode?: string) {
+  const resolvedOriginCode = normalizeOriginCode(originCode);
+  const fallbackCode = getFirstOriginCode(destination.originPricing);
+
+  return (
+    destination.originPricing[resolvedOriginCode] ??
+    destination.originPricing[defaultOriginCode] ??
+    (fallbackCode ? destination.originPricing[fallbackCode] : undefined) ?? {
+      originCity: "Montreal",
+      originCountry: "Canada",
+      currency: "CAD",
+      flightEstimate: { low: 0, average: 0, high: 0 },
+    }
+  );
+}
+
+export function getTravelStyleCosts(destination: Pick<Destination, "dailyCosts">, travelStyle?: TravelStyle) {
+  return destination.dailyCosts[travelStyle ?? defaultTravelStyle] ?? destination.dailyCosts[defaultTravelStyle];
+}
+
+export function getDailyCostTotal(destination: Pick<Destination, "dailyCosts">, travelStyle?: TravelStyle) {
+  return sumTravelStyleCosts(getTravelStyleCosts(destination, travelStyle));
+}
+
+export function getDestinationTripEstimate(
+  destination: Pick<Destination, "originPricing" | "dailyCosts">,
   {
+    days,
+    originCode,
+    travelStyle,
+  }: {
+    days: number;
+    originCode?: string;
+    travelStyle?: TravelStyle;
+  }
+) {
+  const normalizedDays = Number.isFinite(days) ? Math.max(1, Math.round(days)) : estimateDays;
+  const flightAverage = getOriginPricing(destination, originCode).flightEstimate.average ?? 0;
+
+  return Math.round(flightAverage + getDailyCostTotal(destination, travelStyle) * normalizedDays);
+}
+
+export function getDestinationCostBreakdown(
+  destination: Pick<Destination, "originPricing" | "dailyCosts">,
+  {
+    days,
+    originCode,
+    travelStyle,
+  }: {
+    days: number;
+    originCode?: string;
+    travelStyle?: TravelStyle;
+  }
+) {
+  const normalizedDays = Number.isFinite(days) ? Math.max(1, Math.round(days)) : estimateDays;
+  const dailyCosts = getTravelStyleCosts(destination, travelStyle);
+
+  return {
+    flights: getOriginPricing(destination, originCode).flightEstimate.average ?? 0,
+    accommodation: (dailyCosts.accommodation ?? 0) * normalizedDays,
+    food: (dailyCosts.food ?? 0) * normalizedDays,
+    localTransport: (dailyCosts.localTransport ?? 0) * normalizedDays,
+    activities: (dailyCosts.activities ?? 0) * normalizedDays,
+    misc: (dailyCosts.misc ?? 0) * normalizedDays,
+  };
+}
+
+export const destinations: Destination[] = [
+  buildDestination({
     slug: "japan",
     name: "Japan",
     countryCode: "JP",
     image:
       "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1600&q=80",
-    estimatedCost: 2420,
-    currency: "CAD",
+    originPricing: {
+      YUL: {
+        originCity: "Montreal",
+        originCountry: "Canada",
+        currency: "CAD",
+        flightEstimate: { low: 780, average: 900, high: 1350 },
+        seasonalNotes: "Flights are usually cheaper in spring and fall when booked early.",
+      },
+      YYZ: {
+        originCity: "Toronto",
+        originCountry: "Canada",
+        currency: "CAD",
+        flightEstimate: { low: 820, average: 980, high: 1450 },
+      },
+      YVR: {
+        originCity: "Vancouver",
+        originCountry: "Canada",
+        currency: "CAD",
+        flightEstimate: { low: 700, average: 880, high: 1250 },
+      },
+    },
+    dailyCosts: {
+      currency: "CAD",
+      budget: { accommodation: 55, food: 28, localTransport: 13, activities: 18, misc: 8 },
+      midRange: { accommodation: 82, food: 34, localTransport: 18, activities: 26, misc: 12 },
+      luxury: { accommodation: 220, food: 95, localTransport: 45, activities: 90, misc: 40 },
+    },
     score: 86,
-    flightCost: 980,
-    hotelCost: 760,
-    foodCost: 330,
-    transportCost: 210,
-    activitiesCost: 140,
     bestMonths: ["March", "April", "October", "November"],
     travelStyles: ["Culture", "Food", "Cities"],
     weather: "Mild spring and crisp autumn",
@@ -105,21 +290,41 @@ export const destinations: Destination[] = [
           "Tokyo, Kyoto, and Osaka make a strong first route with easy train connections and varied daily costs.",
       },
     ],
-  },
-  {
+  }),
+  buildDestination({
     slug: "portugal",
     name: "Portugal",
     countryCode: "PT",
     image:
       "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1600&q=80",
-    estimatedCost: 1880,
-    currency: "CAD",
+    originPricing: {
+      YUL: {
+        originCity: "Montreal",
+        originCountry: "Canada",
+        currency: "CAD",
+        flightEstimate: { low: 600, average: 730, high: 1050 },
+        seasonalNotes: "Shoulder-season Lisbon and Porto fares are often meaningfully lower than July and August.",
+      },
+      YYZ: {
+        originCity: "Toronto",
+        originCountry: "Canada",
+        currency: "CAD",
+        flightEstimate: { low: 650, average: 790, high: 1100 },
+      },
+      YVR: {
+        originCity: "Vancouver",
+        originCountry: "Canada",
+        currency: "CAD",
+        flightEstimate: { low: 780, average: 980, high: 1400 },
+      },
+    },
+    dailyCosts: {
+      currency: "CAD",
+      budget: { accommodation: 45, food: 25, localTransport: 10, activities: 15, misc: 8 },
+      midRange: { accommodation: 65, food: 32, localTransport: 14, activities: 28, misc: 12 },
+      luxury: { accommodation: 190, food: 85, localTransport: 35, activities: 80, misc: 35 },
+    },
     score: 91,
-    flightCost: 720,
-    hotelCost: 610,
-    foodCost: 260,
-    transportCost: 120,
-    activitiesCost: 170,
     bestMonths: ["May", "June", "September", "October"],
     travelStyles: ["Coast", "Food", "Relaxed"],
     weather: "Sunny shoulder seasons",
@@ -179,21 +384,41 @@ export const destinations: Destination[] = [
           "May and October usually balance lower prices, good weather, and fewer peak-season crowds.",
       },
     ],
-  },
-  {
+  }),
+  buildDestination({
     slug: "vietnam",
     name: "Vietnam",
     countryCode: "VN",
     image:
       "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1600&q=80",
-    estimatedCost: 1650,
-    currency: "CAD",
+    originPricing: {
+      YUL: {
+        originCity: "Montreal",
+        originCountry: "Canada",
+        currency: "CAD",
+        flightEstimate: { low: 760, average: 900, high: 1300 },
+        seasonalNotes: "Long-haul sale fares tend to be strongest outside winter holiday weeks.",
+      },
+      YYZ: {
+        originCity: "Toronto",
+        originCountry: "Canada",
+        currency: "CAD",
+        flightEstimate: { low: 790, average: 940, high: 1350 },
+      },
+      YVR: {
+        originCity: "Vancouver",
+        originCountry: "Canada",
+        currency: "CAD",
+        flightEstimate: { low: 680, average: 820, high: 1180 },
+      },
+    },
+    dailyCosts: {
+      currency: "CAD",
+      budget: { accommodation: 25, food: 14, localTransport: 8, activities: 12, misc: 6 },
+      midRange: { accommodation: 40, food: 19, localTransport: 10, activities: 22, misc: 9 },
+      luxury: { accommodation: 140, food: 60, localTransport: 25, activities: 70, misc: 25 },
+    },
     score: 94,
-    flightCost: 910,
-    hotelCost: 330,
-    foodCost: 160,
-    transportCost: 110,
-    activitiesCost: 140,
     bestMonths: ["February", "March", "April", "November"],
     travelStyles: ["Adventure", "Food", "Backpacking"],
     weather: "Warm with regional variation",
@@ -253,7 +478,7 @@ export const destinations: Destination[] = [
           "Ten to fourteen days gives enough time to spread the flight cost across several regions.",
       },
     ],
-  },
+  }),
 ];
 
 export function getDestination(slug: string) {

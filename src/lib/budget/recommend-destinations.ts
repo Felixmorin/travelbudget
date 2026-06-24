@@ -1,4 +1,9 @@
-import type { Destination } from "@/lib/data/destinations";
+import {
+  getDestinationCostBreakdown,
+  getOriginPricing,
+  type Destination,
+  type TravelStyle as DestinationTravelStyle,
+} from "@/lib/data/destinations";
 
 export type BudgetFitStatus = "best-fit" | "stretch" | "over-budget";
 export type SupportedCurrency = "CAD" | "USD" | "EUR";
@@ -10,6 +15,7 @@ export type CostBreakdown = {
   food: number;
   transport: number;
   activities: number;
+  misc: number;
 };
 
 export type DestinationRecommendation = {
@@ -31,16 +37,6 @@ export type RecommendDestinationsInput = {
   month: string;
   travelers: number;
   style: TravelStyle;
-};
-
-const BASE_DAYS = 10;
-const BASE_TRAVELERS = 2;
-const BASE_NIGHTS = BASE_DAYS - 1;
-
-const styleMultipliers: Record<TravelStyle, number> = {
-  budget: 0.88,
-  balanced: 1,
-  comfort: 1.18,
 };
 
 const relatedStyles: Record<TravelStyle, string[]> = {
@@ -71,7 +67,7 @@ export function recommendDestinations({
 
   return destinations
     .map((destination) => {
-      const costBreakdown = buildCostBreakdown(destination, normalizedDays, normalizedTravelers, style, currency);
+      const costBreakdown = buildCostBreakdown(destination, normalizedDays, normalizedTravelers, style, currency, origin);
       const estimatedTotal = sumCostBreakdown(costBreakdown);
       const budgetRemaining = normalizedBudget - estimatedTotal;
       const budgetFitStatus = getBudgetFitStatus(estimatedTotal, normalizedBudget);
@@ -110,23 +106,24 @@ function buildCostBreakdown(
   days: number,
   travelers: number,
   style: TravelStyle,
-  currency: SupportedCurrency
+  currency: SupportedCurrency,
+  origin: string
 ): CostBreakdown {
-  const nights = Math.max(1, days - 1);
-  const rooms = Math.max(1, Math.ceil(travelers / 2));
-  const styleMultiplier = styleMultipliers[style];
   const currencyRate = currencyRatesFromCad[currency];
+  const destinationStyle = toDestinationTravelStyle(style);
+  const destinationBreakdown = getDestinationCostBreakdown(destination, {
+    days,
+    originCode: origin,
+    travelStyle: destinationStyle,
+  });
 
   return {
-    flights: roundCurrency((destination.flightCost / BASE_TRAVELERS) * travelers * currencyRate),
-    hotel: roundCurrency((destination.hotelCost / BASE_NIGHTS) * nights * rooms * styleMultiplier * currencyRate),
-    food: roundCurrency((destination.foodCost / BASE_DAYS / BASE_TRAVELERS) * days * travelers * styleMultiplier * currencyRate),
-    transport: roundCurrency(
-      (destination.transportCost / BASE_DAYS / BASE_TRAVELERS) * days * travelers * styleMultiplier * currencyRate
-    ),
-    activities: roundCurrency(
-      (destination.activitiesCost / BASE_DAYS / BASE_TRAVELERS) * days * travelers * styleMultiplier * currencyRate
-    ),
+    flights: roundCurrency(destinationBreakdown.flights * travelers * currencyRate),
+    hotel: roundCurrency(destinationBreakdown.accommodation * travelers * currencyRate),
+    food: roundCurrency(destinationBreakdown.food * travelers * currencyRate),
+    transport: roundCurrency(destinationBreakdown.localTransport * travelers * currencyRate),
+    activities: roundCurrency(destinationBreakdown.activities * travelers * currencyRate),
+    misc: roundCurrency(destinationBreakdown.misc * travelers * currencyRate),
   };
 }
 
@@ -235,9 +232,24 @@ function buildReasons({
     reasons.push(`Your ${style} style lines up with ${destination.travelStyles.slice(0, 2).join(" and ")} travel.`);
   }
 
-  reasons.push(`Flight and local-cost estimates are scaled from the mock ${toTitleCase(origin.trim()) || "your city"} baseline.`);
+  const originPricing = getOriginPricing(destination, origin);
+  reasons.push(
+    `Flight and local-cost estimates use the ${originPricing.originCity} baseline with ${style} daily costs.`
+  );
 
   return reasons;
+}
+
+function toDestinationTravelStyle(style: TravelStyle): DestinationTravelStyle {
+  if (style === "comfort") {
+    return "luxury";
+  }
+
+  if (style === "balanced") {
+    return "midRange";
+  }
+
+  return "budget";
 }
 
 function hasMonthMatch(destination: Destination, month: string) {

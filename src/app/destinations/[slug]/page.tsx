@@ -10,7 +10,15 @@ import { CTASection } from "@/components/site/cta-section";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { type Destination, destinations, formatMoney, getDestination } from "@/lib/data/destinations";
+import {
+  type Destination,
+  destinations,
+  formatMoney,
+  getDailyCostTotal,
+  getDestination,
+  getDestinationTripEstimate,
+  getOriginPricing,
+} from "@/lib/data/destinations";
 import { createDestinationMetadata, createMetadata } from "@/lib/seo/metadata";
 
 type DestinationPageProps = {
@@ -46,6 +54,13 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
   }
 
   const budgetInsight = getBudgetInsight(destination);
+  const defaultOriginPricing = getOriginPricing(destination, "YUL");
+  const dailyMidRangeTotal = getDailyCostTotal(destination, "midRange");
+  const typicalEstimate = getDestinationTripEstimate(destination, {
+    days: 10,
+    originCode: "YUL",
+    travelStyle: "midRange",
+  });
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -106,10 +121,10 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
         <section className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1fr_380px] lg:px-8">
           <div className="grid gap-8">
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <Metric icon={WalletCards} label="Estimated total" value={formatMoney(destination.estimatedCost, destination.currency)} />
+              <Metric icon={WalletCards} label="Estimated total" value={formatMoney(typicalEstimate, destination.currency)} />
               <Metric icon={Sparkles} label="Budget score" value={`${destination.score}/100`} />
-              <Metric icon={CalendarDays} label="Best months" value={destination.bestMonths.slice(0, 2).join(", ")} />
-              <Metric icon={Route} label="Trip styles" value={destination.travelStyles.slice(0, 2).join(", ")} />
+              <Metric icon={CalendarDays} label="Daily mid-range" value={formatMoney(dailyMidRangeTotal, destination.currency)} />
+              <Metric icon={Route} label="Departure baseline" value={`${defaultOriginPricing.originCity} (${defaultOriginPricing.currency})`} />
             </div>
 
             <Card className="border-slate-200 bg-white shadow-lg shadow-slate-200/60">
@@ -130,7 +145,7 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
                 <div className="rounded-2xl bg-slate-950 p-5 text-white">
                   <p className="text-xs uppercase tracking-wide text-white/60">Typical mock estimate</p>
                   <p className="mt-2 text-3xl font-semibold">
-                    {formatMoney(destination.estimatedCost, destination.currency)}
+                    {formatMoney(typicalEstimate, destination.currency)}
                   </p>
                 </div>
               </CardContent>
