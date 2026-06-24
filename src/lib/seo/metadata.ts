@@ -17,6 +17,7 @@ type CreateMetadataOptions = {
   path?: string;
   image?: string;
   imageAlt?: string;
+  robots?: Metadata["robots"];
   noIndex?: boolean;
 };
 
@@ -30,6 +31,7 @@ export function createMetadata({
   path = "/",
   image = siteConfig.ogImage,
   imageAlt = siteConfig.name,
+  robots,
   noIndex = false,
 }: CreateMetadataOptions = {}): Metadata {
   const canonicalUrl = createCanonicalUrl(path);
@@ -74,12 +76,14 @@ export function createMetadata({
         },
       ],
     },
-    robots: noIndex
-      ? {
-          index: false,
-          follow: false,
-        }
-      : undefined,
+    robots:
+      robots ??
+      (noIndex
+        ? {
+            index: false,
+            follow: false,
+          }
+        : undefined),
   };
 }
 
@@ -98,6 +102,10 @@ export function createResultsMetadata(): Metadata {
     title: "Travel Budget Results",
     description: "Compare destinations based on your travel budget, trip length, travel style, and departure city.",
     path: "/results",
+    robots: {
+      index: false,
+      follow: true,
+    },
   });
 }
 

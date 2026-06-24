@@ -7,6 +7,18 @@ import { TrustSection } from "@/components/site/trust-section";
 import { CTASection } from "@/components/site/cta-section";
 import { destinations } from "@/lib/data/destinations";
 import { tools } from "@/lib/data/tools";
+import { createMetadata } from "@/lib/seo/metadata";
+
+export const metadata = createMetadata({
+  title: "Find the Best Travel Destinations for Your Budget",
+  description:
+    "Discover where you can travel based on your budget, trip length, departure city, and travel style. TravelBudget.ai helps you compare destinations with realistic cost breakdowns and smart recommendations.",
+  path: "/",
+  robots: {
+    index: true,
+    follow: true,
+  },
+});
 
 export default function Home() {
   return (

@@ -1,36 +1,123 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TravelBudget.ai
+
+TravelBudget.ai is a budget-first travel planning MVP built with Next.js. It helps travelers compare destinations, estimate total trip costs, and understand where their money goes before they book.
+
+The app currently uses curated mock data for Japan, Portugal, and Vietnam. It is designed as a polished frontend foundation that can later be connected to live flight, hotel, exchange-rate, and affiliate APIs.
+
+## Features
+
+- Budget-based destination recommendations
+- Trip cost breakdowns for flights, hotels, food, local transport, and activities
+- Destination detail pages with best months, itinerary previews, FAQs, and booking prompts
+- Side-by-side destination comparison
+- Travel planning tools directory
+- SEO metadata and FAQ structured data for destination pages
+- Responsive UI built with Tailwind CSS, shadcn-style components, and Lucide icons
+
+## Tech Stack
+
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS 4
+- ESLint
+- Lucide React
+- Base UI / shadcn-style component structure
 
 ## Getting Started
 
-First, run the development server:
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Available Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run dev
+```
 
-## Learn More
+Runs the app locally in development mode.
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run build
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Builds the production version.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run start
+```
 
-## Deploy on Vercel
+Starts the production server after a build.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run lint
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Runs ESLint.
+
+## App Routes
+
+- `/` - homepage with the budget search card and featured destinations
+- `/results` - ranked destination recommendations based on query parameters
+- `/destinations/japan` - Japan budget guide
+- `/destinations/portugal` - Portugal budget guide
+- `/destinations/vietnam` - Vietnam budget guide
+- `/compare` - destination comparison table
+- `/tools` - travel tools directory
+
+## Project Structure
+
+```text
+src/
+  app/                    App Router pages and global styles
+  components/
+    site/                 Product-specific UI sections and cards
+    ui/                   Reusable UI primitives
+  lib/
+    budget/               Recommendation and cost-estimation logic
+    data/                 Mock destination and tool data
+    seo/                  Metadata helpers
+public/                   Static assets
+```
+
+## Data Model
+
+Destination data lives in `src/lib/data/destinations.ts`. Each destination includes:
+
+- estimated total trip cost
+- cost categories
+- best travel months
+- travel styles
+- itinerary preview
+- affiliate-ready booking links
+- FAQ content
+
+Recommendation logic lives in `src/lib/budget/recommend-destinations.ts`. It adjusts costs by currency, trip length, number of travelers, and travel style, then ranks destinations by budget fit, seasonality, and style match.
+
+## Current Limitations
+
+- Prices are mock estimates, not live booking data.
+- Affiliate links currently route back into the app.
+- Supported currencies are CAD, USD, and EUR.
+- Supported recommendation styles are budget, balanced, and comfort.
+- The initial destination dataset is intentionally small.
+
+## Next Steps
+
+- Connect live flight and hotel pricing APIs
+- Add saved trips and user accounts
+- Expand destination coverage
+- Add real affiliate providers
+- Persist searches and recommendation history
+- Add tests for recommendation scoring and query parsing
