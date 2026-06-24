@@ -21,6 +21,8 @@ import {
   Wifi,
 } from "lucide-react";
 
+import { AnalyticsView } from "@/components/analytics/analytics-view";
+import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -138,6 +140,15 @@ const offers = [
 export default function ResultsPage() {
   return (
     <main className="bg-[#f7f9fb] text-[#191c1e]">
+      <AnalyticsView
+        eventName="budget_result_viewed"
+        eventProperties={{
+          page: "/results",
+          currency: "CAD",
+          tripLength: 10,
+          resultsCount: destinations.length,
+        }}
+      />
       <section className="border-b border-[#c3c6d7]/35 bg-white/70">
         <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-10 sm:px-6 lg:flex-row lg:items-end lg:justify-between lg:px-8">
           <div>
@@ -153,10 +164,19 @@ export default function ResultsPage() {
             </p>
           </div>
           <Button asChild className="h-12 rounded-full bg-[#004ac6] px-5 text-white shadow-lg shadow-blue-700/20 hover:bg-blue-700">
-            <Link href="/">
+            <TrackedLink
+              href="/"
+              eventName="cta_clicked"
+              eventProperties={{
+                page: "/results",
+                label: "Modify Budget",
+                href: "/",
+                ctaLocation: "results_header",
+              }}
+            >
               <Filter className="mr-2 size-4" />
               Modify Budget
-            </Link>
+            </TrackedLink>
           </Button>
         </div>
       </section>
@@ -213,7 +233,17 @@ function CategoryFilters() {
 function DestinationCard({ destination }: { destination: (typeof destinations)[number] }) {
   return (
     <article className="group overflow-hidden rounded-[24px] border border-[#c3c6d7]/35 bg-white shadow-[0_18px_45px_-24px_rgba(15,23,42,0.35)] transition-[transform,box-shadow] duration-400 ease-[cubic-bezier(0.175,0.885,0.32,1.275)] hover:-translate-y-2 hover:shadow-[0_24px_60px_-28px_rgba(15,23,42,0.5)]">
-      <Link href={destination.href} className="block focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-blue-600/25">
+      <TrackedLink
+        href={destination.href}
+        eventName="destination_card_clicked"
+        eventProperties={{
+          page: "/results",
+          destinationName: destination.country,
+          destinationSlug: destination.href.replace("/destinations/", ""),
+          source: "results_grid",
+        }}
+        className="block focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-blue-600/25"
+      >
         <div className="relative h-56 overflow-hidden">
           <Image
             src={destination.image}
@@ -259,7 +289,7 @@ function DestinationCard({ destination }: { destination: (typeof destinations)[n
             </span>
           </div>
         </div>
-      </Link>
+      </TrackedLink>
     </article>
   );
 }
@@ -342,8 +372,15 @@ function OfferCard({ offer }: { offer: (typeof offers)[number] }) {
   const Icon = offer.icon;
 
   return (
-    <Link
+    <TrackedLink
       href="/tools"
+      eventName="cta_clicked"
+      eventProperties={{
+        page: "/results",
+        label: offer.title,
+        href: "/tools",
+        ctaLocation: "results_offer_panel",
+      }}
       className="group flex items-center gap-4 rounded-[24px] border border-white/60 bg-white/75 p-4 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05)] backdrop-blur transition hover:-translate-y-1 hover:bg-white hover:shadow-[0_18px_42px_-26px_rgba(15,23,42,0.5)] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-blue-600/25"
     >
       <span className={`flex size-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${offer.tone} text-white shadow-lg`}>
@@ -362,7 +399,7 @@ function OfferCard({ offer }: { offer: (typeof offers)[number] }) {
         <span className="rounded-full bg-emerald-50 px-3 py-1 text-sm font-bold text-emerald-700">{offer.discount}</span>
       ) : null}
       <ChevronRight className="size-5 text-slate-400 transition group-hover:translate-x-1 group-hover:text-blue-700" />
-    </Link>
+    </TrackedLink>
   );
 }
 
@@ -386,13 +423,33 @@ function CTASection() {
           </div>
           <div className="flex flex-wrap gap-3">
             <Button asChild className="h-12 rounded-full bg-white px-5 text-[#004ac6] hover:bg-blue-50">
-              <Link href="/">
+              <TrackedLink
+                href="/"
+                eventName="cta_clicked"
+                eventProperties={{
+                  page: "/results",
+                  label: "Commencer maintenant",
+                  href: "/",
+                  ctaLocation: "results_bottom_cta",
+                }}
+              >
                 Commencer maintenant
                 <ArrowRight className="ml-2 size-4" />
-              </Link>
+              </TrackedLink>
             </Button>
             <Button asChild variant="outline" className="h-12 rounded-full border-white/30 bg-white/10 px-5 text-white hover:bg-white/15 hover:text-white">
-              <Link href="/tools">View Itinerary Builder</Link>
+              <TrackedLink
+                href="/tools"
+                eventName="cta_clicked"
+                eventProperties={{
+                  page: "/results",
+                  label: "View Itinerary Builder",
+                  href: "/tools",
+                  ctaLocation: "results_bottom_cta",
+                }}
+              >
+                View Itinerary Builder
+              </TrackedLink>
             </Button>
           </div>
         </div>

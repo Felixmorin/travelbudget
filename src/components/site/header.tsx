@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Globe2, Menu, PlaneTakeoff } from "lucide-react";
 
+import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Button } from "@/components/ui/button";
 
 const navItems = [
@@ -32,16 +33,35 @@ export function Header() {
             );
 
             return (
-              <Link
-                key={item.label}
-                href={item.href}
-                aria-current={isActive ? "page" : undefined}
-                className={`transition hover:text-[#004ac6] ${
-                  isActive ? "font-semibold text-[#004ac6]" : ""
-                }`}
-              >
-                {item.label}
-              </Link>
+              item.label === "Guides" ? (
+                <TrackedLink
+                  key={item.label}
+                  href={item.href}
+                  eventName="guide_clicked"
+                  eventProperties={{
+                    page: pathname,
+                    guideTitle: "Guides",
+                    href: item.href,
+                  }}
+                  aria-current={isActive ? "page" : undefined}
+                  className={`transition hover:text-[#004ac6] ${
+                    isActive ? "font-semibold text-[#004ac6]" : ""
+                  }`}
+                >
+                  {item.label}
+                </TrackedLink>
+              ) : (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  aria-current={isActive ? "page" : undefined}
+                  className={`transition hover:text-[#004ac6] ${
+                    isActive ? "font-semibold text-[#004ac6]" : ""
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              )
             );
           })}
         </nav>

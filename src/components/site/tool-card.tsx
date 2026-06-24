@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
+import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Card, CardContent } from "@/components/ui/card";
 
 type Tool = {
@@ -14,7 +14,16 @@ export function ToolCard({ tool }: { tool: Tool }) {
   const Icon = tool.icon;
 
   return (
-    <Link href={tool.href}>
+    <TrackedLink
+      href={tool.href}
+      eventName="cta_clicked"
+      eventProperties={{
+        page: "/tools",
+        label: tool.title,
+        href: tool.href,
+        ctaLocation: "tool_card",
+      }}
+    >
       <Card className="h-full border-slate-200 bg-white transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-slate-200/80">
         <CardContent className="grid h-full gap-4 pt-6">
           <div className="flex items-start justify-between">
@@ -29,6 +38,6 @@ export function ToolCard({ tool }: { tool: Tool }) {
           </div>
         </CardContent>
       </Card>
-    </Link>
+    </TrackedLink>
   );
 }

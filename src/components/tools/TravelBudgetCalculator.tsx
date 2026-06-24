@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { type FormEvent, useMemo, useRef, useState } from "react";
 import {
   BedDouble,
   Bus,
@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { trackEvent } from "@/lib/analytics/track";
 import { formatMoney } from "@/lib/format-money";
 
 type CalculatorValues = {
@@ -95,6 +96,7 @@ function formatCurrency(value: number) {
 
 export function TravelBudgetCalculator() {
   const [values, setValues] = useState<CalculatorValues>(defaultValues);
+  const trackedFields = useRef(new Set<keyof CalculatorValues>());
 
   const totals = useMemo(() => {
     const travelers = Math.max(values.travelers, 1);
@@ -132,16 +134,48 @@ export function TravelBudgetCalculator() {
     };
   }, [values]);
 
+  function trackCalculatorChange(field: keyof CalculatorValues, nextValues: CalculatorValues) {
+    if (trackedFields.current.has(field)) {
+      return;
+    }
+
+    trackedFields.current.add(field);
+    trackEvent("budget_calculator_updated", {
+      page: "/tools/travel-budget-calculator",
+      field,
+      destinationName: nextValues.destination.slice(0, 80),
+      currency: calculatorCurrency,
+      travelers: nextValues.travelers,
+      tripLength: nextValues.tripLength,
+      estimatedTotal: Math.round(calculateTotal(nextValues)),
+    });
+  }
+
   function updateTextField(field: "departureCity" | "destination", value: string) {
+    const nextValues = { ...values, [field]: value };
+    trackCalculatorChange(field, nextValues);
     setValues((current) => ({ ...current, [field]: value }));
   }
 
   function updateNumberField(field: NumericField["id"], value: string) {
     const parsed = Number(value);
-    setValues((current) => ({
-      ...current,
-      [field]: Number.isFinite(parsed) ? Math.max(parsed, 0) : 0,
-    }));
+    const nextValue = Number.isFinite(parsed) ? Math.max(parsed, 0) : 0;
+    const nextValues = { ...values, [field]: nextValue };
+    trackCalculatorChange(field, nextValues);
+    setValues((current) => ({ ...current, [field]: nextValue }));
+  }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    trackEvent("budget_calculator_submitted", {
+      page: "/tools/travel-budget-calculator",
+      destinationName: values.destination.slice(0, 80),
+      budget: Math.round(totals.total),
+      currency: calculatorCurrency,
+      tripLength: values.tripLength,
+      travelers: values.travelers,
+      estimatedTotal: Math.round(totals.total),
+    });
   }
 
   return (
@@ -155,7 +189,7 @@ export function TravelBudgetCalculator() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <form className="grid gap-4 sm:grid-cols-2" onSubmit={handleSubmit}>
             <div className="grid gap-2">
               <Label htmlFor="departureCity">Departure city</Label>
               <Input
@@ -200,7 +234,7 @@ export function TravelBudgetCalculator() {
                 </div>
               </div>
             ))}
-          </div>
+          </form>
         </CardContent>
       </Card>
 
@@ -247,4 +281,19 @@ export function TravelBudgetCalculator() {
       </div>
     </section>
   );
+}
+
+function calculateTotal(values: CalculatorValues) {
+  const travelers = Math.max(values.travelers, 1);
+  const tripLength = Math.max(values.tripLength, 1);
+  const nights = Math.max(tripLength - 1, 1);
+  const subtotal =
+    values.flightCost * travelers +
+    values.accommodationPerNight * nights +
+    values.foodPerDay * tripLength * travelers +
+    values.activitiesPerDay * tripLength * travelers +
+    values.transportationPerDay * tripLength * travelers +
+    values.insurance * travelers;
+
+  return subtotal + subtotal * (values.bufferPercentage / 100);
 }

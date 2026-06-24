@@ -1,3 +1,4 @@
+import { AnalyticsView } from "@/components/analytics/analytics-view";
 import { TravelBudgetCalculator } from "@/components/tools/TravelBudgetCalculator";
 import { CTASection } from "@/components/site/cta-section";
 import { createMetadata } from "@/lib/seo/metadata";
@@ -54,6 +55,13 @@ export default function TravelBudgetCalculatorPage() {
 
   return (
     <>
+      <AnalyticsView
+        eventName="budget_calculator_started"
+        eventProperties={{
+          page: path,
+          source: "calculator_page_view",
+        }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

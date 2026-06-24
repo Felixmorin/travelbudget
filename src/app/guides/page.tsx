@@ -18,6 +18,8 @@ import {
   WalletCards,
 } from "lucide-react";
 
+import { NewsletterForm } from "@/components/analytics/newsletter-form";
+import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Button } from "@/components/ui/button";
 import { createMetadata } from "@/lib/seo/metadata";
 
@@ -196,16 +198,33 @@ export default function GuidesPage() {
           </div>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Button asChild variant="outline" className="h-12 rounded-xl border-[#c3c6d7] bg-white px-6">
-              <Link href="#featured">
+              <TrackedLink
+                href="#featured"
+                eventName="guide_clicked"
+                eventProperties={{
+                  page: "/guides",
+                  guideTitle: "Explore guides",
+                  href: "#featured",
+                }}
+              >
                 Explore guides
                 <ArrowRight className="size-4" />
-              </Link>
+              </TrackedLink>
             </Button>
             <Button asChild className="h-12 rounded-xl bg-[#6df5e1] px-6 text-[#006f64] hover:bg-[#4fdbc8]">
-              <Link href="/tools/travel-budget-calculator">
+              <TrackedLink
+                href="/tools/travel-budget-calculator"
+                eventName="cta_clicked"
+                eventProperties={{
+                  page: "/guides",
+                  label: "Calculate your travel budget",
+                  href: "/tools/travel-budget-calculator",
+                  ctaLocation: "guides_hero",
+                }}
+              >
                 <Calculator className="size-4" />
                 Calculate your travel budget
-              </Link>
+              </TrackedLink>
             </Button>
           </div>
         </div>
@@ -377,9 +396,19 @@ export default function GuidesPage() {
                 <p className="mt-2 text-sm leading-6 text-[#434655]">
                   A detailed breakdown of transport, food, stay costs, and overall travel value.
                 </p>
-                <Link href="/compare" className="mt-6 text-sm font-bold text-[#004ac6] hover:underline">
+                <TrackedLink
+                  href="/compare"
+                  eventName="guide_clicked"
+                  eventProperties={{
+                    page: "/guides",
+                    guideTitle: comparison,
+                    guideCategory: "comparison",
+                    href: "/compare",
+                  }}
+                  className="mt-6 text-sm font-bold text-[#004ac6] hover:underline"
+                >
                   Read Comparison
-                </Link>
+                </TrackedLink>
               </article>
             ))}
           </div>
@@ -392,14 +421,7 @@ export default function GuidesPage() {
           <p className="mx-auto mt-4 max-w-xl text-lg leading-8 text-white/85">
             Join travelers receiving cost alerts and money-saving ideas every Tuesday.
           </p>
-          <form className="mx-auto mt-8 flex max-w-md flex-col gap-3 sm:flex-row">
-            <input
-              className="h-12 flex-1 rounded-xl border border-white/30 bg-white/20 px-4 text-white outline-none placeholder:text-white/70 focus:ring-2 focus:ring-white/70"
-              placeholder="Your email address"
-              type="email"
-            />
-            <Button className="h-12 rounded-xl bg-white px-6 font-bold text-[#004ac6] hover:bg-white/90">Subscribe</Button>
-          </form>
+          <NewsletterForm />
           <p className="mt-5 text-xs font-semibold uppercase text-white/65">No spam. Only high-value data.</p>
         </div>
       </section>
@@ -427,10 +449,32 @@ export default function GuidesPage() {
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Button asChild className="h-12 rounded-full bg-[#004ac6] px-8 text-white hover:bg-blue-700">
-              <Link href="/">Start Planning for Free</Link>
+              <TrackedLink
+                href="/"
+                eventName="cta_clicked"
+                eventProperties={{
+                  page: "/guides",
+                  label: "Start Planning for Free",
+                  href: "/",
+                  ctaLocation: "guides_bottom_cta",
+                }}
+              >
+                Start Planning for Free
+              </TrackedLink>
             </Button>
             <Button asChild variant="outline" className="h-12 rounded-full border-[#004ac6] px-8 text-[#004ac6]">
-              <Link href="/tools">View Tools</Link>
+              <TrackedLink
+                href="/tools"
+                eventName="cta_clicked"
+                eventProperties={{
+                  page: "/guides",
+                  label: "View Tools",
+                  href: "/tools",
+                  ctaLocation: "guides_bottom_cta",
+                }}
+              >
+                View Tools
+              </TrackedLink>
             </Button>
           </div>
         </div>

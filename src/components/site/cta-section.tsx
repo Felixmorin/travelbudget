@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
+import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Button } from "@/components/ui/button";
 
 export function CTASection() {
@@ -15,10 +15,19 @@ export function CTASection() {
             </p>
           </div>
           <Button asChild className="h-11 rounded-full bg-white px-5 text-blue-600 hover:bg-white/90">
-            <Link href="/">
+            <TrackedLink
+              href="/"
+              eventName="cta_clicked"
+              eventProperties={{
+                page: "global",
+                label: "Start calculating",
+                href: "/",
+                ctaLocation: "global_cta",
+              }}
+            >
               Start calculating
               <ArrowRight className="ml-2 size-4" />
-            </Link>
+            </TrackedLink>
           </Button>
         </div>
       </div>

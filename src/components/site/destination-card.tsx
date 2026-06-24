@@ -1,7 +1,7 @@
 import Image from "next/image";
-import Link from "next/link";
 import { ArrowRight, CalendarDays, Sparkles } from "lucide-react";
 
+import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -54,10 +54,19 @@ export function DestinationCard({ destination, ranked = false }: { destination: 
           </span>
         </div>
         <Button asChild variant="outline" className="h-10 rounded-xl">
-          <Link href={`/destinations/${destination.slug}`}>
+          <TrackedLink
+            href={`/destinations/${destination.slug}`}
+            eventName="destination_card_clicked"
+            eventProperties={{
+              page: "/",
+              destinationName: destination.name,
+              destinationSlug: destination.slug,
+              source: "destination_card",
+            }}
+          >
             View budget guide
             <ArrowRight className="ml-2 size-4" />
-          </Link>
+          </TrackedLink>
         </Button>
       </CardContent>
     </Card>

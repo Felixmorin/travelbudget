@@ -4,6 +4,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArrowRight, CalendarDays, Home, Route, Search, Sparkles, WalletCards } from "lucide-react";
 
+import { AnalyticsView } from "@/components/analytics/analytics-view";
+import { TrackedLink } from "@/components/analytics/tracked-link";
 import { AffiliateCard } from "@/components/site/affiliate-card";
 import { BudgetBreakdown } from "@/components/site/budget-breakdown";
 import { CTASection } from "@/components/site/cta-section";
@@ -79,6 +81,16 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
 
   return (
     <>
+      <AnalyticsView
+        eventName="destination_viewed"
+        eventProperties={{
+          page: `/destinations/${destination.slug}`,
+          destinationName: destination.name,
+          destinationSlug: destination.slug,
+          currency: destination.currency,
+          tripLength: 10,
+        }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -104,16 +116,38 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
             <p className="mt-5 max-w-2xl text-lg leading-8 text-white/85">{destination.shortDescription}</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg" className="rounded-xl bg-orange-500 text-white hover:bg-orange-600">
-                <Link href="/results">
+                <TrackedLink
+                  href="/results"
+                  eventName="cta_clicked"
+                  eventProperties={{
+                    page: `/destinations/${destination.slug}`,
+                    destinationName: destination.name,
+                    destinationSlug: destination.slug,
+                    label: `Plan a trip to ${destination.name}`,
+                    href: "/results",
+                    ctaLocation: "destination_hero",
+                  }}
+                >
                   Plan a trip to {destination.name}
                   <ArrowRight className="ml-2 size-4" />
-                </Link>
+                </TrackedLink>
               </Button>
               <Button asChild size="lg" variant="outline" className="rounded-xl bg-white/95 text-slate-950">
-                <Link href="/results">
+                <TrackedLink
+                  href="/results"
+                  eventName="cta_clicked"
+                  eventProperties={{
+                    page: `/destinations/${destination.slug}`,
+                    destinationName: destination.name,
+                    destinationSlug: destination.slug,
+                    label: "Compare with other destinations",
+                    href: "/results",
+                    ctaLocation: "destination_hero",
+                  }}
+                >
                   Compare with other destinations
                   <Search className="ml-2 size-4" />
-                </Link>
+                </TrackedLink>
               </Button>
             </div>
           </div>
@@ -243,7 +277,7 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
               </p>
             </div>
             {destination.affiliateLinks.map((link) => (
-              <AffiliateCard key={link.type} link={link} />
+              <AffiliateCard key={link.type} destination={destination} link={link} />
             ))}
           </aside>
         </section>

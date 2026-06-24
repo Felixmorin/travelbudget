@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { ArrowRight, BadgeCheck, Hotel, Plane, Shield, Smartphone, Ticket } from "lucide-react";
 
+import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { AffiliateLink } from "@/lib/data/destinations";
@@ -13,7 +13,16 @@ const icons = {
   Insurance: Shield,
 };
 
-export function AffiliateCard({ link }: { link: AffiliateLink }) {
+export function AffiliateCard({
+  link,
+  destination,
+}: {
+  link: AffiliateLink;
+  destination?: {
+    name: string;
+    slug: string;
+  };
+}) {
   const Icon = icons[link.type] ?? BadgeCheck;
 
   return (
@@ -31,10 +40,21 @@ export function AffiliateCard({ link }: { link: AffiliateLink }) {
         <div className="flex items-center justify-between">
           <span className="text-sm font-semibold text-blue-600">{link.priceHint}</span>
           <Button asChild size="sm" variant="outline" className="rounded-full">
-            <Link href={link.href}>
+            <TrackedLink
+              href={link.href}
+              eventName="affiliate_link_clicked"
+              eventProperties={{
+                affiliatePartner: link.title,
+                destinationName: destination?.name,
+                destinationSlug: destination?.slug,
+                linkType: link.type,
+                title: link.title,
+                href: link.href,
+              }}
+            >
               Check
               <ArrowRight className="ml-1 size-3" />
-            </Link>
+            </TrackedLink>
           </Button>
         </div>
       </CardContent>

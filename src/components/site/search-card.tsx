@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Calendar, MapPin, Users, Wallet } from "lucide-react";
 
@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { trackEvent } from "@/lib/analytics/track";
 
 const currencies = ["CAD", "USD", "EUR"] as const;
 const months = ["march", "june", "october"] as const;
@@ -32,6 +33,19 @@ export function SearchCard() {
   const [travelers, setTravelers] = useState<TravelerOption>("2");
   const [style, setStyle] = useState<TravelStyle>("balanced");
   const [error, setError] = useState<string | null>(null);
+  const hasStartedSearch = useRef(false);
+
+  function trackSearchStarted() {
+    if (hasStartedSearch.current) {
+      return;
+    }
+
+    hasStartedSearch.current = true;
+    trackEvent("search_started", {
+      page: "/",
+      source: "hero_search_card",
+    });
+  }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -50,6 +64,16 @@ export function SearchCard() {
     }
 
     setError(null);
+    trackEvent("search_completed", {
+      page: "/",
+      budget: Math.round(parsedBudget),
+      currency,
+      originCode: trimmedOrigin.replace(/\s+/g, " ").slice(0, 12).toUpperCase(),
+      tripLength: Number(days),
+      month,
+      travelers: Number(travelers),
+      travelStyle: style,
+    });
 
     const params = new URLSearchParams({
       budget: String(Math.round(parsedBudget)),
@@ -75,7 +99,11 @@ export function SearchCard() {
             <Field label="Budget" icon={<Wallet className="size-4" />}>
               <Input
                 value={budget}
-                onChange={(event) => setBudget(event.target.value)}
+                onFocus={trackSearchStarted}
+                onChange={(event) => {
+                  trackSearchStarted();
+                  setBudget(event.target.value);
+                }}
                 inputMode="numeric"
                 min={100}
                 max={250000}
@@ -83,7 +111,13 @@ export function SearchCard() {
               />
             </Field>
             <Field label="Currency">
-              <Select value={currency} onValueChange={(value) => setCurrency(getOption(currencies, value, "CAD"))}>
+              <Select
+                value={currency}
+                onValueChange={(value) => {
+                  trackSearchStarted();
+                  setCurrency(getOption(currencies, value, "CAD"));
+                }}
+              >
                 <SelectTrigger className="h-11 w-full bg-white">
                   <SelectValue placeholder="Currency" />
                 </SelectTrigger>
@@ -95,10 +129,24 @@ export function SearchCard() {
               </Select>
             </Field>
             <Field label="Departure city" icon={<MapPin className="size-4" />}>
-              <Input value={origin} onChange={(event) => setOrigin(event.target.value)} className="h-11 bg-white" />
+              <Input
+                value={origin}
+                onFocus={trackSearchStarted}
+                onChange={(event) => {
+                  trackSearchStarted();
+                  setOrigin(event.target.value);
+                }}
+                className="h-11 bg-white"
+              />
             </Field>
             <Field label="Duration" icon={<Calendar className="size-4" />}>
-              <Select value={days} onValueChange={(value) => setDays(getOption(dayOptions, value, "10"))}>
+              <Select
+                value={days}
+                onValueChange={(value) => {
+                  trackSearchStarted();
+                  setDays(getOption(dayOptions, value, "10"));
+                }}
+              >
                 <SelectTrigger className="h-11 w-full bg-white">
                   <SelectValue placeholder="Duration" />
                 </SelectTrigger>
@@ -110,7 +158,13 @@ export function SearchCard() {
               </Select>
             </Field>
             <Field label="Travel month">
-              <Select value={month} onValueChange={(value) => setMonth(getOption(months, value, "october"))}>
+              <Select
+                value={month}
+                onValueChange={(value) => {
+                  trackSearchStarted();
+                  setMonth(getOption(months, value, "october"));
+                }}
+              >
                 <SelectTrigger className="h-11 w-full bg-white">
                   <SelectValue placeholder="Travel month" />
                 </SelectTrigger>
@@ -122,7 +176,13 @@ export function SearchCard() {
               </Select>
             </Field>
             <Field label="Number of travelers" icon={<Users className="size-4" />}>
-              <Select value={travelers} onValueChange={(value) => setTravelers(getOption(travelerOptions, value, "2"))}>
+              <Select
+                value={travelers}
+                onValueChange={(value) => {
+                  trackSearchStarted();
+                  setTravelers(getOption(travelerOptions, value, "2"));
+                }}
+              >
                 <SelectTrigger className="h-11 w-full bg-white">
                   <SelectValue placeholder="Travelers" />
                 </SelectTrigger>
@@ -134,7 +194,13 @@ export function SearchCard() {
               </Select>
             </Field>
             <Field label="Travel style">
-              <Select value={style} onValueChange={(value) => setStyle(getOption(styles, value, "balanced"))}>
+              <Select
+                value={style}
+                onValueChange={(value) => {
+                  trackSearchStarted();
+                  setStyle(getOption(styles, value, "balanced"));
+                }}
+              >
                 <SelectTrigger className="h-11 w-full bg-white">
                   <SelectValue placeholder="Travel style" />
                 </SelectTrigger>
