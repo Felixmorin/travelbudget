@@ -260,10 +260,4 @@ export function getDestination(slug: string) {
   return destinations.find((destination) => destination.slug === slug);
 }
 
-export function formatMoney(amount: number, currency = "CAD") {
-  return new Intl.NumberFormat("en-CA", {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
+export { formatMoney } from "@/lib/format-money";

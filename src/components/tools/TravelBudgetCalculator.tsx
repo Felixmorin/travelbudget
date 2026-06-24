@@ -12,10 +12,12 @@ import {
   WalletCards,
 } from "lucide-react";
 
+import { CostBreakdownCard } from "@/components/site/cost-breakdown-card";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { formatMoney } from "@/lib/format-money";
 
 type CalculatorValues = {
   departureCity: string;
@@ -85,14 +87,10 @@ const categoryStyles = {
 
 type BudgetCategory = keyof typeof categoryStyles;
 
-const currencyFormatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0,
-});
+const calculatorCurrency = "USD";
 
 function formatCurrency(value: number) {
-  return currencyFormatter.format(Math.round(value));
+  return formatMoney(value, calculatorCurrency);
 }
 
 export function TravelBudgetCalculator() {
@@ -123,18 +121,16 @@ export function TravelBudgetCalculator() {
       dailyAverage,
       category,
       breakdown: [
-        { label: "Flights", value: flights, icon: Plane, color: "bg-blue-500" },
-        { label: "Accommodation", value: accommodation, icon: BedDouble, color: "bg-teal-500" },
-        { label: "Food", value: food, icon: Utensils, color: "bg-amber-500" },
-        { label: "Activities", value: activities, icon: Sparkles, color: "bg-fuchsia-500" },
-        { label: "Local transportation", value: localTransportation, icon: Bus, color: "bg-indigo-500" },
-        { label: "Insurance", value: insurance, icon: ShieldCheck, color: "bg-slate-500" },
-        { label: "Buffer", value: buffer, icon: CircleDollarSign, color: "bg-emerald-500" },
+        { label: "Flights", amount: flights, icon: Plane, colorClassName: "bg-blue-500" },
+        { label: "Accommodation", amount: accommodation, icon: BedDouble, colorClassName: "bg-teal-500" },
+        { label: "Food", amount: food, icon: Utensils, colorClassName: "bg-amber-500" },
+        { label: "Activities", amount: activities, icon: Sparkles, colorClassName: "bg-fuchsia-500" },
+        { label: "Local transportation", amount: localTransportation, icon: Bus, colorClassName: "bg-indigo-500" },
+        { label: "Insurance", amount: insurance, icon: ShieldCheck, colorClassName: "bg-slate-500" },
+        { label: "Buffer", amount: buffer, icon: CircleDollarSign, colorClassName: "bg-emerald-500" },
       ],
     };
   }, [values]);
-
-  const maxBreakdown = Math.max(...totals.breakdown.map((item) => item.value), 1);
 
   function updateTextField(field: "departureCity" | "destination", value: string) {
     setValues((current) => ({ ...current, [field]: value }));
@@ -241,32 +237,13 @@ export function TravelBudgetCalculator() {
           </CardContent>
         </Card>
 
-        <Card className="border-slate-200 bg-white shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-lg text-slate-950">Cost breakdown</CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-4">
-            {totals.breakdown.map((item) => {
-              const Icon = item.icon;
-              const width = `${Math.max((item.value / maxBreakdown) * 100, item.value > 0 ? 4 : 0)}%`;
-
-              return (
-                <div key={item.label} className="grid gap-2">
-                  <div className="flex items-center justify-between gap-3 text-sm">
-                    <span className="flex items-center gap-2 font-medium text-slate-700">
-                      <Icon className="size-4 text-slate-400" />
-                      {item.label}
-                    </span>
-                    <span className="font-semibold text-slate-950">{formatCurrency(item.value)}</span>
-                  </div>
-                  <div className="h-2 rounded-full bg-slate-100">
-                    <div className={`h-2 rounded-full ${item.color}`} style={{ width }} />
-                  </div>
-                </div>
-              );
-            })}
-          </CardContent>
-        </Card>
+        <CostBreakdownCard
+          barMode="max"
+          currency={calculatorCurrency}
+          items={totals.breakdown}
+          showTotal={false}
+          title="Cost breakdown"
+        />
       </div>
     </section>
   );

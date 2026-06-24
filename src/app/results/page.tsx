@@ -23,6 +23,11 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  CostBreakdownDonut,
+  CostBreakdownList,
+  type CostBreakdownItem,
+} from "@/components/site/cost-breakdown-card";
 import { createResultsMetadata } from "@/lib/seo/metadata";
 
 export const metadata = createResultsMetadata();
@@ -74,11 +79,11 @@ const destinations = [
   },
 ];
 
-const budgetRows = [
-  { label: "Vols", value: "1 050 $", color: "#2563eb" },
-  { label: "Hébergement", value: "720 $", color: "#14b8a6" },
-  { label: "Nourriture", value: "350 $", color: "#f97316" },
-  { label: "Transport", value: "180 $", color: "#8b5cf6" },
+const budgetRows: CostBreakdownItem[] = [
+  { label: "Flights", amount: 1050, currency: "CAD", color: "#2563eb" },
+  { label: "Accommodation", amount: 720, currency: "CAD", color: "#14b8a6" },
+  { label: "Food", amount: 350, currency: "CAD", color: "#f97316" },
+  { label: "Transport", amount: 180, currency: "CAD", color: "#8b5cf6" },
 ];
 
 const offers = [
@@ -235,41 +240,28 @@ function DestinationCard({ destination }: { destination: (typeof destinations)[n
 }
 
 function BudgetBreakdownCard() {
+  const totalAmount = 2420;
+
   return (
     <section className="grid gap-8 rounded-[32px] border border-white/60 bg-white/70 p-6 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05)] backdrop-blur-xl md:grid-cols-[260px_1fr] md:p-8">
-      <div className="relative mx-auto grid size-56 place-items-center">
-        <svg viewBox="0 0 120 120" className="size-56 -rotate-90" aria-hidden="true">
-          <circle cx="60" cy="60" r="44" fill="none" stroke="#e8edf5" strokeWidth="16" />
-          <circle cx="60" cy="60" r="44" fill="none" stroke="#2563eb" strokeWidth="16" strokeDasharray="122 276" strokeDashoffset="0" />
-          <circle cx="60" cy="60" r="44" fill="none" stroke="#14b8a6" strokeWidth="16" strokeDasharray="84 276" strokeDashoffset="-128" />
-          <circle cx="60" cy="60" r="44" fill="none" stroke="#f97316" strokeWidth="16" strokeDasharray="41 276" strokeDashoffset="-218" />
-          <circle cx="60" cy="60" r="44" fill="none" stroke="#8b5cf6" strokeWidth="16" strokeDasharray="21 276" strokeDashoffset="-264" />
-        </svg>
-        <div className="absolute text-center">
-          <p className="text-3xl font-semibold text-[#191c1e]">2 420 $</p>
-          <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-[#434655]">Total Budget</p>
-        </div>
-      </div>
+      <CostBreakdownDonut centerLabel="Total budget" currency="CAD" items={budgetRows} totalAmount={totalAmount} />
 
       <div className="flex flex-col justify-center">
         <p className="text-sm font-semibold uppercase tracking-wide text-blue-700">Cost clarity</p>
         <h2 className="mt-2 text-3xl font-semibold tracking-tight text-[#191c1e]">
-          Répartition du budget - Japon
+          Budget breakdown - Japan
         </h2>
         <p className="mt-3 text-sm leading-6 text-[#434655]">
-          Basé sur une sélection Équilibrée pour 10 jours.
+          Based on a balanced selection for 10 days.
         </p>
-        <div className="mt-6 grid gap-3 sm:grid-cols-2">
-          {budgetRows.map((row) => (
-            <div key={row.label} className="flex items-center justify-between rounded-2xl border border-[#c3c6d7]/35 bg-white/80 px-4 py-3">
-              <span className="flex items-center gap-3 text-sm font-medium text-[#434655]">
-                <span className="size-3 rounded-full" style={{ backgroundColor: row.color }} />
-                {row.label}
-              </span>
-              <span className="font-semibold text-[#191c1e]">{row.value}</span>
-            </div>
-          ))}
-        </div>
+        <CostBreakdownList
+          className="mt-6 grid gap-3 sm:grid-cols-2"
+          currency="CAD"
+          itemClassName="rounded-2xl border border-[#c3c6d7]/35 bg-white/80 px-4 py-3"
+          items={budgetRows}
+          showBars={false}
+          totalAmount={totalAmount}
+        />
       </div>
     </section>
   );
