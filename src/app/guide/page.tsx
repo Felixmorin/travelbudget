@@ -1,2 +1,5 @@
-export { metadata } from "../guides/page";
-export { default } from "../guides/page";
+import { permanentRedirect } from "next/navigation";
+
+export default function GuideRedirectPage() {
+  permanentRedirect("/guides");
+}

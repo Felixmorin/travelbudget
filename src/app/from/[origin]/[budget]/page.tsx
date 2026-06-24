@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { permanentRedirect } from "next/navigation";
 
 import { ProgrammaticBudgetPage } from "@/components/programmatic/ProgrammaticBudgetPage";
 import {
   getMatchingBudgetDestinations,
   getProgrammaticBudgetPage,
   getProgrammaticBudgetPath,
+  getProgrammaticBudgetRedirectPath,
   programmaticBudgetPages,
 } from "@/lib/programmatic/budget-pages";
 import { createMetadata } from "@/lib/seo/metadata";
@@ -64,7 +65,7 @@ export default async function FromOriginUnderBudgetPage({ params }: BudgetPagePr
   const page = getProgrammaticBudgetPage(origin, budget);
 
   if (!page) {
-    notFound();
+    permanentRedirect(getProgrammaticBudgetRedirectPath(origin));
   }
 
   const matches = getMatchingBudgetDestinations(page);

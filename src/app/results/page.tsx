@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { connection } from "next/server";
 import {
   ArrowRight,
   Building2,
@@ -36,7 +37,12 @@ import {
   type SupportedCurrency,
   type TravelStyle,
 } from "@/lib/budget/recommend-destinations";
-import { destinations as destinationData, formatMoney } from "@/lib/data/destinations";
+import {
+  destinations as destinationData,
+  formatMoney,
+  getOriginPricing,
+  normalizeOriginCode,
+} from "@/lib/data/destinations";
 import { createResultsMetadata } from "@/lib/seo/metadata";
 
 export const metadata = createResultsMetadata();
@@ -125,6 +131,8 @@ const styleAliases: Record<string, TravelStyle> = {
 };
 
 export default async function ResultsPage({ searchParams }: ResultsPageProps) {
+  await connection();
+
   const parsedParams = parseSearchParams(await searchParams);
   const recommendations = recommendDestinations({
     destinations: destinationData,
@@ -135,15 +143,16 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
     month: parsedParams.month,
     travelers: parsedParams.travelers,
     style: parsedParams.style,
-  }).filter((recommendation) => recommendation.budgetFitStatus !== "over-budget");
+  });
   const destinations = recommendations.map((recommendation, index) =>
     toResultDestination(recommendation, index, parsedParams)
   );
   const topRecommendation = recommendations[0];
   const formattedBudget = formatMoney(parsedParams.budget, parsedParams.currency);
+  const originLabel = formatOriginLabel(parsedParams.origin);
   const resultSummary = `Showing ${recommendations.length} ranked ${
     recommendations.length === 1 ? "destination" : "destinations"
-  } from ${parsedParams.origin} for ${formattedBudget}, ${parsedParams.days} days, ${
+  } from ${originLabel} for ${formattedBudget}, ${parsedParams.days} days, ${
     parsedParams.travelers
   } ${parsedParams.travelers === 1 ? "traveler" : "travelers"}, ${formatStyleLabel(parsedParams.style)} style.`;
 
@@ -220,7 +229,7 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
 
         <aside className="grid h-fit gap-6 lg:sticky lg:top-24">
           <GlobalPriceIndexCard />
-          <OffersPanel origin={parsedParams.origin} topDestination={topRecommendation?.destination.name} />
+          <OffersPanel origin={originLabel} topDestination={topRecommendation?.destination.name} />
         </aside>
       </section>
 
@@ -262,7 +271,7 @@ function parseCurrency(value: string | undefined): SupportedCurrency {
 }
 
 function parseOrigin(value: string | undefined) {
-  return value?.trim().replace(/\s+/g, " ").slice(0, 80).toUpperCase() || defaultSearchParams.origin;
+  return normalizeOriginCode(value?.trim().replace(/\s+/g, " ").slice(0, 80) || defaultSearchParams.origin);
 }
 
 function parseTravelStyle(value: string | undefined): TravelStyle {
@@ -323,6 +332,12 @@ function formatStyleLabel(style: TravelStyle) {
   }
 
   return "Balanced";
+}
+
+function formatOriginLabel(originCode: string) {
+  const originPricing = destinationData[0] ? getOriginPricing(destinationData[0], originCode) : undefined;
+
+  return originPricing?.originCity ? `${originPricing.originCity} (${originCode})` : originCode;
 }
 
 function CategoryFilters() {

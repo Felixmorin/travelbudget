@@ -143,6 +143,18 @@ export function getProgrammaticBudgetPage(originSlug: string, budgetSlug: string
   );
 }
 
+export function getProgrammaticBudgetRedirectPath(originSlug: string) {
+  const origin = getProgrammaticOrigin(originSlug);
+
+  if (!origin) {
+    return "/tools/travel-budget-calculator";
+  }
+
+  const fallbackPage = programmaticBudgetPages.find((page) => page.origin.slug === origin.slug);
+
+  return fallbackPage ? getProgrammaticBudgetPath(fallbackPage) : "/tools/travel-budget-calculator";
+}
+
 export function getProgrammaticBudgetPath(page: ProgrammaticBudgetPageConfig) {
   return `/from/${page.origin.slug}/under-${page.budget}`;
 }
