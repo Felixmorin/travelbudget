@@ -655,27 +655,36 @@ function buildAffiliateLinks(seed: DestinationSeed): AffiliateLink[] {
     },
     {
       type: "Hotels",
-      title: "Compare hotel options",
-      description: `Review stay options that fit a practical ${seed.name} travel budget.`,
+      title: `Find stays in ${seed.name}`,
+      description: `Compare Booking.com stays that fit a practical ${seed.name} travel budget.`,
       priceHint: `Mid-range daily stay CAD ${splitDailyTotal(seed.dailyTotals.midRange).accommodation}`,
-      href: `/destinations/${seed.slug}`,
+      href: buildBookingHref(seed),
+      provider: "Booking.com",
+      partner: "Booking.com",
       placement: "destination_sidebar",
+      isExternal: true,
     },
     {
       type: "eSIM",
-      title: "Plan mobile data",
-      description: `Estimate mobile data needs for maps, messaging, and bookings in ${seed.name}.`,
-      priceHint: "Plan before departure",
-      href: "/tools/travel-budget-calculator",
+      title: `Get eSIM data for ${seed.name}`,
+      description: `Compare eSIM data options for maps, messaging, and bookings in ${seed.name}.`,
+      priceHint: "Airalo eSIM plans",
+      href: buildEsimHref(seed),
+      provider: "Airalo",
+      partner: "Airalo",
       placement: "destination_sidebar",
+      isExternal: true,
     },
     {
       type: "Activities",
-      title: "Estimate activity costs",
-      description: `Use activity planning ranges to keep a ${seed.name} itinerary within budget.`,
+      title: `Book activities in ${seed.name}`,
+      description: `Compare tours and activities for a ${seed.name} itinerary before booking.`,
       priceHint: `Mid-range activities CAD ${splitDailyTotal(seed.dailyTotals.midRange).activities}/day`,
-      href: `/destinations/${seed.slug}`,
+      href: buildActivitiesHref(seed),
+      provider: "GetYourGuide",
+      partner: "GetYourGuide",
       placement: "destination_sidebar",
+      isExternal: true,
     },
     {
       type: "Insurance",
@@ -686,6 +695,62 @@ function buildAffiliateLinks(seed: DestinationSeed): AffiliateLink[] {
       placement: "destination_sidebar",
     },
   ];
+}
+
+function buildBookingHref(seed: DestinationSeed) {
+  const url = new URL("https://www.booking.com/searchresults.html");
+  const aid = process.env.NEXT_PUBLIC_BOOKING_AFFILIATE_AID;
+
+  url.searchParams.set("ss", seed.name);
+  url.searchParams.set("label", `travelbudget-${seed.slug}`);
+
+  if (aid) {
+    url.searchParams.set("aid", aid);
+  }
+
+  return url.toString();
+}
+
+function buildEsimHref(seed: DestinationSeed) {
+  return buildProviderSearchHref({
+    baseUrl: process.env.NEXT_PUBLIC_ESIM_AFFILIATE_BASE_URL ?? "https://www.airalo.com/search",
+    queryParam: process.env.NEXT_PUBLIC_ESIM_AFFILIATE_QUERY_PARAM ?? "search",
+    searchTerm: seed.name,
+    fallbackPath: "/search",
+  });
+}
+
+function buildActivitiesHref(seed: DestinationSeed) {
+  return buildProviderSearchHref({
+    baseUrl: process.env.NEXT_PUBLIC_ACTIVITIES_AFFILIATE_BASE_URL ?? "https://www.getyourguide.com/s/",
+    queryParam: process.env.NEXT_PUBLIC_ACTIVITIES_AFFILIATE_QUERY_PARAM ?? "q",
+    searchTerm: seed.name,
+    fallbackPath: "/s/",
+  });
+}
+
+function buildProviderSearchHref({
+  baseUrl,
+  queryParam,
+  searchTerm,
+  fallbackPath,
+}: {
+  baseUrl: string;
+  queryParam: string;
+  searchTerm: string;
+  fallbackPath: string;
+}) {
+  const url = new URL(baseUrl);
+
+  if (url.pathname === "/") {
+    url.pathname = fallbackPath;
+  }
+
+  url.searchParams.set(queryParam, searchTerm);
+  url.searchParams.set("utm_source", "travelbudget.ai");
+  url.searchParams.set("utm_medium", "affiliate");
+
+  return url.toString();
 }
 
 function buildFaqs(seed: DestinationSeed): Destination["faqs"] {

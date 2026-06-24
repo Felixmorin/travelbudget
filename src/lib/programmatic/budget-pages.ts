@@ -64,53 +64,50 @@ const supportedOrigins: ProgrammaticOrigin[] = [
   },
 ];
 
-export const programmaticBudgetPages = [
+const budgetTiers = [
   {
-    origin: supportedOrigins[0],
-    budget: 2500,
-    currency: "CAD",
-    travelStyle: "midRange",
-    tripLengthDays: 10,
-    suggestedTripLength: "7-10 days",
-    travelers: 1,
-  },
-  {
-    origin: supportedOrigins[1],
-    budget: 2500,
-    currency: "CAD",
-    travelStyle: "midRange",
-    tripLengthDays: 10,
-    suggestedTripLength: "7-10 days",
-    travelers: 1,
-  },
-  {
-    origin: supportedOrigins[2],
-    budget: 3000,
-    currency: "CAD",
-    travelStyle: "midRange",
-    tripLengthDays: 10,
-    suggestedTripLength: "10 days",
-    travelers: 1,
-  },
-  {
-    origin: supportedOrigins[0],
     budget: 1500,
-    currency: "CAD",
     travelStyle: "budget",
     tripLengthDays: 7,
-    suggestedTripLength: "7 days",
-    travelers: 1,
+    suggestedTripLength: "5-7 days",
   },
   {
-    origin: supportedOrigins[1],
+    budget: 2000,
+    travelStyle: "budget",
+    tripLengthDays: 8,
+    suggestedTripLength: "7-8 days",
+  },
+  {
+    budget: 2500,
+    travelStyle: "midRange",
+    tripLengthDays: 10,
+    suggestedTripLength: "7-10 days",
+  },
+  {
     budget: 3000,
-    currency: "CAD",
     travelStyle: "midRange",
     tripLengthDays: 10,
     suggestedTripLength: "10 days",
-    travelers: 1,
   },
-] satisfies ProgrammaticBudgetPageConfig[];
+  {
+    budget: 4000,
+    travelStyle: "midRange",
+    tripLengthDays: 12,
+    suggestedTripLength: "10-12 days",
+  },
+] satisfies Omit<ProgrammaticBudgetPageConfig, "origin" | "currency" | "travelers">[];
+
+export const programmaticBudgetPages = supportedOrigins.flatMap((origin) =>
+  budgetTiers.map((tier) => ({
+    origin,
+    budget: tier.budget,
+    currency: "CAD",
+    travelStyle: tier.travelStyle,
+    tripLengthDays: tier.tripLengthDays,
+    suggestedTripLength: tier.suggestedTripLength,
+    travelers: 1,
+  }))
+) satisfies ProgrammaticBudgetPageConfig[];
 
 export function getProgrammaticOrigin(originSlug: string) {
   return supportedOrigins.find((origin) => origin.slug === originSlug.toLowerCase());

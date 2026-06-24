@@ -7,7 +7,6 @@ import {
   CircleDollarSign,
   Compass,
   Filter,
-  Heart,
   Hotel,
   Landmark,
   Leaf,
@@ -442,13 +441,6 @@ function DestinationCard({
           <Badge className="absolute left-4 top-4 rounded-full bg-white px-3 py-1 text-blue-700 shadow-md">
             TOP {destination.rank}
           </Badge>
-          <button
-            type="button"
-            aria-label={`Add ${destination.country} to favorites`}
-            className="absolute right-4 top-4 flex size-10 items-center justify-center rounded-full bg-white/90 text-slate-700 shadow-md backdrop-blur transition hover:bg-white hover:text-rose-500 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-white/70"
-          >
-            <Heart className="size-4" />
-          </button>
         </div>
         <div className="grid gap-5 p-5">
           <div>

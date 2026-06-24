@@ -1,26 +1,27 @@
 # TravelBudget.ai
 
-TravelBudget.ai is a budget-first travel planning MVP built with Next.js. It helps travelers compare destinations, estimate total trip costs, and understand where their money goes before they book.
+TravelBudget.ai is a budget-first travel planning MVP built with Next.js App Router. It helps travelers compare destinations, estimate total trip costs from Canadian origins, and understand where their money goes before they book.
 
-The app currently uses curated planning estimate data for Japan, Portugal, and Vietnam. It is designed as a polished frontend foundation that can later be connected to flight, hotel, exchange-rate, and affiliate APIs.
+The app currently uses a curated planning dataset of 30 country destinations with origin-specific flight estimates from Montreal (YUL), Toronto (YYZ), and Vancouver (YVR), plus 12 city destination guides. Prices are directional estimates in CAD, not live fares or guarantees.
 
 ## Features
 
-- Budget-based destination recommendations
-- Trip cost breakdowns for flights, hotels, food, local transport, and activities
-- Destination detail pages with best months, itinerary previews, FAQs, and booking prompts
-- Side-by-side destination comparison
-- Travel planning tools directory
-- SEO metadata and FAQ structured data for destination pages
-- Responsive UI built with Tailwind CSS, shadcn-style components, and Lucide icons
+- Budget-based destination recommendations with query-string filters
+- Category, destination, and sort controls on `/results`
+- Trip cost breakdowns for flights, accommodation, food, local transport, activities, and miscellaneous spend
+- Destination detail pages with best months, itinerary previews, FAQs, data-confidence notes, and booking modules
+- Programmatic SEO pages for destination budgets, trip durations, and `/from/[origin]/under-[budget]` combinations
+- Booking.com, Airalo, and GetYourGuide external partner link wiring
+- Analytics events for page views, searches, destination clicks, affiliate modules, and CTAs
 
 ## Tech Stack
 
-- Next.js 16
+- Next.js 16 App Router
 - React 19
 - TypeScript
 - Tailwind CSS 4
 - ESLint
+- Vitest
 - Lucide React
 - Base UI / shadcn-style component structure
 
@@ -29,7 +30,7 @@ The app currently uses curated planning estimate data for Japan, Portugal, and V
 Install dependencies:
 
 ```bash
-npm install
+npm ci
 ```
 
 Start the development server:
@@ -40,6 +41,20 @@ npm run dev
 
 Open http://localhost:3000 in your browser.
 
+## Validation
+
+The local validation suite matches CI:
+
+```bash
+npm ci
+npm run lint
+npm run typecheck
+npm test
+npm run build
+```
+
+CI runs from `.github/workflows/ci.yml` on pull requests and pushes to `master`, using Node.js 22 and npm cache.
+
 ## Available Scripts
 
 ```bash
@@ -49,10 +64,28 @@ npm run dev
 Runs the app locally in development mode.
 
 ```bash
+npm run lint
+```
+
+Runs ESLint.
+
+```bash
+npm run typecheck
+```
+
+Runs TypeScript with `tsc --noEmit`.
+
+```bash
+npm test
+```
+
+Runs Vitest unit tests.
+
+```bash
 npm run build
 ```
 
-Builds the production version.
+Builds the production version with Next.js.
 
 ```bash
 npm run start
@@ -60,64 +93,54 @@ npm run start
 
 Starts the production server after a build.
 
-```bash
-npm run lint
-```
-
-Runs ESLint.
-
 ## App Routes
 
-- `/` - homepage with the budget search card and featured destinations
-- `/results` - ranked destination recommendations based on query parameters
-- `/destinations/japan` - Japan budget guide
-- `/destinations/portugal` - Portugal budget guide
-- `/destinations/vietnam` - Vietnam budget guide
+- `/` - homepage with budget search and featured destinations
+- `/results` - dynamic recommendation results using `budget`, `currency`, `origin`, `days`, `month`, `travelers`, `style`, `category`, `destination`, and `sort`
+- `/destinations` - destination explorer
+- `/destinations/[slug]` - 42 generated destination detail pages: 30 country guides and 12 city guides
 - `/compare` - destination comparison table
 - `/tools` - travel tools directory
-
-## Project Structure
-
-```text
-src/
-  app/                    App Router pages and global styles
-  components/
-    site/                 Product-specific UI sections and cards
-    ui/                   Reusable UI primitives
-  lib/
-    budget/               Recommendation and cost-estimation logic
-    data/                 Destination and tool planning data
-    seo/                  Metadata helpers
-public/                   Static assets
-```
+- `/tools/travel-budget-calculator` - budget calculator page
+- `/guides` - guides hub
+- `/guide` - guide landing page
+- `/about` - product/about page
+- `/methodology` - methodology and estimate explanation
+- `/travel-budget/[destination]` - 8 generated destination budget SEO pages
+- `/travel-cost/[destination]/[duration]` - 8 generated duration-based cost pages
+- `/from/[origin]/under-[budget]` - 15 generated pages from Montreal, Toronto, and Vancouver across CAD 1,500, 2,000, 2,500, 3,000, and 4,000 budgets
+- `/robots.txt` and `/sitemap.xml` - generated metadata routes
 
 ## Data Model
 
 Destination data lives in `src/lib/data/destinations.ts`. Each destination includes:
 
-- estimated total trip cost
-- cost categories
-- best travel months
-- travel styles
-- itinerary preview
-- affiliate-ready booking links
-- FAQ content
+- country and destination metadata
+- image URL
+- YUL, YYZ, and YVR flight estimate ranges
+- daily cost models for budget, mid-range, and luxury travel styles
+- best months, travel styles, weather notes, and confidence level
+- itinerary preview and FAQs
+- affiliate link definitions for flights, hotels, eSIM, activities, and insurance
 
-Recommendation logic lives in `src/lib/budget/recommend-destinations.ts`. It adjusts costs by currency, trip length, number of travelers, and travel style, then ranks destinations by budget fit, seasonality, and style match.
+Recommendation logic lives in `src/lib/budget/recommend-destinations.ts`. Results filtering and URL generation live in `src/lib/results/filters.ts`.
+
+## Affiliate Links
+
+Hotel links point to Booking.com destination search pages. eSIM links point to Airalo search by default. Activity links point to GetYourGuide search by default.
+
+Optional public environment variables:
+
+- `NEXT_PUBLIC_BOOKING_AFFILIATE_AID` - adds the Booking.com `aid` parameter
+- `NEXT_PUBLIC_ESIM_AFFILIATE_BASE_URL` - overrides the eSIM provider or affiliate deep-link base URL
+- `NEXT_PUBLIC_ESIM_AFFILIATE_QUERY_PARAM` - overrides the eSIM search query parameter, defaults to `search`
+- `NEXT_PUBLIC_ACTIVITIES_AFFILIATE_BASE_URL` - overrides the activities provider or affiliate deep-link base URL
+- `NEXT_PUBLIC_ACTIVITIES_AFFILIATE_QUERY_PARAM` - overrides the activities search query parameter, defaults to `q`
 
 ## Current Limitations
 
-- Prices are planning estimates, not live booking data.
-- Affiliate links currently route back into the app.
+- Prices are curated planning estimates, not live booking data.
+- Flight links still route to in-app planning results.
+- Affiliate commission tracking depends on configured partner IDs or partner-provided base URLs.
 - Supported currencies are CAD, USD, and EUR.
 - Supported recommendation styles are budget, balanced, and comfort.
-- The initial destination dataset is intentionally small.
-
-## Next Steps
-
-- Connect live flight and hotel pricing APIs
-- Add saved trips and user accounts
-- Expand destination coverage
-- Add real affiliate providers
-- Persist searches and recommendation history
-- Add tests for recommendation scoring and query parsing
