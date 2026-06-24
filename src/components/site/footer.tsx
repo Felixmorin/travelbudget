@@ -10,6 +10,7 @@ const footerSections = [
     links: [
       { labelKey: "planTrip", href: "/" },
       { labelKey: "budgetCalculator", href: "/tools/travel-budget-calculator" },
+      { labelKey: "methodology", href: "/methodology" },
       { labelKey: "itineraryBuilder", href: "/tools" },
       { labelKey: "esimFinder", href: "/tools" },
     ],

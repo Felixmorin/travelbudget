@@ -28,6 +28,7 @@ import {
   createFAQSchema,
   serializeJsonLd,
 } from "@/lib/seo/schema";
+import { destinationBudgetSeoSlugs, getTravelBudgetPath } from "@/lib/programmatic/seo-pages";
 
 type DestinationPageProps = {
   params: Promise<{ slug: string }>;
@@ -69,6 +70,7 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
     originCode: "YUL",
     travelStyle: "midRange",
   });
+  const hasSeoBudgetPage = destinationBudgetSeoSlugs.includes(destination.slug);
   const jsonLd = [
     createDestinationSchema(destination),
     createFAQSchema(destination.faqs),
@@ -308,6 +310,24 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
                   <ArrowRight className="ml-2 size-4" />
                 </TrackedLink>
               </Button>
+              {hasSeoBudgetPage ? (
+                <Button asChild variant="outline" className="rounded-xl bg-white">
+                  <TrackedLink
+                    href={getTravelBudgetPath(destination.slug)}
+                    eventName="cta_clicked"
+                    eventProperties={{
+                      page: `/destinations/${destination.slug}`,
+                      destinationName: destination.name,
+                      destinationSlug: destination.slug,
+                      label: "Read budget methodology guide",
+                      href: getTravelBudgetPath(destination.slug),
+                      ctaLocation: "destination_bottom_nav",
+                    }}
+                  >
+                    Read budget guide
+                  </TrackedLink>
+                </Button>
+              ) : null}
             </div>
           </div>
 

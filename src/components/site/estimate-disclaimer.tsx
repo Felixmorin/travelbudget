@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Info } from "lucide-react";
 
 type EstimateDisclaimerProps = {
@@ -21,7 +22,11 @@ export function EstimateDisclaimer({
           <p className="font-semibold text-slate-950">{title}</p>
           <p className="mt-1">
             Estimates are for planning only. Actual prices can vary with flights, hotels, availability,
-            seasonality, exchange rates, booking timing, departure city, and traveler choices.
+            seasonality, exchange rates, booking timing, departure city, and traveler choices.{" "}
+            <Link href="/methodology" className="font-semibold text-blue-700 hover:text-blue-900">
+              See methodology
+            </Link>
+            .
           </p>
         </div>
       </div>

@@ -42,45 +42,33 @@ import {
   destinations as destinationData,
   formatMoney,
   getOriginPricing,
-  normalizeOriginCode,
 } from "@/lib/data/destinations";
+import {
+  createResultsHref,
+  filterAndSortRecommendations,
+  parseSearchParams,
+  type ParsedSearchParams,
+  type ResultsCategory,
+  type ResultsSearchParams,
+} from "@/lib/results/filters";
 import { createResultsMetadata } from "@/lib/seo/metadata";
 
 export const metadata = createResultsMetadata();
 
-const categories = [
-  { label: "Beach", icon: Waves, active: true },
-  { label: "City", icon: Building2 },
-  { label: "Nature", icon: Leaf },
-  { label: "Culture", icon: Landmark },
-  { label: "Adventure", icon: Mountain },
-  { label: "Food", icon: Utensils },
-  { label: "Family", icon: Users },
-  { label: "Backpacker", icon: Compass },
+const categories: { label: string; value: ResultsCategory; icon: LucideIcon }[] = [
+  { label: "All", value: "all", icon: Sparkles },
+  { label: "Beach", value: "beach", icon: Waves },
+  { label: "City", value: "city", icon: Building2 },
+  { label: "Nature", value: "nature", icon: Leaf },
+  { label: "Culture", value: "culture", icon: Landmark },
+  { label: "Adventure", value: "adventure", icon: Mountain },
+  { label: "Food", value: "food", icon: Utensils },
+  { label: "Family", value: "family", icon: Users },
+  { label: "Backpacker", value: "backpacker", icon: Compass },
 ];
-
-type ResultsSearchParams = {
-  budget?: string | string[];
-  currency?: string | string[];
-  origin?: string | string[];
-  days?: string | string[];
-  month?: string | string[];
-  travelers?: string | string[];
-  style?: string | string[];
-};
 
 type ResultsPageProps = {
   searchParams: Promise<ResultsSearchParams>;
-};
-
-type ParsedSearchParams = {
-  budget: number;
-  currency: SupportedCurrency;
-  origin: string;
-  days: number;
-  month: string;
-  travelers: number;
-  style: TravelStyle;
 };
 
 type ResultDestination = {
@@ -110,32 +98,11 @@ type Offer = {
   tone: string;
 };
 
-const defaultSearchParams: ParsedSearchParams = {
-  budget: 2500,
-  currency: "CAD",
-  origin: "YUL",
-  days: 10,
-  month: "october",
-  travelers: 1,
-  style: "balanced",
-};
-
-const currencyOptions = ["CAD", "USD", "EUR"] as const;
-
-const styleAliases: Record<string, TravelStyle> = {
-  budget: "budget",
-  balanced: "balanced",
-  midrange: "balanced",
-  "mid-range": "balanced",
-  comfort: "comfort",
-  luxury: "comfort",
-};
-
 export default async function ResultsPage({ searchParams }: ResultsPageProps) {
   await connection();
 
   const parsedParams = parseSearchParams(await searchParams);
-  const recommendations = recommendDestinations({
+  const allRecommendations = recommendDestinations({
     destinations: destinationData,
     budget: parsedParams.budget,
     currency: parsedParams.currency,
@@ -145,13 +112,14 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
     travelers: parsedParams.travelers,
     style: parsedParams.style,
   });
+  const recommendations = filterAndSortRecommendations(allRecommendations, parsedParams);
   const destinations = recommendations.map((recommendation, index) =>
     toResultDestination(recommendation, index, parsedParams)
   );
   const topRecommendation = recommendations[0];
   const formattedBudget = formatMoney(parsedParams.budget, parsedParams.currency);
   const originLabel = formatOriginLabel(parsedParams.origin);
-  const resultSummary = `Showing ${recommendations.length} ranked ${
+  const resultSummary = `Showing ${recommendations.length} of ${allRecommendations.length} ${
     recommendations.length === 1 ? "destination" : "destinations"
   } from ${originLabel} for ${formattedBudget}, ${parsedParams.days} days, ${
     parsedParams.travelers
@@ -208,7 +176,8 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
 
       <section className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[minmax(0,8fr)_minmax(320px,4fr)] lg:px-8">
         <div className="grid gap-8">
-          <CategoryFilters />
+          <ResultsFilters parsedParams={parsedParams} />
+          <CategoryFilters parsedParams={parsedParams} />
 
           {destinations.length > 0 ? (
             <div className="grid gap-5 md:grid-cols-3">
@@ -231,7 +200,7 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
               ))}
             </div>
           ) : (
-            <EmptyResultsState />
+            <EmptyResultsState parsedParams={parsedParams} />
           )}
 
           {topRecommendation ? (
@@ -255,47 +224,6 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
       <CTASection />
     </main>
   );
-}
-
-function parseSearchParams(searchParams: ResultsSearchParams): ParsedSearchParams {
-  return {
-    budget: parseNumber(readSearchParam(searchParams.budget), defaultSearchParams.budget),
-    currency: parseCurrency(readSearchParam(searchParams.currency)),
-    origin: parseOrigin(readSearchParam(searchParams.origin)),
-    days: parseNumber(readSearchParam(searchParams.days), defaultSearchParams.days),
-    month: readSearchParam(searchParams.month)?.trim() || defaultSearchParams.month,
-    travelers: parseNumber(readSearchParam(searchParams.travelers), defaultSearchParams.travelers),
-    style: parseTravelStyle(readSearchParam(searchParams.style)),
-  };
-}
-
-function readSearchParam(value: string | string[] | undefined) {
-  return Array.isArray(value) ? value[0] : value;
-}
-
-function parseNumber(value: string | undefined, fallback: number): number {
-  if (!value) {
-    return fallback;
-  }
-
-  const parsedValue = Number(value.replace(/,/g, ""));
-  return Number.isFinite(parsedValue) && parsedValue > 0 ? Math.round(parsedValue) : fallback;
-}
-
-function parseCurrency(value: string | undefined): SupportedCurrency {
-  const normalizedValue = value?.trim().toUpperCase();
-  return currencyOptions.some((currency) => currency === normalizedValue)
-    ? (normalizedValue as SupportedCurrency)
-    : defaultSearchParams.currency;
-}
-
-function parseOrigin(value: string | undefined) {
-  return normalizeOriginCode(value?.trim().replace(/\s+/g, " ").slice(0, 80) || defaultSearchParams.origin);
-}
-
-function parseTravelStyle(value: string | undefined): TravelStyle {
-  const normalizedValue = value?.trim().toLowerCase();
-  return normalizedValue ? styleAliases[normalizedValue] ?? defaultSearchParams.style : defaultSearchParams.style;
 }
 
 function toResultDestination(
@@ -359,18 +287,104 @@ function formatOriginLabel(originCode: string) {
   return originPricing?.originCity ? `${originPricing.originCity} (${originCode})` : originCode;
 }
 
-function CategoryFilters() {
+function ResultsFilters({ parsedParams }: { parsedParams: ParsedSearchParams }) {
+  return (
+    <form action="/results" className="grid gap-4 rounded-[28px] border border-[#c3c6d7]/35 bg-white p-5 shadow-[0_18px_45px_-28px_rgba(15,23,42,0.35)] md:grid-cols-6">
+      <label className="grid gap-2 text-sm font-semibold text-[#434655]">
+        Budget
+        <input
+          name="budget"
+          type="number"
+          min="100"
+          step="50"
+          defaultValue={parsedParams.budget}
+          className="h-11 rounded-xl border border-[#c3c6d7]/60 px-3 text-[#191c1e] outline-none focus:border-blue-500 focus:ring-3 focus:ring-blue-600/15"
+        />
+      </label>
+      <label className="grid gap-2 text-sm font-semibold text-[#434655]">
+        Days
+        <input
+          name="days"
+          type="number"
+          min="1"
+          max="60"
+          defaultValue={parsedParams.days}
+          className="h-11 rounded-xl border border-[#c3c6d7]/60 px-3 text-[#191c1e] outline-none focus:border-blue-500 focus:ring-3 focus:ring-blue-600/15"
+        />
+      </label>
+      <label className="grid gap-2 text-sm font-semibold text-[#434655]">
+        From
+        <select
+          name="origin"
+          defaultValue={parsedParams.origin}
+          className="h-11 rounded-xl border border-[#c3c6d7]/60 px-3 text-[#191c1e] outline-none focus:border-blue-500 focus:ring-3 focus:ring-blue-600/15"
+        >
+          <option value="YUL">Montreal</option>
+          <option value="YYZ">Toronto</option>
+          <option value="YVR">Vancouver</option>
+        </select>
+      </label>
+      <label className="grid gap-2 text-sm font-semibold text-[#434655]">
+        Style
+        <select
+          name="style"
+          defaultValue={parsedParams.style}
+          className="h-11 rounded-xl border border-[#c3c6d7]/60 px-3 text-[#191c1e] outline-none focus:border-blue-500 focus:ring-3 focus:ring-blue-600/15"
+        >
+          <option value="budget">Budget</option>
+          <option value="balanced">Balanced</option>
+          <option value="comfort">Comfort</option>
+        </select>
+      </label>
+      <label className="grid gap-2 text-sm font-semibold text-[#434655]">
+        Sort
+        <select
+          name="sort"
+          defaultValue={parsedParams.sort}
+          className="h-11 rounded-xl border border-[#c3c6d7]/60 px-3 text-[#191c1e] outline-none focus:border-blue-500 focus:ring-3 focus:ring-blue-600/15"
+        >
+          <option value="relevance">Relevance</option>
+          <option value="price-asc">Lowest price</option>
+          <option value="price-desc">Highest price</option>
+          <option value="score">Best score</option>
+        </select>
+      </label>
+      <label className="grid gap-2 text-sm font-semibold text-[#434655]">
+        Destination
+        <input
+          name="destination"
+          type="search"
+          defaultValue={parsedParams.destination}
+          placeholder="Japan, beach..."
+          className="h-11 rounded-xl border border-[#c3c6d7]/60 px-3 text-[#191c1e] outline-none focus:border-blue-500 focus:ring-3 focus:ring-blue-600/15"
+        />
+      </label>
+      <input type="hidden" name="currency" value={parsedParams.currency} />
+      <input type="hidden" name="month" value={parsedParams.month} />
+      <input type="hidden" name="travelers" value={parsedParams.travelers} />
+      <input type="hidden" name="category" value={parsedParams.category} />
+      <div className="md:col-span-6">
+        <Button className="h-11 rounded-full bg-[#004ac6] px-5 text-white hover:bg-blue-700" type="submit">
+          Apply filters
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+function CategoryFilters({ parsedParams }: { parsedParams: ParsedSearchParams }) {
   return (
     <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden">
       {categories.map((category) => {
         const Icon = category.icon;
+        const isActive = category.value === parsedParams.category;
 
         return (
           <Link
             key={category.label}
-            href="/results"
+            href={createResultsHref(parsedParams, { category: category.value })}
             className={`flex min-w-28 items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-semibold shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-blue-600/25 ${
-              category.active
+              isActive
                 ? "border-blue-600 bg-[#004ac6] text-white shadow-blue-700/20"
                 : "border-[#c3c6d7]/45 bg-white text-[#434655] hover:border-blue-200 hover:text-blue-700"
             }`}
@@ -490,7 +504,7 @@ function DestinationCard({
   );
 }
 
-function EmptyResultsState() {
+function EmptyResultsState({ parsedParams }: { parsedParams: ParsedSearchParams }) {
   return (
     <section className="rounded-[28px] border border-[#c3c6d7]/35 bg-white p-8 text-center shadow-[0_18px_45px_-26px_rgba(15,23,42,0.35)]">
       <h2 className="text-2xl font-semibold tracking-tight text-[#191c1e]">No destinations match this search yet</h2>
@@ -498,6 +512,18 @@ function EmptyResultsState() {
         Try increasing your budget, reducing the trip length, changing your travel style, or picking a different
         departure city.
       </p>
+      <Button asChild className="mt-5 rounded-full bg-[#004ac6] px-5 text-white hover:bg-blue-700">
+        <Link
+          href={createResultsHref(parsedParams, {
+            budget: Math.max(parsedParams.budget + 500, 1000),
+            category: "all",
+            destination: "",
+            sort: "relevance",
+          })}
+        >
+          Broaden this search
+        </Link>
+      </Button>
     </section>
   );
 }

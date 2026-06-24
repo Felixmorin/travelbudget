@@ -2,6 +2,12 @@ import type { MetadataRoute } from "next";
 
 import { destinations } from "@/lib/data/destinations";
 import { getProgrammaticBudgetPath, programmaticBudgetPages } from "@/lib/programmatic/budget-pages";
+import {
+  destinationBudgetSeoSlugs,
+  durationSeoPages,
+  getTravelBudgetPath,
+  getTravelCostDurationPath,
+} from "@/lib/programmatic/seo-pages";
 import { createCanonicalUrl } from "@/lib/seo/metadata";
 
 const staticRoutes: MetadataRoute.Sitemap = [
@@ -35,6 +41,11 @@ const staticRoutes: MetadataRoute.Sitemap = [
     changeFrequency: "weekly",
     priority: 0.8,
   },
+  {
+    url: createCanonicalUrl("/methodology"),
+    changeFrequency: "monthly",
+    priority: 0.75,
+  },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -48,6 +59,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "weekly" as const,
     priority: 0.8,
   }));
+  const destinationBudgetRoutes = destinationBudgetSeoSlugs.map((slug) => ({
+    url: createCanonicalUrl(getTravelBudgetPath(slug)),
+    changeFrequency: "monthly" as const,
+    priority: 0.75,
+  }));
+  const durationCostRoutes = durationSeoPages.map((page) => ({
+    url: createCanonicalUrl(getTravelCostDurationPath(page.destinationSlug, page.durationDays)),
+    changeFrequency: "monthly" as const,
+    priority: 0.72,
+  }));
 
-  return [...staticRoutes, ...destinationRoutes, ...programmaticBudgetRoutes];
+  return [
+    ...staticRoutes,
+    ...destinationRoutes,
+    ...programmaticBudgetRoutes,
+    ...destinationBudgetRoutes,
+    ...durationCostRoutes,
+  ];
 }
