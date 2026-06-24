@@ -16,6 +16,8 @@ import {
   ProgrammaticSeoContent,
   ProgrammaticSeoHighlights,
 } from "@/components/programmatic/ProgrammaticSeoContent";
+import { AnalyticsView } from "@/components/analytics/analytics-view";
+import { TrackedLink } from "@/components/analytics/tracked-link";
 import { EstimateDisclaimer } from "@/components/site/estimate-disclaimer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -47,6 +49,23 @@ export function ProgrammaticBudgetPage({
 
   return (
     <main className="overflow-x-hidden bg-[#f7f9fb] text-slate-950">
+      <AnalyticsView
+        eventName="budget_result_viewed"
+        eventProperties={{
+          page: getProgrammaticBudgetPath(page),
+          source: "programmatic_budget_page",
+          originCode: page.origin.code,
+          originCity: page.origin.city,
+          budget: page.budget,
+          currency: page.currency,
+          days: page.tripLengthDays,
+          tripLength: page.tripLengthDays,
+          travelers: 1,
+          travelStyle: page.travelStyle,
+          resultCount: matches.length,
+          resultsCount: matches.length,
+        }}
+      />
       <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
         <div className="grid items-center gap-12 lg:grid-cols-[1fr_520px]">
           <div className="space-y-6">
@@ -84,13 +103,51 @@ export function ProgrammaticBudgetPage({
 
             <div className="flex flex-col gap-3 pt-2 sm:flex-row">
               <Button asChild size="lg" className="rounded-full bg-blue-600 px-8 text-white shadow-lg shadow-blue-600/20 hover:bg-blue-700">
-                <Link href="#destinations">
+                <TrackedLink
+                  href="#destinations"
+                  eventName="cta_clicked"
+                  eventProperties={{
+                    page: getProgrammaticBudgetPath(page),
+                    source: "programmatic_budget_hero",
+                    originCode: page.origin.code,
+                    originCity: page.origin.city,
+                    budget: page.budget,
+                    currency: page.currency,
+                    days: page.tripLengthDays,
+                    tripLength: page.tripLengthDays,
+                    travelers: 1,
+                    travelStyle: page.travelStyle,
+                    label: "Find my trip",
+                    href: "#destinations",
+                    ctaLocation: "programmatic_hero",
+                  }}
+                >
                   Find my trip
                   <ArrowRight className="ml-2 size-4" />
-                </Link>
+                </TrackedLink>
               </Button>
               <Button asChild size="lg" variant="outline" className="rounded-full border-slate-300 bg-white px-8 text-slate-700 hover:bg-slate-100">
-                <Link href="#compare">Compare destinations</Link>
+                <TrackedLink
+                  href="#compare"
+                  eventName="cta_clicked"
+                  eventProperties={{
+                    page: getProgrammaticBudgetPath(page),
+                    source: "programmatic_budget_hero",
+                    originCode: page.origin.code,
+                    originCity: page.origin.city,
+                    budget: page.budget,
+                    currency: page.currency,
+                    days: page.tripLengthDays,
+                    tripLength: page.tripLengthDays,
+                    travelers: 1,
+                    travelStyle: page.travelStyle,
+                    label: "Compare destinations",
+                    href: "#compare",
+                    ctaLocation: "programmatic_hero",
+                  }}
+                >
+                  Compare destinations
+                </TrackedLink>
               </Button>
             </div>
           </div>
@@ -261,10 +318,50 @@ export function ProgrammaticBudgetPage({
             </p>
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
               <Button asChild size="lg" className="rounded-full bg-blue-600 px-8 text-white hover:bg-blue-700">
-                <Link href="/tools/travel-budget-calculator">Start planning now</Link>
+                <TrackedLink
+                  href="/tools/travel-budget-calculator"
+                  eventName="cta_clicked"
+                  eventProperties={{
+                    page: getProgrammaticBudgetPath(page),
+                    source: "programmatic_budget_bottom",
+                    originCode: page.origin.code,
+                    originCity: page.origin.city,
+                    budget: page.budget,
+                    currency: page.currency,
+                    days: page.tripLengthDays,
+                    tripLength: page.tripLengthDays,
+                    travelers: 1,
+                    travelStyle: page.travelStyle,
+                    label: "Start planning now",
+                    href: "/tools/travel-budget-calculator",
+                    ctaLocation: "programmatic_bottom_cta",
+                  }}
+                >
+                  Start planning now
+                </TrackedLink>
               </Button>
               <Button asChild size="lg" variant="outline" className="rounded-full border-white/20 bg-white/10 px-8 text-white hover:bg-white/20">
-                <Link href="/results">Compare all destinations</Link>
+                <TrackedLink
+                  href="/results"
+                  eventName="cta_clicked"
+                  eventProperties={{
+                    page: getProgrammaticBudgetPath(page),
+                    source: "programmatic_budget_bottom",
+                    originCode: page.origin.code,
+                    originCity: page.origin.city,
+                    budget: page.budget,
+                    currency: page.currency,
+                    days: page.tripLengthDays,
+                    tripLength: page.tripLengthDays,
+                    travelers: 1,
+                    travelStyle: page.travelStyle,
+                    label: "Compare all destinations",
+                    href: "/results",
+                    ctaLocation: "programmatic_bottom_cta",
+                  }}
+                >
+                  Compare all destinations
+                </TrackedLink>
               </Button>
             </div>
           </div>

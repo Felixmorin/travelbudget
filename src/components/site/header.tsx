@@ -66,11 +66,32 @@ export function Header() {
         </nav>
         <div className="flex items-center gap-2">
           <LanguageSwitcher />
-          <Link href="/" className="hidden text-sm font-medium text-[#434655] hover:text-[#004ac6] sm:block">
+          <TrackedLink
+            href="/"
+            eventName="cta_clicked"
+            eventProperties={{
+              page: pathname,
+              label: t.nav.signIn,
+              href: "/",
+              ctaLocation: "site_header",
+            }}
+            className="hidden text-sm font-medium text-[#434655] hover:text-[#004ac6] sm:block"
+          >
             {t.nav.signIn}
-          </Link>
+          </TrackedLink>
           <Button asChild className="h-9 rounded-full bg-[#004ac6] px-4 text-white hover:bg-blue-700">
-            <Link href="/">{t.nav.signUp}</Link>
+            <TrackedLink
+              href="/"
+              eventName="cta_clicked"
+              eventProperties={{
+                page: pathname,
+                label: t.nav.signUp,
+                href: "/",
+                ctaLocation: "site_header",
+              }}
+            >
+              {t.nav.signUp}
+            </TrackedLink>
           </Button>
           <Button variant="ghost" size="icon" aria-label={t.nav.openNavigation} className="rounded-full md:hidden">
             <Menu className="size-5" />

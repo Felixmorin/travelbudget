@@ -3,7 +3,7 @@
 Use `trackEvent` from `@/lib/analytics/track` for product events:
 
 ```ts
-trackEvent("budget_calculator_submitted", {
+trackEvent("calculator_submitted", {
   page: "/tools/travel-budget-calculator",
   originCode: "YUL",
   destinationName: "Paris",
@@ -22,4 +22,3 @@ sensitive data, raw email addresses, or free-form user text.
 `trackEvent` is client-safe: it no-ops during SSR and sends to Vercel
 Analytics, GA4, Plausible, PostHog, or Segment if their browser globals are
 present. Without a provider it logs in development and no-ops in production.
-

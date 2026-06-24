@@ -56,7 +56,7 @@ export default function TravelBudgetCalculatorPage() {
   return (
     <>
       <AnalyticsView
-        eventName="budget_calculator_started"
+        eventName="calculator_started"
         eventProperties={{
           page: path,
           source: "calculator_page_view",

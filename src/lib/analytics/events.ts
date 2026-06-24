@@ -4,7 +4,9 @@ export type AnalyticsPayload = Record<string, AnalyticsPrimitive>;
 
 export type CommonAnalyticsProperties = {
   page?: string;
+  source?: string;
   originCode?: string;
+  originCity?: string;
   destinationSlug?: string;
   destinationName?: string;
   budget?: number;
@@ -14,47 +16,40 @@ export type CommonAnalyticsProperties = {
   tripLength?: number;
   travelers?: number;
   travelStyle?: string;
+  resultCount?: number;
   ctaLocation?: string;
+  affiliateType?: string;
   affiliatePartner?: string;
+  href?: string;
+  label?: string;
+};
+
+type CalculatorEventProperties = CommonAnalyticsProperties & {
+  field?: string;
+  estimatedTotal?: number;
 };
 
 export type AnalyticsEventProperties = {
-  search_started: CommonAnalyticsProperties & {
-    source?: string;
-  };
+  search_started: CommonAnalyticsProperties;
   search_completed: CommonAnalyticsProperties & {
-    month?: string;
     resultsCount?: number;
   };
-  destination_card_clicked: CommonAnalyticsProperties & {
-    source?: string;
-  };
+  destination_card_clicked: CommonAnalyticsProperties;
   destination_viewed: CommonAnalyticsProperties;
-  budget_calculator_started: CommonAnalyticsProperties & {
-    source?: string;
-  };
-  budget_calculator_updated: CommonAnalyticsProperties & {
-    field?: string;
-    estimatedTotal?: number;
-  };
-  budget_calculator_submitted: CommonAnalyticsProperties & {
-    estimatedTotal?: number;
-  };
-  budget_calculator_cta_clicked: CommonAnalyticsProperties & {
-    estimatedTotal?: number;
-    label?: string;
-    href?: string;
-  };
+  calculator_started: CommonAnalyticsProperties;
+  calculator_updated: CalculatorEventProperties;
+  calculator_submitted: CalculatorEventProperties;
+  calculator_results_clicked: CalculatorEventProperties;
+  budget_calculator_started: CommonAnalyticsProperties;
+  budget_calculator_updated: CalculatorEventProperties;
+  budget_calculator_submitted: CalculatorEventProperties;
+  budget_calculator_cta_clicked: CalculatorEventProperties;
   budget_result_viewed: CommonAnalyticsProperties & {
-    resultCount?: number;
     resultsCount?: number;
   };
-  cta_clicked: CommonAnalyticsProperties & {
-    label?: string;
-    href?: string;
-  };
+  cta_clicked: CommonAnalyticsProperties;
+  affiliate_module_viewed: CommonAnalyticsProperties;
   affiliate_link_clicked: CommonAnalyticsProperties & {
-    href?: string;
     linkType?: string;
     title?: string;
   };
@@ -78,12 +73,17 @@ export const analyticsEventNames = [
   "search_completed",
   "destination_card_clicked",
   "destination_viewed",
+  "calculator_started",
+  "calculator_updated",
+  "calculator_submitted",
+  "calculator_results_clicked",
   "budget_calculator_started",
   "budget_calculator_updated",
   "budget_calculator_submitted",
   "budget_calculator_cta_clicked",
   "budget_result_viewed",
   "cta_clicked",
+  "affiliate_module_viewed",
   "affiliate_link_clicked",
   "newsletter_submitted",
   "guide_clicked",

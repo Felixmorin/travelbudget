@@ -166,7 +166,9 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
           budget: parsedParams.budget,
           currency: parsedParams.currency,
           originCode: parsedParams.origin,
+          originCity: originLabel,
           days: parsedParams.days,
+          tripLength: parsedParams.days,
           month: parsedParams.month,
           travelers: parsedParams.travelers,
           travelStyle: parsedParams.style,
@@ -211,7 +213,21 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
           {destinations.length > 0 ? (
             <div className="grid gap-5 md:grid-cols-3">
               {destinations.map((destination) => (
-                <DestinationCard key={destination.href} destination={destination} />
+                <DestinationCard
+                  key={destination.href}
+                  destination={destination}
+                  analyticsContext={{
+                    budget: parsedParams.budget,
+                    currency: parsedParams.currency,
+                    days: parsedParams.days,
+                    month: parsedParams.month,
+                    originCity: originLabel,
+                    originCode: parsedParams.origin,
+                    resultCount: recommendations.length,
+                    travelers: parsedParams.travelers,
+                    travelStyle: parsedParams.style,
+                  }}
+                />
               ))}
             </div>
           ) : (
@@ -368,7 +384,23 @@ function CategoryFilters() {
   );
 }
 
-function DestinationCard({ destination }: { destination: ResultDestination }) {
+function DestinationCard({
+  analyticsContext,
+  destination,
+}: {
+  analyticsContext: {
+    budget: number;
+    currency: string;
+    days: number;
+    month: string;
+    originCity: string;
+    originCode: string;
+    resultCount: number;
+    travelers: number;
+    travelStyle: string;
+  };
+  destination: ResultDestination;
+}) {
   return (
     <article className="group overflow-hidden rounded-[24px] border border-[#c3c6d7]/35 bg-white shadow-[0_18px_45px_-24px_rgba(15,23,42,0.35)] transition-[transform,box-shadow] duration-400 ease-[cubic-bezier(0.175,0.885,0.32,1.275)] hover:-translate-y-2 hover:shadow-[0_24px_60px_-28px_rgba(15,23,42,0.5)]">
       <TrackedLink
@@ -376,9 +408,11 @@ function DestinationCard({ destination }: { destination: ResultDestination }) {
         eventName="destination_card_clicked"
         eventProperties={{
           page: "/results",
+          ...analyticsContext,
           destinationName: destination.country,
           destinationSlug: destination.href.replace("/destinations/", ""),
           source: "results_grid",
+          tripLength: analyticsContext.days,
         }}
         className="block focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-blue-600/25"
       >

@@ -1,10 +1,12 @@
 import { ArrowRight, BadgeCheck, Hotel, Plane, Shield, Smartphone, Ticket } from "lucide-react";
 
+import { AffiliateModuleView } from "@/components/analytics/affiliate-module-view";
 import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { buildAffiliateLink } from "@/lib/affiliate/build-affiliate-link";
 import { getAffiliatePlaceholder } from "@/lib/affiliate/links";
-import { AffiliateLink } from "@/lib/data/destinations";
+import type { AffiliateLink } from "@/lib/data/destinations";
 
 const icons = {
   Flights: Plane,
@@ -26,9 +28,27 @@ export function AffiliateCard({
 }) {
   const Icon = icons[link.type] ?? BadgeCheck;
   const placeholder = getAffiliatePlaceholder(link);
+  const builtLink = buildAffiliateLink({ destination, link: { ...link, href: placeholder.href ?? link.href } });
+  const ctaLocation = link.placement ?? "destination_affiliate_card";
+  const page = destination?.slug ? `/destinations/${destination.slug}` : "affiliate_card";
+  const affiliatePartner = builtLink.partner;
+  const analyticsProperties = {
+    affiliatePartner,
+    affiliateType: link.type,
+    ctaLocation,
+    destinationName: destination?.name,
+    destinationSlug: destination?.slug,
+    href: builtLink.href,
+    label: placeholder.actionLabel,
+    linkType: placeholder.type,
+    page,
+    source: ctaLocation,
+    title: placeholder.title,
+  };
 
   return (
     <Card className="border-slate-200 bg-white shadow-sm">
+      <AffiliateModuleView eventProperties={analyticsProperties} />
       <CardContent className="grid gap-4 pt-5">
         <div className="flex items-start gap-3">
           <span className="flex size-10 items-center justify-center rounded-xl bg-teal-50 text-teal-700">
@@ -41,19 +61,14 @@ export function AffiliateCard({
         </div>
         <div className="flex items-center justify-between">
           <span className="text-sm font-semibold text-slate-500">{placeholder.priceHint}</span>
-          {placeholder.href ? (
+          {builtLink.href ? (
             <Button asChild size="sm" variant="outline" className="rounded-full">
               <TrackedLink
-                href={placeholder.href}
+                href={builtLink.href}
                 eventName="affiliate_link_clicked"
-                eventProperties={{
-                  affiliatePartner: placeholder.title,
-                  destinationName: destination?.name,
-                  destinationSlug: destination?.slug,
-                  linkType: placeholder.type,
-                  title: placeholder.title,
-                  href: placeholder.href,
-                }}
+                eventProperties={analyticsProperties}
+                rel={builtLink.rel}
+                target={builtLink.target}
               >
                 {placeholder.actionLabel}
                 <ArrowRight className="ml-1 size-3" />

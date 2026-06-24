@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArrowRight, CalendarDays, Home, Route, Search, Sparkles, WalletCards } from "lucide-react";
@@ -89,6 +88,8 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
           destinationName: destination.name,
           destinationSlug: destination.slug,
           currency: destination.currency,
+          originCode: "YUL",
+          originCity: defaultOriginPricing.originCity,
           tripLength: 10,
         }}
       />
@@ -274,16 +275,38 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
 
             <div className="flex flex-wrap gap-3">
               <Button asChild variant="outline" className="rounded-xl bg-white">
-                <Link href="/">
+                <TrackedLink
+                  href="/"
+                  eventName="cta_clicked"
+                  eventProperties={{
+                    page: `/destinations/${destination.slug}`,
+                    destinationName: destination.name,
+                    destinationSlug: destination.slug,
+                    label: "Back to calculator",
+                    href: "/",
+                    ctaLocation: "destination_bottom_nav",
+                  }}
+                >
                   <Home className="mr-2 size-4" />
                   Back to calculator
-                </Link>
+                </TrackedLink>
               </Button>
               <Button asChild variant="outline" className="rounded-xl bg-white">
-                <Link href="/results">
+                <TrackedLink
+                  href="/results"
+                  eventName="cta_clicked"
+                  eventProperties={{
+                    page: `/destinations/${destination.slug}`,
+                    destinationName: destination.name,
+                    destinationSlug: destination.slug,
+                    label: "Compare all destinations",
+                    href: "/results",
+                    ctaLocation: "destination_bottom_nav",
+                  }}
+                >
                   Compare all destinations
                   <ArrowRight className="ml-2 size-4" />
-                </Link>
+                </TrackedLink>
               </Button>
             </div>
           </div>

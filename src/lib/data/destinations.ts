@@ -4,6 +4,12 @@ export type AffiliateLink = {
   description: string;
   priceHint: string;
   href: string;
+  provider?: string;
+  partner?: string;
+  placement?: string;
+  isExternal?: boolean;
+  rel?: string;
+  target?: string;
 };
 
 export type OriginCode = "YUL" | "YYZ" | "YVR" | (string & {});
@@ -185,7 +191,7 @@ const destinationSeeds: DestinationSeed[] = [
     slug: "guatemala",
     name: "Guatemala",
     countryCode: "GT",
-    image: "https://images.unsplash.com/photo-1562949644-efd55d5491e4?auto=format&fit=crop&w=1600&q=80",
+    image: "https://images.unsplash.com/photo-1697382803428-71666ed66c94?auto=format&fit=crop&w=1600&q=80",
     flightAverage: { YUL: 720, YYZ: 700, YVR: 820 },
     dailyTotals: { budget: 58, midRange: 96, luxury: 260 },
     score: 84,
@@ -410,7 +416,7 @@ const destinationSeeds: DestinationSeed[] = [
     slug: "croatia",
     name: "Croatia",
     countryCode: "HR",
-    image: "https://images.unsplash.com/photo-1555990538-c48dbe4d7d1b?auto=format&fit=crop&w=1600&q=80",
+    image: "https://images.unsplash.com/photo-1575540291670-8d3b26f7d327?auto=format&fit=crop&w=1600&q=80",
     flightAverage: { YUL: 900, YYZ: 950, YVR: 1160 },
     dailyTotals: { budget: 105, midRange: 175, luxury: 480 },
     score: 86,
@@ -455,7 +461,7 @@ const destinationSeeds: DestinationSeed[] = [
     slug: "south-korea",
     name: "South Korea",
     countryCode: "KR",
-    image: "https://images.unsplash.com/photo-1538485399081-7c8a5a6965d8?auto=format&fit=crop&w=1600&q=80",
+    image: "https://images.unsplash.com/photo-1546874177-9e664107314e?auto=format&fit=crop&w=1600&q=80",
     flightAverage: { YUL: 980, YYZ: 1050, YVR: 900 },
     dailyTotals: { budget: 105, midRange: 165, luxury: 450 },
     score: 87,
@@ -515,7 +521,7 @@ const destinationSeeds: DestinationSeed[] = [
     slug: "dominican-republic",
     name: "Dominican Republic",
     countryCode: "DO",
-    image: "https://images.unsplash.com/photo-1518552718888-4e5aa775efdb?auto=format&fit=crop&w=1600&q=80",
+    image: "https://images.unsplash.com/photo-1635450695849-bde4bea19b5f?auto=format&fit=crop&w=1600&q=80",
     flightAverage: { YUL: 560, YYZ: 540, YVR: 760 },
     dailyTotals: { budget: 85, midRange: 145, luxury: 390 },
     score: 82,
@@ -645,6 +651,7 @@ function buildAffiliateLinks(seed: DestinationSeed): AffiliateLink[] {
       description: `Compare round-trip flight options from Montreal, Toronto, or Vancouver to ${seed.name}.`,
       priceHint: `Avg. from YUL CAD ${seed.flightAverage.YUL}`,
       href: `/results?origin=YUL&currency=CAD&style=balanced`,
+      placement: "destination_sidebar",
     },
     {
       type: "Hotels",
@@ -652,6 +659,7 @@ function buildAffiliateLinks(seed: DestinationSeed): AffiliateLink[] {
       description: `Review stay options that fit a practical ${seed.name} travel budget.`,
       priceHint: `Mid-range daily stay CAD ${splitDailyTotal(seed.dailyTotals.midRange).accommodation}`,
       href: `/destinations/${seed.slug}`,
+      placement: "destination_sidebar",
     },
     {
       type: "eSIM",
@@ -659,6 +667,7 @@ function buildAffiliateLinks(seed: DestinationSeed): AffiliateLink[] {
       description: `Estimate mobile data needs for maps, messaging, and bookings in ${seed.name}.`,
       priceHint: "Plan before departure",
       href: "/tools/travel-budget-calculator",
+      placement: "destination_sidebar",
     },
     {
       type: "Activities",
@@ -666,6 +675,7 @@ function buildAffiliateLinks(seed: DestinationSeed): AffiliateLink[] {
       description: `Use activity planning ranges to keep a ${seed.name} itinerary within budget.`,
       priceHint: `Mid-range activities CAD ${splitDailyTotal(seed.dailyTotals.midRange).activities}/day`,
       href: `/destinations/${seed.slug}`,
+      placement: "destination_sidebar",
     },
     {
       type: "Insurance",
@@ -673,6 +683,7 @@ function buildAffiliateLinks(seed: DestinationSeed): AffiliateLink[] {
       description: `Compare insurance needs for trip length, activities, and total prepaid cost.`,
       priceHint: "Verify before booking",
       href: "/tools/travel-budget-calculator",
+      placement: "destination_sidebar",
     },
   ];
 }

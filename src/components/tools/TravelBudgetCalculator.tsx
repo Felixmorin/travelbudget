@@ -157,10 +157,11 @@ export function TravelBudgetCalculator() {
     }
 
     trackedFields.current.add(field);
-    trackEvent("budget_calculator_updated", {
+    trackEvent("calculator_updated", {
       page: "/tools/travel-budget-calculator",
       field,
-      destinationName: nextValues.destination.slice(0, 80),
+      destinationName: normalizeTextValue(nextValues.destination),
+      originCity: normalizeTextValue(nextValues.departureCity),
       currency: calculatorCurrency,
       travelers: nextValues.travelers,
       tripLength: nextValues.tripLength,
@@ -184,9 +185,10 @@ export function TravelBudgetCalculator() {
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    trackEvent("budget_calculator_submitted", {
+    trackEvent("calculator_submitted", {
       page: "/tools/travel-budget-calculator",
-      destinationName: values.destination.slice(0, 80),
+      destinationName: normalizeTextValue(values.destination),
+      originCity: normalizeTextValue(values.departureCity),
       budget: Math.round(totals.total),
       currency: calculatorCurrency,
       tripLength: values.tripLength,
@@ -268,7 +270,7 @@ export function TravelBudgetCalculator() {
                 <Button asChild className="mt-5 rounded-xl bg-orange-500 text-white hover:bg-orange-600">
                   <TrackedLink
                     href={resultsHref}
-                    eventName="budget_calculator_cta_clicked"
+                    eventName="calculator_results_clicked"
                     eventProperties={{
                       page: "/tools/travel-budget-calculator",
                       label: "Find destinations within this budget",
@@ -276,7 +278,7 @@ export function TravelBudgetCalculator() {
                       ctaLocation: "calculator_total",
                       budget: roundedTotal,
                       currency: calculatorCurrency,
-                      originCode: values.departureCity.trim().replace(/\s+/g, " ").slice(0, 80),
+                      originCity: normalizeTextValue(values.departureCity),
                       tripLength: values.tripLength,
                       travelers: values.travelers,
                       estimatedTotal: roundedTotal,
@@ -338,4 +340,8 @@ function calculateTotal(values: CalculatorValues) {
     values.insurance * travelers;
 
   return subtotal + subtotal * (values.bufferPercentage / 100);
+}
+
+function normalizeTextValue(value: string) {
+  return value.trim().replace(/\s+/g, " ").slice(0, 80);
 }

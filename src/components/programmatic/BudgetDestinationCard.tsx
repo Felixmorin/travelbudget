@@ -1,7 +1,7 @@
 import Image from "next/image";
-import Link from "next/link";
 import { ArrowRight, CalendarDays, Plane, WalletCards } from "lucide-react";
 
+import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Badge } from "@/components/ui/badge";
 import { formatMoney } from "@/lib/format-money";
 import type { BudgetDestination, ProgrammaticBudgetPageConfig } from "@/lib/programmatic/budget-pages";
@@ -70,17 +70,37 @@ export function BudgetDestinationCard({
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Total Est.</p>
             <p className="text-2xl font-bold text-blue-700">{formatMoney(item.totalEstimate, page.currency)}</p>
           </div>
-          <Link
+          <TrackedLink
             href={`/destinations/${destination.slug}`}
+            eventName="destination_card_clicked"
+            eventProperties={{
+              page: getProgrammaticPagePath(page),
+              source: "programmatic_budget_card",
+              originCode: page.origin.code,
+              originCity: page.origin.city,
+              budget: page.budget,
+              currency: page.currency,
+              days: page.tripLengthDays,
+              tripLength: page.tripLengthDays,
+              travelers: 1,
+              travelStyle: page.travelStyle,
+              destinationName: destination.name,
+              destinationSlug: destination.slug,
+              href: `/destinations/${destination.slug}`,
+            }}
             aria-label={`View budget breakdown for ${destination.name}`}
             className="flex size-12 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-700 transition-colors hover:bg-blue-600 hover:text-white"
           >
             <ArrowRight className="size-5" />
-          </Link>
+          </TrackedLink>
         </div>
       </div>
     </article>
   );
+}
+
+function getProgrammaticPagePath(page: ProgrammaticBudgetPageConfig) {
+  return `/from/${page.origin.slug}/under-${page.budget}`;
 }
 
 function CompactMetric({

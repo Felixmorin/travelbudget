@@ -83,8 +83,10 @@ export function SearchCard() {
       page: "/",
       budget: Math.round(parsedBudget),
       currency,
-      originCode: trimmedOrigin.replace(/\s+/g, " ").slice(0, 12).toUpperCase(),
+      originCode: normalizeOriginCode(trimmedOrigin),
+      originCity: normalizeTextValue(trimmedOrigin),
       tripLength: Number(days),
+      days: Number(days),
       month,
       travelers: Number(travelers),
       travelStyle: style,
@@ -242,6 +244,28 @@ export function SearchCard() {
 
 function getOption<const T extends readonly string[]>(options: T, value: string | null | undefined, fallback: T[number]) {
   return value && options.some((option) => option === value) ? (value as T[number]) : fallback;
+}
+
+function normalizeOriginCode(value: string) {
+  const normalized = normalizeTextValue(value).toUpperCase();
+
+  if (["MONTREAL", "MONTREAL, QC", "YUL"].includes(normalized)) {
+    return "YUL";
+  }
+
+  if (["TORONTO", "TORONTO, ON", "YYZ"].includes(normalized)) {
+    return "YYZ";
+  }
+
+  if (["VANCOUVER", "VANCOUVER, BC", "YVR"].includes(normalized)) {
+    return "YVR";
+  }
+
+  return normalized.slice(0, 12);
+}
+
+function normalizeTextValue(value: string) {
+  return value.trim().replace(/\s+/g, " ").slice(0, 80);
 }
 
 function Field({
