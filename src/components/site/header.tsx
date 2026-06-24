@@ -10,7 +10,7 @@ const navItems = [
   { label: "Destinations", href: "/results", activePaths: ["/results", "/destinations"] },
   { label: "Tools", href: "/tools", activePaths: ["/tools"] },
   { label: "Guides", href: "/guides", activePaths: ["/guides", "/guide"] },
-  { label: "About", href: "/", activePaths: ["/"] },
+  { label: "About", href: "/about", activePaths: ["/about"] },
 ];
 
 export function Header() {

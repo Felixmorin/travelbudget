@@ -13,16 +13,36 @@ export function Footer() {
           </p>
         </div>
         {[
-          ["Products", "Budget Calculator", "Itinerary Builder", "eSIM Finder"],
-          ["Company", "About Us", "Careers", "Contact"],
-          ["Legal", "Privacy Policy", "Terms of Service"],
-        ].map(([title, ...links]) => (
+          {
+            title: "Products",
+            links: [
+              { label: "Budget Calculator", href: "/tools/travel-budget-calculator" },
+              { label: "Itinerary Builder", href: "/tools" },
+              { label: "eSIM Finder", href: "/tools" },
+            ],
+          },
+          {
+            title: "Company",
+            links: [
+              { label: "About Us", href: "/about" },
+              { label: "Careers", href: "/about" },
+              { label: "Contact", href: "/about" },
+            ],
+          },
+          {
+            title: "Legal",
+            links: [
+              { label: "Privacy Policy", href: "/" },
+              { label: "Terms of Service", href: "/" },
+            ],
+          },
+        ].map(({ title, links }) => (
           <div key={title}>
             <p className="text-sm font-semibold text-[#191c1e]">{title}</p>
             <div className="mt-3 grid gap-2 text-sm text-[#434655]">
-              {links.map((link) => (
-                <Link key={link} href="/tools" className="hover:text-blue-600">
-                  {link}
+              {links.map(({ label, href }) => (
+                <Link key={label} href={href} className="hover:text-blue-600">
+                  {label}
                 </Link>
               ))}
             </div>
