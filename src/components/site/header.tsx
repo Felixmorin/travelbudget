@@ -2,20 +2,24 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Globe2, Menu, PlaneTakeoff } from "lucide-react";
+import { Menu, PlaneTakeoff } from "lucide-react";
 
+import { useTranslation } from "@/components/i18n/language-provider";
+import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Button } from "@/components/ui/button";
 
 const navItems = [
-  { label: "Destinations", href: "/results", activePaths: ["/results", "/destinations"] },
-  { label: "Tools", href: "/tools", activePaths: ["/tools"] },
-  { label: "Guides", href: "/guides", activePaths: ["/guides", "/guide"] },
-  { label: "About", href: "/", activePaths: ["/"] },
-];
+  { labelKey: "planTrip", href: "/", activePaths: ["/"] },
+  { labelKey: "destinations", href: "/results", activePaths: ["/results", "/destinations"] },
+  { labelKey: "tools", href: "/tools", activePaths: ["/tools"] },
+  { labelKey: "guides", href: "/guides", activePaths: ["/guides", "/guide"] },
+  { labelKey: "about", href: "/about", activePaths: ["/about"] },
+] as const;
 
 export function Header() {
   const pathname = usePathname();
+  const { t } = useTranslation();
 
   return (
     <header className="sticky top-0 z-40 border-b border-[#c3c6d7]/40 bg-white/80 backdrop-blur-xl">
@@ -31,56 +35,44 @@ export function Header() {
             const isActive = item.activePaths.some((activePath) =>
               activePath === "/" ? pathname === "/" : pathname === activePath || pathname.startsWith(`${activePath}/`)
             );
+            const label = t.nav[item.labelKey];
 
-            return (
-              item.label === "Guides" ? (
-                <TrackedLink
-                  key={item.label}
-                  href={item.href}
-                  eventName="guide_clicked"
-                  eventProperties={{
-                    page: pathname,
-                    guideTitle: "Guides",
-                    href: item.href,
-                  }}
-                  aria-current={isActive ? "page" : undefined}
-                  className={`transition hover:text-[#004ac6] ${
-                    isActive ? "font-semibold text-[#004ac6]" : ""
-                  }`}
-                >
-                  {item.label}
-                </TrackedLink>
-              ) : (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  aria-current={isActive ? "page" : undefined}
-                  className={`transition hover:text-[#004ac6] ${
-                    isActive ? "font-semibold text-[#004ac6]" : ""
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              )
+            return item.labelKey === "guides" ? (
+              <TrackedLink
+                key={item.labelKey}
+                href={item.href}
+                eventName="guide_clicked"
+                eventProperties={{
+                  page: pathname,
+                  guideTitle: label,
+                  href: item.href,
+                }}
+                aria-current={isActive ? "page" : undefined}
+                className={`transition hover:text-[#004ac6] ${isActive ? "font-semibold text-[#004ac6]" : ""}`}
+              >
+                {label}
+              </TrackedLink>
+            ) : (
+              <Link
+                key={item.labelKey}
+                href={item.href}
+                aria-current={isActive ? "page" : undefined}
+                className={`transition hover:text-[#004ac6] ${isActive ? "font-semibold text-[#004ac6]" : ""}`}
+              >
+                {label}
+              </Link>
             );
           })}
         </nav>
         <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Change language"
-            className="hidden rounded-full text-[#434655] hover:text-[#004ac6] sm:inline-flex"
-          >
-            <Globe2 className="size-4" />
-          </Button>
+          <LanguageSwitcher />
           <Link href="/" className="hidden text-sm font-medium text-[#434655] hover:text-[#004ac6] sm:block">
-            Sign In
+            {t.nav.signIn}
           </Link>
           <Button asChild className="h-9 rounded-full bg-[#004ac6] px-4 text-white hover:bg-blue-700">
-            <Link href="/">Sign Up</Link>
+            <Link href="/">{t.nav.signUp}</Link>
           </Button>
-          <Button variant="ghost" size="icon" aria-label="Open navigation" className="rounded-full md:hidden">
+          <Button variant="ghost" size="icon" aria-label={t.nav.openNavigation} className="rounded-full md:hidden">
             <Menu className="size-5" />
           </Button>
         </div>

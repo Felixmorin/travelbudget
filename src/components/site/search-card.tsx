@@ -4,6 +4,7 @@ import { FormEvent, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Calendar, MapPin, Users, Wallet } from "lucide-react";
 
+import { useTranslation } from "@/components/i18n/language-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -25,6 +26,7 @@ type TravelStyle = (typeof styles)[number];
 
 export function SearchCard() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [budget, setBudget] = useState("2400");
   const [currency, setCurrency] = useState<Currency>("CAD");
   const [origin, setOrigin] = useState("Toronto");
@@ -54,12 +56,12 @@ export function SearchCard() {
     const trimmedOrigin = origin.trim();
 
     if (!Number.isFinite(parsedBudget) || parsedBudget < 100 || parsedBudget > 250000) {
-      setError("Enter a budget between 100 and 250,000 to continue.");
+      setError(t.search.budgetError);
       return;
     }
 
     if (!trimmedOrigin) {
-      setError("Enter a departure city to continue.");
+      setError(t.search.originError);
       return;
     }
 
@@ -91,12 +93,12 @@ export function SearchCard() {
   return (
     <Card className="w-full border-white/50 bg-white/95 shadow-2xl shadow-slate-950/20 backdrop-blur">
       <CardHeader>
-        <CardTitle className="text-lg text-slate-950">Plan from your real budget</CardTitle>
+        <CardTitle className="text-lg text-slate-950">{t.search.title}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Budget" icon={<Wallet className="size-4" />}>
+            <Field label={t.search.budget} icon={<Wallet className="size-4" />}>
               <Input
                 value={budget}
                 onFocus={trackSearchStarted}
@@ -110,7 +112,7 @@ export function SearchCard() {
                 className="h-11 bg-white"
               />
             </Field>
-            <Field label="Currency">
+            <Field label={t.search.currency}>
               <Select
                 value={currency}
                 onValueChange={(value) => {
@@ -119,7 +121,7 @@ export function SearchCard() {
                 }}
               >
                 <SelectTrigger className="h-11 w-full bg-white">
-                  <SelectValue placeholder="Currency" />
+                  <SelectValue placeholder={t.search.currency} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="CAD">CAD</SelectItem>
@@ -128,7 +130,7 @@ export function SearchCard() {
                 </SelectContent>
               </Select>
             </Field>
-            <Field label="Departure city" icon={<MapPin className="size-4" />}>
+            <Field label={t.search.departureCity} icon={<MapPin className="size-4" />}>
               <Input
                 value={origin}
                 onFocus={trackSearchStarted}
@@ -139,7 +141,7 @@ export function SearchCard() {
                 className="h-11 bg-white"
               />
             </Field>
-            <Field label="Duration" icon={<Calendar className="size-4" />}>
+            <Field label={t.search.duration} icon={<Calendar className="size-4" />}>
               <Select
                 value={days}
                 onValueChange={(value) => {
@@ -148,16 +150,16 @@ export function SearchCard() {
                 }}
               >
                 <SelectTrigger className="h-11 w-full bg-white">
-                  <SelectValue placeholder="Duration" />
+                  <SelectValue placeholder={t.search.duration} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="7">7 days</SelectItem>
-                  <SelectItem value="10">10 days</SelectItem>
-                  <SelectItem value="14">14 days</SelectItem>
+                  <SelectItem value="7">7 {t.search.days}</SelectItem>
+                  <SelectItem value="10">10 {t.search.days}</SelectItem>
+                  <SelectItem value="14">14 {t.search.days}</SelectItem>
                 </SelectContent>
               </Select>
             </Field>
-            <Field label="Travel month">
+            <Field label={t.search.travelMonth}>
               <Select
                 value={month}
                 onValueChange={(value) => {
@@ -166,16 +168,16 @@ export function SearchCard() {
                 }}
               >
                 <SelectTrigger className="h-11 w-full bg-white">
-                  <SelectValue placeholder="Travel month" />
+                  <SelectValue placeholder={t.search.travelMonth} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="march">March</SelectItem>
-                  <SelectItem value="june">June</SelectItem>
-                  <SelectItem value="october">October</SelectItem>
+                  <SelectItem value="march">{t.search.march}</SelectItem>
+                  <SelectItem value="june">{t.search.june}</SelectItem>
+                  <SelectItem value="october">{t.search.october}</SelectItem>
                 </SelectContent>
               </Select>
             </Field>
-            <Field label="Number of travelers" icon={<Users className="size-4" />}>
+            <Field label={t.search.travelers} icon={<Users className="size-4" />}>
               <Select
                 value={travelers}
                 onValueChange={(value) => {
@@ -184,16 +186,16 @@ export function SearchCard() {
                 }}
               >
                 <SelectTrigger className="h-11 w-full bg-white">
-                  <SelectValue placeholder="Travelers" />
+                  <SelectValue placeholder={t.search.travelers} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="1">1 traveler</SelectItem>
-                  <SelectItem value="2">2 travelers</SelectItem>
-                  <SelectItem value="4">4 travelers</SelectItem>
+                  <SelectItem value="1">1 {t.search.traveler}</SelectItem>
+                  <SelectItem value="2">2 {t.search.travelersPlural}</SelectItem>
+                  <SelectItem value="4">4 {t.search.travelersPlural}</SelectItem>
                 </SelectContent>
               </Select>
             </Field>
-            <Field label="Travel style">
+            <Field label={t.search.travelStyle}>
               <Select
                 value={style}
                 onValueChange={(value) => {
@@ -202,19 +204,19 @@ export function SearchCard() {
                 }}
               >
                 <SelectTrigger className="h-11 w-full bg-white">
-                  <SelectValue placeholder="Travel style" />
+                  <SelectValue placeholder={t.search.travelStyle} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="budget">Budget</SelectItem>
-                  <SelectItem value="balanced">Balanced</SelectItem>
-                  <SelectItem value="comfort">Comfort</SelectItem>
+                  <SelectItem value="budget">{t.search.budgetStyle}</SelectItem>
+                  <SelectItem value="balanced">{t.search.balanced}</SelectItem>
+                  <SelectItem value="comfort">{t.search.comfort}</SelectItem>
                 </SelectContent>
               </Select>
             </Field>
           </div>
           {error ? <p className="mt-4 text-sm font-medium text-red-600">{error}</p> : null}
           <Button type="submit" className="mt-5 h-12 w-full rounded-xl bg-orange-500 text-base text-white hover:bg-orange-600">
-            Find My Best Destinations
+            {t.search.submit}
             <ArrowRight className="ml-2 size-4" />
           </Button>
         </form>

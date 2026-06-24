@@ -1,5 +1,8 @@
+"use client";
+
 import { ArrowUpRight } from "lucide-react";
 
+import { useTranslation } from "@/components/i18n/language-provider";
 import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -12,6 +15,11 @@ type Tool = {
 
 export function ToolCard({ tool }: { tool: Tool }) {
   const Icon = tool.icon;
+  const { t } = useTranslation();
+  const localizedTool = getLocalizedTool(tool.title, t.tools) ?? {
+    title: tool.title,
+    description: tool.description,
+  };
 
   return (
     <TrackedLink
@@ -19,7 +27,7 @@ export function ToolCard({ tool }: { tool: Tool }) {
       eventName="cta_clicked"
       eventProperties={{
         page: "/tools",
-        label: tool.title,
+        label: localizedTool.title,
         href: tool.href,
         ctaLocation: "tool_card",
       }}
@@ -33,11 +41,34 @@ export function ToolCard({ tool }: { tool: Tool }) {
             <ArrowUpRight className="size-4 text-slate-400" />
           </div>
           <div>
-            <h3 className="font-semibold text-slate-950">{tool.title}</h3>
-            <p className="mt-2 text-sm leading-6 text-slate-500">{tool.description}</p>
+            <h3 className="font-semibold text-slate-950">{localizedTool.title}</h3>
+            <p className="mt-2 text-sm leading-6 text-slate-500">{localizedTool.description}</p>
           </div>
         </CardContent>
       </Card>
     </TrackedLink>
   );
+}
+
+function getLocalizedTool(title: string, tools: ReturnType<typeof useTranslation>["t"]["tools"]) {
+  const keyByTitle = {
+    "Budget Calculator": ["budgetCalculatorTitle", "budgetCalculatorDescription"],
+    "Itinerary Builder": ["itineraryBuilderTitle", "itineraryBuilderDescription"],
+    "Destination Comparator": ["destinationComparatorTitle", "destinationComparatorDescription"],
+    "Price Calendar": ["priceCalendarTitle", "priceCalendarDescription"],
+    "eSIM Finder": ["esimFinderTitle", "esimFinderDescription"],
+    "Packing List": ["packingListTitle", "packingListDescription"],
+    "Flight Watch": ["flightWatchTitle", "flightWatchDescription"],
+    "Style Matcher": ["styleMatcherTitle", "styleMatcherDescription"],
+  } as const;
+  const keys = keyByTitle[title as keyof typeof keyByTitle];
+
+  if (!keys) {
+    return null;
+  }
+
+  return {
+    title: tools[keys[0]],
+    description: tools[keys[1]],
+  };
 }
