@@ -16,6 +16,7 @@ import {
   ProgrammaticSeoContent,
   ProgrammaticSeoHighlights,
 } from "@/components/programmatic/ProgrammaticSeoContent";
+import { EstimateDisclaimer } from "@/components/site/estimate-disclaimer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatMoney } from "@/lib/format-money";
@@ -139,6 +140,8 @@ export function ProgrammaticBudgetPage({
             traveler, and a {page.tripLengthDays}-day trip. Prices are planning estimates, not live fares.
           </p>
         </div>
+
+        <EstimateDisclaimer className="mb-8" />
 
         {matches.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">

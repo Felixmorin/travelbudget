@@ -40,6 +40,11 @@ export type AnalyticsEventProperties = {
   budget_calculator_submitted: CommonAnalyticsProperties & {
     estimatedTotal?: number;
   };
+  budget_calculator_cta_clicked: CommonAnalyticsProperties & {
+    estimatedTotal?: number;
+    label?: string;
+    href?: string;
+  };
   budget_result_viewed: CommonAnalyticsProperties & {
     resultCount?: number;
     resultsCount?: number;
@@ -76,6 +81,7 @@ export const analyticsEventNames = [
   "budget_calculator_started",
   "budget_calculator_updated",
   "budget_calculator_submitted",
+  "budget_calculator_cta_clicked",
   "budget_result_viewed",
   "cta_clicked",
   "affiliate_link_clicked",

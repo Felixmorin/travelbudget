@@ -183,7 +183,7 @@ export default function GuidesPage() {
             Travel guides to plan smarter trips on any budget
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-[#434655]">
-            Unlock expert strategies, local cost breakdowns, and AI-powered financial planning for your next adventure.
+            Unlock expert strategies, local cost breakdowns, and budget-first financial planning for your next adventure.
           </p>
           <div className="mx-auto mt-10 flex max-w-2xl items-center rounded-full border border-white/70 bg-white/75 p-2 shadow-xl shadow-slate-200/70 backdrop-blur-xl">
             <Search className="ml-4 size-5 shrink-0 text-[#004ac6]" />

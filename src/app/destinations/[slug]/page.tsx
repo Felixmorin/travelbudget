@@ -9,6 +9,7 @@ import { TrackedLink } from "@/components/analytics/tracked-link";
 import { AffiliateCard } from "@/components/site/affiliate-card";
 import { BudgetBreakdown } from "@/components/site/budget-breakdown";
 import { CTASection } from "@/components/site/cta-section";
+import { EstimateDisclaimer } from "@/components/site/estimate-disclaimer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -174,13 +175,10 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
                 <div>
                   <Badge className={budgetInsight.badgeClassName}>{budgetInsight.label}</Badge>
                   <p className="mt-4 text-sm leading-6 text-slate-600">{budgetInsight.copy}</p>
-                  <p className="mt-3 text-xs leading-5 text-slate-500">
-                    These are directional mock estimates, not live prices. Actual booking costs can move with
-                    seasonality, departure city, exchange rates, and availability.
-                  </p>
+                  <EstimateDisclaimer className="mt-4" />
                 </div>
                 <div className="rounded-2xl bg-slate-950 p-5 text-white">
-                  <p className="text-xs uppercase tracking-wide text-white/60">Typical mock estimate</p>
+                  <p className="text-xs uppercase tracking-wide text-white/60">Typical planning estimate</p>
                   <p className="mt-2 text-3xl font-semibold">
                     {formatMoney(typicalEstimate, destination.currency)}
                   </p>
@@ -189,6 +187,28 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
             </Card>
 
             <BudgetBreakdown destination={destination} />
+
+            <Card className="border-slate-200 bg-white shadow-lg shadow-slate-200/60">
+              <CardHeader>
+                <CardTitle className="text-xl text-slate-950">Estimate confidence</CardTitle>
+              </CardHeader>
+              <CardContent className="grid gap-4">
+                <div className="flex flex-wrap items-center gap-3">
+                  <Badge className={getDataConfidenceClassName(destination.dataConfidence)}>
+                    {formatDataConfidence(destination.dataConfidence)} confidence
+                  </Badge>
+                  <span className="text-sm text-slate-500">Last updated {destination.lastUpdated}</span>
+                </div>
+                <ul className="grid gap-2 text-sm leading-6 text-slate-600">
+                  {destination.sourceNotes.map((note) => (
+                    <li key={note} className="flex gap-2">
+                      <span className="mt-2 size-1.5 shrink-0 rounded-full bg-blue-600" />
+                      <span>{note}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
 
             <Card className="border-slate-200 bg-white shadow-lg shadow-slate-200/60">
               <CardHeader>
@@ -327,6 +347,22 @@ function getBudgetInsight(destination: Destination) {
   return {
     label: "Premium/stretch",
     badgeClassName: "bg-orange-50 text-orange-700 ring-1 ring-orange-100",
-    copy: `${destination.name} is a stretch destination in this mock budget model. It can still work, but flights, hotels, or peak-season timing need closer control.`,
+    copy: `${destination.name} is a stretch destination in this planning model. It can still work, but flights, hotels, or peak-season timing need closer control.`,
   };
+}
+
+function formatDataConfidence(confidence: Destination["dataConfidence"]) {
+  return confidence.charAt(0).toUpperCase() + confidence.slice(1);
+}
+
+function getDataConfidenceClassName(confidence: Destination["dataConfidence"]) {
+  if (confidence === "high") {
+    return "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100";
+  }
+
+  if (confidence === "medium") {
+    return "bg-blue-50 text-blue-700 ring-1 ring-blue-100";
+  }
+
+  return "bg-amber-50 text-amber-700 ring-1 ring-amber-100";
 }

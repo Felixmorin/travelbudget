@@ -26,6 +26,7 @@ export type OriginPricing = Record<
 >;
 
 export type TravelStyle = "budget" | "midRange" | "luxury";
+export type DataConfidence = "high" | "medium" | "low";
 
 export type TravelStyleCosts = {
   accommodation: number;
@@ -60,6 +61,9 @@ export type Destination = {
   bestMonths: string[];
   travelStyles: string[];
   weather: string;
+  dataConfidence: DataConfidence;
+  lastUpdated: string;
+  sourceNotes: string[];
   shortDescription: string;
   itineraryPreview: string[];
   affiliateLinks: AffiliateLink[];
@@ -312,6 +316,13 @@ export const destinations: Destination[] = [
     bestMonths: ["March", "April", "October", "November"],
     travelStyles: ["Culture", "Food", "Cities"],
     weather: "Mild spring and crisp autumn",
+    dataConfidence: "medium",
+    lastUpdated: "2026-06-24",
+    sourceNotes: [
+      "Uses Montreal, Toronto, and Vancouver flight estimate baselines.",
+      "Daily costs are planning ranges for budget, mid-range, and comfort travel.",
+      "Seasonality and exchange-rate movement can materially change final booking costs.",
+    ],
     shortDescription:
       "A polished city-and-culture trip with efficient transit, standout food, and strong value when flights are booked early.",
     itineraryPreview: [
@@ -323,7 +334,7 @@ export const destinations: Destination[] = [
       {
         type: "Flights",
         title: "Track Tokyo fares",
-        description: "Set a mock alert for round-trip flights from Toronto.",
+        description: "Set a planning alert for round-trip flights from Toronto.",
         priceHint: "From CAD 980",
         href: "/results",
       },
@@ -351,7 +362,7 @@ export const destinations: Destination[] = [
       {
         type: "Insurance",
         title: "Trip protection",
-        description: "Mock quote for medical and cancellation coverage.",
+        description: "Estimated quote for medical and cancellation coverage.",
         priceHint: "From CAD 54",
         href: "/results",
       },
@@ -406,6 +417,13 @@ export const destinations: Destination[] = [
     bestMonths: ["May", "June", "September", "October"],
     travelStyles: ["Coast", "Food", "Relaxed"],
     weather: "Sunny shoulder seasons",
+    dataConfidence: "high",
+    lastUpdated: "2026-06-24",
+    sourceNotes: [
+      "Uses Montreal, Toronto, and Vancouver flight estimate baselines.",
+      "Accommodation and daily costs reflect common Lisbon and Porto planning ranges.",
+      "Summer demand can raise flight and hotel costs above the estimates shown.",
+    ],
     shortDescription:
       "A high-value European trip with coastlines, walkable cities, affordable food, and excellent shoulder-season pricing.",
     itineraryPreview: [
@@ -417,7 +435,7 @@ export const destinations: Destination[] = [
       {
         type: "Flights",
         title: "Lisbon flight watch",
-        description: "Mock fare tracking for Portugal shoulder season.",
+        description: "Estimated fare tracking for Portugal shoulder season.",
         priceHint: "From CAD 720",
         href: "/results",
       },
@@ -445,7 +463,7 @@ export const destinations: Destination[] = [
       {
         type: "Insurance",
         title: "Europe coverage",
-        description: "Mock travel policy for a 10-day Portugal trip.",
+        description: "Estimated travel policy for a 10-day Portugal trip.",
         priceHint: "From CAD 49",
         href: "/results",
       },
@@ -500,6 +518,13 @@ export const destinations: Destination[] = [
     bestMonths: ["February", "March", "April", "November"],
     travelStyles: ["Adventure", "Food", "Backpacking"],
     weather: "Warm with regional variation",
+    dataConfidence: "medium",
+    lastUpdated: "2026-06-24",
+    sourceNotes: [
+      "Uses Canadian long-haul flight estimate baselines by origin city.",
+      "Daily costs reflect practical city-to-city planning ranges.",
+      "Regional routing, internal transfers, and travel style can shift total trip cost.",
+    ],
     shortDescription:
       "A budget-friendly long-haul choice where local costs are low, food is excellent, and scenic routes stretch every dollar.",
     itineraryPreview: [
@@ -511,7 +536,7 @@ export const destinations: Destination[] = [
       {
         type: "Flights",
         title: "Hanoi and Ho Chi Minh fares",
-        description: "Compare open-jaw long-haul mock routes.",
+        description: "Compare estimated open-jaw long-haul routes.",
         priceHint: "From CAD 910",
         href: "/results",
       },
@@ -539,7 +564,7 @@ export const destinations: Destination[] = [
       {
         type: "Insurance",
         title: "Adventure coverage",
-        description: "Mock quote for long-haul travel protection.",
+        description: "Estimated quote for long-haul travel protection.",
         priceHint: "From CAD 57",
         href: "/results",
       },

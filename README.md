@@ -2,7 +2,7 @@
 
 TravelBudget.ai is a budget-first travel planning MVP built with Next.js. It helps travelers compare destinations, estimate total trip costs, and understand where their money goes before they book.
 
-The app currently uses curated mock data for Japan, Portugal, and Vietnam. It is designed as a polished frontend foundation that can later be connected to live flight, hotel, exchange-rate, and affiliate APIs.
+The app currently uses curated planning estimate data for Japan, Portugal, and Vietnam. It is designed as a polished frontend foundation that can later be connected to flight, hotel, exchange-rate, and affiliate APIs.
 
 ## Features
 
@@ -86,7 +86,7 @@ src/
     ui/                   Reusable UI primitives
   lib/
     budget/               Recommendation and cost-estimation logic
-    data/                 Mock destination and tool data
+    data/                 Destination and tool planning data
     seo/                  Metadata helpers
 public/                   Static assets
 ```
@@ -107,7 +107,7 @@ Recommendation logic lives in `src/lib/budget/recommend-destinations.ts`. It adj
 
 ## Current Limitations
 
-- Prices are mock estimates, not live booking data.
+- Prices are planning estimates, not live booking data.
 - Affiliate links currently route back into the app.
 - Supported currencies are CAD, USD, and EUR.
 - Supported recommendation styles are budget, balanced, and comfort.

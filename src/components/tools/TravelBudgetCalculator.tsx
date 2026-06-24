@@ -2,6 +2,7 @@
 
 import { type FormEvent, useMemo, useRef, useState } from "react";
 import {
+  ArrowRight,
   BedDouble,
   Bus,
   CircleDollarSign,
@@ -12,8 +13,11 @@ import {
   WalletCards,
 } from "lucide-react";
 
+import { TrackedLink } from "@/components/analytics/tracked-link";
+import { EstimateDisclaimer } from "@/components/site/estimate-disclaimer";
 import { CostBreakdownCard } from "@/components/site/cost-breakdown-card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -133,6 +137,19 @@ export function TravelBudgetCalculator() {
       ],
     };
   }, [values]);
+  const roundedTotal = Math.round(totals.total);
+  const resultsHref = useMemo(() => {
+    const params = new URLSearchParams({
+      budget: String(roundedTotal),
+      currency: calculatorCurrency,
+      origin: values.departureCity.trim().replace(/\s+/g, " ").slice(0, 80) || defaultValues.departureCity,
+      days: String(Math.max(1, Math.round(values.tripLength))),
+      travelers: String(Math.max(1, Math.round(values.travelers))),
+      style: "balanced",
+    });
+
+    return `/results?${params.toString()}`;
+  }, [roundedTotal, values.departureCity, values.tripLength, values.travelers]);
 
   function trackCalculatorChange(field: keyof CalculatorValues, nextValues: CalculatorValues) {
     if (trackedFields.current.has(field)) {
@@ -234,6 +251,9 @@ export function TravelBudgetCalculator() {
                 </div>
               </div>
             ))}
+            <Button type="submit" variant="outline" className="h-11 rounded-xl sm:col-span-2">
+              Calculate estimate
+            </Button>
           </form>
         </CardContent>
       </Card>
@@ -245,6 +265,27 @@ export function TravelBudgetCalculator() {
               <div>
                 <p className="text-sm font-medium text-slate-300">Total estimated trip cost</p>
                 <p className="mt-2 text-4xl font-semibold tracking-tight">{formatCurrency(totals.total)}</p>
+                <Button asChild className="mt-5 rounded-xl bg-orange-500 text-white hover:bg-orange-600">
+                  <TrackedLink
+                    href={resultsHref}
+                    eventName="budget_calculator_cta_clicked"
+                    eventProperties={{
+                      page: "/tools/travel-budget-calculator",
+                      label: "Find destinations within this budget",
+                      href: resultsHref,
+                      ctaLocation: "calculator_total",
+                      budget: roundedTotal,
+                      currency: calculatorCurrency,
+                      originCode: values.departureCity.trim().replace(/\s+/g, " ").slice(0, 80),
+                      tripLength: values.tripLength,
+                      travelers: values.travelers,
+                      estimatedTotal: roundedTotal,
+                    }}
+                  >
+                    Find destinations within this budget
+                    <ArrowRight className="ml-2 size-4" />
+                  </TrackedLink>
+                </Button>
               </div>
               <span className="flex size-11 items-center justify-center rounded-xl bg-white/10 text-blue-200">
                 <WalletCards className="size-5" />
@@ -278,6 +319,7 @@ export function TravelBudgetCalculator() {
           showTotal={false}
           title="Cost breakdown"
         />
+        <EstimateDisclaimer />
       </div>
     </section>
   );

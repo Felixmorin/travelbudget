@@ -48,7 +48,7 @@ export const tools = [
   },
   {
     title: "Flight Watch",
-    description: "Mock alerts for routes where airfare drives most of the budget.",
+    description: "Planning alerts for routes where airfare drives most of the budget.",
     icon: Plane,
     href: "/results",
   },

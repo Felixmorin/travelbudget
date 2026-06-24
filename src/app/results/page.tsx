@@ -31,6 +31,7 @@ import {
   CostBreakdownList,
   type CostBreakdownItem,
 } from "@/components/site/cost-breakdown-card";
+import { EstimateDisclaimer } from "@/components/site/estimate-disclaimer";
 import {
   recommendDestinations,
   type DestinationRecommendation,
@@ -178,7 +179,7 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
           <div>
             <p className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-blue-700">
               <Sparkles className="size-4" />
-              AI destination finder
+              Budget destination finder
             </p>
             <h1 className="mt-3 text-4xl font-semibold tracking-tight text-[#191c1e] sm:text-6xl">
               Explore the World
@@ -225,6 +226,8 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
               style={parsedParams.style}
             />
           ) : null}
+
+          <EstimateDisclaimer />
         </div>
 
         <aside className="grid h-fit gap-6 lg:sticky lg:top-24">
@@ -516,7 +519,7 @@ function GlobalPriceIndexCard() {
     <section className="rounded-[28px] border border-[#c3c6d7]/35 bg-white p-5 shadow-[0_18px_45px_-26px_rgba(15,23,42,0.45)]">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-xl font-semibold text-[#191c1e]">Global Price Index</h2>
-        <Badge className="rounded-full bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">LIVE DATA</Badge>
+        <Badge className="rounded-full bg-blue-50 text-blue-700 ring-1 ring-blue-100">Estimated data</Badge>
       </div>
 
       <div className="relative mt-5 aspect-square overflow-hidden rounded-[24px] border border-blue-100 bg-[#edf5ff]">
@@ -617,7 +620,7 @@ function CTASection() {
               Ready to plan your next journey?
             </h2>
             <p className="mt-4 max-w-2xl text-sm leading-6 text-white/75 sm:text-base">
-              Join thousands of travelers who save time and money by using our AI-powered financial travel companion.
+              Compare planning estimates, understand the major cost drivers, and choose a trip that fits your budget.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">

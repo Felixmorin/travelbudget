@@ -13,7 +13,20 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { trackEvent } from "@/lib/analytics/track";
 
 const currencies = ["CAD", "USD", "EUR"] as const;
-const months = ["march", "june", "october"] as const;
+const months = [
+  "january",
+  "february",
+  "march",
+  "april",
+  "may",
+  "june",
+  "july",
+  "august",
+  "september",
+  "october",
+  "november",
+  "december",
+] as const;
 const travelerOptions = ["1", "2", "4"] as const;
 const dayOptions = ["7", "10", "14"] as const;
 const styles = ["budget", "balanced", "comfort"] as const;
@@ -29,7 +42,7 @@ export function SearchCard() {
   const { t } = useTranslation();
   const [budget, setBudget] = useState("2400");
   const [currency, setCurrency] = useState<Currency>("CAD");
-  const [origin, setOrigin] = useState("Toronto");
+  const [origin, setOrigin] = useState("Montreal");
   const [days, setDays] = useState<DayOption>("10");
   const [month, setMonth] = useState<Month>("october");
   const [travelers, setTravelers] = useState<TravelerOption>("2");
@@ -171,9 +184,11 @@ export function SearchCard() {
                   <SelectValue placeholder={t.search.travelMonth} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="march">{t.search.march}</SelectItem>
-                  <SelectItem value="june">{t.search.june}</SelectItem>
-                  <SelectItem value="october">{t.search.october}</SelectItem>
+                  {months.map((monthOption) => (
+                    <SelectItem key={monthOption} value={monthOption}>
+                      {t.search[monthOption]}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </Field>
