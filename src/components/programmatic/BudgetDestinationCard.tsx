@@ -44,6 +44,7 @@ export function BudgetDestinationCard({
           <p className="mt-1 text-sm font-medium text-slate-500">
             {destination.countryCode} · {destination.travelStyles.slice(0, 2).join(" & ")}
           </p>
+          <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-600">{destination.shortDescription}</p>
         </div>
 
         <div className="mb-6 grid grid-cols-3 gap-2">

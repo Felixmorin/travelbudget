@@ -20,14 +20,20 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatMoney } from "@/lib/format-money";
 import {
-  getMatchingBudgetDestinations,
   type BudgetDestination,
   type ProgrammaticBudgetPageConfig,
 } from "@/lib/programmatic/budget-pages";
 import type { FAQItem } from "@/lib/seo/schema";
 
-export function ProgrammaticBudgetPage({ page, faqs }: { page: ProgrammaticBudgetPageConfig; faqs: FAQItem[] }) {
-  const matches = getMatchingBudgetDestinations(page);
+export function ProgrammaticBudgetPage({
+  page,
+  matches,
+  faqs,
+}: {
+  page: ProgrammaticBudgetPageConfig;
+  matches: BudgetDestination[];
+  faqs: FAQItem[];
+}) {
   const budgetLabel = formatMoney(page.budget, page.currency);
   const snapshotDestination = matches[0] ?? null;
   const filterLabels = ["Best value", "Beach", "City", "Food", "Culture", "Warm weather", "Family", "Backpacker"];
@@ -108,6 +114,13 @@ export function ProgrammaticBudgetPage({ page, faqs }: { page: ProgrammaticBudge
       </div>
 
       <section id="destinations" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+        <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <SummaryMetric label="Origin" value={`${page.origin.city} (${page.origin.code})`} />
+          <SummaryMetric label="Budget" value={budgetLabel} />
+          <SummaryMetric label="Currency" value={page.currency} />
+          <SummaryMetric label="Matching destinations" value={matches.length.toString()} />
+        </div>
+
         <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-blue-700">Recommended for you</p>
@@ -370,6 +383,15 @@ function IncludedCard({
       </div>
       <h3 className="text-xl font-semibold text-slate-950">{title}</h3>
       <p className="mt-2 text-sm leading-6 text-slate-600">{body}</p>
+    </div>
+  );
+}
+
+function SummaryMetric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-5">
+      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
+      <p className="mt-2 text-lg font-semibold text-slate-950">{value}</p>
     </div>
   );
 }

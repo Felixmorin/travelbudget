@@ -21,26 +21,26 @@ import {
 type BudgetPageProps = {
   params: Promise<{
     origin: string;
-    budgetSlug: string;
+    budget: string;
   }>;
 };
 
 export function generateStaticParams() {
   return programmaticBudgetPages.map((page) => ({
     origin: page.origin.slug,
-    budgetSlug: `under-${page.budget}`,
+    budget: `under-${page.budget}`,
   }));
 }
 
 export async function generateMetadata({ params }: BudgetPageProps): Promise<Metadata> {
-  const { origin, budgetSlug } = await params;
-  const page = getProgrammaticBudgetPage(origin, budgetSlug);
+  const { origin, budget } = await params;
+  const page = getProgrammaticBudgetPage(origin, budget);
 
   if (!page) {
     return createMetadata({
       title: "Budget Trip Page Not Found",
       description: "This TravelBudget.ai programmatic budget page could not be found.",
-      path: `/from/${origin}/${budgetSlug}`,
+      path: `/from/${origin}/${budget}`,
       noIndex: true,
     });
   }
@@ -60,8 +60,8 @@ export async function generateMetadata({ params }: BudgetPageProps): Promise<Met
 }
 
 export default async function FromOriginUnderBudgetPage({ params }: BudgetPageProps) {
-  const { origin, budgetSlug } = await params;
-  const page = getProgrammaticBudgetPage(origin, budgetSlug);
+  const { origin, budget } = await params;
+  const page = getProgrammaticBudgetPage(origin, budget);
 
   if (!page) {
     notFound();
@@ -105,7 +105,7 @@ export default async function FromOriginUnderBudgetPage({ params }: BudgetPagePr
           __html: serializeJsonLd(jsonLd),
         }}
       />
-      <ProgrammaticBudgetPage page={page} faqs={faqs} />
+      <ProgrammaticBudgetPage page={page} matches={matches} faqs={faqs} />
     </>
   );
 }
@@ -137,32 +137,32 @@ function createBudgetFaqs({
 
   return [
     {
-      question: `What are the best destinations from ${originCity} under ${budgetLabel}?`,
+      question: `What are the best destinations from ${originCity} under ${budgetLabel} ${currency}?`,
       answer: `Based on the current TravelBudget.ai estimates, the matching destinations are ${destinationList}.`,
     },
     {
-      question: `Is ${budgetLabel} enough for an international trip from ${originCity}?`,
-      answer: `Yes, ${budgetLabel} can be enough for some international trips from ${originCity}, especially when flights are reasonable and daily costs are moderate.`,
-    },
-    {
-      question: "Does the budget include flights?",
+      question: "Does this budget include flights?",
       answer:
         "Yes. The estimates include round-trip flights, accommodation, food, local transport, activities, and miscellaneous daily costs.",
     },
     {
-      question: `How many days can I travel with ${budgetLabel}?`,
+      question: "How many days can I travel with this budget?",
       answer:
         "This page uses a 10-day mid-range estimate and highlights 7-10 days as the practical planning range for this budget.",
+    },
+    {
+      question: `Are prices shown in ${currency}?`,
+      answer: `Yes. Prices on this page are shown as estimated ${currency} planning amounts, not live booking prices.`,
+    },
+    {
+      question: "How are destinations selected?",
+      answer: `Destinations are selected when their estimated total for flights and ${originCity}-based daily trip costs fits under ${budgetLabel} ${currency}. Results are sorted by estimated total and destination score.`,
     },
     {
       question: `What is the cheapest destination from ${originCity}?`,
       answer: cheapestDestinationName
         ? `${cheapestDestinationName} currently has the lowest total estimate among the matching destinations on this page.`
         : "There is no cheapest match yet because no destination currently fits this budget with the available data.",
-    },
-    {
-      question: `Are prices shown in ${currency}?`,
-      answer: `Yes. Prices on this page are shown as estimated ${currency} planning amounts, not live booking prices.`,
     },
   ];
 }
