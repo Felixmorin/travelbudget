@@ -11,7 +11,13 @@ export function DestinationCard({ destination, ranked = false }: { destination: 
   return (
     <Card className="overflow-hidden border-slate-200 bg-white shadow-lg shadow-slate-200/60">
       <div className="relative h-56">
-        <Image src={destination.image} alt={`${destination.name} travel view`} fill className="object-cover" />
+        <Image
+          src={destination.image}
+          alt={`${destination.name} travel view`}
+          fill
+          sizes="(min-width: 768px) 33vw, 100vw"
+          className="object-cover"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 to-transparent" />
         <Badge className="absolute left-4 top-4 bg-white text-blue-600 shadow">
           {ranked ? `Score ${destination.score}` : destination.countryCode}
@@ -45,7 +51,7 @@ export function DestinationCard({ destination, ranked = false }: { destination: 
         </div>
         <Button asChild variant="outline" className="h-10 rounded-xl">
           <Link href={`/destinations/${destination.slug}`}>
-            View details
+            View budget guide
             <ArrowRight className="ml-2 size-4" />
           </Link>
         </Button>

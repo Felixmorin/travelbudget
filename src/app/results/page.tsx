@@ -185,7 +185,11 @@ function RecommendationCard({
   return (
     <Card className="overflow-hidden border-slate-200 bg-white shadow-lg shadow-slate-200/60">
       <div className="grid lg:grid-cols-[0.85fr_1.15fr]">
-        <div className="relative min-h-72">
+        <Link
+          href={`/destinations/${destination.slug}`}
+          className="relative block min-h-72 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+          aria-label={`View ${destination.name} budget guide`}
+        >
           <Image
             src={destination.image}
             alt={`${destination.name} travel view`}
@@ -199,7 +203,7 @@ function RecommendationCard({
             <h3 className="text-3xl font-semibold">{destination.name}</h3>
             <p className="mt-2 text-sm leading-5 text-white/85">{destination.shortDescription}</p>
           </div>
-        </div>
+        </Link>
         <CardContent className="grid gap-5 p-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
@@ -239,8 +243,8 @@ function RecommendationCard({
               <p className="mt-1 text-sm text-slate-500">Compare fares, stays, and activities before booking.</p>
             </div>
             <Button asChild className="rounded-xl bg-orange-500 text-white hover:bg-orange-600">
-              <Link href={destination.affiliateLinks[0]?.href ?? `/destinations/${destination.slug}`}>
-                Check options
+              <Link href={`/destinations/${destination.slug}`}>
+                View budget guide
                 <ArrowRight className="ml-2 size-4" />
               </Link>
             </Button>

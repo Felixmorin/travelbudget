@@ -15,7 +15,7 @@ export function BudgetBreakdown({ destination }: { destination: Destination }) {
   return (
     <Card className="border-slate-200 bg-white shadow-lg shadow-slate-200/60">
       <CardHeader>
-        <CardTitle className="text-lg text-slate-950">Budget breakdown</CardTitle>
+        <CardTitle className="text-lg text-slate-950">Trip cost breakdown</CardTitle>
       </CardHeader>
       <CardContent className="grid gap-4">
         {rows.map((row) => {
@@ -38,6 +38,12 @@ export function BudgetBreakdown({ destination }: { destination: Destination }) {
             </div>
           );
         })}
+        <div className="flex items-center justify-between border-t border-slate-200 pt-4 text-sm">
+          <span className="font-semibold text-slate-950">Total estimated cost</span>
+          <span className="text-lg font-semibold text-slate-950">
+            {formatMoney(destination.estimatedCost, destination.currency)}
+          </span>
+        </div>
       </CardContent>
     </Card>
   );
