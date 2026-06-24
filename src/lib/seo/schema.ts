@@ -31,6 +31,18 @@ export type ArticleSchemaInput = {
   dateModified?: string;
 };
 
+export type ItemListElementInput = {
+  name: string;
+  url: string;
+  description?: string;
+};
+
+export type CollectionPageSchemaInput = {
+  name: string;
+  description: string;
+  path: string;
+};
+
 export function serializeJsonLd(schema: SchemaObject | SchemaObject[]) {
   return JSON.stringify(schema).replace(/</g, "\\u003c");
 }
@@ -132,6 +144,33 @@ export function createGuideArticleSchema(article: ArticleSchemaInput): SchemaObj
       "@type": "Organization",
       name: siteConfig.name,
     },
+  });
+}
+
+export function createCollectionPageSchema(collectionPage: CollectionPageSchemaInput): SchemaObject {
+  return withContext({
+    "@type": "CollectionPage",
+    name: collectionPage.name,
+    description: collectionPage.description,
+    url: createCanonicalUrl(collectionPage.path),
+    isPartOf: {
+      "@type": "WebSite",
+      name: siteConfig.name,
+      url: createCanonicalUrl("/"),
+    },
+  });
+}
+
+export function createItemListSchema(items: ItemListElementInput[]): SchemaObject {
+  return withContext({
+    "@type": "ItemList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      url: createCanonicalUrl(item.url),
+      ...(item.description ? { description: item.description } : {}),
+    })),
   });
 }
 

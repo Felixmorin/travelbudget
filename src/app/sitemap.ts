@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 
 import { destinations } from "@/lib/data/destinations";
+import { getProgrammaticBudgetPath, programmaticBudgetPages } from "@/lib/programmatic/budget-pages";
 import { createCanonicalUrl } from "@/lib/seo/metadata";
 
 const staticRoutes: MetadataRoute.Sitemap = [
@@ -37,6 +38,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "monthly" as const,
     priority: 0.85,
   }));
+  const programmaticBudgetRoutes = programmaticBudgetPages.map((page) => ({
+    url: createCanonicalUrl(getProgrammaticBudgetPath(page)),
+    changeFrequency: "weekly" as const,
+    priority: 0.8,
+  }));
 
-  return [...staticRoutes, ...destinationRoutes];
+  return [...staticRoutes, ...destinationRoutes, ...programmaticBudgetRoutes];
 }
