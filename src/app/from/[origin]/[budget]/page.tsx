@@ -74,6 +74,9 @@ export default async function FromOriginUnderBudgetPage({ params }: BudgetPagePr
     originCity: page.origin.city,
     budget: page.budget,
     currency: page.currency,
+    travelStyle: page.travelStyle,
+    tripLengthDays: page.tripLengthDays,
+    suggestedTripLength: page.suggestedTripLength,
     destinationNames: matches.map((item) => item.destination.name),
     cheapestDestinationName: matches[0]?.destination.name ?? null,
   });
@@ -120,12 +123,18 @@ function createBudgetFaqs({
   originCity,
   budget,
   currency,
+  travelStyle,
+  tripLengthDays,
+  suggestedTripLength,
   destinationNames,
   cheapestDestinationName,
 }: {
   originCity: string;
   budget: number;
   currency: string;
+  travelStyle: string;
+  tripLengthDays: number;
+  suggestedTripLength: string;
   destinationNames: string[];
   cheapestDestinationName: string | null;
 }): FAQItem[] {
@@ -147,8 +156,9 @@ function createBudgetFaqs({
     },
     {
       question: "How many days can I travel with this budget?",
-      answer:
-        "This page uses a 10-day mid-range estimate and highlights 7-10 days as the practical planning range for this budget.",
+      answer: `This page uses a ${tripLengthDays}-day ${formatTravelStyleLabel(
+        travelStyle
+      ).toLowerCase()} estimate and highlights ${suggestedTripLength} as the practical planning range for this budget.`,
     },
     {
       question: `Are prices shown in ${currency}?`,
@@ -165,4 +175,12 @@ function createBudgetFaqs({
         : "There is no cheapest match yet because no destination currently fits this budget with the available data.",
     },
   ];
+}
+
+function formatTravelStyleLabel(style: string) {
+  if (style === "midRange") {
+    return "Mid-range";
+  }
+
+  return style.charAt(0).toUpperCase() + style.slice(1);
 }

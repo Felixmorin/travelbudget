@@ -50,6 +50,18 @@ const supportedOrigins: ProgrammaticOrigin[] = [
     country: "Canada",
     code: "YUL",
   },
+  {
+    slug: "toronto",
+    city: "Toronto",
+    country: "Canada",
+    code: "YYZ",
+  },
+  {
+    slug: "vancouver",
+    city: "Vancouver",
+    country: "Canada",
+    code: "YVR",
+  },
 ];
 
 export const programmaticBudgetPages = [
@@ -60,6 +72,42 @@ export const programmaticBudgetPages = [
     travelStyle: "midRange",
     tripLengthDays: 10,
     suggestedTripLength: "7-10 days",
+    travelers: 1,
+  },
+  {
+    origin: supportedOrigins[1],
+    budget: 2500,
+    currency: "CAD",
+    travelStyle: "midRange",
+    tripLengthDays: 10,
+    suggestedTripLength: "7-10 days",
+    travelers: 1,
+  },
+  {
+    origin: supportedOrigins[2],
+    budget: 3000,
+    currency: "CAD",
+    travelStyle: "midRange",
+    tripLengthDays: 10,
+    suggestedTripLength: "10 days",
+    travelers: 1,
+  },
+  {
+    origin: supportedOrigins[0],
+    budget: 1500,
+    currency: "CAD",
+    travelStyle: "budget",
+    tripLengthDays: 7,
+    suggestedTripLength: "7 days",
+    travelers: 1,
+  },
+  {
+    origin: supportedOrigins[1],
+    budget: 3000,
+    currency: "CAD",
+    travelStyle: "midRange",
+    tripLengthDays: 10,
+    suggestedTripLength: "10 days",
     travelers: 1,
   },
 ] satisfies ProgrammaticBudgetPageConfig[];

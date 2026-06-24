@@ -81,7 +81,7 @@ export function createMetadata({
       (noIndex
         ? {
             index: false,
-            follow: false,
+            follow: true,
           }
         : undefined),
   };

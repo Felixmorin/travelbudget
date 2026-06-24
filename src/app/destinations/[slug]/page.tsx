@@ -273,7 +273,7 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
               <p className="text-sm font-semibold uppercase tracking-wide text-teal-700">Booking options</p>
               <h2 className="mt-2 text-2xl font-semibold text-slate-950">Book the core trip pieces</h2>
               <p className="mt-2 text-sm leading-6 text-slate-500">
-                Mock affiliate-ready actions for flights, hotels, eSIM, activities, and insurance.
+                Affiliate placeholders for flights, hotels, eSIM, activities, and insurance. Partners are not connected yet.
               </p>
             </div>
             {destination.affiliateLinks.map((link) => (

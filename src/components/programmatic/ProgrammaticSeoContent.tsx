@@ -6,16 +6,18 @@ export function ProgrammaticSeoContent({
   originCity,
   budgetLabel,
   cheapestDestinationName,
+  travelStyleLabel = "Mid-range",
 }: {
   originCity: string;
   budgetLabel: string;
   cheapestDestinationName: string | null;
+  travelStyleLabel?: string;
 }) {
   return (
     <div className="grid gap-6">
       <SeoSection title={`How far can ${budgetLabel} take you from ${originCity}?`}>
         <p>
-          A {budgetLabel} budget can cover a realistic mid-range trip from {originCity} when flight prices
+          A {budgetLabel} budget can cover a realistic {travelStyleLabel.toLowerCase()} trip from {originCity} when flight prices
           are reasonable and daily costs are controlled. The strongest matches usually combine affordable
           round-trip flights with destinations where hotels, food, local transport, and activities stay
           predictable.

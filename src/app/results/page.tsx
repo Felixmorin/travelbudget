@@ -3,7 +3,6 @@ import Link from "next/link";
 import {
   ArrowRight,
   Building2,
-  ChevronRight,
   CircleDollarSign,
   Compass,
   Filter,
@@ -99,8 +98,7 @@ type ResultDestination = {
 type Offer = {
   title: string;
   detail: string;
-  discount?: string;
-  action?: string;
+  action: string;
   icon: LucideIcon;
   tone: string;
 };
@@ -137,13 +135,13 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
     month: parsedParams.month,
     travelers: parsedParams.travelers,
     style: parsedParams.style,
-  });
+  }).filter((recommendation) => recommendation.budgetFitStatus !== "over-budget");
   const destinations = recommendations.map((recommendation, index) =>
     toResultDestination(recommendation, index, parsedParams)
   );
   const topRecommendation = recommendations[0];
   const formattedBudget = formatMoney(parsedParams.budget, parsedParams.currency);
-  const resultSummary = `Found ${recommendations.length} ranked ${
+  const resultSummary = `Showing ${recommendations.length} ranked ${
     recommendations.length === 1 ? "destination" : "destinations"
   } from ${parsedParams.origin} for ${formattedBudget}, ${parsedParams.days} days, ${
     parsedParams.travelers
@@ -159,9 +157,11 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
           currency: parsedParams.currency,
           originCode: parsedParams.origin,
           days: parsedParams.days,
+          month: parsedParams.month,
           travelers: parsedParams.travelers,
           travelStyle: parsedParams.style,
           resultCount: recommendations.length,
+          resultsCount: recommendations.length,
         }}
       />
       <section className="border-b border-[#c3c6d7]/35 bg-white/70">
@@ -532,23 +532,23 @@ function GlobalPriceIndexCard() {
 function OffersPanel({ origin, topDestination }: { origin: string; topDestination?: string }) {
   const offers = [
     {
-      title: "Flight watch",
-      detail: topDestination ? `${origin} -> ${topDestination}` : `Flights from ${origin}`,
-      discount: "Fare alerts",
+      title: "Compare flights",
+      detail: topDestination ? `${origin} to ${topDestination}` : `Flights from ${origin}`,
+      action: "Coming soon",
       icon: Plane,
       tone: "from-blue-500 to-cyan-400",
     },
     {
-      title: "Hotels Top Pick",
-      detail: topDestination ? `${topDestination} stays under budget` : "Stays under budget",
-      discount: "Compare",
+      title: "Find hotels",
+      detail: topDestination ? `${topDestination} stays` : "Destination stays",
+      action: "Coming soon",
       icon: Hotel,
       tone: "from-violet-500 to-fuchsia-400",
     },
     {
-      title: "Budget eSIM Finder",
-      detail: "Save on roaming fees.",
-      action: "Compare eSIMs",
+      title: "Get an eSIM for your trip",
+      detail: "Mobile data options will be connected later.",
+      action: "Coming soon",
       icon: Wifi,
       tone: "from-emerald-500 to-teal-400",
     },
@@ -570,15 +570,7 @@ function OfferCard({ offer }: { offer: Offer }) {
   const Icon = offer.icon;
 
   return (
-    <TrackedLink
-      href="/tools"
-      eventName="cta_clicked"
-      eventProperties={{
-        page: "/results",
-        label: offer.title,
-        href: "/tools",
-        ctaLocation: "results_offer_panel",
-      }}
+    <article
       className="group flex items-center gap-4 rounded-[24px] border border-white/60 bg-white/75 p-4 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05)] backdrop-blur transition hover:-translate-y-1 hover:bg-white hover:shadow-[0_18px_42px_-26px_rgba(15,23,42,0.5)] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-blue-600/25"
     >
       <span className={`flex size-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${offer.tone} text-white shadow-lg`}>
@@ -587,17 +579,11 @@ function OfferCard({ offer }: { offer: Offer }) {
       <span className="min-w-0 flex-1">
         <span className="block font-semibold text-[#191c1e]">{offer.title}</span>
         <span className="mt-1 block text-sm text-[#434655]">{offer.detail}</span>
-        {"action" in offer ? (
-          <span className="mt-3 inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
-            {offer.action}
-          </span>
-        ) : null}
       </span>
-      {"discount" in offer ? (
-        <span className="rounded-full bg-emerald-50 px-3 py-1 text-sm font-bold text-emerald-700">{offer.discount}</span>
-      ) : null}
-      <ChevronRight className="size-5 text-slate-400 transition group-hover:translate-x-1 group-hover:text-blue-700" />
-    </TrackedLink>
+      <Button size="sm" variant="outline" className="rounded-full" disabled>
+        {offer.action}
+      </Button>
+    </article>
   );
 }
 

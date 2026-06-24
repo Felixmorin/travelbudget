@@ -22,6 +22,8 @@ import { formatMoney } from "@/lib/format-money";
 import {
   type BudgetDestination,
   type ProgrammaticBudgetPageConfig,
+  getProgrammaticBudgetPath,
+  programmaticBudgetPages,
 } from "@/lib/programmatic/budget-pages";
 import type { FAQItem } from "@/lib/seo/schema";
 
@@ -37,6 +39,10 @@ export function ProgrammaticBudgetPage({
   const budgetLabel = formatMoney(page.budget, page.currency);
   const snapshotDestination = matches[0] ?? null;
   const filterLabels = ["Best value", "Beach", "City", "Food", "Culture", "Warm weather", "Family", "Backpacker"];
+  const relatedPages = programmaticBudgetPages
+    .filter((relatedPage) => getProgrammaticBudgetPath(relatedPage) !== getProgrammaticBudgetPath(page))
+    .slice(0, 3);
+  const travelStyleLabel = formatTravelStyleLabel(page.travelStyle);
 
   return (
     <main className="overflow-x-hidden bg-[#f7f9fb] text-slate-950">
@@ -65,7 +71,7 @@ export function ProgrammaticBudgetPage({
               </h1>
               <p className="mt-6 max-w-xl text-lg leading-8 text-slate-600">
                 Uncover realistic trips from {page.origin.city} with flight estimates, daily costs, and
-                practical mid-range budget breakdowns based on the current TravelBudget.ai destination data.
+                practical {travelStyleLabel.toLowerCase()} budget breakdowns based on the current TravelBudget.ai destination data.
               </p>
             </div>
 
@@ -129,7 +135,7 @@ export function ProgrammaticBudgetPage({
             </h2>
           </div>
           <p className="max-w-xl text-sm leading-6 text-slate-600">
-            Estimates use {page.origin.code} flight pricing when available, mid-range daily costs, one
+            Estimates use {page.origin.code} flight pricing when available, {travelStyleLabel.toLowerCase()} daily costs, one
             traveler, and a {page.tripLengthDays}-day trip. Prices are planning estimates, not live fares.
           </p>
         </div>
@@ -201,6 +207,7 @@ export function ProgrammaticBudgetPage({
           originCity={page.origin.city}
           budgetLabel={budgetLabel}
           cheapestDestinationName={snapshotDestination?.destination.name ?? null}
+          travelStyleLabel={travelStyleLabel}
         />
         <aside>
           <div className="lg:sticky lg:top-28">
@@ -217,14 +224,18 @@ export function ProgrammaticBudgetPage({
       <section className="mx-auto max-w-7xl px-4 pb-14 sm:px-6 lg:px-8">
         <h2 className="mb-6 text-xl font-semibold text-slate-950">Explore more budget trips</h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {[1500, 2000, 3000].map((budget) => (
+          {relatedPages.map((relatedPage) => (
             <Link
-              key={budget}
-              href={`/from/${page.origin.slug}/under-${budget}`}
+              key={getProgrammaticBudgetPath(relatedPage)}
+              href={getProgrammaticBudgetPath(relatedPage)}
               className="rounded-xl bg-slate-100 p-4 transition-colors hover:bg-blue-100"
             >
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Under</p>
-              <p className="mt-1 font-bold text-slate-950">{formatMoney(budget, page.currency)} CAD</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                From {relatedPage.origin.city}
+              </p>
+              <p className="mt-1 font-bold text-slate-950">
+                Under {formatMoney(relatedPage.budget, relatedPage.currency)} CAD
+              </p>
             </Link>
           ))}
           <Link href="/tools/travel-budget-calculator" className="rounded-xl bg-slate-100 p-4 transition-colors hover:bg-blue-100">
@@ -258,6 +269,14 @@ export function ProgrammaticBudgetPage({
       </section>
     </main>
   );
+}
+
+function formatTravelStyleLabel(style: ProgrammaticBudgetPageConfig["travelStyle"]) {
+  if (style === "midRange") {
+    return "Mid-range";
+  }
+
+  return style.charAt(0).toUpperCase() + style.slice(1);
 }
 
 function HeroPill({

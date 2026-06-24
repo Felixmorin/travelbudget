@@ -10,6 +10,7 @@ export type CommonAnalyticsProperties = {
   budget?: number;
   currency?: string;
   days?: number;
+  month?: string;
   tripLength?: number;
   travelers?: number;
   travelStyle?: string;
