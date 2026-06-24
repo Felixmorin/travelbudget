@@ -1,6 +1,7 @@
 import { TravelBudgetCalculator } from "@/components/tools/TravelBudgetCalculator";
 import { CTASection } from "@/components/site/cta-section";
-import { createCanonicalUrl, createMetadata } from "@/lib/seo/metadata";
+import { createMetadata } from "@/lib/seo/metadata";
+import { createFAQSchema, createTravelToolSchema, serializeJsonLd } from "@/lib/seo/schema";
 
 const path = "/tools/travel-budget-calculator";
 
@@ -37,36 +38,6 @@ const faqItems = [
   },
 ];
 
-const jsonLd = [
-  {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    name: "Travel Budget Calculator",
-    url: createCanonicalUrl(path),
-    applicationCategory: "TravelApplication",
-    operatingSystem: "Any",
-    description:
-      "Estimate your travel budget based on destination, trip length, flights, accommodation, food, activities, transportation, insurance, and daily spending.",
-    offers: {
-      "@type": "Offer",
-      price: "0",
-      priceCurrency: "USD",
-    },
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqItems.map((item) => ({
-      "@type": "Question",
-      name: item.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: item.answer,
-      },
-    })),
-  },
-];
-
 export const metadata = createMetadata({
   title: "Travel Budget Calculator | Plan Your Trip Costs",
   description:
@@ -79,12 +50,14 @@ export const metadata = createMetadata({
 });
 
 export default function TravelBudgetCalculatorPage() {
+  const jsonLd = [createTravelToolSchema(), createFAQSchema(faqItems)];
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+          __html: serializeJsonLd(jsonLd),
         }}
       />
       <main className="bg-slate-50">

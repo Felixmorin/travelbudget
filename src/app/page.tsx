@@ -8,6 +8,7 @@ import { CTASection } from "@/components/site/cta-section";
 import { destinations } from "@/lib/data/destinations";
 import { tools } from "@/lib/data/tools";
 import { createMetadata } from "@/lib/seo/metadata";
+import { createOrganizationSchema, createWebSiteSchema, serializeJsonLd } from "@/lib/seo/schema";
 
 export const metadata = createMetadata({
   title: "Find the Best Travel Destinations for Your Budget",
@@ -21,8 +22,16 @@ export const metadata = createMetadata({
 });
 
 export default function Home() {
+  const jsonLd = [createWebSiteSchema(), createOrganizationSchema()];
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: serializeJsonLd(jsonLd),
+        }}
+      />
       <section className="relative isolate overflow-hidden">
         <Image
           src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1800&q=85"
@@ -50,7 +59,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="bg-white py-16 sm:py-20">
+      <section id="destinations" className="bg-white py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div>

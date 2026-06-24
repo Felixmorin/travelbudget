@@ -1,0 +1,143 @@
+import type { Destination } from "@/lib/data/destinations";
+import { createCanonicalUrl, siteConfig } from "@/lib/seo/metadata";
+
+export type SchemaValue = string | number | boolean | null | SchemaObject | SchemaValue[];
+
+export type SchemaObject = {
+  [key: string]: SchemaValue;
+};
+
+export type BreadcrumbItem = {
+  name: string;
+  url: string;
+};
+
+export type FAQItem = {
+  question: string;
+  answer: string;
+};
+
+export type DestinationSchemaInput = Pick<
+  Destination,
+  "name" | "slug" | "countryCode" | "image" | "shortDescription" | "travelStyles" | "bestMonths"
+>;
+
+export type ArticleSchemaInput = {
+  title: string;
+  description: string;
+  path: string;
+  image?: string;
+  datePublished?: string;
+  dateModified?: string;
+};
+
+export function serializeJsonLd(schema: SchemaObject | SchemaObject[]) {
+  return JSON.stringify(schema).replace(/</g, "\\u003c");
+}
+
+export function createWebSiteSchema(): SchemaObject {
+  return withContext({
+    "@type": "WebSite",
+    name: siteConfig.name,
+    url: createCanonicalUrl("/"),
+    description: siteConfig.description,
+  });
+}
+
+export function createOrganizationSchema(): SchemaObject {
+  return withContext({
+    "@type": "Organization",
+    name: siteConfig.name,
+    url: createCanonicalUrl("/"),
+  });
+}
+
+export function createBreadcrumbSchema(items: BreadcrumbItem[]): SchemaObject {
+  return withContext({
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: createCanonicalUrl(item.url),
+    })),
+  });
+}
+
+export function createFAQSchema(faqs: FAQItem[]): SchemaObject {
+  return withContext({
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
+  });
+}
+
+export function createTravelToolSchema(): SchemaObject {
+  return withContext({
+    "@type": "WebApplication",
+    name: "Travel Budget Calculator",
+    url: createCanonicalUrl("/tools/travel-budget-calculator"),
+    applicationCategory: "TravelApplication",
+    operatingSystem: "Any",
+    description:
+      "Estimate your travel budget based on destination, trip length, flights, accommodation, food, activities, transportation, insurance, and daily spending.",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+  });
+}
+
+export function createDestinationSchema(destination: DestinationSchemaInput): SchemaObject {
+  return withContext({
+    "@type": "TouristDestination",
+    name: destination.name,
+    url: createCanonicalUrl(`/destinations/${destination.slug}`),
+    image: destination.image,
+    description: destination.shortDescription,
+    identifier: destination.countryCode,
+    touristType: destination.travelStyles,
+    publicAccess: true,
+    additionalProperty: [
+      {
+        "@type": "PropertyValue",
+        name: "Best months to visit",
+        value: destination.bestMonths.join(", "),
+      },
+    ],
+  });
+}
+
+export function createGuideArticleSchema(article: ArticleSchemaInput): SchemaObject {
+  return withContext({
+    "@type": "Article",
+    headline: article.title,
+    description: article.description,
+    url: createCanonicalUrl(article.path),
+    ...(article.image ? { image: createCanonicalUrl(article.image) } : {}),
+    ...(article.datePublished ? { datePublished: article.datePublished } : {}),
+    ...(article.dateModified ? { dateModified: article.dateModified } : {}),
+    author: {
+      "@type": "Organization",
+      name: siteConfig.name,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: siteConfig.name,
+    },
+  });
+}
+
+function withContext(schema: Omit<SchemaObject, "@context">): SchemaObject {
+  return {
+    "@context": "https://schema.org",
+    ...schema,
+  };
+}

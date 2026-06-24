@@ -115,15 +115,16 @@ function buildCostBreakdown(
     days,
     originCode: origin,
     travelStyle: destinationStyle,
+    travelers,
   });
 
   return {
-    flights: roundCurrency(destinationBreakdown.flights * travelers * currencyRate),
-    hotel: roundCurrency(destinationBreakdown.accommodation * travelers * currencyRate),
-    food: roundCurrency(destinationBreakdown.food * travelers * currencyRate),
-    transport: roundCurrency(destinationBreakdown.localTransport * travelers * currencyRate),
-    activities: roundCurrency(destinationBreakdown.activities * travelers * currencyRate),
-    misc: roundCurrency(destinationBreakdown.misc * travelers * currencyRate),
+    flights: roundCurrency(destinationBreakdown.flights * currencyRate),
+    hotel: roundCurrency(destinationBreakdown.accommodation * currencyRate),
+    food: roundCurrency(destinationBreakdown.food * currencyRate),
+    transport: roundCurrency(destinationBreakdown.localTransport * currencyRate),
+    activities: roundCurrency(destinationBreakdown.activities * currencyRate),
+    misc: roundCurrency(destinationBreakdown.misc * currencyRate),
   };
 }
 

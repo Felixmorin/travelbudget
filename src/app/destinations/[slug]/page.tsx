@@ -20,6 +20,12 @@ import {
   getOriginPricing,
 } from "@/lib/data/destinations";
 import { createDestinationMetadata, createMetadata } from "@/lib/seo/metadata";
+import {
+  createBreadcrumbSchema,
+  createDestinationSchema,
+  createFAQSchema,
+  serializeJsonLd,
+} from "@/lib/seo/schema";
 
 type DestinationPageProps = {
   params: Promise<{ slug: string }>;
@@ -61,25 +67,22 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
     originCode: "YUL",
     travelStyle: "midRange",
   });
-  const faqJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: destination.faqs.map((faq) => ({
-      "@type": "Question",
-      name: faq.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: faq.answer,
-      },
-    })),
-  };
+  const jsonLd = [
+    createDestinationSchema(destination),
+    createFAQSchema(destination.faqs),
+    createBreadcrumbSchema([
+      { name: "Home", url: "/" },
+      { name: "Destinations", url: "/#destinations" },
+      { name: destination.name, url: `/destinations/${destination.slug}` },
+    ]),
+  ];
 
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(faqJsonLd).replace(/</g, "\\u003c"),
+          __html: serializeJsonLd(jsonLd),
         }}
       />
       <section className="relative isolate min-h-[520px] overflow-hidden">

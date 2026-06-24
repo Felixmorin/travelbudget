@@ -72,6 +72,7 @@ export type Destination = {
 const defaultOriginCode = "YUL";
 const defaultTravelStyle: TravelStyle = "midRange";
 const estimateDays = 10;
+const defaultTravelers = 1;
 
 function sumTravelStyleCosts(costs: Partial<TravelStyleCosts> | undefined) {
   return (
@@ -83,8 +84,8 @@ function sumTravelStyleCosts(costs: Partial<TravelStyleCosts> | undefined) {
   );
 }
 
-function getFirstOriginCode(originPricing: OriginPricing) {
-  return Object.keys(originPricing)[0] as OriginCode | undefined;
+function getFirstOriginCode(originPricing: Partial<OriginPricing> | undefined) {
+  return originPricing ? (Object.keys(originPricing)[0] as OriginCode | undefined) : undefined;
 }
 
 function buildDestination(destination: Omit<Destination, "estimatedCost" | "currency" | "flightCost" | "hotelCost" | "foodCost" | "transportCost" | "activitiesCost">): Destination {
@@ -129,71 +130,148 @@ export function normalizeOriginCode(originCode: string | null | undefined): Orig
   return normalized as OriginCode;
 }
 
-export function getOriginPricing(destination: Pick<Destination, "originPricing">, originCode?: string) {
+export function getOriginPricing(destination: Pick<Partial<Destination>, "originPricing" | "flightCost">, originCode?: string) {
   const resolvedOriginCode = normalizeOriginCode(originCode);
   const fallbackCode = getFirstOriginCode(destination.originPricing);
+  const legacyFlightEstimate = normalizeMoney(destination.flightCost);
 
   return (
-    destination.originPricing[resolvedOriginCode] ??
-    destination.originPricing[defaultOriginCode] ??
-    (fallbackCode ? destination.originPricing[fallbackCode] : undefined) ?? {
+    destination.originPricing?.[resolvedOriginCode] ??
+    destination.originPricing?.[defaultOriginCode] ??
+    (fallbackCode ? destination.originPricing?.[fallbackCode] : undefined) ?? {
       originCity: "Montreal",
       originCountry: "Canada",
       currency: "CAD",
-      flightEstimate: { low: 0, average: 0, high: 0 },
+      flightEstimate: {
+        low: legacyFlightEstimate,
+        average: legacyFlightEstimate,
+        high: legacyFlightEstimate,
+      },
     }
   );
 }
 
-export function getTravelStyleCosts(destination: Pick<Destination, "dailyCosts">, travelStyle?: TravelStyle) {
-  return destination.dailyCosts[travelStyle ?? defaultTravelStyle] ?? destination.dailyCosts[defaultTravelStyle];
+export function getFlightEstimate(destination: Pick<Partial<Destination>, "originPricing" | "flightCost">, originCode?: string) {
+  const flightEstimate = getOriginPricing(destination, originCode).flightEstimate;
+  const average = normalizeMoney(flightEstimate.average);
+
+  return {
+    low: normalizeMoney(flightEstimate.low || average),
+    average,
+    high: normalizeMoney(flightEstimate.high || average),
+  };
 }
 
-export function getDailyCostTotal(destination: Pick<Destination, "dailyCosts">, travelStyle?: TravelStyle) {
+export function getTravelStyleCosts(destination: Pick<Partial<Destination>, "dailyCosts">, travelStyle?: TravelStyle) {
+  const dailyCosts = destination.dailyCosts;
+  const requestedCosts = dailyCosts?.[travelStyle ?? defaultTravelStyle];
+  const fallbackCosts = dailyCosts?.[defaultTravelStyle] ?? dailyCosts?.budget ?? dailyCosts?.luxury;
+
+  return requestedCosts ?? fallbackCosts ?? {
+    accommodation: 0,
+    food: 0,
+    localTransport: 0,
+    activities: 0,
+    misc: 0,
+  };
+}
+
+export function getDailyCostTotal(destination: Pick<Partial<Destination>, "dailyCosts">, travelStyle?: TravelStyle) {
   return sumTravelStyleCosts(getTravelStyleCosts(destination, travelStyle));
 }
 
+export type CalculateTripEstimateParams = {
+  destination: Pick<Partial<Destination>, "originPricing" | "dailyCosts" | "flightCost">;
+  numberOfDays?: number;
+  originCode?: string;
+  travelStyle?: TravelStyle;
+  numberOfTravelers?: number;
+};
+
+export function calculateTripEstimate({
+  destination,
+  numberOfDays,
+  originCode,
+  travelStyle,
+  numberOfTravelers,
+}: CalculateTripEstimateParams) {
+  const normalizedDays = normalizePositiveInteger(numberOfDays, estimateDays);
+  const normalizedTravelers = normalizePositiveInteger(numberOfTravelers, defaultTravelers);
+  const dailyTotalPerTraveler = getDailyCostTotal(destination, travelStyle);
+  const tripDailyTotalPerTraveler = dailyTotalPerTraveler * normalizedDays;
+  const flightAveragePerTraveler = getFlightEstimate(destination, originCode).average;
+  const flightTotal = flightAveragePerTraveler * normalizedTravelers;
+  const dailyTotal = tripDailyTotalPerTraveler * normalizedTravelers;
+
+  return {
+    dailyTotalPerTraveler,
+    tripDailyTotalPerTraveler,
+    flightAveragePerTraveler,
+    flightTotal: Math.round(flightTotal),
+    dailyTotal: Math.round(dailyTotal),
+    totalEstimatedCost: Math.round(flightTotal + dailyTotal),
+    numberOfDays: normalizedDays,
+    numberOfTravelers: normalizedTravelers,
+  };
+}
+
 export function getDestinationTripEstimate(
-  destination: Pick<Destination, "originPricing" | "dailyCosts">,
+  destination: Pick<Partial<Destination>, "originPricing" | "dailyCosts" | "flightCost">,
   {
     days,
     originCode,
     travelStyle,
+    travelers,
   }: {
-    days: number;
+    days?: number;
     originCode?: string;
     travelStyle?: TravelStyle;
+    travelers?: number;
   }
 ) {
-  const normalizedDays = Number.isFinite(days) ? Math.max(1, Math.round(days)) : estimateDays;
-  const flightAverage = getOriginPricing(destination, originCode).flightEstimate.average ?? 0;
-
-  return Math.round(flightAverage + getDailyCostTotal(destination, travelStyle) * normalizedDays);
+  return calculateTripEstimate({
+    destination,
+    numberOfDays: days,
+    originCode,
+    travelStyle,
+    numberOfTravelers: travelers,
+  }).totalEstimatedCost;
 }
 
 export function getDestinationCostBreakdown(
-  destination: Pick<Destination, "originPricing" | "dailyCosts">,
+  destination: Pick<Partial<Destination>, "originPricing" | "dailyCosts" | "flightCost">,
   {
     days,
     originCode,
     travelStyle,
+    travelers,
   }: {
-    days: number;
+    days?: number;
     originCode?: string;
     travelStyle?: TravelStyle;
+    travelers?: number;
   }
 ) {
-  const normalizedDays = Number.isFinite(days) ? Math.max(1, Math.round(days)) : estimateDays;
+  const normalizedDays = normalizePositiveInteger(days, estimateDays);
+  const normalizedTravelers = normalizePositiveInteger(travelers, defaultTravelers);
   const dailyCosts = getTravelStyleCosts(destination, travelStyle);
 
   return {
-    flights: getOriginPricing(destination, originCode).flightEstimate.average ?? 0,
-    accommodation: (dailyCosts.accommodation ?? 0) * normalizedDays,
-    food: (dailyCosts.food ?? 0) * normalizedDays,
-    localTransport: (dailyCosts.localTransport ?? 0) * normalizedDays,
-    activities: (dailyCosts.activities ?? 0) * normalizedDays,
-    misc: (dailyCosts.misc ?? 0) * normalizedDays,
+    flights: getFlightEstimate(destination, originCode).average * normalizedTravelers,
+    accommodation: normalizeMoney(dailyCosts.accommodation) * normalizedDays * normalizedTravelers,
+    food: normalizeMoney(dailyCosts.food) * normalizedDays * normalizedTravelers,
+    localTransport: normalizeMoney(dailyCosts.localTransport) * normalizedDays * normalizedTravelers,
+    activities: normalizeMoney(dailyCosts.activities) * normalizedDays * normalizedTravelers,
+    misc: normalizeMoney(dailyCosts.misc) * normalizedDays * normalizedTravelers,
   };
+}
+
+function normalizeMoney(value: number | null | undefined) {
+  return typeof value === "number" && Number.isFinite(value) ? Math.max(0, value) : 0;
+}
+
+function normalizePositiveInteger(value: number | null | undefined, fallback: number) {
+  return typeof value === "number" && Number.isFinite(value) ? Math.max(1, Math.round(value)) : fallback;
 }
 
 export const destinations: Destination[] = [
