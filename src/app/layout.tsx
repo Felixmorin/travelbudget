@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Footer } from "@/components/site/footer";
 import { Header } from "@/components/site/header";
+import { createMetadata } from "@/lib/seo/metadata";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,10 +14,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "TravelBudget.ai",
-  description: "Discover the best destinations based on your real travel budget.",
-};
+export const metadata = createMetadata();
 
 export default function RootLayout({
   children,

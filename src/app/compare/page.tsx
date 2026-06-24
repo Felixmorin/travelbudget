@@ -6,6 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { destinations, formatMoney } from "@/lib/data/destinations";
+import { createMetadata } from "@/lib/seo/metadata";
+
+export const metadata = createMetadata({
+  title: "Travel Cost Comparison",
+  description: "Compare destination travel costs side by side, including flights, hotels, food, activities, weather, and value scores.",
+  path: "/compare",
+});
 
 const rows = [
   ["Total cost", (i: number) => formatMoney(destinations[i].estimatedCost)],

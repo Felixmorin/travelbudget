@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { Metadata } from "next";
 import { ArrowLeft, ArrowRight, Bus, CalendarDays, Hotel, Plane, Ticket, Users, Utensils, WalletCards } from "lucide-react";
 
 import { AffiliateCard } from "@/components/site/affiliate-card";
@@ -16,11 +15,9 @@ import {
   type TravelStyle,
   recommendDestinations,
 } from "@/lib/budget/recommend-destinations";
+import { createResultsMetadata } from "@/lib/seo/metadata";
 
-export const metadata: Metadata = {
-  title: "Travel Budget Results | TravelBudget.ai",
-  description: "Compare destinations based on your travel budget, trip length, travel style, and departure city.",
-};
+export const metadata = createResultsMetadata();
 
 const supportedMonths = [
   "january",

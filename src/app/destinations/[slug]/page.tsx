@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { type Destination, destinations, formatMoney, getDestination } from "@/lib/data/destinations";
+import { createDestinationMetadata, createMetadata } from "@/lib/seo/metadata";
 
 type DestinationPageProps = {
   params: Promise<{ slug: string }>;
@@ -25,32 +26,15 @@ export async function generateMetadata({ params }: DestinationPageProps): Promis
   const destination = getDestination(slug);
 
   if (!destination) {
-    return {
-      title: "Destination Not Found | TravelBudget.ai",
-    };
+    return createMetadata({
+      title: "Destination Not Found",
+      description: "This TravelBudget.ai destination budget guide could not be found.",
+      path: `/destinations/${slug}`,
+      noIndex: true,
+    });
   }
 
-  const title = `${destination.name} Travel Budget Guide | TravelBudget.ai`;
-  const description = `See estimated travel costs for ${destination.name}, including flights, hotels, food, transport, activities, best months to visit, itinerary ideas, and booking options.`;
-
-  return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      type: "website",
-      siteName: "TravelBudget.ai",
-      images: [
-        {
-          url: destination.image,
-          width: 1600,
-          height: 900,
-          alt: `${destination.name} travel budget guide`,
-        },
-      ],
-    },
-  };
+  return createDestinationMetadata(destination);
 }
 
 export default async function DestinationPage({ params }: DestinationPageProps) {

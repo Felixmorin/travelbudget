@@ -1,6 +1,13 @@
 import { ToolCard } from "@/components/site/tool-card";
 import { CTASection } from "@/components/site/cta-section";
 import { tools } from "@/lib/data/tools";
+import { createToolMetadata } from "@/lib/seo/metadata";
+
+export const metadata = createToolMetadata({
+  title: "Free Travel Budget Tools",
+  description: "Use TravelBudget.ai tools to compare trip costs, estimate budgets, and choose realistic destinations before booking.",
+  path: "/tools",
+});
 
 export default function ToolsPage() {
   return (
