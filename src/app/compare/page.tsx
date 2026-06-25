@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { destinations, formatMoney, getDestinationCostBreakdown, getDestinationTripEstimate } from "@/lib/data/destinations";
+import { comparisonPages, getComparisonPath } from "@/lib/programmatic/comparison-pages";
 import { createMetadata } from "@/lib/seo/metadata";
 
 export const metadata = createMetadata({
@@ -92,6 +93,28 @@ export default function ComparePage() {
               </Card>
             ))}
           </div>
+
+          <section className="mt-12">
+            <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">SEO comparison guides</p>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">
+              Popular travel budget comparisons
+            </h2>
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              {comparisonPages.map((page) => (
+                <Link
+                  key={page.slug}
+                  href={getComparisonPath(page)}
+                  className="rounded-xl border border-slate-200 bg-white p-5 transition-colors hover:bg-blue-50"
+                >
+                  <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">
+                    {page.searchIntent}
+                  </p>
+                  <h3 className="mt-2 text-xl font-semibold text-slate-950">{page.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">{page.description}</p>
+                </Link>
+              ))}
+            </div>
+          </section>
         </section>
       </main>
       <CTASection />

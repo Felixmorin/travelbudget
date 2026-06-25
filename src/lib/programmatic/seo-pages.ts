@@ -16,27 +16,11 @@ export type DestinationBudgetSeoPage = {
   travelers: number;
 };
 
-export const destinationBudgetSeoSlugs = [
-  "portugal",
-  "vietnam",
-  "japan",
-  "mexico",
-  "italy",
-  "thailand",
-  "spain",
-  "colombia",
-];
+export const destinationBudgetSeoSlugs = destinations.map((destination) => destination.slug);
 
-export const durationSeoPages = [
-  { destinationSlug: "portugal", durationDays: 7 },
-  { destinationSlug: "portugal", durationDays: 10 },
-  { destinationSlug: "vietnam", durationDays: 14 },
-  { destinationSlug: "japan", durationDays: 10 },
-  { destinationSlug: "mexico", durationDays: 7 },
-  { destinationSlug: "italy", durationDays: 10 },
-  { destinationSlug: "thailand", durationDays: 14 },
-  { destinationSlug: "spain", durationDays: 10 },
-];
+export const durationSeoPages = destinationBudgetSeoSlugs.flatMap((destinationSlug) =>
+  [7, 10, 14].map((durationDays) => ({ destinationSlug, durationDays }))
+);
 
 export function getDestinationBudgetSeoPage(destinationSlug: string): DestinationBudgetSeoPage | null {
   if (!destinationBudgetSeoSlugs.includes(destinationSlug)) {

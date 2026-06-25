@@ -4,39 +4,52 @@ import type { FAQItem } from "@/lib/seo/schema";
 
 export function ProgrammaticSeoContent({
   originCity,
+  originCode,
   budgetLabel,
+  budgetAmount,
+  tripLengthDays,
   cheapestDestinationName,
+  matchingDestinationNames,
   travelStyleLabel = "Mid-range",
 }: {
   originCity: string;
+  originCode: string;
   budgetLabel: string;
+  budgetAmount: number;
+  tripLengthDays: number;
   cheapestDestinationName: string | null;
+  matchingDestinationNames: string[];
   travelStyleLabel?: string;
 }) {
+  const budgetPositioning = getBudgetPositioning(budgetAmount);
+  const destinationList = matchingDestinationNames.slice(0, 4).join(", ");
+
   return (
     <div className="grid gap-6">
       <SeoSection title={`How far can ${budgetLabel} take you from ${originCity}?`}>
         <p>
-          A {budgetLabel} budget can cover a realistic {travelStyleLabel.toLowerCase()} trip from {originCity} when flight prices
-          are reasonable and daily costs are controlled. The strongest matches usually combine affordable
-          round-trip flights with destinations where hotels, food, local transport, and activities stay
-          predictable.
+          A {budgetLabel} budget can cover a realistic {travelStyleLabel.toLowerCase()} trip from {originCity} when the
+          {` ${originCode} `} flight share stays in check and daily costs are controlled. This is a{" "}
+          {budgetPositioning} budget page, so the strongest matches are destinations where the total trip estimate
+          still leaves room for normal price movement.
         </p>
       </SeoSection>
 
-      <SeoSection title="What is included in this travel budget?">
+      <SeoSection title={`What is included in this ${tripLengthDays}-day travel budget?`}>
         <p>
           These estimates include round-trip flights, accommodation, food, local transport, activities, and a
-          small miscellaneous allowance. Prices are planning estimates in CAD, not live fares or guaranteed
-          booking prices.
+          small miscellaneous allowance for one traveler over {tripLengthDays} days. Prices are planning estimates
+          in CAD, not live fares or guaranteed booking prices.
         </p>
       </SeoSection>
 
       <SeoSection title={`Best types of trips from ${originCity} under ${budgetLabel}`}>
         <p>
-          The most realistic trips under this budget are value-focused city breaks, food-focused itineraries,
-          shoulder-season Europe routes, and long-haul destinations with lower daily costs. A slightly longer
-          trip can make sense when local costs are low enough to spread out the flight cost.
+          The most realistic trips under this budget are {getTripTypeCopy(budgetAmount)}.{" "}
+          {destinationList
+            ? `Current matching examples include ${destinationList}.`
+            : "Matching examples will appear as more pricing data is added."}{" "}
+          A slightly longer trip can make sense when local costs are low enough to spread out the flight cost.
         </p>
       </SeoSection>
 
@@ -51,12 +64,36 @@ export function ProgrammaticSeoContent({
       <SeoSection title={`Tips to stretch your travel budget from ${originCity}`}>
         <p>
           Travel outside peak weeks, compare nearby departure dates, choose central stays that reduce transit
-          costs, and reserve the expensive parts of the trip first. For this dataset,{" "}
+          costs, and reserve the expensive parts of the trip first. For this {originCode} budget set,{" "}
           {cheapestDestinationName ? `${cheapestDestinationName} currently has the lowest matching estimate.` : "new matches will appear as more destination pricing is added."}
         </p>
       </SeoSection>
     </div>
   );
+}
+
+function getBudgetPositioning(budgetAmount: number) {
+  if (budgetAmount <= 1500) {
+    return "tight, flight-sensitive";
+  }
+
+  if (budgetAmount <= 2500) {
+    return "balanced";
+  }
+
+  return "comfort-oriented";
+}
+
+function getTripTypeCopy(budgetAmount: number) {
+  if (budgetAmount <= 1500) {
+    return "shorter city breaks, nearby warm escapes, and destinations with very low local costs";
+  }
+
+  if (budgetAmount <= 2500) {
+    return "food-focused itineraries, warm-weather escapes, and shoulder-season city routes";
+  }
+
+  return "longer mid-range trips, transatlantic city routes, and selected long-haul destinations with controlled daily costs";
 }
 
 export function ProgrammaticFAQ({ faqs }: { faqs: FAQItem[] }) {

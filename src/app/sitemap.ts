@@ -1,7 +1,9 @@
 import type { MetadataRoute } from "next";
 
 import { destinations } from "@/lib/data/destinations";
+import { cityDestinations } from "@/lib/data/destination-hub";
 import { getProgrammaticBudgetPath, programmaticBudgetPages } from "@/lib/programmatic/budget-pages";
+import { comparisonPages, getComparisonPath } from "@/lib/programmatic/comparison-pages";
 import {
   destinationBudgetSeoSlugs,
   durationSeoPages,
@@ -59,6 +61,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "monthly" as const,
     priority: 0.85,
   }));
+  const cityDestinationRoutes = cityDestinations.map((destination) => ({
+    url: createCanonicalUrl(`/destinations/${destination.slug}`),
+    changeFrequency: "monthly" as const,
+    priority: 0.82,
+  }));
   const programmaticBudgetRoutes = programmaticBudgetPages.map((page) => ({
     url: createCanonicalUrl(getProgrammaticBudgetPath(page)),
     changeFrequency: "weekly" as const,
@@ -74,12 +81,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "monthly" as const,
     priority: 0.72,
   }));
+  const comparisonRoutes = comparisonPages.map((page) => ({
+    url: createCanonicalUrl(getComparisonPath(page)),
+    changeFrequency: "monthly" as const,
+    priority: 0.78,
+  }));
 
   return [
     ...staticRoutes,
     ...destinationRoutes,
+    ...cityDestinationRoutes,
     ...programmaticBudgetRoutes,
     ...destinationBudgetRoutes,
     ...durationCostRoutes,
+    ...comparisonRoutes,
   ];
 }

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArrowRight, CalendarDays, Home, Route, Search, Sparkles, WalletCards } from "lucide-react";
@@ -35,7 +36,17 @@ import {
   createFAQSchema,
   serializeJsonLd,
 } from "@/lib/seo/schema";
-import { destinationBudgetSeoSlugs, getTravelBudgetPath } from "@/lib/programmatic/seo-pages";
+import {
+  destinationBudgetSeoSlugs,
+  getTravelBudgetPath,
+  getTravelCostDurationPath,
+} from "@/lib/programmatic/seo-pages";
+import {
+  activeProgrammaticOrigins,
+  getProgrammaticBudgetPath,
+  programmaticBudgetPages,
+} from "@/lib/programmatic/budget-pages";
+import { comparisonPages, getComparisonPath } from "@/lib/programmatic/comparison-pages";
 
 type DestinationPageProps = {
   params: Promise<{ slug: string }>;
@@ -313,6 +324,43 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
               </CardContent>
             </Card>
 
+            <Card className="border-slate-200 bg-white">
+              <CardHeader>
+                <CardTitle className="text-xl text-slate-950">Related {destination.name} planning pages</CardTitle>
+              </CardHeader>
+              <CardContent className="grid gap-4 md:grid-cols-2">
+                <InternalPlanningLink
+                  href={getTravelBudgetPath(destination.slug)}
+                  label="Travel budget"
+                  title={`${destination.name} travel budget`}
+                />
+                {[7, 10, 14].map((days) => (
+                  <InternalPlanningLink
+                    key={days}
+                    href={getTravelCostDurationPath(destination.slug, days)}
+                    label={`${days}-day cost`}
+                    title={`${destination.name} cost for ${days} days`}
+                  />
+                ))}
+                {getOriginBudgetLinks(destination).map((link) => (
+                  <InternalPlanningLink
+                    key={link.href}
+                    href={link.href}
+                    label="From origin"
+                    title={link.title}
+                  />
+                ))}
+                {getDestinationComparisonLinks(destination.slug).map((link) => (
+                  <InternalPlanningLink
+                    key={link.href}
+                    href={link.href}
+                    label="Comparison"
+                    title={link.title}
+                  />
+                ))}
+              </CardContent>
+            </Card>
+
             <div className="flex flex-wrap gap-3">
               <Button asChild variant="outline" className="rounded-xl bg-white">
                 <TrackedLink
@@ -551,6 +599,50 @@ function CityDestinationPage({ destination }: { destination: CityDestination }) 
               </p>
             </CardContent>
           </Card>
+
+          <Card className="border-slate-200 bg-white shadow-lg shadow-slate-200/60">
+            <CardHeader>
+              <CardTitle className="text-xl text-slate-950">Related {destination.city} budget pages</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-4 md:grid-cols-2">
+              {getParentCountryDestination(destination) ? (
+                <InternalPlanningLink
+                  href={`/destinations/${getParentCountryDestination(destination)?.slug}`}
+                  label="Country guide"
+                  title={`${destination.country} travel budget`}
+                />
+              ) : null}
+              {getParentCountryDestination(destination) ? (
+                <InternalPlanningLink
+                  href={getTravelBudgetPath(getParentCountryDestination(destination)!.slug)}
+                  label="Travel budget"
+                  title={`${destination.country} budget guide`}
+                />
+              ) : null}
+              {activeProgrammaticOrigins.slice(0, 3).map((origin) => {
+                const originPage = programmaticBudgetPages.find(
+                  (page) => page.origin.slug === origin.slug && page.budget === 2500
+                );
+
+                return originPage ? (
+                  <InternalPlanningLink
+                    key={origin.slug}
+                    href={getProgrammaticBudgetPath(originPage)}
+                    label="From origin"
+                    title={`Trips from ${origin.city} under $2,500`}
+                  />
+                ) : null;
+              })}
+              {getAlternativeCityLinks(destination).map((link) => (
+                <InternalPlanningLink
+                  key={link.href}
+                  href={link.href}
+                  label="Alternative city"
+                  title={link.title}
+                />
+              ))}
+            </CardContent>
+          </Card>
         </div>
 
         <aside className="grid gap-5">
@@ -623,6 +715,86 @@ function CityCostLine({ label, value }: { label: string; value: number }) {
       <p className="mt-1 text-xl font-semibold text-slate-950">{formatDestinationMoney(value, "CAD")}</p>
     </div>
   );
+}
+
+function InternalPlanningLink({
+  href,
+  label,
+  title,
+}: {
+  href: string;
+  label: string;
+  title: string;
+}) {
+  return (
+    <Link href={href} className="rounded-xl bg-slate-50 p-4 transition-colors hover:bg-blue-50">
+      <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">{label}</p>
+      <p className="mt-1 font-semibold text-slate-950">{title}</p>
+    </Link>
+  );
+}
+
+function getOriginBudgetLinks(destination: Destination) {
+  return activeProgrammaticOrigins
+    .map((origin) => {
+      const page = programmaticBudgetPages.find((candidate) => {
+        if (candidate.origin.slug !== origin.slug) {
+          return false;
+        }
+
+        const estimate = getDestinationTripEstimate(destination, {
+          days: candidate.tripLengthDays,
+          originCode: origin.code,
+          travelStyle: candidate.travelStyle,
+        });
+
+        return estimate <= candidate.budget;
+      });
+
+      return page
+        ? {
+            href: getProgrammaticBudgetPath(page),
+            title: `${destination.name} from ${origin.city} under ${formatMoney(page.budget, page.currency)}`,
+          }
+        : null;
+    })
+    .filter((link): link is { href: string; title: string } => Boolean(link))
+    .slice(0, 3);
+}
+
+function getDestinationComparisonLinks(destinationSlug: string) {
+  return comparisonPages
+    .filter((page) => page.kind === "destination-pair" && page.destinationSlugs.includes(destinationSlug))
+    .map((page) => ({
+      href: getComparisonPath(page),
+      title: page.title,
+    }))
+    .slice(0, 2);
+}
+
+function getParentCountryDestination(destination: CityDestination) {
+  return destinations.find(
+    (countryDestination) => countryDestination.name.toLowerCase() === destination.country.toLowerCase()
+  );
+}
+
+function getAlternativeCityLinks(destination: CityDestination) {
+  const sameCountry = cityDestinations.filter(
+    (candidate) => candidate.slug !== destination.slug && candidate.country === destination.country
+  );
+  const sameStyle = cityDestinations.filter(
+    (candidate) =>
+      candidate.slug !== destination.slug &&
+      candidate.country !== destination.country &&
+      candidate.travelStyles.some((style) => destination.travelStyles.includes(style))
+  );
+
+  return [...sameCountry, ...sameStyle]
+    .slice(0, 3)
+    .map((candidate) => ({
+      href: `/destinations/${candidate.slug}`,
+      title: `${candidate.city}, ${candidate.country}`,
+    }));
 }
 
 function Metric({

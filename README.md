@@ -2,7 +2,7 @@
 
 TravelBudget.ai is a budget-first travel planning MVP built with Next.js App Router. It helps travelers compare destinations, estimate total trip costs from Canadian origins, and understand where their money goes before they book.
 
-The app currently uses a curated planning dataset of 30 country destinations with origin-specific flight estimates from Montreal (YUL), Toronto (YYZ), and Vancouver (YVR), plus 12 city destination guides. Prices are directional estimates in CAD, not live fares or guarantees.
+The app currently uses a curated planning dataset of 30 country destinations with origin-specific flight estimates from Montreal (YUL), Toronto (YYZ), and Vancouver (YVR), plus 24 city destination guides. Prices are directional estimates in CAD, not live fares or guarantees.
 
 ## Features
 
@@ -99,17 +99,18 @@ Starts the production server after a build.
 - `/` - homepage with budget search and featured destinations
 - `/results` - dynamic recommendation results using `budget`, `currency`, `origin`, `days`, `month`, `travelers`, `style`, `category`, `destination`, and `sort`
 - `/destinations` - destination explorer
-- `/destinations/[slug]` - 42 generated destination detail pages: 30 country guides and 12 city guides
-- `/compare` - destination comparison table
+- `/destinations/[slug]` - 54 generated destination detail pages: 30 country guides and 24 city guides
+- `/compare` - destination comparison table and comparison guide hub
+- `/compare/[comparison]` - 4 generated comparison SEO pages
 - `/tools` - travel tools directory
 - `/tools/travel-budget-calculator` - budget calculator page
 - `/guides` - guides hub
 - `/guide` - guide landing page
 - `/about` - product/about page
 - `/methodology` - methodology and estimate explanation
-- `/travel-budget/[destination]` - 8 generated destination budget SEO pages
-- `/travel-cost/[destination]/[duration]` - 8 generated duration-based cost pages
-- `/from/[origin]/under-[budget]` - 15 generated pages from Montreal, Toronto, and Vancouver across CAD 1,500, 2,000, 2,500, 3,000, and 4,000 budgets
+- `/travel-budget/[destination]` - 30 generated destination budget SEO pages
+- `/travel-cost/[destination]/[duration]` - 90 generated duration-based cost pages
+- `/from/[origin]/under-[budget]` - 30 generated pages from Montreal, Toronto, Vancouver, Quebec, Ottawa, and Calgary across CAD 1,500, 2,000, 2,500, 3,000, and 4,000 budgets
 - `/robots.txt` and `/sitemap.xml` - generated metadata routes
 
 ## Data Model

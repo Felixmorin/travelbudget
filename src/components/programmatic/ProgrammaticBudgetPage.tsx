@@ -30,6 +30,7 @@ import {
   getProgrammaticBudgetPath,
   programmaticBudgetPages,
 } from "@/lib/programmatic/budget-pages";
+import { getTravelBudgetPath, getTravelCostDurationPath } from "@/lib/programmatic/seo-pages";
 import type { FAQItem } from "@/lib/seo/schema";
 
 export function ProgrammaticBudgetPage({
@@ -280,8 +281,12 @@ export function ProgrammaticBudgetPage({
       <section className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1fr_380px] lg:px-8">
         <ProgrammaticSeoContent
           originCity={page.origin.city}
+          originCode={page.origin.code}
           budgetLabel={budgetLabel}
+          budgetAmount={page.budget}
+          tripLengthDays={page.tripLengthDays}
           cheapestDestinationName={snapshotDestination?.destination.name ?? null}
+          matchingDestinationNames={matches.map((item) => item.destination.name)}
           travelStyleLabel={travelStyleLabel}
         />
         <aside>
@@ -341,6 +346,30 @@ export function ProgrammaticBudgetPage({
                 </Link>
               ) : null;
             })}
+          </div>
+        </div>
+        <div className="mt-8">
+          <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">Destination deep dives</p>
+          <div className="mt-3 grid gap-4 md:grid-cols-3">
+            {matches.slice(0, 3).map((item) => (
+              <div key={item.destination.slug} className="rounded-xl bg-white p-4">
+                <p className="font-bold text-slate-950">{item.destination.name}</p>
+                <div className="mt-3 grid gap-2 text-sm font-semibold text-blue-700">
+                  <Link href={getTravelBudgetPath(item.destination.slug)} className="hover:underline">
+                    Full travel budget
+                  </Link>
+                  <Link
+                    href={getTravelCostDurationPath(item.destination.slug, page.tripLengthDays)}
+                    className="hover:underline"
+                  >
+                    {page.tripLengthDays}-day cost estimate
+                  </Link>
+                  <Link href={`/destinations/${item.destination.slug}`} className="hover:underline">
+                    Destination guide
+                  </Link>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
