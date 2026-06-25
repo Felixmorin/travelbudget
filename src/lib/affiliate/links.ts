@@ -13,10 +13,10 @@ export type AffiliatePlaceholder = {
 const placeholders: Record<AffiliateLink["type"], Omit<AffiliatePlaceholder, "type">> = {
   Flights: {
     title: "Compare flights",
-    description: "Compare planning options before checking live fares.",
-    actionLabel: "Plan",
-    priceHint: "Estimate",
-    href: "/results",
+    description: "Compare live fares with the trip budget estimate.",
+    actionLabel: "Compare",
+    priceHint: "Live fares",
+    href: "https://www.skyscanner.ca/transport/flights/",
     isAvailable: true,
   },
   Hotels: {

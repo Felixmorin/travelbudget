@@ -129,10 +129,14 @@ Recommendation logic lives in `src/lib/budget/recommend-destinations.ts`. Result
 
 ## Affiliate Links
 
-Hotel links point to Booking.com destination search pages. eSIM links point to Airalo search by default. Activity links point to GetYourGuide search by default.
+Flight links point to Skyscanner search by default and can be redirected to another flight affiliate provider. Hotel links point to Booking.com destination search pages. eSIM links point to Airalo search by default. Activity links point to GetYourGuide search by default.
 
 Optional public environment variables:
 
+- `NEXT_PUBLIC_FLIGHTS_AFFILIATE_BASE_URL` - overrides the flight provider or affiliate deep-link base URL
+- `NEXT_PUBLIC_FLIGHTS_AFFILIATE_QUERY_PARAM` - overrides the flight search query parameter, defaults to `query`
+- `NEXT_PUBLIC_FLIGHTS_AFFILIATE_PROVIDER` - labels the flight analytics provider, defaults to `Skyscanner`
+- `NEXT_PUBLIC_FLIGHTS_AFFILIATE_PARTNER` - labels the flight commercial partner, defaults to the provider value
 - `NEXT_PUBLIC_BOOKING_AFFILIATE_AID` - adds the Booking.com `aid` parameter
 - `NEXT_PUBLIC_ESIM_AFFILIATE_BASE_URL` - overrides the eSIM provider or affiliate deep-link base URL
 - `NEXT_PUBLIC_ESIM_AFFILIATE_QUERY_PARAM` - overrides the eSIM search query parameter, defaults to `search`

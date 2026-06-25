@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import { connection } from "next/server";
 import {
   ArrowRight,
@@ -22,6 +21,8 @@ import {
 } from "lucide-react";
 
 import { AnalyticsView } from "@/components/analytics/analytics-view";
+import { SaveDestinationButton } from "@/components/analytics/save-destination-button";
+import { TrackedFilterForm } from "@/components/analytics/tracked-form";
 import { EmailCapture } from "@/components/leads/email-capture";
 import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Badge } from "@/components/ui/badge";
@@ -176,8 +177,8 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
 
       <section className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[minmax(0,8fr)_minmax(320px,4fr)] lg:px-8">
         <div className="grid gap-8">
-          <ResultsFilters parsedParams={parsedParams} />
-          <CategoryFilters parsedParams={parsedParams} />
+          <ResultsFilters parsedParams={parsedParams} resultCount={recommendations.length} />
+          <CategoryFilters parsedParams={parsedParams} resultCount={recommendations.length} />
 
           {destinations.length > 0 ? (
             <div className="grid gap-5 md:grid-cols-3">
@@ -307,9 +308,25 @@ function formatOriginLabel(originCode: string) {
   return originPricing?.originCity ? `${originPricing.originCity} (${originCode})` : originCode;
 }
 
-function ResultsFilters({ parsedParams }: { parsedParams: ParsedSearchParams }) {
+function ResultsFilters({ parsedParams, resultCount }: { parsedParams: ParsedSearchParams; resultCount: number }) {
   return (
-    <form action="/results" className="grid gap-4 rounded-[28px] border border-[#c3c6d7]/35 bg-white p-5 shadow-[0_18px_45px_-28px_rgba(15,23,42,0.35)] md:grid-cols-6">
+    <TrackedFilterForm
+      action="/results"
+      eventProperties={{
+        page: "/results",
+        budget: parsedParams.budget,
+        currency: parsedParams.currency,
+        days: parsedParams.days,
+        month: parsedParams.month,
+        originCode: parsedParams.origin,
+        resultCount,
+        source: "results_filter_form",
+        travelers: parsedParams.travelers,
+        travelStyle: parsedParams.style,
+        tripLength: parsedParams.days,
+      }}
+      className="grid gap-4 rounded-[28px] border border-[#c3c6d7]/35 bg-white p-5 shadow-[0_18px_45px_-28px_rgba(15,23,42,0.35)] md:grid-cols-6"
+    >
       <label className="grid gap-2 text-sm font-semibold text-[#434655]">
         Budget
         <input
@@ -391,11 +408,11 @@ function ResultsFilters({ parsedParams }: { parsedParams: ParsedSearchParams }) 
           Apply filters
         </Button>
       </div>
-    </form>
+    </TrackedFilterForm>
   );
 }
 
-function CategoryFilters({ parsedParams }: { parsedParams: ParsedSearchParams }) {
+function CategoryFilters({ parsedParams, resultCount }: { parsedParams: ParsedSearchParams; resultCount: number }) {
   return (
     <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden">
       {categories.map((category) => {
@@ -403,9 +420,26 @@ function CategoryFilters({ parsedParams }: { parsedParams: ParsedSearchParams })
         const isActive = category.value === parsedParams.category;
 
         return (
-          <Link
+          <TrackedLink
             key={category.label}
             href={createResultsHref(parsedParams, { category: category.value })}
+            eventName="filter_changed"
+            eventProperties={{
+              page: "/results",
+              budget: parsedParams.budget,
+              currency: parsedParams.currency,
+              days: parsedParams.days,
+              filterName: "category",
+              filterValue: category.value,
+              month: parsedParams.month,
+              originCode: parsedParams.origin,
+              previousValue: parsedParams.category,
+              resultCount,
+              source: "results_category_filter",
+              travelers: parsedParams.travelers,
+              travelStyle: parsedParams.style,
+              tripLength: parsedParams.days,
+            }}
             className={`flex min-w-28 items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-semibold shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-blue-600/25 ${
               isActive
                 ? "border-blue-600 bg-[#004ac6] text-white shadow-blue-700/20"
@@ -414,7 +448,7 @@ function CategoryFilters({ parsedParams }: { parsedParams: ParsedSearchParams })
           >
             <Icon className="size-4" />
             {category.label}
-          </Link>
+          </TrackedLink>
         );
       })}
     </div>
@@ -439,7 +473,19 @@ function DestinationCard({
   destination: ResultDestination;
 }) {
   return (
-    <article className="group overflow-hidden rounded-[24px] border border-[#c3c6d7]/35 bg-white shadow-[0_18px_45px_-24px_rgba(15,23,42,0.35)] transition-[transform,box-shadow] duration-400 ease-[cubic-bezier(0.175,0.885,0.32,1.275)] hover:-translate-y-2 hover:shadow-[0_24px_60px_-28px_rgba(15,23,42,0.5)]">
+    <article className="group relative overflow-hidden rounded-[24px] border border-[#c3c6d7]/35 bg-white shadow-[0_18px_45px_-24px_rgba(15,23,42,0.35)] transition-[transform,box-shadow] duration-400 ease-[cubic-bezier(0.175,0.885,0.32,1.275)] hover:-translate-y-2 hover:shadow-[0_24px_60px_-28px_rgba(15,23,42,0.5)]">
+      <SaveDestinationButton
+        storageKey={`travelbudget:saved-destination:${destination.href}`}
+        eventProperties={{
+          page: "/results",
+          ...analyticsContext,
+          destinationName: destination.country,
+          destinationSlug: destination.href.replace("/destinations/", ""),
+          resultRank: destination.rank,
+          source: "results_grid",
+          tripLength: analyticsContext.days,
+        }}
+      />
       <TrackedLink
         href={destination.href}
         eventName="destination_card_clicked"
@@ -448,9 +494,25 @@ function DestinationCard({
           ...analyticsContext,
           destinationName: destination.country,
           destinationSlug: destination.href.replace("/destinations/", ""),
+          resultRank: destination.rank,
           source: "results_grid",
           tripLength: analyticsContext.days,
         }}
+        secondaryEvents={[
+          {
+            eventName: "result_clicked",
+            eventProperties: {
+              page: "/results",
+              ...analyticsContext,
+              destinationName: destination.country,
+              destinationSlug: destination.href.replace("/destinations/", ""),
+              href: destination.href,
+              resultRank: destination.rank,
+              source: "results_grid",
+              tripLength: analyticsContext.days,
+            },
+          },
+        ]}
         className="block focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-blue-600/25"
       >
         <div className="relative h-56 overflow-hidden">
@@ -529,16 +591,31 @@ function EmptyResultsState({ parsedParams }: { parsedParams: ParsedSearchParams 
         departure city.
       </p>
       <Button asChild className="mt-5 rounded-full bg-[#004ac6] px-5 text-white hover:bg-blue-700">
-        <Link
+        <TrackedLink
           href={createResultsHref(parsedParams, {
             budget: Math.max(parsedParams.budget + 500, 1000),
             category: "all",
             destination: "",
             sort: "relevance",
           })}
+          eventName="filter_changed"
+          eventProperties={{
+            page: "/results",
+            budget: parsedParams.budget,
+            currency: parsedParams.currency,
+            days: parsedParams.days,
+            filterName: "empty_results_broaden",
+            filterValue: Math.max(parsedParams.budget + 500, 1000),
+            month: parsedParams.month,
+            originCode: parsedParams.origin,
+            source: "empty_results_state",
+            travelers: parsedParams.travelers,
+            travelStyle: parsedParams.style,
+            tripLength: parsedParams.days,
+          }}
         >
           Broaden this search
-        </Link>
+        </TrackedLink>
       </Button>
     </section>
   );

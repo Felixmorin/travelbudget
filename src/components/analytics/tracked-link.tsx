@@ -11,6 +11,12 @@ type TrackedLinkProps<EventName extends AnalyticsEventName> = LinkProps &
     children: ReactNode;
     eventName: EventName;
     eventProperties?: AnalyticsEventPayload<EventName>;
+    secondaryEvents?: {
+      [SecondaryEventName in AnalyticsEventName]: {
+        eventName: SecondaryEventName;
+        eventProperties?: AnalyticsEventPayload<SecondaryEventName>;
+      };
+    }[AnalyticsEventName][];
     onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
   };
 
@@ -18,11 +24,15 @@ export function TrackedLink<EventName extends AnalyticsEventName>({
   children,
   eventName,
   eventProperties,
+  secondaryEvents,
   onClick,
   ...props
 }: TrackedLinkProps<EventName>) {
   function handleClick(event: MouseEvent<HTMLAnchorElement>) {
     trackEvent(eventName, eventProperties);
+    secondaryEvents?.forEach((secondaryEvent) => {
+      trackEvent(secondaryEvent.eventName, secondaryEvent.eventProperties);
+    });
     onClick?.(event);
   }
 

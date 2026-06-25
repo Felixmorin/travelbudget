@@ -9,7 +9,10 @@ TravelBudget.ai uses typed product events from `src/lib/analytics/events.ts` and
 | `search_started` | A user first focuses or changes the homepage search form. | `page`, `source` | `originCode`, `originCity`, `budget`, `currency`, `travelStyle` | Which entry points start budget-search intent? |
 | `search_completed` | A valid homepage search is submitted. | `page`, `budget`, `currency`, `originCode`, `originCity`, `days`, `tripLength`, `travelers`, `month`, `travelStyle` | `source`, `resultCount` | Which budgets, origins, months, and styles do users search most? |
 | `budget_result_viewed` | A user views ranked results or a programmatic budget page. | `page`, `budget`, `currency`, `originCode`, `originCity`, `days`, `tripLength`, `travelers`, `travelStyle`, `resultCount` | `month`, `source` | Which searches and SEO pages produce recommendation views? |
-| `destination_card_clicked` | A user clicks a destination card from homepage, results, or budget pages. | `page`, `destinationSlug`, `destinationName`, `source` | `budget`, `currency`, `originCode`, `originCity`, `days`, `tripLength`, `travelers`, `month`, `travelStyle`, `resultCount`, `href` | Which recommendations attract clicks? |
+| `destination_card_clicked` | A user clicks a destination card from homepage, results, or budget pages. | `page`, `destinationSlug`, `destinationName`, `source` | `budget`, `currency`, `originCode`, `originCity`, `days`, `tripLength`, `travelers`, `month`, `travelStyle`, `resultCount`, `resultRank`, `href` | Which recommendations attract clicks? |
+| `result_clicked` | A ranked result card is clicked. | `page`, `destinationSlug`, `destinationName`, `resultRank`, `source` | `budget`, `currency`, `originCode`, `originCity`, `days`, `tripLength`, `travelers`, `month`, `travelStyle`, `resultCount`, `href` | Which result rank positions drive destination detail views? |
+| `filter_changed` | A results or destination discovery filter value changes. | `page`, `filterName`, `filterValue`, `source` | `previousValue`, `budget`, `currency`, `originCode`, `days`, `tripLength`, `travelers`, `month`, `travelStyle` | Which filter interactions reshape search intent? |
+| `destination_saved` | A user saves or unsaves a destination. | `page`, `destinationSlug`, `destinationName`, `source` | `resultRank`, `savedState`, `budget`, `currency`, `originCode`, `days`, `tripLength`, `travelers`, `month`, `travelStyle` | Which destinations earn explicit planning intent? |
 | `destination_viewed` | A destination budget page renders. | `page`, `destinationSlug`, `destinationName` | `originCode`, `originCity`, `currency`, `tripLength` | Which destinations get planning attention? |
 
 ## Calculator
@@ -28,12 +31,13 @@ Legacy aliases `budget_calculator_started`, `budget_calculator_updated`, `budget
 | Event | Fires when | Required properties | Optional properties | Business question |
 | --- | --- | --- | --- | --- |
 | `cta_clicked` | A primary navigation, hero, bottom, or tool CTA is clicked. | `page`, `label`, `href`, `ctaLocation` | `source`, `originCode`, `originCity`, `destinationSlug`, `destinationName`, `budget`, `currency`, `days`, `tripLength`, `travelers`, `travelStyle` | Which calls to action move users deeper into the funnel? |
-| `affiliate_module_viewed` | An affiliate card becomes visible at least once. | `page`, `destinationSlug`, `destinationName`, `affiliateType`, `href`, `ctaLocation` | `affiliatePartner`, `source`, `label` | Which destinations and affiliate categories get impressions? |
-| `affiliate_link_clicked` | A user clicks an affiliate/planning link. | `page`, `destinationSlug`, `destinationName`, `affiliateType`, `href`, `ctaLocation` | `affiliatePartner`, `source`, `label`, `linkType`, `title` | Which destinations and categories drive revenue intent? |
+| `affiliate_module_viewed` | An affiliate card becomes visible at least once. | `page`, `destinationSlug`, `destinationName`, `affiliateType`, `href`, `ctaLocation` | `affiliatePartner`, `affiliateProvider`, `source`, `label` | Which destinations, providers, and affiliate categories get impressions? |
+| `affiliate_link_clicked` | A user clicks an affiliate/planning link. | `page`, `destinationSlug`, `destinationName`, `affiliateType`, `href`, `ctaLocation` | `affiliatePartner`, `affiliateProvider`, `source`, `label`, `linkType`, `title` | Which providers, destinations, and categories drive revenue intent? |
 
 ## Supporting Content
 
 | Event | Fires when | Required properties | Optional properties | Business question |
 | --- | --- | --- | --- | --- |
 | `newsletter_submitted` | The guides newsletter form is submitted. | `page`, `newsletterLocation` |  | Which content pages drive email intent? |
+| `email_submitted_by_intent` | A lead capture form is submitted, grouped by intent. | `page`, `intent`, `source` | `variant`, `originCity`, `destinationName`, `budget`, `days`, `tripLength` | Which email capture intents are strongest? |
 | `guide_clicked` | A guide navigation or guide card link is clicked. | `page`, `guideTitle`, `href` | `guideCategory` | Which editorial topics earn clicks? |

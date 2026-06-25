@@ -17,9 +17,11 @@ export type CommonAnalyticsProperties = {
   travelers?: number;
   travelStyle?: string;
   resultCount?: number;
+  resultRank?: number;
   ctaLocation?: string;
   affiliateType?: string;
   affiliatePartner?: string;
+  affiliateProvider?: string;
   href?: string;
   label?: string;
 };
@@ -52,6 +54,22 @@ export type AnalyticsEventProperties = {
   affiliate_link_clicked: CommonAnalyticsProperties & {
     linkType?: string;
     title?: string;
+  };
+  email_submitted_by_intent: CommonAnalyticsProperties & {
+    intent?: string;
+    variant?: string;
+  };
+  result_clicked: CommonAnalyticsProperties & {
+    resultRank?: number;
+  };
+  filter_changed: CommonAnalyticsProperties & {
+    filterName?: string;
+    filterValue?: string | number | boolean | null;
+    previousValue?: string | number | boolean | null;
+  };
+  destination_saved: CommonAnalyticsProperties & {
+    resultRank?: number;
+    savedState?: boolean;
   };
   email_capture_viewed: CommonAnalyticsProperties & {
     intent?: string;
@@ -102,6 +120,10 @@ export const analyticsEventNames = [
   "cta_clicked",
   "affiliate_module_viewed",
   "affiliate_link_clicked",
+  "email_submitted_by_intent",
+  "result_clicked",
+  "filter_changed",
+  "destination_saved",
   "email_capture_viewed",
   "email_capture_submitted",
   "email_capture_success",

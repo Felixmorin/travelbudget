@@ -32,8 +32,10 @@ export function AffiliateCard({
   const ctaLocation = link.placement ?? "destination_affiliate_card";
   const page = destination?.slug ? `/destinations/${destination.slug}` : "affiliate_card";
   const affiliatePartner = builtLink.partner;
+  const affiliateProvider = builtLink.provider ?? affiliatePartner;
   const analyticsProperties = {
     affiliatePartner,
+    affiliateProvider,
     affiliateType: link.type,
     ctaLocation,
     destinationName: destination?.name,

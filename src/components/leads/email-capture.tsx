@@ -92,6 +92,7 @@ export function EmailCapture({
     setStatus("loading");
     setMessage("");
     trackEvent("email_capture_submitted", analyticsProperties);
+    trackEvent("email_submitted_by_intent", analyticsProperties);
 
     try {
       const response = await fetch("/api/lead-capture", {

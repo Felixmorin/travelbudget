@@ -11,7 +11,7 @@ export type BuiltAffiliateLink = {
 };
 
 const fallbackHrefByType: Record<AffiliateLink["type"], string> = {
-  Flights: "/results",
+  Flights: "https://www.skyscanner.ca/transport/flights/",
   Hotels: "/results",
   eSIM: "/tools/travel-budget-calculator",
   Activities: "/results",

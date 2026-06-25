@@ -662,19 +662,27 @@ function splitDailyTotal(total: number): TravelStyleCosts {
 }
 
 function buildAffiliateLinks(seed: DestinationSeed): AffiliateLink[] {
+  const primaryStyle = getPrimaryTravelStyle(seed);
+  const tripContext = getTripContext(seed);
+
   return [
     {
       type: "Flights",
-      title: `Compare flights to ${seed.name}`,
-      description: `Compare round-trip flight options from Montreal, Toronto, or Vancouver to ${seed.name}.`,
+      title: getContextualAffiliateTitle("Flights", seed, primaryStyle),
+      description: `Compare live fares to ${seed.name} against the CAD ${seed.flightAverage.YUL} YUL planning baseline before locking the trip.`,
       priceHint: `Avg. from YUL CAD ${seed.flightAverage.YUL}`,
-      href: `/results?origin=YUL&currency=CAD&style=balanced`,
+      href: buildFlightHref(seed),
+      provider: process.env.NEXT_PUBLIC_FLIGHTS_AFFILIATE_PROVIDER ?? "Skyscanner",
+      partner: process.env.NEXT_PUBLIC_FLIGHTS_AFFILIATE_PARTNER ?? process.env.NEXT_PUBLIC_FLIGHTS_AFFILIATE_PROVIDER ?? "Skyscanner",
       placement: "destination_sidebar",
+      isExternal: true,
     },
     {
       type: "Hotels",
-      title: `Find stays in ${seed.name}`,
-      description: `Compare Booking.com stays that fit a practical ${seed.name} travel budget.`,
+      title: getContextualAffiliateTitle("Hotels", seed, primaryStyle),
+      description: `Compare Booking.com stays for a ${tripContext} ${seed.name} trip with lodging near CAD ${
+        splitDailyTotal(seed.dailyTotals.midRange).accommodation
+      } per night.`,
       priceHint: `Mid-range daily stay CAD ${splitDailyTotal(seed.dailyTotals.midRange).accommodation}`,
       href: buildBookingHref(seed),
       provider: "Booking.com",
@@ -684,8 +692,8 @@ function buildAffiliateLinks(seed: DestinationSeed): AffiliateLink[] {
     },
     {
       type: "eSIM",
-      title: `Get eSIM data for ${seed.name}`,
-      description: `Compare eSIM data options for maps, messaging, and bookings in ${seed.name}.`,
+      title: getContextualAffiliateTitle("eSIM", seed, primaryStyle),
+      description: `Get mobile data for maps, transfers, and bookings during a ${tripContext} ${seed.name} itinerary.`,
       priceHint: "Airalo eSIM plans",
       href: buildEsimHref(seed),
       provider: "Airalo",
@@ -695,8 +703,8 @@ function buildAffiliateLinks(seed: DestinationSeed): AffiliateLink[] {
     },
     {
       type: "Activities",
-      title: `Book activities in ${seed.name}`,
-      description: `Compare tours and activities for a ${seed.name} itinerary before booking.`,
+      title: getContextualAffiliateTitle("Activities", seed, primaryStyle),
+      description: `Find ${primaryStyle.toLowerCase()} activities for ${seed.name} while keeping the daily activity budget in view.`,
       priceHint: `Mid-range activities CAD ${splitDailyTotal(seed.dailyTotals.midRange).activities}/day`,
       href: buildActivitiesHref(seed),
       provider: "GetYourGuide",
@@ -706,13 +714,60 @@ function buildAffiliateLinks(seed: DestinationSeed): AffiliateLink[] {
     },
     {
       type: "Insurance",
-      title: "Check travel insurance options",
-      description: `Compare insurance needs for trip length, activities, and total prepaid cost.`,
+      title: getContextualAffiliateTitle("Insurance", seed, primaryStyle),
+      description: `Check coverage for a ${tripContext} ${seed.name} trip, especially if flights and prepaid stays are a large share of the budget.`,
       priceHint: "Verify before booking",
       href: "/tools/travel-budget-calculator",
       placement: "destination_sidebar",
     },
   ];
+}
+
+function getPrimaryTravelStyle(seed: DestinationSeed) {
+  return seed.travelStyles[0] ?? "Flexible";
+}
+
+function getTripContext(seed: DestinationSeed) {
+  if (seed.dailyTotals.budget <= 95) {
+    return "budget-friendly";
+  }
+
+  if (seed.dailyTotals.midRange >= 220 || seed.flightAverage.YUL >= 1200) {
+    return "higher-budget";
+  }
+
+  return "balanced";
+}
+
+function getContextualAffiliateTitle(type: AffiliateLink["type"], seed: DestinationSeed, primaryStyle: string) {
+  const context = getTripContext(seed);
+
+  if (type === "Flights") {
+    return context === "higher-budget" ? `Watch fares to ${seed.name}` : `Compare flights to ${seed.name}`;
+  }
+
+  if (type === "Hotels") {
+    return context === "budget-friendly" ? `Find value stays in ${seed.name}` : `Find ${primaryStyle.toLowerCase()} stays in ${seed.name}`;
+  }
+
+  if (type === "eSIM") {
+    return `Get trip data for ${seed.name}`;
+  }
+
+  if (type === "Activities") {
+    return `Book ${primaryStyle.toLowerCase()} activities`;
+  }
+
+  return `Check coverage for ${seed.name}`;
+}
+
+function buildFlightHref(seed: DestinationSeed) {
+  return buildProviderSearchHref({
+    baseUrl: process.env.NEXT_PUBLIC_FLIGHTS_AFFILIATE_BASE_URL ?? "https://www.skyscanner.ca/transport/flights/",
+    queryParam: process.env.NEXT_PUBLIC_FLIGHTS_AFFILIATE_QUERY_PARAM ?? "query",
+    searchTerm: `Flights to ${seed.name}`,
+    fallbackPath: "/transport/flights/",
+  });
 }
 
 function buildBookingHref(seed: DestinationSeed) {
@@ -721,6 +776,8 @@ function buildBookingHref(seed: DestinationSeed) {
 
   url.searchParams.set("ss", seed.name);
   url.searchParams.set("label", `travelbudget-${seed.slug}`);
+  url.searchParams.set("utm_source", "travelbudget.ai");
+  url.searchParams.set("utm_medium", "affiliate");
 
   if (aid) {
     url.searchParams.set("aid", aid);
