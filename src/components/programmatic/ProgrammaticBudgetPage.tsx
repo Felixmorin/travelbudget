@@ -17,6 +17,7 @@ import {
   ProgrammaticSeoHighlights,
 } from "@/components/programmatic/ProgrammaticSeoContent";
 import { AnalyticsView } from "@/components/analytics/analytics-view";
+import { EmailCapture } from "@/components/leads/email-capture";
 import { TrackedLink } from "@/components/analytics/tracked-link";
 import { EstimateDisclaimer } from "@/components/site/estimate-disclaimer";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +26,7 @@ import { formatMoney } from "@/lib/format-money";
 import {
   type BudgetDestination,
   type ProgrammaticBudgetPageConfig,
+  activeProgrammaticOrigins,
   getProgrammaticBudgetPath,
   programmaticBudgetPages,
 } from "@/lib/programmatic/budget-pages";
@@ -44,7 +46,9 @@ export function ProgrammaticBudgetPage({
   const filterLabels = ["Best value", "Beach", "City", "Food", "Culture", "Warm weather", "Family", "Backpacker"];
   const relatedPages = programmaticBudgetPages
     .filter((relatedPage) => getProgrammaticBudgetPath(relatedPage) !== getProgrammaticBudgetPath(page))
+    .sort((a, b) => Number(a.budget !== page.budget) - Number(b.budget !== page.budget))
     .slice(0, 3);
+  const relatedOrigins = activeProgrammaticOrigins.filter((origin) => origin.slug !== page.origin.slug).slice(0, 4);
   const travelStyleLabel = formatTravelStyleLabel(page.travelStyle);
 
   return (
@@ -212,6 +216,17 @@ export function ProgrammaticBudgetPage({
             shorter trip length.
           </div>
         )}
+
+        <EmailCapture
+          budget={snapshotDestination?.totalEstimate ?? page.budget}
+          destination={snapshotDestination?.destination.name}
+          duration={page.tripLengthDays}
+          intent="trip_budget"
+          origin={`${page.origin.city} (${page.origin.code})`}
+          source="programmatic_budget_destinations"
+          variant="inline"
+          className="mt-8"
+        />
       </section>
 
       <section id="compare" className="bg-white py-14">
@@ -302,6 +317,31 @@ export function ProgrammaticBudgetPage({
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Tool</p>
             <p className="mt-1 font-bold text-slate-950">Custom budget</p>
           </Link>
+        </div>
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
+          <InternalLink href="/results" label="Results" title="Compare live budget results" />
+          <InternalLink href="/destinations" label="Destinations" title="Browse destination budget guides" />
+          <InternalLink href="/methodology" label="Methodology" title="How estimates are calculated" />
+        </div>
+        <div className="mt-8">
+          <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">Other origins</p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {relatedOrigins.map((origin) => {
+              const relatedOriginPage = programmaticBudgetPages.find(
+                (relatedPage) => relatedPage.origin.slug === origin.slug && relatedPage.budget === page.budget
+              );
+
+              return relatedOriginPage ? (
+                <Link
+                  key={origin.slug}
+                  href={getProgrammaticBudgetPath(relatedOriginPage)}
+                  className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:border-blue-200 hover:text-blue-700"
+                >
+                  From {origin.city}
+                </Link>
+              ) : null;
+            })}
+          </div>
         </div>
       </section>
 
@@ -512,5 +552,14 @@ function SummaryMetric({ label, value }: { label: string; value: string }) {
       <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
       <p className="mt-2 text-lg font-semibold text-slate-950">{value}</p>
     </div>
+  );
+}
+
+function InternalLink({ href, label, title }: { href: string; label: string; title: string }) {
+  return (
+    <Link href={href} className="rounded-xl bg-white p-4 transition-colors hover:bg-blue-50">
+      <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">{label}</p>
+      <p className="mt-1 font-bold text-slate-950">{title}</p>
+    </Link>
   );
 }

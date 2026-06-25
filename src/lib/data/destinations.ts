@@ -12,7 +12,7 @@ export type AffiliateLink = {
   target?: string;
 };
 
-export type OriginCode = "YUL" | "YYZ" | "YVR" | (string & {});
+export type OriginCode = "YUL" | "YYZ" | "YVR" | "YQB" | "YOW" | "YYC" | "NYC" | "BOS" | "CHI" | (string & {});
 
 export type FlightEstimate = {
   low: number;
@@ -106,6 +106,12 @@ const origins = {
   YUL: { originCity: "Montreal", originCountry: "Canada" },
   YYZ: { originCity: "Toronto", originCountry: "Canada" },
   YVR: { originCity: "Vancouver", originCountry: "Canada" },
+  YQB: { originCity: "Québec", originCountry: "Canada" },
+  YOW: { originCity: "Ottawa", originCountry: "Canada" },
+  YYC: { originCity: "Calgary", originCountry: "Canada" },
+  NYC: { originCity: "New York", originCountry: "United States" },
+  BOS: { originCity: "Boston", originCountry: "United States" },
+  CHI: { originCity: "Chicago", originCountry: "United States" },
 } as const;
 
 const destinationSeeds: DestinationSeed[] = [
@@ -600,7 +606,7 @@ function buildDestination(destination: Omit<Destination, "estimatedCost" | "curr
 
 function buildOriginPricing(seed: DestinationSeed): OriginPricing {
   return Object.fromEntries(
-    Object.entries(seed.flightAverage).map(([originCode, average]) => [
+    Object.entries(buildFlightAverages(seed)).map(([originCode, average]) => [
       originCode,
       {
         ...origins[originCode as keyof typeof origins],
@@ -616,6 +622,18 @@ function buildOriginPricing(seed: DestinationSeed): OriginPricing {
       },
     ])
   ) as OriginPricing;
+}
+
+function buildFlightAverages(seed: DestinationSeed): Record<keyof typeof origins, number> {
+  return {
+    ...seed.flightAverage,
+    YQB: roundToNearest(seed.flightAverage.YUL * 1.08 + 40, 10),
+    YOW: roundToNearest((seed.flightAverage.YUL + seed.flightAverage.YYZ) / 2 + 30, 10),
+    YYC: roundToNearest(seed.flightAverage.YVR * 0.7 + seed.flightAverage.YYZ * 0.3 + 70, 10),
+    NYC: roundToNearest(seed.flightAverage.YYZ * 0.92, 10),
+    BOS: roundToNearest(((seed.flightAverage.YUL + seed.flightAverage.YYZ) / 2) * 0.95, 10),
+    CHI: roundToNearest(seed.flightAverage.YYZ * 0.97, 10),
+  };
 }
 
 function buildDailyCosts(seed: DestinationSeed): DailyCosts {
@@ -781,8 +799,20 @@ export function normalizeOriginCode(originCode: string | null | undefined): Orig
     return defaultOriginCode;
   }
 
-  if (["MONTREAL", "MONTRÉAL"].includes(normalized)) {
+  if (["MONTREAL", "MONTRÉAL", "MONTRÃ‰AL"].includes(normalized)) {
     return "YUL";
+  }
+
+  if (["QUEBEC", "QUÉBEC", "QUEBEC CITY", "QUÉBEC CITY"].includes(normalized)) {
+    return "YQB";
+  }
+
+  if (normalized === "OTTAWA") {
+    return "YOW";
+  }
+
+  if (normalized === "CALGARY") {
+    return "YYC";
   }
 
   if (normalized === "TORONTO") {
@@ -791,6 +821,18 @@ export function normalizeOriginCode(originCode: string | null | undefined): Orig
 
   if (normalized === "VANCOUVER") {
     return "YVR";
+  }
+
+  if (normalized === "NEW YORK") {
+    return "NYC";
+  }
+
+  if (normalized === "BOSTON") {
+    return "BOS";
+  }
+
+  if (normalized === "CHICAGO") {
+    return "CHI";
   }
 
   return normalized as OriginCode;

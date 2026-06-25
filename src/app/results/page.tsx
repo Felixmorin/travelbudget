@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 
 import { AnalyticsView } from "@/components/analytics/analytics-view";
+import { EmailCapture } from "@/components/leads/email-capture";
 import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -203,12 +204,23 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
           )}
 
           {topRecommendation ? (
-            <BudgetBreakdownCard
-              currency={parsedParams.currency}
-              days={parsedParams.days}
-              recommendation={topRecommendation}
-              style={parsedParams.style}
-            />
+            <>
+              <BudgetBreakdownCard
+                currency={parsedParams.currency}
+                days={parsedParams.days}
+                recommendation={topRecommendation}
+                style={parsedParams.style}
+              />
+              <EmailCapture
+                budget={topRecommendation.estimatedTotal}
+                destination={topRecommendation.destination.name}
+                duration={parsedParams.days}
+                intent="trip_budget"
+                origin={originLabel}
+                source="results_budget_breakdown"
+                variant="inline"
+              />
+            </>
           ) : null}
 
           <EstimateDisclaimer />
@@ -216,6 +228,15 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
 
         <aside className="grid h-fit gap-6 lg:sticky lg:top-24">
           <GlobalPriceIndexCard />
+          <EmailCapture
+            budget={topRecommendation?.estimatedTotal}
+            destination={topRecommendation?.destination.name}
+            duration={parsedParams.days}
+            intent="price_alert"
+            origin={originLabel}
+            source="results_sidebar"
+            variant="compact"
+          />
           <OffersPanel origin={originLabel} topDestination={topRecommendation?.destination.name} />
         </aside>
       </section>
@@ -321,6 +342,9 @@ function ResultsFilters({ parsedParams }: { parsedParams: ParsedSearchParams }) 
           <option value="YUL">Montreal</option>
           <option value="YYZ">Toronto</option>
           <option value="YVR">Vancouver</option>
+          <option value="YQB">Québec</option>
+          <option value="YOW">Ottawa</option>
+          <option value="YYC">Calgary</option>
         </select>
       </label>
       <label className="grid gap-2 text-sm font-semibold text-[#434655]">

@@ -15,6 +15,7 @@ export type ProgrammaticOrigin = {
   city: string;
   country: string;
   code: string;
+  status: "active" | "planned";
 };
 
 export type ProgrammaticBudgetPageConfig = {
@@ -43,26 +44,75 @@ export type ComparisonPick = {
   detail: string;
 };
 
-const supportedOrigins: ProgrammaticOrigin[] = [
+export const programmaticOrigins: ProgrammaticOrigin[] = [
   {
     slug: "montreal",
     city: "Montreal",
     country: "Canada",
     code: "YUL",
+    status: "active",
   },
   {
     slug: "toronto",
     city: "Toronto",
     country: "Canada",
     code: "YYZ",
+    status: "active",
   },
   {
     slug: "vancouver",
     city: "Vancouver",
     country: "Canada",
     code: "YVR",
+    status: "active",
+  },
+  {
+    slug: "quebec",
+    city: "Québec",
+    country: "Canada",
+    code: "YQB",
+    status: "active",
+  },
+  {
+    slug: "ottawa",
+    city: "Ottawa",
+    country: "Canada",
+    code: "YOW",
+    status: "active",
+  },
+  {
+    slug: "calgary",
+    city: "Calgary",
+    country: "Canada",
+    code: "YYC",
+    status: "active",
+  },
+  {
+    slug: "new-york",
+    city: "New York",
+    country: "United States",
+    code: "NYC",
+    status: "planned",
+  },
+  {
+    slug: "boston",
+    city: "Boston",
+    country: "United States",
+    code: "BOS",
+    status: "planned",
+  },
+  {
+    slug: "chicago",
+    city: "Chicago",
+    country: "United States",
+    code: "CHI",
+    status: "planned",
   },
 ];
+
+export const activeProgrammaticOrigins = programmaticOrigins.filter(
+  (origin) => origin.status === "active"
+);
 
 const budgetTiers = [
   {
@@ -97,7 +147,7 @@ const budgetTiers = [
   },
 ] satisfies Omit<ProgrammaticBudgetPageConfig, "origin" | "currency" | "travelers">[];
 
-export const programmaticBudgetPages = supportedOrigins.flatMap((origin) =>
+export const programmaticBudgetPages = activeProgrammaticOrigins.flatMap((origin) =>
   budgetTiers.map((tier) => ({
     origin,
     budget: tier.budget,
@@ -110,7 +160,7 @@ export const programmaticBudgetPages = supportedOrigins.flatMap((origin) =>
 ) satisfies ProgrammaticBudgetPageConfig[];
 
 export function getProgrammaticOrigin(originSlug: string) {
-  return supportedOrigins.find((origin) => origin.slug === originSlug.toLowerCase());
+  return programmaticOrigins.find((origin) => origin.slug === originSlug.toLowerCase());
 }
 
 export function parseBudgetSlug(budgetSlug: string) {

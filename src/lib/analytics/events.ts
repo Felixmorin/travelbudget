@@ -53,6 +53,23 @@ export type AnalyticsEventProperties = {
     linkType?: string;
     title?: string;
   };
+  email_capture_viewed: CommonAnalyticsProperties & {
+    intent?: string;
+    variant?: string;
+  };
+  email_capture_submitted: CommonAnalyticsProperties & {
+    intent?: string;
+    variant?: string;
+  };
+  email_capture_success: CommonAnalyticsProperties & {
+    intent?: string;
+    variant?: string;
+  };
+  email_capture_error: CommonAnalyticsProperties & {
+    intent?: string;
+    variant?: string;
+    error?: string;
+  };
   newsletter_submitted: CommonAnalyticsProperties & {
     newsletterLocation?: string;
   };
@@ -85,6 +102,10 @@ export const analyticsEventNames = [
   "cta_clicked",
   "affiliate_module_viewed",
   "affiliate_link_clicked",
+  "email_capture_viewed",
+  "email_capture_submitted",
+  "email_capture_success",
+  "email_capture_error",
   "newsletter_submitted",
   "guide_clicked",
 ] as const satisfies readonly AnalyticsEventName[];

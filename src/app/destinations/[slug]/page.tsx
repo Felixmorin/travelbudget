@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowRight, CalendarDays, Home, Route, Search, Sparkles, WalletCards } from "lucide-react";
 
 import { AnalyticsView } from "@/components/analytics/analytics-view";
+import { EmailCapture } from "@/components/leads/email-capture";
 import { TrackedLink } from "@/components/analytics/tracked-link";
 import { AffiliateCard } from "@/components/site/affiliate-card";
 import { BudgetBreakdown } from "@/components/site/budget-breakdown";
@@ -218,6 +219,16 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
 
             <BudgetBreakdown destination={destination} />
 
+            <EmailCapture
+              budget={typicalEstimate}
+              destination={destination.name}
+              duration={10}
+              intent="trip_budget"
+              origin={`${defaultOriginPricing.originCity} (${defaultOriginPricing.currency})`}
+              source="destination_budget_breakdown"
+              variant="inline"
+            />
+
             <Card className="border-slate-200 bg-white shadow-lg shadow-slate-200/60">
               <CardHeader>
                 <CardTitle className="text-xl text-slate-950">Estimate confidence</CardTitle>
@@ -359,6 +370,15 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
           </div>
 
           <aside className="grid h-fit gap-4 lg:sticky lg:top-24">
+            <EmailCapture
+              budget={typicalEstimate}
+              destination={destination.name}
+              duration={10}
+              intent="price_alert"
+              origin={defaultOriginPricing.originCity}
+              source="destination_sidebar"
+              variant="compact"
+            />
             <div>
               <p className="text-sm font-semibold uppercase tracking-wide text-teal-700">Booking options</p>
               <h2 className="mt-2 text-2xl font-semibold text-slate-950">Book the core trip pieces</h2>
@@ -581,6 +601,15 @@ function CityDestinationPage({ destination }: { destination: CityDestination }) 
               </Button>
             </CardContent>
           </Card>
+          <EmailCapture
+            budget={destination.estimatedTotalCost}
+            destination={destination.city}
+            duration={destination.durationDays}
+            intent="price_alert"
+            origin={destination.departureCity}
+            source="city_destination_sidebar"
+            variant="compact"
+          />
         </aside>
       </section>
     </main>
