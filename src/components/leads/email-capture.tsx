@@ -75,7 +75,9 @@ export function EmailCapture({
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const formData = new FormData(event.currentTarget);
     const normalizedEmail = email.trim();
+    const website = String(formData.get("website") ?? "");
 
     if (!isValidEmail(normalizedEmail)) {
       setStatus("error");
@@ -106,6 +108,7 @@ export function EmailCapture({
           duration,
           source,
           pathname,
+          website,
         }),
       });
       const result = (await response.json()) as { ok?: boolean; error?: string };
@@ -150,6 +153,7 @@ export function EmailCapture({
       </div>
 
       <form className="mt-4 grid gap-3 sm:grid-cols-[1fr_auto]" onSubmit={handleSubmit}>
+        <input aria-hidden="true" autoComplete="off" className="hidden" name="website" tabIndex={-1} type="text" />
         <Input
           aria-label="Email address"
           aria-invalid={status === "error"}

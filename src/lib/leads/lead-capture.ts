@@ -21,6 +21,17 @@ type LeadCaptureStore = {
 };
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const providerTimeoutMs = 5000;
+
+export class LeadCaptureError extends Error {
+  status: number;
+
+  constructor(message: string, status = 500) {
+    super(message);
+    this.name = "LeadCaptureError";
+    this.status = status;
+  }
+}
 
 export function isValidEmail(email: string) {
   return emailPattern.test(email.trim());
@@ -34,13 +45,18 @@ export function normalizeLeadCapturePayload(input: unknown): LeadCapturePayload 
   const payload = input as Record<string, unknown>;
   const email = typeof payload.email === "string" ? payload.email.trim().toLowerCase() : "";
   const intent = payload.intent;
+  const honeypot = normalizeOptionalString(payload.website) ?? normalizeOptionalString(payload.company);
+
+  if (honeypot) {
+    throw new LeadCaptureError("Unable to save this email request.", 400);
+  }
 
   if (!isValidEmail(email)) {
-    throw new Error("Enter a valid email address.");
+    throw new LeadCaptureError("Enter a valid email address.", 400);
   }
 
   if (intent !== "trip_budget" && intent !== "price_alert") {
-    throw new Error("Choose a valid email capture intent.");
+    throw new LeadCaptureError("Choose a valid email capture intent.", 400);
   }
 
   return {
@@ -62,6 +78,15 @@ export async function saveLeadCapture(payload: LeadCapturePayload): Promise<Stor
     timestamp: new Date().toISOString(),
   };
 
+  if (process.env.LEAD_CAPTURE_WEBHOOK_URL) {
+    await sendLeadCaptureToProvider(lead);
+    return lead;
+  }
+
+  if (process.env.NODE_ENV === "production") {
+    throw new LeadCaptureError("Email capture is not configured.", 503);
+  }
+
   if (process.env.LEAD_CAPTURE_LOG_TO_CONSOLE === "true") {
     console.info("[lead-capture]", lead);
   }
@@ -77,6 +102,62 @@ export function listStoredLeadCaptures() {
 
 export function clearStoredLeadCaptures() {
   getDevelopmentStore().leads.length = 0;
+}
+
+async function sendLeadCaptureToProvider(lead: StoredLeadCapture) {
+  const webhookUrl = process.env.LEAD_CAPTURE_WEBHOOK_URL;
+
+  if (!webhookUrl) {
+    throw new LeadCaptureError("Email capture is not configured.", 503);
+  }
+
+  let url: URL;
+
+  try {
+    url = new URL(webhookUrl);
+  } catch {
+    throw new LeadCaptureError("Email capture provider is misconfigured.", 500);
+  }
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), providerTimeoutMs);
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: buildProviderHeaders(),
+      body: JSON.stringify({
+        event: "lead_capture.created",
+        lead,
+      }),
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      throw new LeadCaptureError("Email capture provider rejected the request.", 502);
+    }
+  } catch (error) {
+    if (error instanceof LeadCaptureError) {
+      throw error;
+    }
+
+    throw new LeadCaptureError("Email capture provider is unavailable.", 502);
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function buildProviderHeaders() {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  const secret = process.env.LEAD_CAPTURE_WEBHOOK_SECRET;
+
+  if (secret) {
+    headers.Authorization = `Bearer ${secret}`;
+  }
+
+  return headers;
 }
 
 function normalizeOptionalString(value: unknown) {

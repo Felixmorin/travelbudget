@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { recommendDestinations } from "@/lib/budget/recommend-destinations";
+import { recommendDestinations, type DestinationRecommendation } from "@/lib/budget/recommend-destinations";
 import { destinations } from "@/lib/data/destinations";
 import {
   createResultsHref,
@@ -30,6 +30,49 @@ const recommendations = recommendDestinations({
   travelers: baseParams.travelers,
   style: baseParams.style,
 });
+
+const fixtureRecommendations = [
+  createRecommendationFixture({
+    slug: "lisbon",
+    name: "Lisbon",
+    countryCode: "PT",
+    weather: "Sunny shoulder season",
+    shortDescription: "Coastal food city with trams",
+    travelStyles: ["Coast", "Food", "Cities"],
+    estimatedTotal: 2200,
+    matchScore: 80,
+  }),
+  createRecommendationFixture({
+    slug: "kyoto",
+    name: "Kyoto",
+    countryCode: "JP",
+    weather: "Mild autumn",
+    shortDescription: "Temples and culture",
+    travelStyles: ["Culture", "Food"],
+    estimatedTotal: 2750,
+    matchScore: 85,
+  }),
+  createRecommendationFixture({
+    slug: "banff",
+    name: "Banff",
+    countryCode: "CA",
+    weather: "Mountain summer",
+    shortDescription: "Lake hikes and road trip scenery",
+    travelStyles: ["Nature", "Adventure", "Road Trip"],
+    estimatedTotal: 3301,
+    matchScore: 95,
+  }),
+  createRecommendationFixture({
+    slug: "seoul",
+    name: "Seoul",
+    countryCode: "KR",
+    weather: "Cool spring",
+    shortDescription: "Transit-friendly city food trip",
+    travelStyles: ["Cities", "Food"],
+    estimatedTotal: 2750,
+    matchScore: 85,
+  }),
+];
 
 describe("parseSearchParams", () => {
   it("normalizes supported scalar values and aliases", () => {
@@ -97,6 +140,28 @@ describe("createResultsHref", () => {
 });
 
 describe("filterAndSortRecommendations", () => {
+  it("keeps recommendations at or under 110% of budget and removes higher totals", () => {
+    const results = filterAndSortRecommendations(fixtureRecommendations, {
+      ...baseParams,
+      budget: 3000,
+    });
+
+    expect(results.map((result) => result.destination.slug)).toEqual(["kyoto", "seoul", "lisbon"]);
+    expect(results.every((result) => result.estimatedTotal <= 3300)).toBe(true);
+  });
+
+  it("combines budget fit, category, destination search, and score sorting", () => {
+    const results = filterAndSortRecommendations(fixtureRecommendations, {
+      ...baseParams,
+      budget: 2500,
+      category: "food",
+      destination: "city",
+      sort: "score",
+    });
+
+    expect(results.map((result) => result.destination.slug)).toEqual(["seoul", "lisbon"]);
+  });
+
   it("filters by category using destination travel-style aliases", () => {
     const beachResults = filterAndSortRecommendations(recommendations, {
       ...baseParams,
@@ -153,10 +218,64 @@ describe("filterAndSortRecommendations", () => {
       }
     }
   });
+
+  it("uses score and estimated total tie-breakers for relevance sorting", () => {
+    const results = filterAndSortRecommendations(fixtureRecommendations, {
+      ...baseParams,
+      budget: 3001,
+      sort: "relevance",
+    });
+
+    expect(results.map((result) => result.destination.slug)).toEqual(["banff", "kyoto", "seoul", "lisbon"]);
+  });
 });
 
 function hasAnyTravelStyle(styles: string[], expectedStyles: string[]) {
   const normalizedStyles = styles.map((style) => style.toLowerCase());
 
   return normalizedStyles.some((style) => expectedStyles.includes(style));
+}
+
+function createRecommendationFixture({
+  slug,
+  name,
+  countryCode,
+  weather,
+  shortDescription,
+  travelStyles,
+  estimatedTotal,
+  matchScore,
+}: {
+  slug: string;
+  name: string;
+  countryCode: string;
+  weather: string;
+  shortDescription: string;
+  travelStyles: string[];
+  estimatedTotal: number;
+  matchScore: number;
+}): DestinationRecommendation {
+  return {
+    destination: {
+      slug,
+      name,
+      countryCode,
+      weather,
+      shortDescription,
+      travelStyles,
+    },
+    estimatedTotal,
+    budgetRemaining: 0,
+    budgetFitStatus: "best-fit",
+    matchScore,
+    costBreakdown: {
+      flights: 0,
+      hotel: 0,
+      food: 0,
+      transport: 0,
+      activities: 0,
+      misc: 0,
+    },
+    reasons: [],
+  } as unknown as DestinationRecommendation;
 }

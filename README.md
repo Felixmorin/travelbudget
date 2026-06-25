@@ -13,6 +13,7 @@ The app currently uses a curated planning dataset of 30 country destinations wit
 - Programmatic SEO pages for destination budgets, trip durations, and `/from/[origin]/under-[budget]` combinations
 - Booking.com, Airalo, and GetYourGuide external partner link wiring
 - Analytics events for page views, searches, destination clicks, affiliate modules, and CTAs
+- Lead capture via a configurable server-side provider webhook, with local-only development storage
 
 ## Tech Stack
 
@@ -136,6 +137,12 @@ Optional public environment variables:
 - `NEXT_PUBLIC_ESIM_AFFILIATE_QUERY_PARAM` - overrides the eSIM search query parameter, defaults to `search`
 - `NEXT_PUBLIC_ACTIVITIES_AFFILIATE_BASE_URL` - overrides the activities provider or affiliate deep-link base URL
 - `NEXT_PUBLIC_ACTIVITIES_AFFILIATE_QUERY_PARAM` - overrides the activities search query parameter, defaults to `q`
+
+Server-side lead capture variables:
+
+- `LEAD_CAPTURE_WEBHOOK_URL` - required in production; receives `lead_capture.created` events for a CRM, database API, email provider, or automation tool
+- `LEAD_CAPTURE_WEBHOOK_SECRET` - optional bearer token sent to the webhook as `Authorization: Bearer <secret>`
+- `LEAD_CAPTURE_LOG_TO_CONSOLE` - optional local-development logging; production does not fall back to memory storage
 
 ## Current Limitations
 

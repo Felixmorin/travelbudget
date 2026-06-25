@@ -18,37 +18,65 @@ const costInputs = [
     title: "Flights",
     icon: Plane,
     body:
-      "We start with round-trip flight planning estimates from supported origin cities. Current baselines cover Montreal, Toronto, and Vancouver when destination-specific data is available.",
+      "We use round-trip economy flight planning baselines by origin city. Current destination estimates include Montreal, Toronto, and Vancouver, with additional supported origins normalized to the closest available baseline when needed.",
   },
   {
     title: "Accommodation",
     icon: Hotel,
     body:
-      "Hotel and stay estimates are modeled per night as part of each destination's daily cost profile, with different assumptions for budget, mid-range, and comfort-oriented trips.",
+      "Accommodation is modeled per traveler per night inside each destination's daily cost profile. Budget, balanced, and comfort styles use different lodging assumptions instead of one universal hotel price.",
   },
   {
     title: "Meals",
     icon: Utensils,
     body:
-      "Meal budgets include practical daily food spending, from simple local meals in budget mode to more flexible restaurant choices in balanced and comfort modes.",
+      "Food estimates cover practical daily meals. Budget mode assumes simple local meals, balanced mode assumes a mix of casual restaurants and quick meals, and comfort mode assumes more flexible dining.",
   },
   {
     title: "Local transport",
     icon: Calculator,
     body:
-      "Local movement includes public transit, rideshares, short transfers, and similar ground transport needed to make an itinerary workable after arrival.",
+      "Local movement includes public transit, rideshares, short transfers, ferries, and similar ground transport needed to make an itinerary workable after arrival.",
   },
   {
     title: "Activities",
     icon: CircleDollarSign,
     body:
-      "Activity costs cover paid attractions, tours, museums, day trips, and destination experiences. High-cost special activities still need separate verification before booking.",
+      "Activity costs cover ordinary paid attractions, tours, museums, day trips, and destination experiences. Major special activities, permits, and private tours still need separate verification.",
   },
   {
     title: "Safety margin",
     icon: ShieldCheck,
     body:
-      "A miscellaneous line is included for small surprises such as baggage, mobile data, city taxes, tips, laundry, and minor price movement between planning and booking.",
+      "A miscellaneous line is included for small surprises such as baggage, mobile data, city taxes, tips, laundry, and modest price movement between planning and booking.",
+  },
+];
+
+const assumptions = [
+  {
+    label: "Travelers",
+    value:
+      "Flights and daily costs scale by traveler count. Shared-room savings and family-room pricing are not automatically assumed, so group trips should still verify lodging live.",
+  },
+  {
+    label: "Trip length",
+    value:
+      "Daily costs multiply by the selected number of days. The model does not infer a detailed itinerary, so expensive transfer days or multi-city hops can move the total.",
+  },
+  {
+    label: "Season",
+    value:
+      "Best-month signals affect recommendation score, not a guaranteed discount. Holidays, festivals, school breaks, and peak weather windows can override normal seasonal value.",
+  },
+  {
+    label: "Currency",
+    value:
+      "Destination inputs are maintained in CAD planning estimates, then converted to supported display currencies. Exchange-rate movement can change real booking cost.",
+  },
+  {
+    label: "Error range",
+    value:
+      "Treat totals as directional planning numbers. A practical margin is plus or minus 15-25%, and more for destinations with low data confidence, fast-moving fares, or peak-season lodging.",
   },
 ];
 
@@ -85,6 +113,7 @@ export default function MethodologyPage() {
           <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-600">
             TravelBudget.ai combines flight baselines, destination-level daily costs, trip length, travelers,
             departure city, and travel style to create a planning estimate before you start comparing live prices.
+            The result is a decision aid, not a live quote or booking guarantee.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild className="rounded-full bg-blue-600 px-6 text-white hover:bg-blue-700">
@@ -120,6 +149,14 @@ export default function MethodologyPage() {
             and miscellaneous spending for the selected number of travelers and days. The model adjusts daily
             costs by travel style: budget, balanced, or comfort.
           </p>
+          <div className="mt-8 grid gap-4">
+            {assumptions.map((assumption) => (
+              <div key={assumption.label} className="border-t border-slate-200 pt-4">
+                <h3 className="text-base font-semibold">{assumption.label}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{assumption.value}</p>
+              </div>
+            ))}
+          </div>
           <h2 className="mt-8 text-2xl font-semibold">Important limits</h2>
           <p className="mt-3 text-sm leading-6 text-slate-600">
             These are planning estimates, not live booking quotes. Final prices can change because of seasonality,
