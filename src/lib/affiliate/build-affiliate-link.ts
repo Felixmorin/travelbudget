@@ -27,9 +27,10 @@ export function buildAffiliateLink({
 }): BuiltAffiliateLink {
   const href = getSafeHref(link.href, destination?.slug, link.type);
   const isExternal = link.isExternal ?? isExternalHref(href);
+  const trackedHref = isExternal ? buildInternalTrackingHref({ destination, href, isExternal, link }) : href;
 
   return {
-    href,
+    href: trackedHref,
     isExternal,
     rel: link.rel ?? (isExternal ? "sponsored noopener noreferrer" : undefined),
     target: link.target ?? (isExternal ? "_blank" : undefined),
@@ -55,4 +56,32 @@ function getSafeHref(href: string | null | undefined, destinationSlug: string | 
 
 function isExternalHref(href: string) {
   return /^https?:\/\//i.test(href);
+}
+
+function buildInternalTrackingHref({
+  destination,
+  href,
+  link,
+}: {
+  destination?: Pick<Destination, "slug">;
+  href: string;
+  isExternal: boolean;
+  link: AffiliateLink;
+}) {
+  const destinationSlug = destination?.slug ?? "general";
+  const affiliateType = link.type.toLowerCase();
+  const params = new URLSearchParams({
+    url: Buffer.from(href, "utf8").toString("base64url"),
+    source: link.placement ?? "affiliate_card",
+  });
+
+  if (link.partner ?? link.provider) {
+    params.set("partner", link.partner ?? link.provider ?? "");
+  }
+
+  if (link.provider) {
+    params.set("provider", link.provider);
+  }
+
+  return `/go/${destinationSlug}/${affiliateType}?${params.toString()}`;
 }

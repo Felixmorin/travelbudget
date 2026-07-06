@@ -21,6 +21,7 @@ import {
 import { NewsletterForm } from "@/components/analytics/newsletter-form";
 import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Button } from "@/components/ui/button";
+import { longTailGuides } from "@/lib/data/guides";
 import { createMetadata } from "@/lib/seo/metadata";
 
 export const metadata = createMetadata({
@@ -244,6 +245,36 @@ export default function GuidesPage() {
               <h3 className="text-xl font-semibold text-slate-950 transition group-hover:text-[#004ac6]">{guide.title}</h3>
               <p className="mt-2 text-base leading-7 text-[#434655]">{guide.description}</p>
             </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
+        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+          <div>
+            <h2 className="text-3xl font-semibold text-slate-950">High-intent travel budget guides</h2>
+            <p className="mt-2 text-[#434655]">Specific planning pages built for destination, budget, and timing searches.</p>
+          </div>
+          <span className="text-sm font-semibold text-[#434655]">{longTailGuides.length} guides</span>
+        </div>
+        <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {longTailGuides.map((guide) => (
+            <TrackedLink
+              key={guide.slug}
+              href={`/guides/${guide.slug}`}
+              eventName="guide_clicked"
+              eventProperties={{
+                page: "/guides",
+                guideTitle: guide.title,
+                guideCategory: guide.category,
+                href: `/guides/${guide.slug}`,
+              }}
+              className="rounded-lg border border-[#c3c6d7]/45 bg-white p-5 shadow-sm transition hover:border-[#004ac6]"
+            >
+              <span className="text-xs font-semibold uppercase tracking-wide text-[#004ac6]">{guide.category}</span>
+              <h3 className="mt-2 text-lg font-semibold leading-7 text-slate-950">{guide.title}</h3>
+              <p className="mt-2 line-clamp-2 text-sm leading-6 text-[#434655]">{guide.summary}</p>
+            </TrackedLink>
           ))}
         </div>
       </section>

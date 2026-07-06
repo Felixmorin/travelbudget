@@ -1,3 +1,5 @@
+import { insertBackendRecord, isBackendStorageConfigured } from "@/lib/backend/storage";
+
 export type LeadCaptureIntent = "trip_budget" | "price_alert";
 
 export type LeadCapturePayload = {
@@ -78,12 +80,27 @@ export async function saveLeadCapture(payload: LeadCapturePayload): Promise<Stor
     timestamp: new Date().toISOString(),
   };
 
+  if (isBackendStorageConfigured()) {
+    await insertBackendRecord("leads", {
+      id: lead.id,
+      email: lead.email,
+      intent: lead.intent,
+      destination: lead.destination,
+      origin: lead.origin,
+      budget: lead.budget,
+      duration: lead.duration,
+      source: lead.source,
+      pathname: lead.pathname,
+      created_at: lead.timestamp,
+    });
+  }
+
   if (process.env.LEAD_CAPTURE_WEBHOOK_URL) {
     await sendLeadCaptureToProvider(lead);
     return lead;
   }
 
-  if (process.env.NODE_ENV === "production") {
+  if (process.env.NODE_ENV === "production" && !isBackendStorageConfigured()) {
     throw new LeadCaptureError("Email capture is not configured.", 503);
   }
 

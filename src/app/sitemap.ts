@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 
 import { destinations } from "@/lib/data/destinations";
 import { cityDestinations } from "@/lib/data/destination-hub";
+import { longTailGuides } from "@/lib/data/guides";
 import { getProgrammaticBudgetPath, programmaticBudgetPages } from "@/lib/programmatic/budget-pages";
 import { comparisonPages, getComparisonPath } from "@/lib/programmatic/comparison-pages";
 import {
@@ -106,6 +107,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "monthly" as const,
     priority: 0.78,
   }));
+  const guideRoutes = longTailGuides.map((guide) => ({
+    url: createCanonicalUrl(`/guides/${guide.slug}`),
+    changeFrequency: "monthly" as const,
+    priority: 0.74,
+  }));
 
   return [
     ...staticRoutes,
@@ -115,5 +121,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...destinationBudgetRoutes,
     ...durationCostRoutes,
     ...comparisonRoutes,
+    ...guideRoutes,
   ];
 }

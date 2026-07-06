@@ -31,10 +31,27 @@ export function trackEvent<EventName extends AnalyticsEventName>(
   const providers = getAnalyticsProviders(analyticsWindow);
 
   providers.forEach((provider) => provider(eventName, normalizedProperties));
+  sendServerAnalyticsEvent(eventName, normalizedProperties);
 
   if (process.env.NODE_ENV === "development" && providers.length === 0) {
     console.debug("[analytics]", eventName, normalizedProperties);
   }
+}
+
+function sendServerAnalyticsEvent(eventName: string, properties: AnalyticsPayload) {
+  const body = JSON.stringify({ eventName, properties });
+
+  if (navigator.sendBeacon) {
+    navigator.sendBeacon("/api/analytics-events", new Blob([body], { type: "application/json" }));
+    return;
+  }
+
+  fetch("/api/analytics-events", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body,
+    keepalive: true,
+  }).catch(() => undefined);
 }
 
 function normalizeProperties(properties?: Record<string, AnalyticsPrimitive | undefined>) {
