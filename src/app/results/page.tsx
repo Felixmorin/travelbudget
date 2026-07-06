@@ -2,41 +2,36 @@ import Image from "next/image";
 import { connection } from "next/server";
 import {
   ArrowRight,
-  Building2,
-  CircleDollarSign,
+  BadgeCheck,
+  Bed,
+  CalendarDays,
+  Clock3,
   Compass,
-  Filter,
-  Hotel,
-  Landmark,
-  Leaf,
-  MapPin,
-  Mountain,
+  Edit3,
+  Globe2,
+  Luggage,
   Plane,
+  PlaneTakeoff,
+  Scale,
+  ShieldCheck,
+  SlidersHorizontal,
   Sparkles,
-  Users,
+  Sun,
+  ThermometerSun,
   Utensils,
-  Waves,
-  Wifi,
+  WalletCards,
   type LucideIcon,
 } from "lucide-react";
 
 import { AnalyticsView } from "@/components/analytics/analytics-view";
 import { SaveDestinationButton } from "@/components/analytics/save-destination-button";
 import { TrackedFilterForm } from "@/components/analytics/tracked-form";
-import { EmailCapture } from "@/components/leads/email-capture";
 import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  CostBreakdownDonut,
-  CostBreakdownList,
-  type CostBreakdownItem,
-} from "@/components/site/cost-breakdown-card";
-import { EstimateDisclaimer } from "@/components/site/estimate-disclaimer";
-import {
   recommendDestinations,
   type DestinationRecommendation,
-  type SupportedCurrency,
   type TravelStyle,
 } from "@/lib/budget/recommend-destinations";
 import {
@@ -56,47 +51,77 @@ import { createResultsMetadata } from "@/lib/seo/metadata";
 
 export const metadata = createResultsMetadata();
 
-const categories: { label: string; value: ResultsCategory; icon: LucideIcon }[] = [
-  { label: "All", value: "all", icon: Sparkles },
-  { label: "Beach", value: "beach", icon: Waves },
-  { label: "City", value: "city", icon: Building2 },
-  { label: "Nature", value: "nature", icon: Leaf },
-  { label: "Culture", value: "culture", icon: Landmark },
-  { label: "Adventure", value: "adventure", icon: Mountain },
-  { label: "Food", value: "food", icon: Utensils },
-  { label: "Family", value: "family", icon: Users },
-  { label: "Backpacker", value: "backpacker", icon: Compass },
-];
-
 type ResultsPageProps = {
   searchParams: Promise<ResultsSearchParams>;
 };
 
 type ResultDestination = {
   rank: number;
-  country: string;
-  region: string;
+  slug: string;
+  title: string;
+  tag: string;
   total: string;
-  flightCost: string;
-  dailyCost: string;
-  budgetRemaining: string;
+  budgetDelta: string;
   budgetRemainingValue: number;
-  quality: string;
-  score: string;
+  budgetFitPercent: number;
+  flightCost: string;
+  stayCost: string;
+  foodCost: string;
   href: string;
   image: string;
   alt: string;
-  duration: string;
-  style: string;
+  flightTime: string;
+  climate: string;
+  entry: string;
   summary: string;
 };
 
-type Offer = {
-  title: string;
-  detail: string;
-  action: string;
-  icon: LucideIcon;
-  tone: string;
+const sidebarFilters: { label: string; icon: LucideIcon }[] = [
+  { label: "Budget", icon: WalletCards },
+  { label: "Continent", icon: Globe2 },
+  { label: "Climate", icon: Sun },
+  { label: "Travel style", icon: Luggage },
+  { label: "Visa", icon: BadgeCheck },
+  { label: "Flight duration", icon: PlaneTakeoff },
+  { label: "Season", icon: CalendarDays },
+  { label: "Trip type", icon: Compass },
+];
+
+const categoryFilters: { label: string; value: ResultsCategory; icon: LucideIcon }[] = [
+  { label: "All", value: "all", icon: Sparkles },
+  { label: "Beach", value: "beach", icon: Sun },
+  { label: "City", value: "city", icon: Globe2 },
+  { label: "Nature", value: "nature", icon: Compass },
+  { label: "Culture", value: "culture", icon: BadgeCheck },
+  { label: "Adventure", value: "adventure", icon: Luggage },
+  { label: "Food", value: "food", icon: Utensils },
+  { label: "Family", value: "family", icon: ShieldCheck },
+  { label: "Backpacker", value: "backpacker", icon: WalletCards },
+];
+
+const displayNameBySlug: Record<string, string> = {
+  portugal: "Lisbon, Portugal",
+  mexico: "Mexico City, Mexico",
+  france: "Paris, France",
+  italy: "Rome, Italy",
+  thailand: "Bangkok, Thailand",
+  canada: "Vancouver, Canada",
+  japan: "Tokyo, Japan",
+  spain: "Madrid, Spain",
+  vietnam: "Vietnam",
+  greece: "Athens, Greece",
+};
+
+const flightTimeBySlug: Record<string, string> = {
+  portugal: "7h 05m",
+  mexico: "5h 45m",
+  france: "6h 50m",
+  italy: "8h 10m",
+  thailand: "19h+",
+  japan: "14h+",
+  vietnam: "20h+",
+  spain: "7h 25m",
+  greece: "9h 30m",
 };
 
 export default async function ResultsPage({ searchParams }: ResultsPageProps) {
@@ -113,21 +138,26 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
     travelers: parsedParams.travelers,
     style: parsedParams.style,
   });
-  const recommendations = filterAndSortRecommendations(allRecommendations, parsedParams);
+  const strictRecommendations = filterAndSortRecommendations(allRecommendations, parsedParams);
+  const recommendations =
+    strictRecommendations.length > 0
+      ? strictRecommendations
+      : filterAndSortRecommendations(allRecommendations, {
+          ...parsedParams,
+          budget: Number.MAX_SAFE_INTEGER,
+        });
   const destinations = recommendations.map((recommendation, index) =>
     toResultDestination(recommendation, index, parsedParams)
   );
+  const featuredDestinations = destinations.slice(0, 6);
   const topRecommendation = recommendations[0];
   const formattedBudget = formatMoney(parsedParams.budget, parsedParams.currency);
   const originLabel = formatOriginLabel(parsedParams.origin);
-  const resultSummary = `Showing ${recommendations.length} of ${allRecommendations.length} ${
-    recommendations.length === 1 ? "destination" : "destinations"
-  } from ${originLabel} for ${formattedBudget}, ${parsedParams.days} days, ${
-    parsedParams.travelers
-  } ${parsedParams.travelers === 1 ? "traveler" : "travelers"}, ${formatStyleLabel(parsedParams.style)} style.`;
+  const styleLabel = formatStyleLabel(parsedParams.style);
+  const summaryText = `${formattedBudget} - ${parsedParams.days} days - ${originLabel} - ${styleLabel}`;
 
   return (
-    <main className="bg-[#f7f9fb] text-[#191c1e]">
+    <main className="min-h-screen bg-[#f7f9fb] text-[#191c1e]">
       <AnalyticsView
         eventName="budget_result_viewed"
         eventProperties={{
@@ -145,313 +175,349 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
           resultsCount: recommendations.length,
         }}
       />
-      <section className="border-b border-[#c3c6d7]/35 bg-white/70">
-        <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-10 sm:px-6 lg:flex-row lg:items-end lg:justify-between lg:px-8">
-          <div>
-            <p className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-blue-700">
-              <Sparkles className="size-4" />
-              Budget destination finder
-            </p>
-            <h1 className="mt-3 text-4xl font-semibold tracking-tight text-[#191c1e] sm:text-6xl">
-              Explore the World
-            </h1>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-[#434655]">{resultSummary}</p>
-          </div>
-          <Button asChild className="h-12 rounded-full bg-[#004ac6] px-5 text-white shadow-lg shadow-blue-700/20 hover:bg-blue-700">
-            <TrackedLink
-              href="/"
-              eventName="cta_clicked"
-              eventProperties={{
-                page: "/results",
-                label: "Modify Budget",
-                href: "/",
-                ctaLocation: "results_header",
-              }}
-            >
-              <Filter className="mr-2 size-4" />
-              Modify Budget
-            </TrackedLink>
-          </Button>
-        </div>
-      </section>
 
-      <section className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[minmax(0,8fr)_minmax(320px,4fr)] lg:px-8">
-        <div className="grid gap-8">
-          <ResultsFilters parsedParams={parsedParams} resultCount={recommendations.length} />
-          <CategoryFilters parsedParams={parsedParams} resultCount={recommendations.length} />
+      <div className="flex">
+        <FilterSidebar />
 
-          {destinations.length > 0 ? (
-            <div className="grid gap-5 md:grid-cols-3">
-              {destinations.map((destination) => (
-                <DestinationCard
-                  key={destination.href}
-                  destination={destination}
-                  analyticsContext={{
-                    budget: parsedParams.budget,
-                    currency: parsedParams.currency,
-                    days: parsedParams.days,
-                    month: parsedParams.month,
-                    originCity: originLabel,
-                    originCode: parsedParams.origin,
-                    resultCount: recommendations.length,
-                    travelers: parsedParams.travelers,
-                    travelStyle: parsedParams.style,
-                  }}
-                />
-              ))}
-            </div>
-          ) : (
-            <EmptyResultsState parsedParams={parsedParams} />
-          )}
-
-          {topRecommendation ? (
-            <>
-              <BudgetBreakdownCard
-                currency={parsedParams.currency}
-                days={parsedParams.days}
-                recommendation={topRecommendation}
-                style={parsedParams.style}
-              />
-              <EmailCapture
-                budget={topRecommendation.estimatedTotal}
-                destination={topRecommendation.destination.name}
-                duration={parsedParams.days}
-                intent="trip_budget"
-                origin={originLabel}
-                source="results_budget_breakdown"
-                variant="inline"
-              />
-            </>
-          ) : null}
-
-          <EstimateDisclaimer />
-        </div>
-
-        <aside className="grid h-fit gap-6 lg:sticky lg:top-24">
-          <GlobalPriceIndexCard />
-          <EmailCapture
-            budget={topRecommendation?.estimatedTotal}
-            destination={topRecommendation?.destination.name}
-            duration={parsedParams.days}
-            intent="price_alert"
-            origin={originLabel}
-            source="results_sidebar"
-            variant="compact"
+        <div className="min-w-0 flex-1">
+          <SearchSummaryBar
+            parsedParams={parsedParams}
+            resultCount={recommendations.length}
+            summaryText={summaryText}
           />
-          <OffersPanel origin={originLabel} topDestination={topRecommendation?.destination.name} />
-        </aside>
-      </section>
 
-      <CTASection />
+          <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+            <HeroSection
+              parsedParams={parsedParams}
+              resultCount={recommendations.length}
+              summaryText={summaryText}
+            />
+
+            <ResultsControls parsedParams={parsedParams} resultCount={recommendations.length} />
+
+            {featuredDestinations.length > 0 ? (
+              <section className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+                {featuredDestinations.map((destination) => (
+                  <DestinationCard
+                    key={destination.href}
+                    destination={destination}
+                    analyticsContext={{
+                      budget: parsedParams.budget,
+                      currency: parsedParams.currency,
+                      days: parsedParams.days,
+                      month: parsedParams.month,
+                      originCity: originLabel,
+                      originCode: parsedParams.origin,
+                      resultCount: recommendations.length,
+                      travelers: parsedParams.travelers,
+                      travelStyle: parsedParams.style,
+                    }}
+                  />
+                ))}
+              </section>
+            ) : (
+              <EmptyResultsState parsedParams={parsedParams} />
+            )}
+
+            <TrustModule />
+            <SeoLinks budget={formattedBudget} origin={originLabel} />
+            <FinalCta />
+          </div>
+        </div>
+      </div>
+
+      {topRecommendation ? <ComparisonTray destinations={featuredDestinations.slice(0, 3)} /> : null}
     </main>
   );
 }
 
-function toResultDestination(
-  recommendation: DestinationRecommendation,
-  index: number,
-  { budget, currency, days, style }: ParsedSearchParams
-): ResultDestination {
-  const { destination, costBreakdown } = recommendation;
-  const dailyCost =
-    recommendation.estimatedTotal > costBreakdown.flights
-      ? (recommendation.estimatedTotal - costBreakdown.flights) / days
-      : 0;
-
-  return {
-    rank: index + 1,
-    country: destination.name,
-    region: destination.travelStyles.slice(0, 2).join(" & "),
-    total: formatMoney(recommendation.estimatedTotal, currency),
-    flightCost: formatMoney(costBreakdown.flights, currency),
-    dailyCost: formatMoney(dailyCost, currency),
-    budgetRemaining: formatMoney(Math.abs(recommendation.budgetRemaining), currency),
-    budgetRemainingValue: recommendation.budgetRemaining,
-    quality: getFitLabel(recommendation.budgetFitStatus),
-    score: `${recommendation.matchScore}/100`,
-    href: `/destinations/${destination.slug}`,
-    image: destination.image,
-    alt: `${destination.name} travel view`,
-    duration: `${days} ${days === 1 ? "day" : "days"}`,
-    style: formatStyleLabel(style),
-    summary: recommendation.reasons[0] ?? `Estimated against a ${formatMoney(budget, currency)} budget.`,
-  };
-}
-
-function getFitLabel(status: DestinationRecommendation["budgetFitStatus"]) {
-  if (status === "best-fit") {
-    return "Best fit";
-  }
-
-  if (status === "stretch") {
-    return "Slight stretch";
-  }
-
-  return "Over budget";
-}
-
-function formatStyleLabel(style: TravelStyle) {
-  if (style === "comfort") {
-    return "Comfort";
-  }
-
-  if (style === "budget") {
-    return "Budget";
-  }
-
-  return "Balanced";
-}
-
-function formatOriginLabel(originCode: string) {
-  const originPricing = destinationData[0] ? getOriginPricing(destinationData[0], originCode) : undefined;
-
-  return originPricing?.originCity ? `${originPricing.originCity} (${originCode})` : originCode;
-}
-
-function ResultsFilters({ parsedParams, resultCount }: { parsedParams: ParsedSearchParams; resultCount: number }) {
+function FilterSidebar() {
   return (
-    <TrackedFilterForm
-      action="/results"
-      eventProperties={{
-        page: "/results",
-        budget: parsedParams.budget,
-        currency: parsedParams.currency,
-        days: parsedParams.days,
-        month: parsedParams.month,
-        originCode: parsedParams.origin,
-        resultCount,
-        source: "results_filter_form",
-        travelers: parsedParams.travelers,
-        travelStyle: parsedParams.style,
-        tripLength: parsedParams.days,
-      }}
-      className="grid gap-4 rounded-[28px] border border-[#c3c6d7]/35 bg-white p-5 shadow-[0_18px_45px_-28px_rgba(15,23,42,0.35)] md:grid-cols-6"
-    >
-      <label className="grid gap-2 text-sm font-semibold text-[#434655]">
-        Budget
-        <input
-          name="budget"
-          type="number"
-          min="100"
-          step="50"
-          defaultValue={parsedParams.budget}
-          className="h-11 rounded-xl border border-[#c3c6d7]/60 px-3 text-[#191c1e] outline-none focus:border-blue-500 focus:ring-3 focus:ring-blue-600/15"
-        />
-      </label>
-      <label className="grid gap-2 text-sm font-semibold text-[#434655]">
-        Days
-        <input
-          name="days"
-          type="number"
-          min="1"
-          max="60"
-          defaultValue={parsedParams.days}
-          className="h-11 rounded-xl border border-[#c3c6d7]/60 px-3 text-[#191c1e] outline-none focus:border-blue-500 focus:ring-3 focus:ring-blue-600/15"
-        />
-      </label>
-      <label className="grid gap-2 text-sm font-semibold text-[#434655]">
-        From
-        <select
-          name="origin"
-          defaultValue={parsedParams.origin}
-          className="h-11 rounded-xl border border-[#c3c6d7]/60 px-3 text-[#191c1e] outline-none focus:border-blue-500 focus:ring-3 focus:ring-blue-600/15"
-        >
-          <option value="YUL">Montreal</option>
-          <option value="YYZ">Toronto</option>
-          <option value="YVR">Vancouver</option>
-          <option value="YQB">Québec</option>
-          <option value="YOW">Ottawa</option>
-          <option value="YYC">Calgary</option>
-        </select>
-      </label>
-      <label className="grid gap-2 text-sm font-semibold text-[#434655]">
-        Style
-        <select
-          name="style"
-          defaultValue={parsedParams.style}
-          className="h-11 rounded-xl border border-[#c3c6d7]/60 px-3 text-[#191c1e] outline-none focus:border-blue-500 focus:ring-3 focus:ring-blue-600/15"
-        >
-          <option value="budget">Budget</option>
-          <option value="balanced">Balanced</option>
-          <option value="comfort">Comfort</option>
-        </select>
-      </label>
-      <label className="grid gap-2 text-sm font-semibold text-[#434655]">
-        Sort
-        <select
-          name="sort"
-          defaultValue={parsedParams.sort}
-          className="h-11 rounded-xl border border-[#c3c6d7]/60 px-3 text-[#191c1e] outline-none focus:border-blue-500 focus:ring-3 focus:ring-blue-600/15"
-        >
-          <option value="relevance">Relevance</option>
-          <option value="price-asc">Lowest price</option>
-          <option value="price-desc">Highest price</option>
-          <option value="score">Best score</option>
-        </select>
-      </label>
-      <label className="grid gap-2 text-sm font-semibold text-[#434655]">
-        Destination
-        <input
-          name="destination"
-          type="search"
-          defaultValue={parsedParams.destination}
-          placeholder="Japan, beach..."
-          className="h-11 rounded-xl border border-[#c3c6d7]/60 px-3 text-[#191c1e] outline-none focus:border-blue-500 focus:ring-3 focus:ring-blue-600/15"
-        />
-      </label>
-      <input type="hidden" name="currency" value={parsedParams.currency} />
-      <input type="hidden" name="month" value={parsedParams.month} />
-      <input type="hidden" name="travelers" value={parsedParams.travelers} />
-      <input type="hidden" name="category" value={parsedParams.category} />
-      <div className="md:col-span-6">
-        <Button className="h-11 rounded-full bg-[#004ac6] px-5 text-white hover:bg-blue-700" type="submit">
-          Apply filters
-        </Button>
+    <aside className="sticky top-16 hidden h-[calc(100vh-4rem)] w-64 shrink-0 flex-col gap-4 overflow-y-auto border-r border-[#c3c6d7]/30 bg-[#f7f9fb] p-6 lg:flex">
+      <div>
+        <h2 className="text-xl font-bold text-[#191c1e]">Filters</h2>
+        <p className="text-sm font-medium text-[#434655]">Refine your results</p>
       </div>
-    </TrackedFilterForm>
+      <nav className="grid gap-2">
+        {sidebarFilters.map((item, index) => {
+          const Icon = item.icon;
+          const active = index === 0;
+
+          return (
+            <button
+              key={item.label}
+              type="button"
+              className={`flex items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-semibold transition ${
+                active
+                  ? "bg-[#2563eb] text-white"
+                  : "text-[#434655] hover:bg-[#e6e8ea] hover:text-[#191c1e]"
+              }`}
+            >
+              <Icon className="size-5" />
+              {item.label}
+            </button>
+          );
+        })}
+      </nav>
+    </aside>
   );
 }
 
-function CategoryFilters({ parsedParams, resultCount }: { parsedParams: ParsedSearchParams; resultCount: number }) {
+function SearchSummaryBar({
+  parsedParams,
+  resultCount,
+  summaryText,
+}: {
+  parsedParams: ParsedSearchParams;
+  resultCount: number;
+  summaryText: string;
+}) {
   return (
-    <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden">
-      {categories.map((category) => {
-        const Icon = category.icon;
-        const isActive = category.value === parsedParams.category;
+    <div className="sticky top-16 z-30 border-b border-[#c3c6d7]/30 bg-[#f7f9fb]/90 px-4 py-3 backdrop-blur-md sm:px-6 lg:px-8">
+      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4">
+        <div className="flex min-w-0 flex-wrap items-center gap-3">
+          <span className="text-base font-bold text-[#191c1e]">{summaryText}</span>
+          <div className="flex flex-wrap gap-2">
+            <Pill>Budget</Pill>
+            <Pill>Duration</Pill>
+            <Pill>{parsedParams.origin}</Pill>
+            <Pill>{formatStyleLabel(parsedParams.style)}</Pill>
+          </div>
+        </div>
+        <TrackedLink
+          href="/"
+          eventName="cta_clicked"
+          eventProperties={{
+            page: "/results",
+            label: "Edit search",
+            href: "/",
+            ctaLocation: "results_summary_bar",
+          }}
+          className="inline-flex items-center gap-2 text-sm font-bold text-[#004ac6] hover:underline"
+        >
+          <Edit3 className="size-4" />
+          Edit search
+        </TrackedLink>
+        <span className="sr-only">{resultCount} matching destinations</span>
+      </div>
+    </div>
+  );
+}
 
-        return (
-          <TrackedLink
-            key={category.label}
-            href={createResultsHref(parsedParams, { category: category.value })}
-            eventName="filter_changed"
+function HeroSection({
+  parsedParams,
+  resultCount,
+  summaryText,
+}: {
+  parsedParams: ParsedSearchParams;
+  resultCount: number;
+  summaryText: string;
+}) {
+  return (
+    <section className="mb-10">
+      <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h1 className="max-w-3xl text-4xl font-bold leading-tight tracking-normal text-[#191c1e] sm:text-5xl">
+            Best destinations for your budget
+          </h1>
+          <p className="mt-4 max-w-2xl text-lg leading-8 text-[#434655]">
+            We found realistic trip options based on your budget, trip length, departure city, and travel style.
+          </p>
+          <div className="mt-4 flex items-start gap-2 text-sm font-medium text-[#737686]">
+            <ShieldCheck className="mt-0.5 size-5 shrink-0 text-[#004ac6]" />
+            <span>
+              Estimates include flights, accommodation, food, local transport, activities, and a safety buffer.
+            </span>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-4">
+          <span className="text-sm font-bold text-[#434655]">
+            {resultCount} {resultCount === 1 ? "destination" : "destinations"} found
+          </span>
+          <TrackedFilterForm
+            action="/results"
             eventProperties={{
               page: "/results",
               budget: parsedParams.budget,
               currency: parsedParams.currency,
               days: parsedParams.days,
-              filterName: "category",
-              filterValue: category.value,
               month: parsedParams.month,
               originCode: parsedParams.origin,
-              previousValue: parsedParams.category,
               resultCount,
-              source: "results_category_filter",
+              source: "results_sort_select",
               travelers: parsedParams.travelers,
               travelStyle: parsedParams.style,
               tripLength: parsedParams.days,
             }}
-            className={`flex min-w-28 items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-semibold shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-blue-600/25 ${
-              isActive
-                ? "border-blue-600 bg-[#004ac6] text-white shadow-blue-700/20"
-                : "border-[#c3c6d7]/45 bg-white text-[#434655] hover:border-blue-200 hover:text-blue-700"
-            }`}
+            className="flex items-center gap-2"
           >
-            <Icon className="size-4" />
-            {category.label}
-          </TrackedLink>
-        );
-      })}
-    </div>
+            <input type="hidden" name="budget" value={parsedParams.budget} />
+            <input type="hidden" name="currency" value={parsedParams.currency} />
+            <input type="hidden" name="origin" value={parsedParams.origin} />
+            <input type="hidden" name="days" value={parsedParams.days} />
+            <input type="hidden" name="month" value={parsedParams.month} />
+            <input type="hidden" name="travelers" value={parsedParams.travelers} />
+            <input type="hidden" name="style" value={parsedParams.style} />
+            <input type="hidden" name="category" value={parsedParams.category} />
+            <input type="hidden" name="destination" value={parsedParams.destination} />
+            <select
+              name="sort"
+              defaultValue={parsedParams.sort}
+              aria-label={`Sort results for ${summaryText}`}
+              className="h-11 appearance-none rounded-xl border border-[#c3c6d7] bg-[#eceef0] px-4 text-sm font-semibold text-[#191c1e] outline-none focus:border-[#004ac6] focus:ring-3 focus:ring-[#004ac6]/15"
+            >
+              <option value="relevance">Best match</option>
+              <option value="price-asc">Cheapest</option>
+              <option value="score">Highest score</option>
+              <option value="price-desc">Highest price</option>
+            </select>
+            <Button
+              type="submit"
+              size="icon"
+              aria-label="Apply sort"
+              className="h-11 w-11 rounded-xl bg-[#004ac6] text-white hover:bg-blue-700"
+            >
+              <SlidersHorizontal className="size-4" />
+            </Button>
+          </TrackedFilterForm>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ResultsControls({
+  parsedParams,
+  resultCount,
+}: {
+  parsedParams: ParsedSearchParams;
+  resultCount: number;
+}) {
+  return (
+    <section className="mb-8 grid gap-4">
+      <TrackedFilterForm
+        action="/results"
+        eventProperties={{
+          page: "/results",
+          budget: parsedParams.budget,
+          currency: parsedParams.currency,
+          days: parsedParams.days,
+          month: parsedParams.month,
+          originCode: parsedParams.origin,
+          resultCount,
+          source: "results_filter_form",
+          travelers: parsedParams.travelers,
+          travelStyle: parsedParams.style,
+          tripLength: parsedParams.days,
+        }}
+        className="grid gap-3 rounded-3xl border border-[#c3c6d7]/35 bg-white/70 p-4 shadow-[0_18px_45px_-32px_rgba(15,23,42,0.45)] backdrop-blur md:grid-cols-6"
+      >
+        <Field label="Budget">
+          <input
+            name="budget"
+            type="number"
+            min="100"
+            step="50"
+            defaultValue={parsedParams.budget}
+            className="field-input"
+          />
+        </Field>
+        <Field label="Days">
+          <input
+            name="days"
+            type="number"
+            min="1"
+            max="60"
+            defaultValue={parsedParams.days}
+            className="field-input"
+          />
+        </Field>
+        <Field label="From">
+          <select name="origin" defaultValue={parsedParams.origin} className="field-input">
+            <option value="YUL">Montreal</option>
+            <option value="YYZ">Toronto</option>
+            <option value="YVR">Vancouver</option>
+            <option value="YQB">Quebec</option>
+            <option value="YOW">Ottawa</option>
+            <option value="YYC">Calgary</option>
+          </select>
+        </Field>
+        <Field label="Style">
+          <select name="style" defaultValue={parsedParams.style} className="field-input">
+            <option value="budget">Budget</option>
+            <option value="balanced">Balanced</option>
+            <option value="comfort">Comfort</option>
+          </select>
+        </Field>
+        <Field label="Destination">
+          <input
+            name="destination"
+            type="search"
+            defaultValue={parsedParams.destination}
+            placeholder="Japan, beach..."
+            className="field-input"
+          />
+        </Field>
+        <div className="flex items-end">
+          <Button className="h-11 w-full rounded-full bg-[#004ac6] text-white hover:bg-blue-700" type="submit">
+            Apply
+          </Button>
+        </div>
+        <input type="hidden" name="currency" value={parsedParams.currency} />
+        <input type="hidden" name="month" value={parsedParams.month} />
+        <input type="hidden" name="travelers" value={parsedParams.travelers} />
+        <input type="hidden" name="category" value={parsedParams.category} />
+        <input type="hidden" name="sort" value={parsedParams.sort} />
+      </TrackedFilterForm>
+
+      <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden">
+        {categoryFilters.map((category) => {
+          const Icon = category.icon;
+          const isActive = category.value === parsedParams.category;
+
+          return (
+            <TrackedLink
+              key={category.value}
+              href={createResultsHref(parsedParams, { category: category.value })}
+              eventName="filter_changed"
+              eventProperties={{
+                page: "/results",
+                budget: parsedParams.budget,
+                currency: parsedParams.currency,
+                days: parsedParams.days,
+                filterName: "category",
+                filterValue: category.value,
+                month: parsedParams.month,
+                originCode: parsedParams.origin,
+                previousValue: parsedParams.category,
+                resultCount,
+                source: "results_category_filter",
+                travelers: parsedParams.travelers,
+                travelStyle: parsedParams.style,
+                tripLength: parsedParams.days,
+              }}
+              className={`inline-flex min-w-max items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition ${
+                isActive
+                  ? "border-[#2563eb] bg-[#2563eb] text-white"
+                  : "border-[#c3c6d7]/60 bg-white text-[#434655] hover:border-[#004ac6] hover:text-[#004ac6]"
+              }`}
+            >
+              <Icon className="size-4" />
+              {category.label}
+            </TrackedLink>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function Field({ children, label }: { children: React.ReactNode; label: string }) {
+  return (
+    <label className="grid gap-2 text-sm font-semibold text-[#434655]">
+      {label}
+      {children}
+    </label>
   );
 }
 
@@ -472,120 +538,342 @@ function DestinationCard({
   };
   destination: ResultDestination;
 }) {
+  const isOverBudget = destination.budgetRemainingValue < 0;
+
   return (
-    <article className="group relative overflow-hidden rounded-[24px] border border-[#c3c6d7]/35 bg-white shadow-[0_18px_45px_-24px_rgba(15,23,42,0.35)] transition-[transform,box-shadow] duration-400 ease-[cubic-bezier(0.175,0.885,0.32,1.275)] hover:-translate-y-2 hover:shadow-[0_24px_60px_-28px_rgba(15,23,42,0.5)]">
-      <SaveDestinationButton
-        storageKey={`travelbudget:saved-destination:${destination.href}`}
-        eventProperties={{
-          page: "/results",
-          ...analyticsContext,
-          destinationName: destination.country,
-          destinationSlug: destination.href.replace("/destinations/", ""),
-          resultRank: destination.rank,
-          source: "results_grid",
-          tripLength: analyticsContext.days,
-        }}
-      />
-      <TrackedLink
-        href={destination.href}
-        eventName="destination_card_clicked"
-        eventProperties={{
-          page: "/results",
-          ...analyticsContext,
-          destinationName: destination.country,
-          destinationSlug: destination.href.replace("/destinations/", ""),
-          resultRank: destination.rank,
-          source: "results_grid",
-          tripLength: analyticsContext.days,
-        }}
-        secondaryEvents={[
-          {
-            eventName: "result_clicked",
-            eventProperties: {
-              page: "/results",
-              ...analyticsContext,
-              destinationName: destination.country,
-              destinationSlug: destination.href.replace("/destinations/", ""),
-              href: destination.href,
-              resultRank: destination.rank,
-              source: "results_grid",
-              tripLength: analyticsContext.days,
-            },
-          },
-        ]}
-        className="block focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-blue-600/25"
-      >
-        <div className="relative h-56 overflow-hidden">
-          <Image
-            src={destination.image}
-            alt={destination.alt}
-            fill
-            sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 100vw"
-            className="object-cover transition duration-500 group-hover:scale-105"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/45 via-transparent to-slate-950/10" />
-          <Badge className="absolute left-4 top-4 rounded-full bg-white px-3 py-1 text-blue-700 shadow-md">
-            TOP {destination.rank}
+    <article
+      className={`group flex h-full flex-col overflow-hidden rounded-3xl border bg-white/70 shadow-[0_18px_45px_-28px_rgba(15,23,42,0.45)] backdrop-blur-xl transition duration-500 hover:shadow-xl ${
+        isOverBudget ? "border-red-300/60" : "border-slate-200/80"
+      }`}
+    >
+      <div className="relative h-48 overflow-hidden">
+        <Image
+          src={destination.image}
+          alt={destination.alt}
+          fill
+          sizes="(min-width: 1280px) 28vw, (min-width: 768px) 45vw, 100vw"
+          className="object-cover transition duration-700 group-hover:scale-110"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/25 to-transparent" />
+        <div className="absolute left-4 top-4 flex max-w-[calc(100%-5rem)] flex-wrap gap-2">
+          <Badge className="rounded-full bg-gradient-to-br from-[#2563eb] to-[#7c3aed] px-3 py-1.5 text-xs font-bold text-white shadow-lg">
+            {destination.tag}
           </Badge>
+          {isOverBudget ? (
+            <Badge className="rounded-full bg-red-600 px-3 py-1.5 text-xs font-bold text-white shadow-lg">
+              Over Budget
+            </Badge>
+          ) : null}
         </div>
-        <div className="grid gap-5 p-5">
-          <div>
-            <p className="text-sm font-medium text-[#434655]">{destination.region}</p>
-            <h2 className="mt-1 text-2xl font-semibold tracking-tight text-[#191c1e]">{destination.country}</h2>
-            <p className="mt-2 line-clamp-2 text-sm leading-6 text-[#434655]">{destination.summary}</p>
+        <SaveDestinationButton
+          storageKey={`travelbudget:saved-destination:${destination.href}`}
+          eventProperties={{
+            page: "/results",
+            ...analyticsContext,
+            destinationName: destination.title,
+            destinationSlug: destination.slug,
+            resultRank: destination.rank,
+            source: "results_grid",
+            tripLength: analyticsContext.days,
+          }}
+        />
+      </div>
+
+      <div className="flex flex-1 flex-col p-6">
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <h2 className="text-xl font-semibold leading-7 text-[#191c1e]">{destination.title}</h2>
+            <p className="mt-1 line-clamp-2 text-sm leading-6 text-[#434655]">{destination.summary}</p>
           </div>
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-[#434655]">Est. Total</p>
-              <p className="mt-1 text-3xl font-semibold text-[#004ac6]">{destination.total}</p>
+          <div className="shrink-0 text-right">
+            <div className={`text-xl font-semibold ${isOverBudget ? "text-red-600" : "text-[#004ac6]"}`}>
+              {destination.total}
             </div>
-            <div className="rounded-full bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700">
-              {destination.score}
+            <div className={`text-xs font-bold ${isOverBudget ? "text-red-600" : "text-[#006b5f]"}`}>
+              {destination.budgetDelta}
             </div>
           </div>
-          <div className="flex items-center justify-between gap-3 text-sm">
-            <span className="flex items-center gap-2 font-medium text-[#434655]">
-              <span className="size-2.5 rounded-full bg-emerald-500 shadow-[0_0_0_4px_rgba(16,185,129,0.14)]" />
-              {destination.quality}
-            </span>
-            <span className="inline-flex items-center gap-1 font-semibold text-blue-700">
-              View details
-              <ArrowRight className="size-4" />
+        </div>
+
+        <div className="mt-5">
+          <div className="mb-1 flex justify-between text-xs font-semibold">
+            <span className="text-[#737686]">Budget fit</span>
+            <span className={isOverBudget ? "text-red-600" : "text-[#191c1e]"}>
+              {destination.budgetFitPercent}%
             </span>
           </div>
-          <dl className="grid grid-cols-2 gap-3 border-t border-[#c3c6d7]/35 pt-4 text-sm">
-            <div>
-              <dt className="text-xs font-semibold uppercase tracking-wide text-[#434655]">Flights</dt>
-              <dd className="mt-1 font-semibold text-[#191c1e]">{destination.flightCost}</dd>
-            </div>
-            <div>
-              <dt className="text-xs font-semibold uppercase tracking-wide text-[#434655]">Daily</dt>
-              <dd className="mt-1 font-semibold text-[#191c1e]">{destination.dailyCost}</dd>
-            </div>
-            <div>
-              <dt className="text-xs font-semibold uppercase tracking-wide text-[#434655]">Duration</dt>
-              <dd className="mt-1 font-semibold text-[#191c1e]">{destination.duration}</dd>
-            </div>
-            <div>
-              <dt className="text-xs font-semibold uppercase tracking-wide text-[#434655]">
-                {destination.budgetRemainingValue >= 0 ? "Remaining" : "Over"}
-              </dt>
-              <dd className="mt-1 font-semibold text-[#191c1e]">{destination.budgetRemaining}</dd>
-            </div>
-          </dl>
-          <Badge className="w-fit rounded-full bg-blue-50 text-blue-700 ring-1 ring-blue-100">
-            {destination.style} style
-          </Badge>
+          <div className={`h-2 overflow-hidden rounded-full ${isOverBudget ? "bg-red-100" : "bg-[#eceef0]"}`}>
+            <div
+              className={`h-full rounded-full ${isOverBudget ? "bg-red-600" : "bg-[#004ac6]"}`}
+              style={{ width: `${Math.min(destination.budgetFitPercent, 100)}%` }}
+            />
+          </div>
         </div>
-      </TrackedLink>
+
+        <dl className="mt-6 grid gap-2">
+          <BudgetLine icon={Plane} label="Flight" value={destination.flightCost} />
+          <BudgetLine icon={Bed} label="Stay" value={destination.stayCost} />
+          <BudgetLine icon={Utensils} label="Food" value={destination.foodCost} />
+        </dl>
+
+        <div className="mt-6 flex flex-wrap gap-4 border-t border-[#c3c6d7]/30 pt-4 text-xs font-medium text-[#737686]">
+          <MetaItem icon={Clock3}>{destination.flightTime}</MetaItem>
+          <MetaItem icon={destination.climate === "Tropical" ? ThermometerSun : Sun}>{destination.climate}</MetaItem>
+          <MetaItem icon={ShieldCheck}>{destination.entry}</MetaItem>
+        </div>
+
+        <div className="mt-8 flex gap-3">
+          <Button
+            asChild
+            className={`h-11 flex-1 rounded-xl font-bold text-white ${
+              isOverBudget
+                ? "bg-[#e0e3e5] text-[#434655] hover:bg-[#c3c6d7]"
+                : "bg-gradient-to-br from-[#2563eb] to-[#7c3aed] hover:opacity-90"
+            }`}
+          >
+            <TrackedLink
+              href={destination.href}
+              eventName="destination_card_clicked"
+              eventProperties={{
+                page: "/results",
+                ...analyticsContext,
+                destinationName: destination.title,
+                destinationSlug: destination.slug,
+                resultRank: destination.rank,
+                source: "results_grid",
+                tripLength: analyticsContext.days,
+              }}
+              secondaryEvents={[
+                {
+                  eventName: "result_clicked",
+                  eventProperties: {
+                    page: "/results",
+                    ...analyticsContext,
+                    destinationName: destination.title,
+                    destinationSlug: destination.slug,
+                    href: destination.href,
+                    resultRank: destination.rank,
+                    source: "results_grid",
+                    tripLength: analyticsContext.days,
+                  },
+                },
+              ]}
+            >
+              {isOverBudget ? "View details" : "View trip budget"}
+            </TrackedLink>
+          </Button>
+          <Button
+            asChild
+            variant="outline"
+            size="icon"
+            className="h-11 w-12 rounded-xl border-[#c3c6d7] bg-white/60 hover:bg-[#eceef0]"
+          >
+            <TrackedLink
+              href="/compare"
+              eventName="cta_clicked"
+              eventProperties={{
+                page: "/results",
+                label: "Compare destination",
+                href: "/compare",
+                ctaLocation: "result_card",
+              }}
+              aria-label={`Compare ${destination.title}`}
+            >
+              <Scale className="size-5" />
+            </TrackedLink>
+          </Button>
+        </div>
+      </div>
     </article>
+  );
+}
+
+function BudgetLine({ icon: Icon, label, value }: { icon: LucideIcon; label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between text-base">
+      <dt className="flex items-center gap-2 text-[#434655]">
+        <Icon className="size-4" />
+        {label}
+      </dt>
+      <dd className="font-medium text-[#191c1e]">{value}</dd>
+    </div>
+  );
+}
+
+function MetaItem({ children, icon: Icon }: { children: React.ReactNode; icon: LucideIcon }) {
+  return (
+    <span className="inline-flex items-center gap-1">
+      <Icon className="size-4" />
+      {children}
+    </span>
+  );
+}
+
+function TrustModule() {
+  const items = [
+    { label: "Flights", icon: Plane },
+    { label: "Stay", icon: Bed },
+    { label: "Food", icon: Utensils },
+    { label: "Transport", icon: PlaneTakeoff },
+    { label: "Activities", icon: Sparkles },
+    { label: "Buffer", icon: ShieldCheck },
+  ];
+
+  return (
+    <section className="mt-20 rounded-[32px] border border-[#c3c6d7]/20 bg-[#f2f4f6] p-8 md:p-10">
+      <div className="flex flex-col items-center justify-between gap-8 md:flex-row">
+        <div className="max-w-md">
+          <h2 className="text-3xl font-semibold tracking-normal text-[#191c1e]">
+            What&apos;s included in each estimate?
+          </h2>
+          <p className="mt-4 text-lg leading-8 text-[#434655]">
+            Our planning engine combines flight baselines and destination cost models to keep every budget realistic.
+          </p>
+          <TrackedLink
+            href="/methodology"
+            eventName="guide_clicked"
+            eventProperties={{
+              page: "/results",
+              guideTitle: "Methodology",
+              href: "/methodology",
+            }}
+            className="mt-6 inline-flex items-center gap-2 font-bold text-[#004ac6] hover:underline"
+          >
+            See our methodology
+            <ArrowRight className="size-4" />
+          </TrackedLink>
+        </div>
+        <div className="grid grid-cols-2 gap-6 sm:grid-cols-3">
+          {items.map((item) => {
+            const Icon = item.icon;
+
+            return (
+              <div key={item.label} className="flex flex-col items-center gap-3">
+                <div className="flex size-12 items-center justify-center rounded-full bg-white shadow-sm">
+                  <Icon className="size-5 text-[#004ac6]" />
+                </div>
+                <span className="text-sm font-semibold text-[#191c1e]">{item.label}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function SeoLinks({ budget, origin }: { budget: string; origin: string }) {
+  const links = [
+    "Best Europe trips",
+    "Best warm destinations",
+    "Cheapest 10-day trips",
+    "Montreal to Lisbon budget",
+    "Montreal to Mexico City budget",
+  ];
+
+  return (
+    <section className="mt-20 border-t border-[#c3c6d7]/30 pt-10">
+      <h2 className="mb-6 text-sm font-bold uppercase tracking-widest text-[#434655]">
+        Where can you travel with {budget} from {origin}?
+      </h2>
+      <div className="flex flex-wrap gap-x-12 gap-y-4">
+        {links.map((link) => (
+          <TrackedLink
+            key={link}
+            href="/guides"
+            eventName="guide_clicked"
+            eventProperties={{
+              page: "/results",
+              guideTitle: link,
+              href: "/guides",
+            }}
+            className="text-base text-[#434655] transition hover:text-[#004ac6]"
+          >
+            {link}
+          </TrackedLink>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function FinalCta() {
+  return (
+    <section className="my-20 overflow-hidden rounded-[32px] border border-[#c3c6d7]/30 bg-[#f2f4f6] p-10 text-center shadow-sm md:p-16">
+      <h2 className="text-4xl font-bold tracking-normal text-[#191c1e]">Not seeing the right trip?</h2>
+      <p className="mx-auto mt-4 max-w-xl text-lg leading-8 text-[#434655]">
+        Adjust your preferences or increase your budget to see more exotic long-haul destinations.
+      </p>
+      <Button asChild className="mt-8 h-14 rounded-full bg-[#004ac6] px-10 text-lg font-bold text-white hover:bg-blue-700">
+        <TrackedLink
+          href="/"
+          eventName="cta_clicked"
+          eventProperties={{
+            page: "/results",
+            label: "Start a new search",
+            href: "/",
+            ctaLocation: "results_final_cta",
+          }}
+        >
+          Start a new search
+        </TrackedLink>
+      </Button>
+    </section>
+  );
+}
+
+function ComparisonTray({ destinations }: { destinations: ResultDestination[] }) {
+  if (destinations.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="fixed bottom-6 left-1/2 z-40 hidden w-[90%] max-w-4xl -translate-x-1/2 md:block">
+      <div className="flex items-center justify-between gap-6 rounded-full border border-[#004ac6]/20 bg-white/80 px-8 py-4 shadow-2xl backdrop-blur-xl">
+        <div className="flex min-w-0 items-center gap-4">
+          <div className="flex -space-x-3">
+            {destinations.map((destination) => (
+              <div
+                key={destination.href}
+                className="relative size-10 overflow-hidden rounded-full border-2 border-white bg-[#eceef0]"
+              >
+                <Image src={destination.image} alt="" fill sizes="40px" className="object-cover" />
+              </div>
+            ))}
+          </div>
+          <div className="truncate text-sm font-medium">
+            <span className="font-bold">{destinations.length} destinations selected:</span>{" "}
+            <span className="text-[#434655]">{destinations.map((destination) => destination.title.split(",")[0]).join(" - ")}</span>
+          </div>
+        </div>
+        <div className="flex shrink-0 items-center gap-4">
+          <button type="button" className="text-sm font-bold text-[#434655] transition hover:text-[#004ac6]">
+            Clear
+          </button>
+          <Button asChild className="rounded-full bg-[#004ac6] px-6 font-bold text-white hover:bg-blue-700">
+            <TrackedLink
+              href="/compare"
+              eventName="cta_clicked"
+              eventProperties={{
+                page: "/results",
+                label: "Compare selected",
+                href: "/compare",
+                ctaLocation: "comparison_tray",
+              }}
+            >
+              Compare selected
+            </TrackedLink>
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 }
 
 function EmptyResultsState({ parsedParams }: { parsedParams: ParsedSearchParams }) {
   return (
     <section className="rounded-[28px] border border-[#c3c6d7]/35 bg-white p-8 text-center shadow-[0_18px_45px_-26px_rgba(15,23,42,0.35)]">
-      <h2 className="text-2xl font-semibold tracking-tight text-[#191c1e]">No destinations match this search yet</h2>
+      <h2 className="text-2xl font-semibold tracking-normal text-[#191c1e]">No destinations match this search yet</h2>
       <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-[#434655]">
         Try increasing your budget, reducing the trip length, changing your travel style, or picking a different
         departure city.
@@ -621,194 +909,64 @@ function EmptyResultsState({ parsedParams }: { parsedParams: ParsedSearchParams 
   );
 }
 
-function BudgetBreakdownCard({
-  currency,
-  days,
-  recommendation,
-  style,
-}: {
-  currency: SupportedCurrency;
-  days: number;
-  recommendation: DestinationRecommendation;
-  style: TravelStyle;
-}) {
-  const budgetRows: CostBreakdownItem[] = [
-    { label: "Flights", amount: recommendation.costBreakdown.flights, currency, color: "#2563eb" },
-    { label: "Accommodation", amount: recommendation.costBreakdown.hotel, currency, color: "#14b8a6" },
-    { label: "Food", amount: recommendation.costBreakdown.food, currency, color: "#f97316" },
-    { label: "Transport", amount: recommendation.costBreakdown.transport, currency, color: "#8b5cf6" },
-    { label: "Activities", amount: recommendation.costBreakdown.activities, currency, color: "#a855f7" },
-    { label: "Misc", amount: recommendation.costBreakdown.misc, currency, color: "#f59e0b" },
-  ];
-  const totalAmount = recommendation.estimatedTotal;
+function toResultDestination(
+  recommendation: DestinationRecommendation,
+  index: number,
+  { budget, currency, days }: ParsedSearchParams
+): ResultDestination {
+  const { costBreakdown, destination } = recommendation;
+  const title = displayNameBySlug[destination.slug] ?? destination.name;
+  const climate = destination.weather.toLowerCase().includes("tropical") ? "Tropical" : destination.weather.split(" ")[0] ?? "Mild";
+  const budgetFitPercent = budget > 0 ? Math.round((recommendation.estimatedTotal / budget) * 100) : 100;
+  const budgetDelta =
+    recommendation.budgetRemaining >= 0
+      ? `${formatMoney(recommendation.budgetRemaining, currency)} under budget`
+      : `${formatMoney(Math.abs(recommendation.budgetRemaining), currency)} over budget`;
 
+  return {
+    rank: index + 1,
+    slug: destination.slug,
+    title,
+    tag: destination.travelStyles.slice(0, 2).join(" + "),
+    total: formatMoney(recommendation.estimatedTotal, currency),
+    budgetDelta,
+    budgetRemainingValue: recommendation.budgetRemaining,
+    budgetFitPercent,
+    flightCost: formatMoney(costBreakdown.flights, currency),
+    stayCost: formatMoney(costBreakdown.hotel, currency),
+    foodCost: formatMoney(costBreakdown.food, currency),
+    href: `/destinations/${destination.slug}`,
+    image: destination.image,
+    alt: `${title} travel view`,
+    flightTime: flightTimeBySlug[destination.slug] ?? (days > 12 ? "10h+" : "7h 30m"),
+    climate,
+    entry: destination.countryCode === "CA" ? "Domestic" : "No visa",
+    summary: recommendation.reasons[0] ?? destination.shortDescription,
+  };
+}
+
+function Pill({ children }: { children: React.ReactNode }) {
   return (
-    <section className="grid gap-8 rounded-[32px] border border-white/60 bg-white/70 p-6 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05)] backdrop-blur-xl md:grid-cols-[260px_1fr] md:p-8">
-      <CostBreakdownDonut centerLabel="Total budget" currency={currency} items={budgetRows} totalAmount={totalAmount} />
-
-      <div className="flex flex-col justify-center">
-        <p className="text-sm font-semibold uppercase tracking-wide text-blue-700">Cost clarity</p>
-        <h2 className="mt-2 text-3xl font-semibold tracking-tight text-[#191c1e]">
-          Budget breakdown - {recommendation.destination.name}
-        </h2>
-        <p className="mt-3 text-sm leading-6 text-[#434655]">
-          Based on a {formatStyleLabel(style).toLowerCase()} selection for {days} {days === 1 ? "day" : "days"}.
-        </p>
-        <CostBreakdownList
-          className="mt-6 grid gap-3 sm:grid-cols-2"
-          currency={currency}
-          itemClassName="rounded-2xl border border-[#c3c6d7]/35 bg-white/80 px-4 py-3"
-          items={budgetRows}
-          showBars={false}
-          totalAmount={totalAmount}
-        />
-      </div>
-    </section>
+    <span className="rounded-full bg-[#eceef0] px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#737686]">
+      {children}
+    </span>
   );
 }
 
-function GlobalPriceIndexCard() {
-  return (
-    <section className="rounded-[28px] border border-[#c3c6d7]/35 bg-white p-5 shadow-[0_18px_45px_-26px_rgba(15,23,42,0.45)]">
-      <div className="flex items-center justify-between gap-4">
-        <h2 className="text-xl font-semibold text-[#191c1e]">Global Price Index</h2>
-        <Badge className="rounded-full bg-blue-50 text-blue-700 ring-1 ring-blue-100">Estimated data</Badge>
-      </div>
+function formatStyleLabel(style: TravelStyle) {
+  if (style === "comfort") {
+    return "Comfort";
+  }
 
-      <div className="relative mt-5 aspect-square overflow-hidden rounded-[24px] border border-blue-100 bg-[#edf5ff]">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_35%,rgba(37,99,235,0.18),transparent_24%),radial-gradient(circle_at_72%_52%,rgba(20,184,166,0.2),transparent_18%),radial-gradient(circle_at_55%_30%,rgba(249,115,22,0.14),transparent_20%)]" />
-        <svg viewBox="0 0 360 360" className="absolute inset-0 h-full w-full text-blue-900/25" aria-label="Stylized world map">
-          <path d="M54 124c26-24 61-20 87-11 18 6 31 2 49-3 36-9 69 2 99 26 14 11 11 29-5 35-22 8-44-8-65-4-22 4-34 26-58 23-21-2-31-22-52-25-24-3-51 10-68-8-10-11-1-23 13-33Z" fill="currentColor" />
-          <path d="M78 222c23-17 52-13 68 6 12 15 8 36-11 44-25 11-66-6-79-24-7-10 1-18 22-26Z" fill="currentColor" />
-          <path d="M236 222c17-12 42-10 56 4 12 12 8 31-9 39-22 10-52-2-63-18-7-9 0-17 16-25Z" fill="currentColor" />
-        </svg>
-        <div className="absolute left-[56%] top-[47%] rounded-2xl border border-white/70 bg-white/90 px-4 py-3 shadow-xl backdrop-blur">
-          <p className="text-xs font-bold uppercase tracking-wide text-blue-700">VIETNAM</p>
-          <p className="mt-1 text-lg font-semibold text-[#191c1e]">$45 / day</p>
-        </div>
-        <MapPin className="absolute left-[50%] top-[55%] size-6 fill-blue-600 text-blue-600" />
-      </div>
+  if (style === "budget") {
+    return "Budget";
+  }
 
-      <div className="mt-5">
-        <div className="h-3 rounded-full bg-gradient-to-r from-emerald-400 via-yellow-300 via-orange-400 to-red-500" />
-        <div className="mt-2 flex justify-between text-xs font-semibold text-[#434655]">
-          <span>Cheaper</span>
-          <span>Pricier</span>
-        </div>
-      </div>
-    </section>
-  );
+  return "Balanced";
 }
 
-function OffersPanel({ origin, topDestination }: { origin: string; topDestination?: string }) {
-  const offers = [
-    {
-      title: "Compare flights",
-      detail: topDestination ? `${origin} to ${topDestination}` : `Flights from ${origin}`,
-      action: "Coming soon",
-      icon: Plane,
-      tone: "from-blue-500 to-cyan-400",
-    },
-    {
-      title: "Find hotels",
-      detail: topDestination ? `${topDestination} stays` : "Destination stays",
-      action: "Coming soon",
-      icon: Hotel,
-      tone: "from-violet-500 to-fuchsia-400",
-    },
-    {
-      title: "Get an eSIM for your trip",
-      detail: "Mobile data options will be connected later.",
-      action: "Coming soon",
-      icon: Wifi,
-      tone: "from-emerald-500 to-teal-400",
-    },
-  ];
+function formatOriginLabel(originCode: string) {
+  const originPricing = destinationData[0] ? getOriginPricing(destinationData[0], originCode) : undefined;
 
-  return (
-    <section>
-      <h2 className="text-xl font-semibold text-[#191c1e]">Offers to maximize your budget</h2>
-      <div className="mt-4 grid gap-3">
-        {offers.map((offer) => (
-          <OfferCard key={offer.title} offer={offer} />
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function OfferCard({ offer }: { offer: Offer }) {
-  const Icon = offer.icon;
-
-  return (
-    <article
-      className="group flex items-center gap-4 rounded-[24px] border border-white/60 bg-white/75 p-4 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05)] backdrop-blur transition hover:-translate-y-1 hover:bg-white hover:shadow-[0_18px_42px_-26px_rgba(15,23,42,0.5)] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-blue-600/25"
-    >
-      <span className={`flex size-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${offer.tone} text-white shadow-lg`}>
-        <Icon className="size-6" />
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className="block font-semibold text-[#191c1e]">{offer.title}</span>
-        <span className="mt-1 block text-sm text-[#434655]">{offer.detail}</span>
-      </span>
-      <Button size="sm" variant="outline" className="rounded-full" disabled>
-        {offer.action}
-      </Button>
-    </article>
-  );
-}
-
-function CTASection() {
-  return (
-    <section className="mx-auto max-w-7xl px-4 pb-12 pt-4 sm:px-6 lg:px-8">
-      <div className="relative overflow-hidden rounded-[40px] bg-[#0F172A] px-6 py-12 text-white shadow-2xl shadow-slate-950/20 sm:px-10 lg:px-14">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(37,99,235,0.45),transparent_28%),linear-gradient(135deg,rgba(0,74,198,0.3),transparent_45%)]" />
-        <div className="relative grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
-          <div>
-            <p className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-blue-200">
-              <CircleDollarSign className="size-4" />
-              Smarter travel finance
-            </p>
-            <h2 className="mt-3 max-w-2xl text-3xl font-semibold tracking-tight sm:text-5xl">
-              Ready to plan your next journey?
-            </h2>
-            <p className="mt-4 max-w-2xl text-sm leading-6 text-white/75 sm:text-base">
-              Compare planning estimates, understand the major cost drivers, and choose a trip that fits your budget.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <Button asChild className="h-12 rounded-full bg-white px-5 text-[#004ac6] hover:bg-blue-50">
-              <TrackedLink
-                href="/"
-                eventName="cta_clicked"
-                eventProperties={{
-                  page: "/results",
-                  label: "Start now",
-                  href: "/",
-                  ctaLocation: "results_bottom_cta",
-                }}
-              >
-                Start now
-                <ArrowRight className="ml-2 size-4" />
-              </TrackedLink>
-            </Button>
-            <Button asChild variant="outline" className="h-12 rounded-full border-white/30 bg-white/10 px-5 text-white hover:bg-white/15 hover:text-white">
-              <TrackedLink
-                href="/tools"
-                eventName="cta_clicked"
-                eventProperties={{
-                  page: "/results",
-                  label: "View Itinerary Builder",
-                  href: "/tools",
-                  ctaLocation: "results_bottom_cta",
-                }}
-              >
-                View Itinerary Builder
-              </TrackedLink>
-            </Button>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
+  return originPricing?.originCity ? `${originPricing.originCity} (${originCode})` : originCode;
 }

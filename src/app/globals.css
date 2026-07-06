@@ -134,3 +134,9 @@
     color: rgb(71 85 105);
   }
 }
+
+@layer components {
+  .field-input {
+    @apply h-11 rounded-xl border border-[#c3c6d7]/60 bg-white px-3 text-[#191c1e] outline-none focus:border-[#004ac6] focus:ring-3 focus:ring-[#004ac6]/15;
+  }
+}
