@@ -1,12 +1,10 @@
 import {
   ArrowRight,
   Bed,
-  CalendarClock,
   CheckCircle2,
   CircleX,
   Diamond,
   Info,
-  MapPin,
   Plane,
   Search,
   Ticket,
@@ -17,6 +15,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { EmailCapture } from "@/components/leads/email-capture";
+import { SearchCard } from "@/components/site/search-card";
 
 const matches = [
   {
@@ -136,27 +135,8 @@ export function HomeContent() {
             budgets and 24 city guides to see where your money can realistically go.
           </p>
 
-          <div className="mt-10 rounded-3xl border border-[#c3c6d7]/40 bg-white p-6 shadow-2xl shadow-blue-950/10 sm:p-8">
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <Field icon={Wallet} label="Budget" defaultValue="$2,500 CAD" />
-              <Field icon={CalendarClock} label="Duration" defaultValue="10 days" />
-              <Field icon={MapPin} label="From" defaultValue="Montreal" />
-              <label className="grid gap-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Travel Style</span>
-                <select
-                  defaultValue="Comfort"
-                  className="h-12 rounded-xl border border-[#c3c6d7] bg-white px-4 text-base outline-none transition focus:border-[#004ac6] focus:ring-4 focus:ring-blue-600/10"
-                >
-                  <option>Budget</option>
-                  <option>Comfort</option>
-                  <option>Premium</option>
-                </select>
-              </label>
-            </div>
-            <button className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-[#2563eb] to-[#7c3aed] px-5 py-4 text-lg font-semibold text-white shadow-lg transition hover:scale-[1.01] hover:opacity-95 active:scale-[0.99]">
-              Find my destinations
-              <ArrowRight className="size-5" />
-            </button>
+          <div className="mt-10">
+            <SearchCard />
             <p className="mt-4 flex items-center justify-center gap-2 text-center text-xs font-medium text-slate-500">
               <Info className="size-4" />
               Estimates include flights, accommodation, food, and local activities.
@@ -386,36 +366,15 @@ export function HomeContent() {
         <h2 className="mx-auto mb-8 max-w-3xl text-4xl font-bold tracking-tight sm:text-5xl">
           Stop guessing where you can afford to travel
         </h2>
-        <button className="inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-[#2563eb] to-[#7c3aed] px-10 py-5 text-lg font-semibold text-white shadow-xl transition hover:scale-105 active:scale-95">
+        <Link
+          href="/results?budget=2500&currency=CAD&origin=YUL&days=10&month=october&travelers=2&style=balanced"
+          className="inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-[#2563eb] to-[#7c3aed] px-10 py-5 text-lg font-semibold text-white shadow-xl transition hover:scale-105 active:scale-95"
+        >
           <Search className="size-5" />
           Find my destinations
-        </button>
+        </Link>
       </section>
     </main>
-  );
-}
-
-function Field({
-  icon: Icon,
-  label,
-  defaultValue,
-}: {
-  icon: typeof Wallet;
-  label: string;
-  defaultValue: string;
-}) {
-  return (
-    <label className="grid gap-2">
-      <span className="text-xs font-bold uppercase tracking-wider text-slate-500">{label}</span>
-      <span className="relative block">
-        <Icon className="absolute left-3 top-1/2 size-5 -translate-y-1/2 text-[#004ac6]" />
-        <input
-          type="text"
-          defaultValue={defaultValue}
-          className="h-12 w-full rounded-xl border border-[#c3c6d7] pl-10 pr-4 text-base outline-none transition focus:border-[#004ac6] focus:ring-4 focus:ring-blue-600/10"
-        />
-      </span>
-    </label>
   );
 }
 

@@ -1,12 +1,11 @@
 import {
-  destinations,
   formatMoney,
-  getDestination,
   getDestinationCostBreakdown,
   getDestinationTripEstimate,
   type Destination,
   type TravelStyle,
 } from "@/lib/data/destinations";
+import { getUnifiedDestination, unifiedDestinations } from "@/lib/data/unified-destinations";
 
 export type DestinationBudgetSeoPage = {
   destination: Destination;
@@ -16,7 +15,7 @@ export type DestinationBudgetSeoPage = {
   travelers: number;
 };
 
-export const destinationBudgetSeoSlugs = destinations.map((destination) => destination.slug);
+export const destinationBudgetSeoSlugs = unifiedDestinations.map((destination) => destination.slug);
 
 export const durationSeoPages = destinationBudgetSeoSlugs.flatMap((destinationSlug) =>
   [7, 10, 14].map((durationDays) => ({ destinationSlug, durationDays }))
@@ -27,7 +26,7 @@ export function getDestinationBudgetSeoPage(destinationSlug: string): Destinatio
     return null;
   }
 
-  const destination = getDestination(destinationSlug);
+  const destination = getUnifiedDestination(destinationSlug);
 
   if (!destination) {
     return null;
@@ -52,7 +51,7 @@ export function getDurationSeoPage(destinationSlug: string, durationSlug: string
   const page = durationSeoPages.find(
     (item) => item.destinationSlug === destinationSlug && item.durationDays === durationDays
   );
-  const destination = page ? getDestination(destinationSlug) : null;
+  const destination = page ? getUnifiedDestination(destinationSlug) : null;
 
   return page && destination
     ? {
@@ -96,7 +95,7 @@ export function getTravelCostDurationPath(destinationSlug: string, durationDays:
 
 export function getDestinationBudgetSeoStaticParams() {
   return destinationBudgetSeoSlugs
-    .filter((slug) => destinations.some((destination) => destination.slug === slug))
+    .filter((slug) => unifiedDestinations.some((destination) => destination.slug === slug))
     .map((destination) => ({ destination }));
 }
 

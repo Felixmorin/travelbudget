@@ -16,17 +16,20 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   type Destination,
-  destinations,
   formatMoney,
   getDailyCostTotal,
-  getDestination,
   getDestinationTripEstimate,
   getOriginPricing,
 } from "@/lib/data/destinations";
 import {
+  countryDestinations as destinations,
+  getCityCountryLabel,
+  getUnifiedDestination,
+  getUnifiedDestinationStaticParams,
+} from "@/lib/data/unified-destinations";
+import {
   cityDestinations,
   formatDestinationMoney,
-  getCityDestination,
   type CityDestination,
 } from "@/lib/data/destination-hub";
 import { createDestinationMetadata, createMetadata } from "@/lib/seo/metadata";
@@ -53,29 +56,14 @@ type DestinationPageProps = {
 };
 
 export function generateStaticParams() {
-  return [
-    ...destinations.map((destination) => ({ slug: destination.slug })),
-    ...cityDestinations.map((destination) => ({ slug: destination.slug })),
-  ];
+  return getUnifiedDestinationStaticParams();
 }
 
 export async function generateMetadata({ params }: DestinationPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const destination = getDestination(slug);
+  const destination = getUnifiedDestination(slug);
 
   if (!destination) {
-    const cityDestination = getCityDestination(slug);
-
-    if (cityDestination) {
-      return createMetadata({
-        title: `${cityDestination.city}, ${cityDestination.country} Travel Budget`,
-        description: `See estimated travel costs for ${cityDestination.city}, including flights, stays, food, local transport, activities, and best months to visit.`,
-        path: `/destinations/${cityDestination.slug}`,
-        image: cityDestination.imageUrl,
-        imageAlt: cityDestination.imageAlt,
-      });
-    }
-
     return createMetadata({
       title: "Destination Not Found",
       description: "This TravelBudget.ai destination budget guide could not be found.",
@@ -89,18 +77,13 @@ export async function generateMetadata({ params }: DestinationPageProps): Promis
 
 export default async function DestinationPage({ params }: DestinationPageProps) {
   const { slug } = await params;
-  const destination = getDestination(slug);
+  const destination = getUnifiedDestination(slug);
 
   if (!destination) {
-    const cityDestination = getCityDestination(slug);
-
-    if (cityDestination) {
-      return <CityDestinationPage destination={cityDestination} />;
-    }
-
     notFound();
   }
 
+  const destinationLabel = getCityCountryLabel(destination);
   const budgetInsight = getBudgetInsight(destination);
   const defaultOriginPricing = getOriginPricing(destination, "YUL");
   const dailyMidRangeTotal = getDailyCostTotal(destination, "midRange");
@@ -116,7 +99,7 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
     createBreadcrumbSchema([
       { name: "Home", url: "/" },
       { name: "Destinations", url: "/#destinations" },
-      { name: destination.name, url: `/destinations/${destination.slug}` },
+      { name: destinationLabel, url: `/destinations/${destination.slug}` },
     ]),
   ];
 
@@ -126,7 +109,7 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
         eventName="destination_viewed"
         eventProperties={{
           page: `/destinations/${destination.slug}`,
-          destinationName: destination.name,
+          destinationName: destinationLabel,
           destinationSlug: destination.slug,
           currency: destination.currency,
           originCode: "YUL",
@@ -143,7 +126,7 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
       <section className="relative isolate min-h-[520px] overflow-hidden">
         <Image
           src={destination.image}
-          alt={`${destination.name} landscape`}
+          alt={`${destinationLabel} landscape`}
           fill
           priority
           sizes="100vw"
@@ -154,7 +137,7 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
           <div className="max-w-3xl text-white">
             <Badge className="mb-4 bg-white text-blue-600">{destination.countryCode} budget guide</Badge>
             <h1 className="text-5xl font-semibold tracking-tight sm:text-6xl">
-              {destination.name} travel budget
+              {destinationLabel} travel budget
             </h1>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-white/85">{destination.shortDescription}</p>
             <div className="mt-8 flex flex-wrap gap-3">
@@ -164,14 +147,14 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
                   eventName="cta_clicked"
                   eventProperties={{
                     page: `/destinations/${destination.slug}`,
-                    destinationName: destination.name,
+                    destinationName: destinationLabel,
                     destinationSlug: destination.slug,
-                    label: `Plan a trip to ${destination.name}`,
+                    label: `Plan a trip to ${destinationLabel}`,
                     href: "/results",
                     ctaLocation: "destination_hero",
                   }}
                 >
-                  Plan a trip to {destination.name}
+                  Plan a trip to {destinationLabel}
                   <ArrowRight className="ml-2 size-4" />
                 </TrackedLink>
               </Button>
@@ -181,7 +164,7 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
                   eventName="cta_clicked"
                   eventProperties={{
                     page: `/destinations/${destination.slug}`,
-                    destinationName: destination.name,
+                    destinationName: destinationLabel,
                     destinationSlug: destination.slug,
                     label: "Compare with other destinations",
                     href: "/results",
@@ -210,7 +193,7 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
             <Card className="border-slate-200 bg-white shadow-lg shadow-slate-200/60">
               <CardHeader>
                 <CardTitle className="text-xl text-slate-950">
-                  Can I afford {destination.name}?
+                  Can I afford {destinationLabel}?
                 </CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-center">
@@ -232,7 +215,7 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
 
             <EmailCapture
               budget={typicalEstimate}
-              destination={destination.name}
+              destination={destinationLabel}
               duration={10}
               intent="trip_budget"
               origin={`${defaultOriginPricing.originCity} (${defaultOriginPricing.currency})`}
@@ -445,7 +428,7 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
   );
 }
 
-function CityDestinationPage({ destination }: { destination: CityDestination }) {
+export function CityDestinationPage({ destination }: { destination: CityDestination }) {
   const planParams = new URLSearchParams({
     destination: destination.slug,
     budget: String(destination.estimatedTotalCost),

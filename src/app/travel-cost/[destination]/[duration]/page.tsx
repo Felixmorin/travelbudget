@@ -12,6 +12,7 @@ import {
   getTravelBudgetPath,
   getTravelCostDurationPath,
 } from "@/lib/programmatic/seo-pages";
+import { getCityCountryLabel } from "@/lib/data/unified-destinations";
 import { createMetadata } from "@/lib/seo/metadata";
 import { createBreadcrumbSchema, createGuideArticleSchema, serializeJsonLd } from "@/lib/seo/schema";
 
@@ -36,12 +37,14 @@ export async function generateMetadata({ params }: DurationCostPageProps): Promi
     });
   }
 
+  const destinationLabel = getCityCountryLabel(page.destination);
+
   return createMetadata({
-    title: `How Much Does ${page.destination.name} Cost for ${page.durationDays} Days?`,
-    description: `Estimate how much it costs to travel to ${page.destination.name} for ${page.durationDays} days, including flights, stays, meals, local transport, activities, and assumptions.`,
+    title: `How Much Does ${destinationLabel} Cost for ${page.durationDays} Days?`,
+    description: `Estimate how much it costs to travel to ${destinationLabel} for ${page.durationDays} days, including flights, stays, meals, local transport, activities, and assumptions.`,
     path: getTravelCostDurationPath(page.destination.slug, page.durationDays),
     image: page.destination.image,
-    imageAlt: `${page.destination.name} ${page.durationDays}-day travel cost`,
+    imageAlt: `${destinationLabel} ${page.durationDays}-day travel cost`,
   });
 }
 
@@ -53,13 +56,14 @@ export default async function DurationCostPage({ params }: DurationCostPageProps
     notFound();
   }
 
+  const destinationLabel = getCityCountryLabel(page.destination);
   const estimate = getBudgetSeoEstimate(page);
   const path = getTravelCostDurationPath(page.destination.slug, page.durationDays);
   const dailyTotal = Math.round((estimate.totalEstimate - estimate.costBreakdown.flights) / page.durationDays);
   const jsonLd = [
     createGuideArticleSchema({
-      title: `How much does it cost to travel to ${page.destination.name} for ${page.durationDays} days?`,
-      description: `A ${page.durationDays}-day cost estimate for ${page.destination.name}, including flights and daily trip costs.`,
+      title: `How much does it cost to travel to ${destinationLabel} for ${page.durationDays} days?`,
+      description: `A ${page.durationDays}-day cost estimate for ${destinationLabel}, including flights and daily trip costs.`,
       path,
       image: page.destination.image,
       datePublished: "2026-06-24",
@@ -67,7 +71,7 @@ export default async function DurationCostPage({ params }: DurationCostPageProps
     }),
     createBreadcrumbSchema([
       { name: "Home", url: "/" },
-      { name: `${page.destination.name} for ${page.durationDays} days`, url: path },
+      { name: `${destinationLabel} for ${page.durationDays} days`, url: path },
     ]),
   ];
 
@@ -83,7 +87,7 @@ export default async function DurationCostPage({ params }: DurationCostPageProps
         <div className="mx-auto max-w-5xl px-4 py-14 sm:px-6 lg:px-8">
           <Badge className="rounded-full bg-blue-100 px-4 py-1 text-blue-800">Trip length estimate</Badge>
           <h1 className="mt-5 text-4xl font-semibold tracking-tight sm:text-6xl">
-            How much does it cost to travel to {page.destination.name} for {page.durationDays} days?
+            How much does it cost to travel to {destinationLabel} for {page.durationDays} days?
           </h1>
           <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-600">
             A {page.durationDays}-day mid-range estimate from Montreal is {estimate.totalLabel}, or about{" "}
@@ -107,7 +111,7 @@ export default async function DurationCostPage({ params }: DurationCostPageProps
           <section className="rounded-[24px] border border-slate-200 bg-white p-6">
             <h2 className="text-2xl font-semibold">Is {page.durationDays} days enough?</h2>
             <p className="mt-3 text-sm leading-6 text-slate-600">
-              For {page.destination.name}, {page.durationDays} days gives enough room to cover the core itinerary
+              For {destinationLabel}, {page.durationDays} days gives enough room to cover the core itinerary
               without spreading flight costs across too few nights. Travelers can reduce the estimate by shortening
               paid activities, choosing simpler stays, or moving outside peak travel weeks.
             </p>

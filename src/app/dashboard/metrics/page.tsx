@@ -1,5 +1,6 @@
 import { BarChart3, Database, Mail, MousePointerClick, Search, Star } from "lucide-react";
 
+import { verifyAdminAccess } from "@/lib/auth/admin";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { destinations } from "@/lib/data/destinations";
@@ -15,7 +16,17 @@ export const metadata = createMetadata({
 
 const metricIcons = [Mail, Star, MousePointerClick, Search];
 
-export default async function MetricsDashboardPage() {
+type MetricsDashboardPageProps = {
+  searchParams: Promise<{ admin_secret?: string | string[]; token?: string | string[] }>;
+};
+
+export default async function MetricsDashboardPage({ searchParams }: MetricsDashboardPageProps) {
+  const hasAccess = await verifyAdminAccess(await searchParams);
+
+  if (!hasAccess) {
+    return <AccessDenied />;
+  }
+
   const dashboard = await getDashboardMetrics();
   const topSeoPages = destinations
     .slice()
@@ -113,6 +124,23 @@ export default async function MetricsDashboardPage() {
           </Card>
         </section>
       </div>
+    </main>
+  );
+}
+
+function AccessDenied() {
+  return (
+    <main className="min-h-screen bg-slate-50 px-4 py-10 text-slate-950 sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-xl rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+        <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-red-700">
+          <BarChart3 className="size-4" />
+          Restricted
+        </p>
+        <h1 className="mt-3 text-3xl font-semibold">Metrics dashboard locked</h1>
+        <p className="mt-3 leading-7 text-slate-600">
+          Set `ADMIN_DASHBOARD_SECRET` and send it with the `x-admin-secret` header to view internal metrics.
+        </p>
+      </section>
     </main>
   );
 }

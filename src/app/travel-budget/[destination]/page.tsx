@@ -13,6 +13,7 @@ import {
   getTravelBudgetPath,
   getTravelCostDurationPath,
 } from "@/lib/programmatic/seo-pages";
+import { getCityCountryLabel } from "@/lib/data/unified-destinations";
 import { createMetadata } from "@/lib/seo/metadata";
 import { createBreadcrumbSchema, createGuideArticleSchema, serializeJsonLd } from "@/lib/seo/schema";
 
@@ -37,12 +38,14 @@ export async function generateMetadata({ params }: TravelBudgetPageProps): Promi
     });
   }
 
+  const destinationLabel = getCityCountryLabel(page.destination);
+
   return createMetadata({
-    title: `Travel Budget for ${page.destination.name}`,
-    description: `See a realistic ${page.durationDays}-day ${page.destination.name} travel budget from Canada, including flights, accommodation, meals, local transport, activities, and planning limits.`,
+    title: `Travel Budget for ${destinationLabel}`,
+    description: `See a realistic ${page.durationDays}-day ${destinationLabel} travel budget from Canada, including flights, accommodation, meals, local transport, activities, and planning limits.`,
     path: getTravelBudgetPath(page.destination.slug),
     image: page.destination.image,
-    imageAlt: `${page.destination.name} travel budget`,
+    imageAlt: `${destinationLabel} travel budget`,
   });
 }
 
@@ -54,12 +57,13 @@ export default async function TravelBudgetPage({ params }: TravelBudgetPageProps
     notFound();
   }
 
+  const destinationLabel = getCityCountryLabel(page.destination);
   const estimate = getBudgetSeoEstimate(page);
   const path = getTravelBudgetPath(page.destination.slug);
   const jsonLd = [
     createGuideArticleSchema({
-      title: `Travel Budget for ${page.destination.name}`,
-      description: `A practical ${page.durationDays}-day budget estimate for ${page.destination.name}, including major trip cost categories.`,
+      title: `Travel Budget for ${destinationLabel}`,
+      description: `A practical ${page.durationDays}-day budget estimate for ${destinationLabel}, including major trip cost categories.`,
       path,
       image: page.destination.image,
       datePublished: "2026-06-24",
@@ -67,7 +71,7 @@ export default async function TravelBudgetPage({ params }: TravelBudgetPageProps
     }),
     createBreadcrumbSchema([
       { name: "Home", url: "/" },
-      { name: `${page.destination.name} travel budget`, url: path },
+      { name: `${destinationLabel} travel budget`, url: path },
     ]),
   ];
 
@@ -83,10 +87,10 @@ export default async function TravelBudgetPage({ params }: TravelBudgetPageProps
         <div className="mx-auto max-w-5xl px-4 py-14 sm:px-6 lg:px-8">
           <Badge className="rounded-full bg-blue-100 px-4 py-1 text-blue-800">Destination budget guide</Badge>
           <h1 className="mt-5 text-4xl font-semibold tracking-tight sm:text-6xl">
-            Travel budget for {page.destination.name}
+            Travel budget for {destinationLabel}
           </h1>
           <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-600">
-            A practical {page.durationDays}-day planning estimate for {page.destination.name}, using Montreal
+            A practical {page.durationDays}-day planning estimate for {destinationLabel}, using Montreal
             flight baselines, mid-range daily costs, and one traveler.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
@@ -106,7 +110,7 @@ export default async function TravelBudgetPage({ params }: TravelBudgetPageProps
             <CostCard icon={Bus} title="Local transport" amount={estimate.costBreakdown.localTransport} />
           </div>
           <section className="rounded-[24px] border border-slate-200 bg-white p-6">
-            <h2 className="text-2xl font-semibold">How to use this {page.destination.name} budget</h2>
+            <h2 className="text-2xl font-semibold">How to use this {destinationLabel} budget</h2>
             <p className="mt-3 text-sm leading-6 text-slate-600">
               Use this as a first-pass affordability check. The biggest swing factors are flight timing,
               neighborhood and hotel quality, activity choices, and whether you travel during one of the stronger

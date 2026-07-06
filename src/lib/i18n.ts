@@ -20,6 +20,7 @@ export const translations = {
       signUp: "Get alerts",
       changeLanguage: "Change language",
       openNavigation: "Open navigation",
+      closeNavigation: "Close navigation",
     },
     home: {
       eyebrow: "Budget-first destination discovery",
@@ -160,6 +161,7 @@ export const translations = {
       signUp: "Recevoir alertes",
       changeLanguage: "Changer la langue",
       openNavigation: "Ouvrir la navigation",
+      closeNavigation: "Fermer la navigation",
     },
     home: {
       eyebrow: "Decouverte de destinations selon le budget",

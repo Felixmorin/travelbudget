@@ -23,6 +23,7 @@ import { EstimateDisclaimer } from "@/components/site/estimate-disclaimer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatMoney } from "@/lib/format-money";
+import { getCityCountryLabel } from "@/lib/data/unified-destinations";
 import {
   type BudgetDestination,
   type ProgrammaticBudgetPageConfig,
@@ -220,7 +221,7 @@ export function ProgrammaticBudgetPage({
 
         <EmailCapture
           budget={snapshotDestination?.totalEstimate ?? page.budget}
-          destination={snapshotDestination?.destination.name}
+          destination={snapshotDestination ? getCityCountryLabel(snapshotDestination.destination) : undefined}
           duration={page.tripLengthDays}
           intent="trip_budget"
           origin={`${page.origin.city} (${page.origin.code})`}
@@ -285,8 +286,8 @@ export function ProgrammaticBudgetPage({
           budgetLabel={budgetLabel}
           budgetAmount={page.budget}
           tripLengthDays={page.tripLengthDays}
-          cheapestDestinationName={snapshotDestination?.destination.name ?? null}
-          matchingDestinationNames={matches.map((item) => item.destination.name)}
+          cheapestDestinationName={snapshotDestination ? getCityCountryLabel(snapshotDestination.destination) : null}
+          matchingDestinationNames={matches.map((item) => getCityCountryLabel(item.destination))}
           travelStyleLabel={travelStyleLabel}
         />
         <aside>
@@ -353,7 +354,7 @@ export function ProgrammaticBudgetPage({
           <div className="mt-3 grid gap-4 md:grid-cols-3">
             {matches.slice(0, 3).map((item) => (
               <div key={item.destination.slug} className="rounded-xl bg-white p-4">
-                <p className="font-bold text-slate-950">{item.destination.name}</p>
+                <p className="font-bold text-slate-950">{getCityCountryLabel(item.destination)}</p>
                 <div className="mt-3 grid gap-2 text-sm font-semibold text-blue-700">
                   <Link href={getTravelBudgetPath(item.destination.slug)} className="hover:underline">
                     Full travel budget
@@ -489,7 +490,7 @@ function BudgetSnapshot({
           <div>
             <h2 className="text-xl font-semibold text-slate-950">Budget Snapshot</h2>
             <p className="mt-1 text-sm text-slate-500">
-              {item ? `${item.destination.name} matching estimate` : "Estimated trip total"}
+              {item ? `${getCityCountryLabel(item.destination)} matching estimate` : "Estimated trip total"}
             </p>
           </div>
           <p className="text-right text-3xl font-bold text-blue-700">

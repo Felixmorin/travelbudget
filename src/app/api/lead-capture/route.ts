@@ -1,4 +1,5 @@
 import { LeadCaptureError, normalizeLeadCapturePayload, saveLeadCapture } from "@/lib/leads/lead-capture";
+import { getErrorMessage, logServerEvent } from "@/lib/monitoring/server-logger";
 
 type RateLimitRecord = {
   count: number;
@@ -30,6 +31,11 @@ export async function POST(request: Request) {
     }
 
     const lead = await saveLeadCapture(payload);
+    await logServerEvent("info", "Lead capture saved.", {
+      email: payload.email,
+      intent: payload.intent,
+      source: payload.source,
+    });
 
     return Response.json({
       ok: true,
@@ -39,6 +45,10 @@ export async function POST(request: Request) {
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to save this email request.";
     const status = error instanceof LeadCaptureError ? error.status : 500;
+    await logServerEvent(status >= 500 ? "error" : "warn", "Lead capture request failed.", {
+      error: getErrorMessage(error),
+      status,
+    });
 
     return Response.json(
       {

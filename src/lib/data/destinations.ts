@@ -52,6 +52,10 @@ export type DailyCosts = {
 export type Destination = {
   slug: string;
   name: string;
+  cityName?: string;
+  countryName?: string;
+  parentCountrySlug?: string;
+  destinationKind?: "country" | "city";
   countryCode: string;
   image: string;
   originPricing: OriginPricing;

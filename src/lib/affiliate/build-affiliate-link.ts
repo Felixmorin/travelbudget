@@ -1,4 +1,5 @@
 import type { AffiliateLink, Destination } from "@/lib/data/destinations";
+import { isAllowedAffiliateUrl } from "@/lib/affiliate/allowed-domains";
 
 export type BuiltAffiliateLink = {
   href: string;
@@ -43,7 +44,11 @@ export function buildAffiliateLink({
 function getSafeHref(href: string | null | undefined, destinationSlug: string | undefined, type: AffiliateLink["type"]) {
   const trimmedHref = href?.trim();
 
-  if (trimmedHref && (trimmedHref.startsWith("/") || isExternalHref(trimmedHref))) {
+  if (trimmedHref?.startsWith("/")) {
+    return trimmedHref;
+  }
+
+  if (trimmedHref && isExternalHref(trimmedHref) && isAllowedAffiliateUrl(trimmedHref)) {
     return trimmedHref;
   }
 

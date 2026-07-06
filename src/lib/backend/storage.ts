@@ -23,6 +23,27 @@ export function isBackendStorageConfigured() {
   return Boolean(getSupabaseConfig());
 }
 
+export function getBackendStorageStatus() {
+  try {
+    const config = getSupabaseConfig();
+
+    return {
+      configured: Boolean(config),
+      mode: config ? "Supabase" : "Development memory",
+      requiresServiceRoleKey: process.env.NODE_ENV === "production" && !process.env.SUPABASE_SERVICE_ROLE_KEY?.trim(),
+      urlHost: config ? new URL(config.url).hostname : null,
+    };
+  } catch (error) {
+    return {
+      configured: false,
+      mode: "Misconfigured",
+      requiresServiceRoleKey: true,
+      urlHost: null,
+      error: error instanceof Error ? error.message : "Supabase storage is misconfigured.",
+    };
+  }
+}
+
 export async function insertBackendRecord<TRecord extends BackendRecord>(table: BackendTable, record: TRecord) {
   const config = getSupabaseConfig();
 
@@ -112,7 +133,15 @@ function getSupabaseConfig(): SupabaseConfig | null {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() ?? process.env.SUPABASE_ANON_KEY?.trim();
 
   if (!url || !key) {
+    if (process.env.NODE_ENV === "production" && url && !process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()) {
+      throw new BackendStorageError("Supabase service role key is required in production.", 500);
+    }
+
     return null;
+  }
+
+  if (process.env.NODE_ENV === "production" && !process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()) {
+    throw new BackendStorageError("Supabase service role key is required in production.", 500);
   }
 
   try {

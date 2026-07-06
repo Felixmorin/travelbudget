@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import type { Destination } from "@/lib/data/destinations";
+import { getCityCountryLabel } from "@/lib/data/unified-destinations";
 
 export const siteConfig = {
   name: "TravelBudget.ai",
@@ -88,12 +89,14 @@ export function createMetadata({
 }
 
 export function createDestinationMetadata(destination: Destination): Metadata {
+  const destinationLabel = getCityCountryLabel(destination);
+
   return createMetadata({
-    title: `${destination.name} Travel Budget Guide`,
-    description: `See estimated travel costs for ${destination.name}, including flights, hotels, food, transport, activities, best months to visit, itinerary ideas, and booking options.`,
+    title: `${destinationLabel} Travel Budget Guide`,
+    description: `See estimated travel costs for ${destinationLabel}, including flights, hotels, food, transport, activities, best months to visit, itinerary ideas, and booking options.`,
     path: `/destinations/${destination.slug}`,
     image: destination.image,
-    imageAlt: `${destination.name} travel budget guide`,
+    imageAlt: `${destinationLabel} travel budget guide`,
   });
 }
 

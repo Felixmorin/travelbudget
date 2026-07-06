@@ -1,5 +1,4 @@
 import {
-  destinations,
   formatMoney,
   getDailyCostTotal,
   getDestinationCostBreakdown,
@@ -9,6 +8,7 @@ import {
   type Destination,
   type TravelStyle,
 } from "@/lib/data/destinations";
+import { getCityCountryLabel, unifiedDestinations } from "@/lib/data/unified-destinations";
 
 export type ProgrammaticOrigin = {
   slug: string;
@@ -209,7 +209,7 @@ export function getProgrammaticBudgetPath(page: ProgrammaticBudgetPageConfig) {
 export function getMatchingBudgetDestinations(page: ProgrammaticBudgetPageConfig): BudgetDestination[] {
   const originCode = normalizeOriginCode(page.origin.code);
 
-  return destinations
+  return unifiedDestinations
     .map((destination) => {
       const costBreakdown = getDestinationCostBreakdown(destination, {
         days: page.tripLengthDays,
@@ -267,7 +267,7 @@ export function getComparisonPicks(destinations: BudgetDestination[]): Compariso
         ? {
             label: `Best for ${style.toLowerCase()}`,
             destination,
-            detail: `${destination.destination.name} fits ${style.toLowerCase()}-focused trips in this budget set.`,
+            detail: `${getCityCountryLabel(destination.destination)} fits ${style.toLowerCase()}-focused trips in this budget set.`,
           }
         : null;
     })
@@ -277,7 +277,7 @@ export function getComparisonPicks(destinations: BudgetDestination[]): Compariso
     {
       label: "Cheapest total estimate",
       destination: cheapest,
-      detail: `${cheapest.destination.name} has the lowest 10-day estimate at ${formatMoney(
+      detail: `${getCityCountryLabel(cheapest.destination)} has the lowest 10-day estimate at ${formatMoney(
         cheapest.totalEstimate,
         "CAD"
       )}.`,
@@ -285,7 +285,7 @@ export function getComparisonPicks(destinations: BudgetDestination[]): Compariso
     {
       label: "Best value",
       destination: bestValue,
-      detail: `${bestValue.destination.name} balances budget fit with a strong destination score.`,
+      detail: `${getCityCountryLabel(bestValue.destination)} balances budget fit with a strong destination score.`,
     },
     ...stylePicks,
   ]);

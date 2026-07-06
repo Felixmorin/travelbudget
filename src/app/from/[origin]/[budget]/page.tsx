@@ -9,6 +9,7 @@ import {
   getProgrammaticBudgetRedirectPath,
   programmaticBudgetPages,
 } from "@/lib/programmatic/budget-pages";
+import { getCityCountryLabel } from "@/lib/data/unified-destinations";
 import { createMetadata } from "@/lib/seo/metadata";
 import {
   createBreadcrumbSchema,
@@ -78,8 +79,8 @@ export default async function FromOriginUnderBudgetPage({ params }: BudgetPagePr
     travelStyle: page.travelStyle,
     tripLengthDays: page.tripLengthDays,
     suggestedTripLength: page.suggestedTripLength,
-    destinationNames: matches.map((item) => item.destination.name),
-    cheapestDestinationName: matches[0]?.destination.name ?? null,
+    destinationNames: matches.map((item) => getCityCountryLabel(item.destination)),
+    cheapestDestinationName: matches[0] ? getCityCountryLabel(matches[0].destination) : null,
   });
   const jsonLd = [
     createCollectionPageSchema({
@@ -89,7 +90,7 @@ export default async function FromOriginUnderBudgetPage({ params }: BudgetPagePr
     }),
     createItemListSchema(
       matches.map((item) => ({
-        name: item.destination.name,
+        name: getCityCountryLabel(item.destination),
         url: `/destinations/${item.destination.slug}`,
         description: item.destination.shortDescription,
       }))

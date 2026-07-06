@@ -1,4 +1,4 @@
-import { selectBackendRecords } from "@/lib/backend/storage";
+import { getBackendStorageStatus, selectBackendRecords } from "@/lib/backend/storage";
 import { listStoredAffiliateClicks } from "@/lib/affiliate/tracking";
 import { listAnalyticsEvents } from "@/lib/analytics/server-events";
 import { listStoredLeadCaptures } from "@/lib/leads/lead-capture";
@@ -37,7 +37,7 @@ export async function getDashboardMetrics() {
   );
 
   return {
-    storageMode: process.env.SUPABASE_URL ? "Supabase" : "Development memory",
+    storageMode: getBackendStorageStatus().mode,
     metrics: [
       {
         label: "Emails",

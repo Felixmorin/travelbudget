@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 
+import { isAllowedAffiliateUrl } from "@/lib/affiliate/allowed-domains";
 import { saveAffiliateClick } from "@/lib/affiliate/tracking";
+import { getErrorMessage, logServerEvent } from "@/lib/monitoring/server-logger";
 
 type GoRouteProps = {
   params: Promise<{ slug: string[] }>;
@@ -16,17 +18,36 @@ export async function GET(request: Request, { params }: GoRouteProps) {
     redirect("/");
   }
 
-  await saveAffiliateClick({
-    destinationSlug,
-    affiliateType,
-    affiliatePartner: url.searchParams.get("partner") ?? undefined,
-    affiliateProvider: url.searchParams.get("provider") ?? undefined,
-    href,
-    source: url.searchParams.get("source") ?? "affiliate_redirect",
-    page: url.searchParams.get("page") ?? undefined,
-    referrer: request.headers.get("referer") ?? undefined,
-    userAgent: request.headers.get("user-agent") ?? undefined,
-  });
+  if (!isAllowedAffiliateUrl(href)) {
+    await logServerEvent("warn", "Blocked affiliate redirect to non-whitelisted domain.", {
+      affiliateType,
+      destinationSlug,
+      host: getHost(href),
+    });
+
+    return Response.json({ ok: false, error: "Unsupported affiliate destination." }, { status: 400 });
+  }
+
+  try {
+    await saveAffiliateClick({
+      destinationSlug,
+      affiliateType,
+      affiliatePartner: url.searchParams.get("partner") ?? undefined,
+      affiliateProvider: url.searchParams.get("provider") ?? undefined,
+      href,
+      source: url.searchParams.get("source") ?? "affiliate_redirect",
+      page: url.searchParams.get("page") ?? undefined,
+      referrer: request.headers.get("referer") ?? undefined,
+      userAgent: request.headers.get("user-agent") ?? undefined,
+    });
+  } catch (error) {
+    await logServerEvent("error", "Unable to persist affiliate click before redirect.", {
+      affiliateType,
+      destinationSlug,
+      error: getErrorMessage(error),
+      host: getHost(href),
+    });
+  }
 
   redirect(href);
 }
@@ -40,12 +61,20 @@ function decodeTargetUrl(value: string | null) {
     const decoded = Buffer.from(value, "base64url").toString("utf8");
     const targetUrl = new URL(decoded, process.env.NEXT_PUBLIC_SITE_URL ?? "https://travelbudget.ai");
 
-    if (targetUrl.protocol !== "https:" && targetUrl.protocol !== "http:") {
+    if (targetUrl.protocol !== "https:") {
       return null;
     }
 
     return targetUrl.toString();
   } catch {
     return null;
+  }
+}
+
+function getHost(href: string) {
+  try {
+    return new URL(href).hostname;
+  } catch {
+    return "invalid";
   }
 }

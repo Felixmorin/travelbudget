@@ -4,6 +4,7 @@ import { ArrowRight, CalendarDays, Plane, WalletCards } from "lucide-react";
 import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Badge } from "@/components/ui/badge";
 import { formatMoney } from "@/lib/format-money";
+import { getCityCountryLabel, getDestinationCountryName } from "@/lib/data/unified-destinations";
 import type { BudgetDestination, ProgrammaticBudgetPageConfig } from "@/lib/programmatic/budget-pages";
 
 export function BudgetDestinationCard({
@@ -14,6 +15,7 @@ export function BudgetDestinationCard({
   page: ProgrammaticBudgetPageConfig;
 }) {
   const { destination } = item;
+  const destinationLabel = getCityCountryLabel(destination);
   const primaryStyle = destination.travelStyles[0] ?? "Best value";
 
   return (
@@ -21,7 +23,7 @@ export function BudgetDestinationCard({
       <div className="relative h-64 overflow-hidden">
         <Image
           src={destination.image}
-          alt={`${destination.name} travel destination`}
+          alt={`${destinationLabel} travel destination`}
           fill
           sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
           className="object-cover transition-transform duration-700 group-hover:scale-110"
@@ -40,9 +42,9 @@ export function BudgetDestinationCard({
 
       <div className="p-6">
         <div className="mb-4">
-          <h3 className="text-xl font-semibold text-slate-950">{destination.name}</h3>
+          <h3 className="text-xl font-semibold text-slate-950">{destinationLabel}</h3>
           <p className="mt-1 text-sm font-medium text-slate-500">
-            {destination.countryCode} · {destination.travelStyles.slice(0, 2).join(" & ")}
+            {getDestinationCountryName(destination)} · {destination.travelStyles.slice(0, 2).join(" & ")}
           </p>
           <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-600">{destination.shortDescription}</p>
         </div>
@@ -84,11 +86,11 @@ export function BudgetDestinationCard({
               tripLength: page.tripLengthDays,
               travelers: 1,
               travelStyle: page.travelStyle,
-              destinationName: destination.name,
+              destinationName: destinationLabel,
               destinationSlug: destination.slug,
               href: `/destinations/${destination.slug}`,
             }}
-            aria-label={`View budget breakdown for ${destination.name}`}
+            aria-label={`View budget breakdown for ${destinationLabel}`}
             className="flex size-12 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-700 transition-colors hover:bg-blue-600 hover:text-white"
           >
             <ArrowRight className="size-5" />

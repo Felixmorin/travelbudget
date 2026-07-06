@@ -1,4 +1,5 @@
 import type { Destination } from "@/lib/data/destinations";
+import { getCityCountryLabel } from "@/lib/data/unified-destinations";
 import { createCanonicalUrl, siteConfig } from "@/lib/seo/metadata";
 
 export type SchemaValue = string | number | boolean | null | SchemaObject | SchemaValue[];
@@ -108,9 +109,11 @@ export function createTravelToolSchema(): SchemaObject {
 }
 
 export function createDestinationSchema(destination: DestinationSchemaInput): SchemaObject {
+  const destinationLabel = getCityCountryLabel(destination);
+
   return withContext({
     "@type": "TouristDestination",
-    name: destination.name,
+    name: destinationLabel,
     url: createCanonicalUrl(`/destinations/${destination.slug}`),
     image: destination.image,
     description: destination.shortDescription,

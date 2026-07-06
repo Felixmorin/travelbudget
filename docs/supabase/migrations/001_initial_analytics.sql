@@ -1,6 +1,3 @@
--- Aggregate Supabase schema. For production deploys, prefer applying the
--- versioned files in docs/supabase/migrations in lexical order.
-
 create table if not exists leads (
   id uuid primary key,
   email text not null,
@@ -56,37 +53,3 @@ create index if not exists affiliate_clicks_created_at_idx on affiliate_clicks (
 create index if not exists affiliate_clicks_destination_idx on affiliate_clicks (destination_slug);
 create index if not exists analytics_events_created_at_idx on analytics_events (created_at desc);
 create index if not exists analytics_events_name_idx on analytics_events (event_name);
-
-alter table leads enable row level security;
-alter table saved_trips enable row level security;
-alter table affiliate_clicks enable row level security;
-alter table analytics_events enable row level security;
-
-drop policy if exists "server role manages leads" on leads;
-drop policy if exists "server role manages saved trips" on saved_trips;
-drop policy if exists "server role manages affiliate clicks" on affiliate_clicks;
-drop policy if exists "server role manages analytics events" on analytics_events;
-
-create policy "server role manages leads"
-  on leads
-  for all
-  using (auth.role() = 'service_role')
-  with check (auth.role() = 'service_role');
-
-create policy "server role manages saved trips"
-  on saved_trips
-  for all
-  using (auth.role() = 'service_role')
-  with check (auth.role() = 'service_role');
-
-create policy "server role manages affiliate clicks"
-  on affiliate_clicks
-  for all
-  using (auth.role() = 'service_role')
-  with check (auth.role() = 'service_role');
-
-create policy "server role manages analytics events"
-  on analytics_events
-  for all
-  using (auth.role() = 'service_role')
-  with check (auth.role() = 'service_role');

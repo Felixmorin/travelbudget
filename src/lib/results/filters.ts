@@ -18,6 +18,7 @@ export type ResultsSearchParams = {
   budget?: string | string[];
   currency?: string | string[];
   origin?: string | string[];
+  from?: string | string[];
   days?: string | string[];
   month?: string | string[];
   travelers?: string | string[];
@@ -94,7 +95,7 @@ export function parseSearchParams(searchParams: ResultsSearchParams): ParsedSear
   return {
     budget: parseNumber(readSearchParam(searchParams.budget), defaultSearchParams.budget),
     currency: parseCurrency(readSearchParam(searchParams.currency)),
-    origin: parseOrigin(readSearchParam(searchParams.origin)),
+    origin: parseOrigin(readSearchParam(searchParams.origin) ?? readSearchParam(searchParams.from)),
     days: parseNumber(readSearchParam(searchParams.days), defaultSearchParams.days),
     month: readSearchParam(searchParams.month)?.trim() || defaultSearchParams.month,
     travelers: parseNumber(readSearchParam(searchParams.travelers), defaultSearchParams.travelers),
@@ -216,6 +217,8 @@ function matchesDestinationQuery(recommendation: DestinationRecommendation, dest
 
   return [
     destination.name,
+    destination.cityName ?? "",
+    destination.countryName ?? "",
     destination.countryCode,
     destination.weather,
     destination.shortDescription,

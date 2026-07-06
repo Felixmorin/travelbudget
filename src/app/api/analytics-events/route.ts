@@ -1,5 +1,6 @@
 import { analyticsEventNames, type AnalyticsEventName, type AnalyticsPayload } from "@/lib/analytics/events";
 import { saveAnalyticsEvent } from "@/lib/analytics/server-events";
+import { getErrorMessage, logServerEvent } from "@/lib/monitoring/server-logger";
 
 export async function POST(request: Request) {
   try {
@@ -18,7 +19,11 @@ export async function POST(request: Request) {
     });
 
     return Response.json({ ok: true });
-  } catch {
+  } catch (error) {
+    await logServerEvent("warn", "Analytics event request failed.", {
+      error: getErrorMessage(error),
+    });
+
     return Response.json({ ok: false, error: "Unable to track analytics event." }, { status: 400 });
   }
 }

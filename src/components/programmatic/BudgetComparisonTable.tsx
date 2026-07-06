@@ -9,6 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatMoney } from "@/lib/format-money";
+import { getCityCountryLabel } from "@/lib/data/unified-destinations";
 import type { BudgetDestination, ProgrammaticBudgetPageConfig } from "@/lib/programmatic/budget-pages";
 
 export function BudgetComparisonTable({
@@ -45,7 +46,7 @@ export function BudgetComparisonTable({
             <TableRow key={item.destination.slug} className="hover:bg-slate-50">
               <TableCell className="px-4 py-5 font-bold text-slate-950">
                 <Link href={`/destinations/${item.destination.slug}`} className="hover:text-blue-700">
-                  {item.destination.name}
+                  {getCityCountryLabel(item.destination)}
                 </Link>
               </TableCell>
               <TableCell className="px-4 py-5 font-bold text-blue-700">

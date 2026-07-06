@@ -35,10 +35,10 @@ import {
   type TravelStyle,
 } from "@/lib/budget/recommend-destinations";
 import {
-  destinations as destinationData,
   formatMoney,
   getOriginPricing,
 } from "@/lib/data/destinations";
+import { getCityCountryLabel, unifiedDestinations as destinationData } from "@/lib/data/unified-destinations";
 import {
   createResultsHref,
   filterAndSortRecommendations,
@@ -98,19 +98,6 @@ const categoryFilters: { label: string; value: ResultsCategory; icon: LucideIcon
   { label: "Family", value: "family", icon: ShieldCheck },
   { label: "Backpacker", value: "backpacker", icon: WalletCards },
 ];
-
-const displayNameBySlug: Record<string, string> = {
-  portugal: "Lisbon, Portugal",
-  mexico: "Mexico City, Mexico",
-  france: "Paris, France",
-  italy: "Rome, Italy",
-  thailand: "Bangkok, Thailand",
-  canada: "Vancouver, Canada",
-  japan: "Tokyo, Japan",
-  spain: "Madrid, Spain",
-  vietnam: "Vietnam",
-  greece: "Athens, Greece",
-};
 
 const flightTimeBySlug: Record<string, string> = {
   portugal: "7h 05m",
@@ -915,7 +902,7 @@ function toResultDestination(
   { budget, currency, days }: ParsedSearchParams
 ): ResultDestination {
   const { costBreakdown, destination } = recommendation;
-  const title = displayNameBySlug[destination.slug] ?? destination.name;
+  const title = getCityCountryLabel(destination);
   const climate = destination.weather.toLowerCase().includes("tropical") ? "Tropical" : destination.weather.split(" ")[0] ?? "Mild";
   const budgetFitPercent = budget > 0 ? Math.round((recommendation.estimatedTotal / budget) * 100) : 100;
   const budgetDelta =

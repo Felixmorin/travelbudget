@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, PlaneTakeoff } from "lucide-react";
+import { Menu, PlaneTakeoff, X } from "lucide-react";
+import { useState } from "react";
 
 import { useTranslation } from "@/components/i18n/language-provider";
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
@@ -21,6 +22,7 @@ const navItems = [
 export function Header() {
   const pathname = usePathname();
   const { t } = useTranslation();
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-40 border-b border-[#c3c6d7]/40 bg-white/80 backdrop-blur-xl">
@@ -94,10 +96,78 @@ export function Header() {
               {t.nav.signUp}
             </TrackedLink>
           </Button>
-          <Button variant="ghost" size="icon" aria-label={t.nav.openNavigation} className="rounded-full md:hidden">
-            <Menu className="size-5" />
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={isMobileNavOpen ? t.nav.closeNavigation : t.nav.openNavigation}
+            aria-expanded={isMobileNavOpen}
+            aria-controls="mobile-navigation"
+            className="rounded-full md:hidden"
+            onClick={() => setIsMobileNavOpen((open) => !open)}
+          >
+            {isMobileNavOpen ? <X className="size-5" /> : <Menu className="size-5" />}
           </Button>
         </div>
+      </div>
+      <div
+        id="mobile-navigation"
+        className={`border-t border-[#c3c6d7]/40 bg-white px-4 py-4 shadow-lg md:hidden ${
+          isMobileNavOpen ? "block" : "hidden"
+        }`}
+      >
+        <nav className="mx-auto grid max-w-7xl gap-1 text-sm font-semibold text-[#434655]">
+          {navItems.map((item) => {
+            const isActive = item.activePaths.some((activePath) =>
+              activePath === "/" ? pathname === "/" : pathname === activePath || pathname.startsWith(`${activePath}/`)
+            );
+            const label = t.nav[item.labelKey];
+            const className = `rounded-lg px-3 py-3 transition hover:bg-[#f2f4f6] hover:text-[#004ac6] ${
+              isActive ? "bg-blue-50 text-[#004ac6]" : ""
+            }`;
+
+            return item.labelKey === "guides" ? (
+              <TrackedLink
+                key={item.labelKey}
+                href={item.href}
+                eventName="guide_clicked"
+                eventProperties={{
+                  page: pathname,
+                  guideTitle: label,
+                  href: item.href,
+                }}
+                aria-current={isActive ? "page" : undefined}
+                className={className}
+                onClick={() => setIsMobileNavOpen(false)}
+              >
+                {label}
+              </TrackedLink>
+            ) : (
+              <Link
+                key={item.labelKey}
+                href={item.href}
+                aria-current={isActive ? "page" : undefined}
+                className={className}
+                onClick={() => setIsMobileNavOpen(false)}
+              >
+                {label}
+              </Link>
+            );
+          })}
+          <TrackedLink
+            href="/deals"
+            eventName="cta_clicked"
+            eventProperties={{
+              page: pathname,
+              label: t.nav.signIn,
+              href: "/deals",
+              ctaLocation: "site_header_mobile",
+            }}
+            className="rounded-lg px-3 py-3 transition hover:bg-[#f2f4f6] hover:text-[#004ac6]"
+            onClick={() => setIsMobileNavOpen(false)}
+          >
+            {t.nav.signIn}
+          </TrackedLink>
+        </nav>
       </div>
     </header>
   );
