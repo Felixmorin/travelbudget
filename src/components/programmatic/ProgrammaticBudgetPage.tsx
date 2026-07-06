@@ -324,7 +324,7 @@ export function ProgrammaticBudgetPage({
           </Link>
         </div>
         <div className="mt-8 grid gap-4 md:grid-cols-3">
-          <InternalLink href="/results" label="Results" title="Compare live budget results" />
+          <InternalLink href="/results" label="Results" title="Compare budget results" />
           <InternalLink href="/destinations" label="Destinations" title="Browse destination budget guides" />
           <InternalLink href="/methodology" label="Methodology" title="How estimates are calculated" />
         </div>

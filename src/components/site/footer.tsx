@@ -9,6 +9,7 @@ const footerSections = [
     titleKey: "products",
     links: [
       { labelKey: "planTrip", href: "/" },
+      { labelKey: "deals", href: "/deals" },
       { labelKey: "budgetCalculator", href: "/tools/travel-budget-calculator" },
       { labelKey: "methodology", href: "/methodology" },
       { labelKey: "itineraryBuilder", href: "/tools" },
@@ -26,8 +27,9 @@ const footerSections = [
   {
     titleKey: "legal",
     links: [
-      { labelKey: "privacy", href: "/about" },
-      { labelKey: "terms", href: "/about" },
+      { labelKey: "privacy", href: "/privacy" },
+      { labelKey: "terms", href: "/terms" },
+      { labelKey: "affiliateDisclosure", href: "/affiliate-disclosure" },
     ],
   },
 ] as const;

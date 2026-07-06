@@ -669,7 +669,7 @@ function buildAffiliateLinks(seed: DestinationSeed): AffiliateLink[] {
     {
       type: "Flights",
       title: getContextualAffiliateTitle("Flights", seed, primaryStyle),
-      description: `Compare live fares to ${seed.name} against the CAD ${seed.flightAverage.YUL} YUL planning baseline before locking the trip.`,
+      description: `Compare provider fares to ${seed.name} against the CAD ${seed.flightAverage.YUL} YUL planning baseline before locking the trip.`,
       priceHint: `Avg. from YUL CAD ${seed.flightAverage.YUL}`,
       href: buildFlightHref(seed),
       provider: process.env.NEXT_PUBLIC_FLIGHTS_AFFILIATE_PROVIDER ?? "Skyscanner",
@@ -696,8 +696,8 @@ function buildAffiliateLinks(seed: DestinationSeed): AffiliateLink[] {
       description: `Get mobile data for maps, transfers, and bookings during a ${tripContext} ${seed.name} itinerary.`,
       priceHint: "Airalo eSIM plans",
       href: buildEsimHref(seed),
-      provider: "Airalo",
-      partner: "Airalo",
+      provider: process.env.NEXT_PUBLIC_ESIM_AFFILIATE_PROVIDER ?? "Airalo",
+      partner: process.env.NEXT_PUBLIC_ESIM_AFFILIATE_PARTNER ?? process.env.NEXT_PUBLIC_ESIM_AFFILIATE_PROVIDER ?? "Airalo",
       placement: "destination_sidebar",
       isExternal: true,
     },
@@ -707,8 +707,11 @@ function buildAffiliateLinks(seed: DestinationSeed): AffiliateLink[] {
       description: `Find ${primaryStyle.toLowerCase()} activities for ${seed.name} while keeping the daily activity budget in view.`,
       priceHint: `Mid-range activities CAD ${splitDailyTotal(seed.dailyTotals.midRange).activities}/day`,
       href: buildActivitiesHref(seed),
-      provider: "GetYourGuide",
-      partner: "GetYourGuide",
+      provider: process.env.NEXT_PUBLIC_ACTIVITIES_AFFILIATE_PROVIDER ?? "GetYourGuide",
+      partner:
+        process.env.NEXT_PUBLIC_ACTIVITIES_AFFILIATE_PARTNER ??
+        process.env.NEXT_PUBLIC_ACTIVITIES_AFFILIATE_PROVIDER ??
+        "GetYourGuide",
       placement: "destination_sidebar",
       isExternal: true,
     },
@@ -717,8 +720,11 @@ function buildAffiliateLinks(seed: DestinationSeed): AffiliateLink[] {
       title: getContextualAffiliateTitle("Insurance", seed, primaryStyle),
       description: `Check coverage for a ${tripContext} ${seed.name} trip, especially if flights and prepaid stays are a large share of the budget.`,
       priceHint: "Verify before booking",
-      href: "/tools/travel-budget-calculator",
+      href: buildInsuranceHref(seed),
+      provider: process.env.NEXT_PUBLIC_INSURANCE_AFFILIATE_PROVIDER ?? "Travel insurance",
+      partner: process.env.NEXT_PUBLIC_INSURANCE_AFFILIATE_PARTNER ?? process.env.NEXT_PUBLIC_INSURANCE_AFFILIATE_PROVIDER,
       placement: "destination_sidebar",
+      isExternal: Boolean(process.env.NEXT_PUBLIC_INSURANCE_AFFILIATE_BASE_URL),
     },
   ];
 }
@@ -767,6 +773,8 @@ function buildFlightHref(seed: DestinationSeed) {
     queryParam: process.env.NEXT_PUBLIC_FLIGHTS_AFFILIATE_QUERY_PARAM ?? "query",
     searchTerm: `Flights to ${seed.name}`,
     fallbackPath: "/transport/flights/",
+    partnerParam: process.env.NEXT_PUBLIC_FLIGHTS_AFFILIATE_ID_PARAM,
+    partnerValue: process.env.NEXT_PUBLIC_FLIGHTS_AFFILIATE_ID,
   });
 }
 
@@ -792,6 +800,8 @@ function buildEsimHref(seed: DestinationSeed) {
     queryParam: process.env.NEXT_PUBLIC_ESIM_AFFILIATE_QUERY_PARAM ?? "search",
     searchTerm: seed.name,
     fallbackPath: "/search",
+    partnerParam: process.env.NEXT_PUBLIC_ESIM_AFFILIATE_ID_PARAM,
+    partnerValue: process.env.NEXT_PUBLIC_ESIM_AFFILIATE_ID,
   });
 }
 
@@ -801,6 +811,25 @@ function buildActivitiesHref(seed: DestinationSeed) {
     queryParam: process.env.NEXT_PUBLIC_ACTIVITIES_AFFILIATE_QUERY_PARAM ?? "q",
     searchTerm: seed.name,
     fallbackPath: "/s/",
+    partnerParam: process.env.NEXT_PUBLIC_ACTIVITIES_AFFILIATE_ID_PARAM,
+    partnerValue: process.env.NEXT_PUBLIC_ACTIVITIES_AFFILIATE_ID,
+  });
+}
+
+function buildInsuranceHref(seed: DestinationSeed) {
+  const baseUrl = process.env.NEXT_PUBLIC_INSURANCE_AFFILIATE_BASE_URL;
+
+  if (!baseUrl) {
+    return "/tools/travel-budget-calculator";
+  }
+
+  return buildProviderSearchHref({
+    baseUrl,
+    queryParam: process.env.NEXT_PUBLIC_INSURANCE_AFFILIATE_QUERY_PARAM ?? "destination",
+    searchTerm: seed.name,
+    fallbackPath: "/",
+    partnerParam: process.env.NEXT_PUBLIC_INSURANCE_AFFILIATE_ID_PARAM,
+    partnerValue: process.env.NEXT_PUBLIC_INSURANCE_AFFILIATE_ID,
   });
 }
 
@@ -809,11 +838,15 @@ function buildProviderSearchHref({
   queryParam,
   searchTerm,
   fallbackPath,
+  partnerParam,
+  partnerValue,
 }: {
   baseUrl: string;
   queryParam: string;
   searchTerm: string;
   fallbackPath: string;
+  partnerParam?: string;
+  partnerValue?: string;
 }) {
   const url = new URL(baseUrl);
 
@@ -825,6 +858,10 @@ function buildProviderSearchHref({
   url.searchParams.set("utm_source", "travelbudget.ai");
   url.searchParams.set("utm_medium", "affiliate");
 
+  if (partnerParam && partnerValue) {
+    url.searchParams.set(partnerParam, partnerValue);
+  }
+
   return url.toString();
 }
 
@@ -832,7 +869,7 @@ function buildFaqs(seed: DestinationSeed): Destination["faqs"] {
   return [
     {
       question: `Is ${seed.name} realistic for a budget-conscious trip from Canada?`,
-      answer: `${seed.name} can be realistic when the flight estimate and daily-cost tier fit your total budget. Use these numbers as planning estimates, then verify live fares and lodging before booking.`,
+      answer: `${seed.name} can be realistic when the flight estimate and daily-cost tier fit your total budget. Use these numbers as planning estimates, then verify current fares and lodging before booking.`,
     },
     {
       question: `What usually changes the ${seed.name} trip estimate the most?`,

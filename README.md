@@ -11,8 +11,9 @@ The app currently uses a curated planning dataset of 30 country destinations wit
 - Trip cost breakdowns for flights, accommodation, food, local transport, activities, and miscellaneous spend
 - Destination detail pages with best months, itinerary previews, FAQs, data-confidence notes, and booking modules
 - Programmatic SEO pages for destination budgets, trip durations, and `/from/[origin]/under-[budget]` combinations
-- Booking.com, Airalo, and GetYourGuide external partner link wiring
+- Booking.com, Airalo, GetYourGuide, flight, and insurance partner link wiring
 - Analytics events for page views, searches, destination clicks, affiliate modules, and CTAs
+- Optional GA4, Microsoft Clarity, Plausible, and PostHog script loading from production environment variables
 - Lead capture via a configurable server-side provider webhook, with local-only development storage
 
 ## Tech Stack
@@ -100,6 +101,7 @@ Starts the production server after a build.
 - `/results` - dynamic recommendation results using `budget`, `currency`, `origin`, `days`, `month`, `travelers`, `style`, `category`, `destination`, and `sort`
 - `/destinations` - destination explorer
 - `/destinations/[slug]` - 54 generated destination detail pages: 30 country guides and 24 city guides
+- `/deals` - email conversion page for saved budgets and price alert intent
 - `/compare` - destination comparison table and comparison guide hub
 - `/compare/[comparison]` - 4 generated comparison SEO pages
 - `/tools` - travel tools directory
@@ -108,6 +110,7 @@ Starts the production server after a build.
 - `/guide` - guide landing page
 - `/about` - product/about page
 - `/methodology` - methodology and estimate explanation
+- `/privacy`, `/terms`, and `/affiliate-disclosure` - launch-ready legal basics
 - `/travel-budget/[destination]` - 30 generated destination budget SEO pages
 - `/travel-cost/[destination]/[duration]` - 90 generated duration-based cost pages
 - `/from/[origin]/under-[budget]` - 30 generated pages from Montreal, Toronto, Vancouver, Quebec, Ottawa, and Calgary across CAD 1,500, 2,000, 2,500, 3,000, and 4,000 budgets
@@ -129,7 +132,16 @@ Recommendation logic lives in `src/lib/budget/recommend-destinations.ts`. Result
 
 ## Affiliate Links
 
-Flight links point to Skyscanner search by default and can be redirected to another flight affiliate provider. Hotel links point to Booking.com destination search pages. eSIM links point to Airalo search by default. Activity links point to GetYourGuide search by default.
+Flight links point to Skyscanner search by default and can be redirected to another flight affiliate provider. Hotel links point to Booking.com destination search pages. eSIM links point to Airalo search by default. Activity links point to GetYourGuide search by default. Insurance links remain internal unless `NEXT_PUBLIC_INSURANCE_AFFILIATE_BASE_URL` is configured.
+
+Analytics environment variables:
+
+- `NEXT_PUBLIC_GA_MEASUREMENT_ID` - enables GA4 script loading
+- `NEXT_PUBLIC_CLARITY_PROJECT_ID` - enables Microsoft Clarity
+- `NEXT_PUBLIC_PLAUSIBLE_DOMAIN` - enables Plausible tracking for the configured domain
+- `NEXT_PUBLIC_PLAUSIBLE_SCRIPT_SRC` - optional Plausible script override, defaults to `https://plausible.io/js/script.js`
+- `NEXT_PUBLIC_POSTHOG_KEY` - enables PostHog
+- `NEXT_PUBLIC_POSTHOG_HOST` - optional PostHog host, defaults to `https://us.i.posthog.com`
 
 Optional public environment variables:
 
@@ -137,11 +149,20 @@ Optional public environment variables:
 - `NEXT_PUBLIC_FLIGHTS_AFFILIATE_QUERY_PARAM` - overrides the flight search query parameter, defaults to `query`
 - `NEXT_PUBLIC_FLIGHTS_AFFILIATE_PROVIDER` - labels the flight analytics provider, defaults to `Skyscanner`
 - `NEXT_PUBLIC_FLIGHTS_AFFILIATE_PARTNER` - labels the flight commercial partner, defaults to the provider value
+- `NEXT_PUBLIC_FLIGHTS_AFFILIATE_ID_PARAM` and `NEXT_PUBLIC_FLIGHTS_AFFILIATE_ID` - optional flight partner ID query parameter and value
 - `NEXT_PUBLIC_BOOKING_AFFILIATE_AID` - adds the Booking.com `aid` parameter
 - `NEXT_PUBLIC_ESIM_AFFILIATE_BASE_URL` - overrides the eSIM provider or affiliate deep-link base URL
 - `NEXT_PUBLIC_ESIM_AFFILIATE_QUERY_PARAM` - overrides the eSIM search query parameter, defaults to `search`
+- `NEXT_PUBLIC_ESIM_AFFILIATE_PROVIDER` and `NEXT_PUBLIC_ESIM_AFFILIATE_PARTNER` - labels eSIM provider and commercial partner
+- `NEXT_PUBLIC_ESIM_AFFILIATE_ID_PARAM` and `NEXT_PUBLIC_ESIM_AFFILIATE_ID` - optional eSIM partner ID query parameter and value
 - `NEXT_PUBLIC_ACTIVITIES_AFFILIATE_BASE_URL` - overrides the activities provider or affiliate deep-link base URL
 - `NEXT_PUBLIC_ACTIVITIES_AFFILIATE_QUERY_PARAM` - overrides the activities search query parameter, defaults to `q`
+- `NEXT_PUBLIC_ACTIVITIES_AFFILIATE_PROVIDER` and `NEXT_PUBLIC_ACTIVITIES_AFFILIATE_PARTNER` - labels activity provider and commercial partner
+- `NEXT_PUBLIC_ACTIVITIES_AFFILIATE_ID_PARAM` and `NEXT_PUBLIC_ACTIVITIES_AFFILIATE_ID` - optional activity partner ID query parameter and value
+- `NEXT_PUBLIC_INSURANCE_AFFILIATE_BASE_URL` - enables external insurance partner links
+- `NEXT_PUBLIC_INSURANCE_AFFILIATE_QUERY_PARAM` - destination query parameter for insurance links, defaults to `destination`
+- `NEXT_PUBLIC_INSURANCE_AFFILIATE_PROVIDER` and `NEXT_PUBLIC_INSURANCE_AFFILIATE_PARTNER` - labels insurance provider and commercial partner
+- `NEXT_PUBLIC_INSURANCE_AFFILIATE_ID_PARAM` and `NEXT_PUBLIC_INSURANCE_AFFILIATE_ID` - optional insurance partner ID query parameter and value
 
 Server-side lead capture variables:
 
@@ -152,7 +173,6 @@ Server-side lead capture variables:
 ## Current Limitations
 
 - Prices are curated planning estimates, not live booking data.
-- Flight links still route to in-app planning results.
 - Affiliate commission tracking depends on configured partner IDs or partner-provided base URLs.
 - Supported currencies are CAD, USD, and EUR.
 - Supported recommendation styles are budget, balanced, and comfort.

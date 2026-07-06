@@ -34,6 +34,11 @@ const staticRoutes: MetadataRoute.Sitemap = [
     priority: 0.9,
   },
   {
+    url: createCanonicalUrl("/deals"),
+    changeFrequency: "weekly",
+    priority: 0.85,
+  },
+  {
     url: createCanonicalUrl("/about"),
     changeFrequency: "monthly",
     priority: 0.6,
@@ -52,6 +57,21 @@ const staticRoutes: MetadataRoute.Sitemap = [
     url: createCanonicalUrl("/methodology"),
     changeFrequency: "monthly",
     priority: 0.75,
+  },
+  {
+    url: createCanonicalUrl("/privacy"),
+    changeFrequency: "yearly",
+    priority: 0.3,
+  },
+  {
+    url: createCanonicalUrl("/terms"),
+    changeFrequency: "yearly",
+    priority: 0.3,
+  },
+  {
+    url: createCanonicalUrl("/affiliate-disclosure"),
+    changeFrequency: "yearly",
+    priority: 0.3,
   },
 ];
 

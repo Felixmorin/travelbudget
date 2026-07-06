@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 const navItems = [
   { labelKey: "planTrip", href: "/", activePaths: ["/"] },
   { labelKey: "destinations", href: "/destinations", activePaths: ["/destinations"] },
+  { labelKey: "deals", href: "/deals", activePaths: ["/deals"] },
   { labelKey: "tools", href: "/tools", activePaths: ["/tools"] },
   { labelKey: "guides", href: "/guides", activePaths: ["/guides", "/guide"] },
   { labelKey: "about", href: "/about", activePaths: ["/about"] },
@@ -67,12 +68,12 @@ export function Header() {
         <div className="flex items-center gap-2">
           <LanguageSwitcher />
           <TrackedLink
-            href="/"
+            href="/deals"
             eventName="cta_clicked"
             eventProperties={{
               page: pathname,
               label: t.nav.signIn,
-              href: "/",
+              href: "/deals",
               ctaLocation: "site_header",
             }}
             className="hidden text-sm font-medium text-[#434655] hover:text-[#004ac6] sm:block"
@@ -81,12 +82,12 @@ export function Header() {
           </TrackedLink>
           <Button asChild className="h-9 rounded-full bg-[#004ac6] px-4 text-white hover:bg-blue-700">
             <TrackedLink
-              href="/"
+              href="/deals"
               eventName="cta_clicked"
               eventProperties={{
                 page: pathname,
                 label: t.nav.signUp,
-                href: "/",
+                href: "/deals",
                 ctaLocation: "site_header",
               }}
             >

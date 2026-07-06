@@ -1,6 +1,6 @@
 # Revenue Funnel
 
-TravelBudget.ai's MVP funnel is designed to measure budget-first travel intent before adding databases, live pricing APIs, or real affiliate partner integrations.
+TravelBudget.ai's MVP funnel is designed to measure budget-first travel intent before adding databases, live pricing APIs, or deeper affiliate conversion reporting.
 
 ## MVP Funnel
 
@@ -26,6 +26,6 @@ TravelBudget.ai's MVP funnel is designed to measure budget-first travel intent b
 
 ## Notes
 
-- Current affiliate links are internal planning links unless destination data explicitly provides an external URL.
+- Affiliate links use configured partner URLs and IDs where production environment variables are present.
 - Prices shown in the MVP are planning estimates, not live fares, hotel rates, or booking availability.
-- Real partner IDs, sub IDs, conversion APIs, and payout reporting should be added only after the current event loop shows meaningful click intent.
+- Partner postbacks, conversion APIs, and payout reporting should be added after the current event loop shows meaningful click intent.

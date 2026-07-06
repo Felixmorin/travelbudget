@@ -16,6 +16,8 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 
+import { EmailCapture } from "@/components/leads/email-capture";
+
 const matches = [
   {
     city: "Lisbon",
@@ -93,8 +95,8 @@ const popularTrips = [
 ];
 
 const methodology = [
-  [Plane, "Flights", "Live scanning of airlines and booking platforms for your specific dates and departure city."],
-  [Bed, "Accommodation", "Hotel, hostel, and rental pricing tailored to your selected travel style."],
+  [Plane, "Flights", "Origin-specific fare estimates from the current planning dataset for major Canadian departure cities."],
+  [Bed, "Accommodation", "Hotel, hostel, and rental assumptions tailored to your selected travel style."],
   [Utensils, "Daily Costs", "Realistic food, transit, and local spend estimates for each destination."],
   [Ticket, "Activities", "Entrance fees and tour costs based on your preferences and destination profile."],
 ];
@@ -130,8 +132,8 @@ export function HomeContent() {
             Find the best travel destinations for your <span className="text-[#004ac6]">budget</span>
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-[#434655]">
-            Enter your budget, trip length, and departure city. Our AI scans millions of flight and hotel data points
-            to tell you exactly where you can go.
+            Enter your budget, trip length, and departure city. Compare the current planning dataset of 30 country
+            budgets and 24 city guides to see where your money can realistically go.
           </p>
 
           <div className="mt-10 rounded-3xl border border-[#c3c6d7]/40 bg-white p-6 shadow-2xl shadow-blue-950/10 sm:p-8">
@@ -165,9 +167,9 @@ export function HomeContent() {
         <div className="hidden lg:col-span-5 lg:block">
           <div className="space-y-4 rounded-3xl border border-white/70 bg-white/70 p-6 shadow-2xl shadow-blue-950/10 backdrop-blur">
             <div className="mb-6 flex items-center justify-between gap-4">
-              <h2 className="text-xl font-semibold">Live Matches</h2>
+              <h2 className="text-xl font-semibold">Budget Matches</h2>
               <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold uppercase tracking-widest text-emerald-700">
-                34 Destinations Found
+                54 Guides Available
               </span>
             </div>
             {matches.map((match) => (
@@ -204,7 +206,7 @@ export function HomeContent() {
             <h2 className="text-3xl font-semibold tracking-tight text-slate-950">
               With $2,500 CAD from Montreal, you could visit:
             </h2>
-            <p className="mt-3 text-lg text-[#434655]">Real-time estimates calculated for Comfort travel style.</p>
+            <p className="mt-3 text-lg text-[#434655]">Planning estimates calculated for Comfort travel style.</p>
           </div>
           <div className="grid gap-8 md:grid-cols-3">
             {destinationCards.map((destination) => (
@@ -283,7 +285,8 @@ export function HomeContent() {
           <div className="mb-12 max-w-2xl">
             <h2 className="text-3xl font-semibold tracking-tight">How we estimate your travel budget</h2>
             <p className="mt-4 text-lg leading-8 text-slate-400">
-              Our AI engine aggregates real-world pricing signals to keep your budget realistic, not just average.
+              Our planning model combines curated destination costs, origin-specific flight estimates, and travel
+              style assumptions to keep your budget realistic, not just average.
             </p>
           </div>
           <div className="mb-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -348,25 +351,15 @@ export function HomeContent() {
               Found a destination you love? Send the full breakdown to your email or set a price alert for when
               flights drop.
             </p>
-            <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="min-h-14 flex-1 rounded-xl border-0 px-6 text-slate-950 outline-none focus:ring-4 focus:ring-white/20"
+            <div className="mt-10 text-left text-slate-950">
+              <EmailCapture
+                intent="trip_budget"
+                origin="Montreal"
+                budget={2500}
+                duration={10}
+                source="home_save_budget_cta"
+                variant="inline"
               />
-              <button className="min-h-14 rounded-xl bg-white px-7 font-bold text-[#004ac6] transition hover:bg-white/90">
-                Send me this trip budget
-              </button>
-            </div>
-            <div className="mt-7 flex flex-wrap items-center justify-center gap-6 text-sm">
-              <label className="flex items-center gap-2">
-                <input type="checkbox" defaultChecked className="size-4 rounded border-0 text-[#004ac6]" />
-                Get price alerts
-              </label>
-              <label className="flex items-center gap-2">
-                <input type="checkbox" className="size-4 rounded border-0 text-[#004ac6]" />
-                Weekly budget deals
-              </label>
             </div>
           </div>
           <div className="absolute -left-12 -top-12 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
@@ -430,8 +423,8 @@ function ComparisonCard({ title, tone }: { title: string; tone: "muted" | "smart
   const smart = tone === "smart";
   const items = smart
     ? [
-        "One search finds 100+ budget-accurate destinations.",
-        "Live price scanning from real local data.",
+        "One search compares 30 country budgets plus 24 city guides.",
+        "Transparent planning estimates from curated destination data.",
         "Transparent breakdowns for every penny spent.",
         "AI-curated travel styles for your comfort level.",
       ]
