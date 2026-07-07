@@ -17,7 +17,6 @@ import {
   ProgrammaticSeoHighlights,
 } from "@/components/programmatic/ProgrammaticSeoContent";
 import { AnalyticsView } from "@/components/analytics/analytics-view";
-import { EmailCapture } from "@/components/leads/email-capture";
 import { TrackedLink } from "@/components/analytics/tracked-link";
 import { EstimateDisclaimer } from "@/components/site/estimate-disclaimer";
 import { Badge } from "@/components/ui/badge";
@@ -219,16 +218,6 @@ export function ProgrammaticBudgetPage({
           </div>
         )}
 
-        <EmailCapture
-          budget={snapshotDestination?.totalEstimate ?? page.budget}
-          destination={snapshotDestination ? getCityCountryLabel(snapshotDestination.destination) : undefined}
-          duration={page.tripLengthDays}
-          intent="trip_budget"
-          origin={`${page.origin.city} (${page.origin.code})`}
-          source="programmatic_budget_destinations"
-          variant="inline"
-          className="mt-8"
-        />
       </section>
 
       <section id="compare" className="bg-white py-14">

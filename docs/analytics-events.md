@@ -12,7 +12,6 @@ TravelBudget.ai uses typed product events from `src/lib/analytics/events.ts` and
 | `destination_card_clicked` | A user clicks a destination card from homepage, results, or budget pages. | `page`, `destinationSlug`, `destinationName`, `source` | `budget`, `currency`, `originCode`, `originCity`, `days`, `tripLength`, `travelers`, `month`, `travelStyle`, `resultCount`, `resultRank`, `href` | Which recommendations attract clicks? |
 | `result_clicked` | A ranked result card is clicked. | `page`, `destinationSlug`, `destinationName`, `resultRank`, `source` | `budget`, `currency`, `originCode`, `originCity`, `days`, `tripLength`, `travelers`, `month`, `travelStyle`, `resultCount`, `href` | Which result rank positions drive destination detail views? |
 | `filter_changed` | A results or destination discovery filter value changes. | `page`, `filterName`, `filterValue`, `source` | `previousValue`, `budget`, `currency`, `originCode`, `days`, `tripLength`, `travelers`, `month`, `travelStyle` | Which filter interactions reshape search intent? |
-| `destination_saved` | A user saves or unsaves a destination. | `page`, `destinationSlug`, `destinationName`, `source` | `resultRank`, `savedState`, `budget`, `currency`, `originCode`, `days`, `tripLength`, `travelers`, `month`, `travelStyle` | Which destinations earn explicit planning intent? |
 | `destination_viewed` | A destination budget page renders. | `page`, `destinationSlug`, `destinationName` | `originCode`, `originCity`, `currency`, `tripLength` | Which destinations get planning attention? |
 
 ## Calculator
@@ -38,6 +37,4 @@ Legacy aliases `budget_calculator_started`, `budget_calculator_updated`, `budget
 
 | Event | Fires when | Required properties | Optional properties | Business question |
 | --- | --- | --- | --- | --- |
-| `newsletter_submitted` | The guides newsletter form is submitted. | `page`, `newsletterLocation` |  | Which content pages drive email intent? |
-| `email_submitted_by_intent` | A lead capture form is submitted, grouped by intent. | `page`, `intent`, `source` | `variant`, `originCity`, `destinationName`, `budget`, `days`, `tripLength` | Which email capture intents are strongest? |
 | `guide_clicked` | A guide navigation or guide card link is clicked. | `page`, `guideTitle`, `href` | `guideCategory` | Which editorial topics earn clicks? |

@@ -18,18 +18,17 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-xl font-semibold text-slate-950">Information we collect</h2>
             <p className="mt-2">
-              TravelBudget.ai collects the information you enter into planning and email forms, such as email address,
-              destination, origin city, budget, trip length, and page context. We may also collect analytics events such
-              as page views, searches, destination clicks, affiliate clicks, and email capture submissions.
+              TravelBudget.ai collects the information you enter into planning tools, such as destination, origin city,
+              budget, trip length, and page context. We may also collect analytics events such as page views, searches,
+              destination clicks, affiliate clicks, and CTA interactions.
             </p>
           </section>
 
           <section>
             <h2 className="text-xl font-semibold text-slate-950">How we use information</h2>
             <p className="mt-2">
-              We use this information to provide trip budget estimates, send requested budget emails or alerts, measure
-              product usage, improve destination recommendations, debug issues, and understand which booking partners
-              are useful to travelers.
+              We use this information to provide trip budget estimates, measure product usage, improve destination
+              recommendations, debug issues, and understand which booking partners are useful to travelers.
             </p>
           </section>
 
@@ -37,8 +36,7 @@ export default function PrivacyPage() {
             <h2 className="text-xl font-semibold text-slate-950">Analytics and service providers</h2>
             <p className="mt-2">
               The site can be configured with analytics providers such as Google Analytics, Microsoft Clarity,
-              Plausible, or PostHog. Email capture requests may be sent to a configured CRM, database API, email
-              automation tool, or webhook receiver.
+              Plausible, or PostHog.
             </p>
           </section>
 
@@ -46,7 +44,7 @@ export default function PrivacyPage() {
             <h2 className="text-xl font-semibold text-slate-950">Data sharing</h2>
             <p className="mt-2">
               We do not sell personal information. We may share information with service providers that operate the
-              website, analytics, email capture, hosting, security, or affiliate tracking systems. Affiliate partners
+              website, analytics, hosting, security, or affiliate tracking systems. Affiliate partners
               may receive click or referral context when you leave TravelBudget.ai through a partner link.
             </p>
           </section>
@@ -54,9 +52,9 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-xl font-semibold text-slate-950">Your choices</h2>
             <p className="mt-2">
-              You can avoid submitting email forms, use browser privacy controls, or unsubscribe from emails where an
-              unsubscribe option is provided. To request access, correction, or deletion of submitted email data, contact
-              us through the contact details published on TravelBudget.ai.
+              You can use browser privacy controls and avoid partner links if you do not want referral context shared
+              with booking providers. To request access, correction, or deletion of submitted data, contact us through
+              the contact details published on TravelBudget.ai.
             </p>
           </section>
         </div>

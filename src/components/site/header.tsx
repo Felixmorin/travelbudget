@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 const navItems = [
   { labelKey: "planTrip", href: "/", activePaths: ["/"] },
   { labelKey: "destinations", href: "/destinations", activePaths: ["/destinations"] },
-  { labelKey: "deals", href: "/deals", activePaths: ["/deals"] },
   { labelKey: "tools", href: "/tools", activePaths: ["/tools"] },
   { labelKey: "guides", href: "/guides", activePaths: ["/guides", "/guide"] },
   { labelKey: "about", href: "/about", activePaths: ["/about"] },
@@ -69,31 +68,18 @@ export function Header() {
         </nav>
         <div className="flex items-center gap-2">
           <LanguageSwitcher />
-          <TrackedLink
-            href="/deals"
-            eventName="cta_clicked"
-            eventProperties={{
-              page: pathname,
-              label: t.nav.signIn,
-              href: "/deals",
-              ctaLocation: "site_header",
-            }}
-            className="hidden text-sm font-medium text-[#434655] hover:text-[#004ac6] sm:block"
-          >
-            {t.nav.signIn}
-          </TrackedLink>
           <Button asChild className="h-9 rounded-full bg-[#004ac6] px-4 text-white hover:bg-blue-700">
             <TrackedLink
-              href="/deals"
+              href="/tools/travel-budget-calculator"
               eventName="cta_clicked"
               eventProperties={{
                 page: pathname,
-                label: t.nav.signUp,
-                href: "/deals",
+                label: t.nav.calculateBudget,
+                href: "/tools/travel-budget-calculator",
                 ctaLocation: "site_header",
               }}
             >
-              {t.nav.signUp}
+              {t.nav.calculateBudget}
             </TrackedLink>
           </Button>
           <Button
@@ -153,20 +139,6 @@ export function Header() {
               </Link>
             );
           })}
-          <TrackedLink
-            href="/deals"
-            eventName="cta_clicked"
-            eventProperties={{
-              page: pathname,
-              label: t.nav.signIn,
-              href: "/deals",
-              ctaLocation: "site_header_mobile",
-            }}
-            className="rounded-lg px-3 py-3 transition hover:bg-[#f2f4f6] hover:text-[#004ac6]"
-            onClick={() => setIsMobileNavOpen(false)}
-          >
-            {t.nav.signIn}
-          </TrackedLink>
         </nav>
       </div>
     </header>

@@ -3,14 +3,7 @@ import type { MetadataRoute } from "next";
 import { destinations } from "@/lib/data/destinations";
 import { cityDestinations } from "@/lib/data/destination-hub";
 import { longTailGuides } from "@/lib/data/guides";
-import { getProgrammaticBudgetPath, programmaticBudgetPages } from "@/lib/programmatic/budget-pages";
 import { comparisonPages, getComparisonPath } from "@/lib/programmatic/comparison-pages";
-import {
-  destinationBudgetSeoSlugs,
-  durationSeoPages,
-  getTravelBudgetPath,
-  getTravelCostDurationPath,
-} from "@/lib/programmatic/seo-pages";
 import { createCanonicalUrl } from "@/lib/seo/metadata";
 
 const staticRoutes: MetadataRoute.Sitemap = [
@@ -33,11 +26,6 @@ const staticRoutes: MetadataRoute.Sitemap = [
     url: createCanonicalUrl("/destinations"),
     changeFrequency: "weekly",
     priority: 0.9,
-  },
-  {
-    url: createCanonicalUrl("/deals"),
-    changeFrequency: "weekly",
-    priority: 0.85,
   },
   {
     url: createCanonicalUrl("/about"),
@@ -87,21 +75,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "monthly" as const,
     priority: 0.82,
   }));
-  const programmaticBudgetRoutes = programmaticBudgetPages.map((page) => ({
-    url: createCanonicalUrl(getProgrammaticBudgetPath(page)),
-    changeFrequency: "weekly" as const,
-    priority: 0.8,
-  }));
-  const destinationBudgetRoutes = destinationBudgetSeoSlugs.map((slug) => ({
-    url: createCanonicalUrl(getTravelBudgetPath(slug)),
-    changeFrequency: "monthly" as const,
-    priority: 0.75,
-  }));
-  const durationCostRoutes = durationSeoPages.map((page) => ({
-    url: createCanonicalUrl(getTravelCostDurationPath(page.destinationSlug, page.durationDays)),
-    changeFrequency: "monthly" as const,
-    priority: 0.72,
-  }));
   const comparisonRoutes = comparisonPages.map((page) => ({
     url: createCanonicalUrl(getComparisonPath(page)),
     changeFrequency: "monthly" as const,
@@ -117,9 +90,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...staticRoutes,
     ...destinationRoutes,
     ...cityDestinationRoutes,
-    ...programmaticBudgetRoutes,
-    ...destinationBudgetRoutes,
-    ...durationCostRoutes,
     ...comparisonRoutes,
     ...guideRoutes,
   ];

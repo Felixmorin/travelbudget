@@ -1,4 +1,4 @@
-export type BackendTable = "leads" | "saved_trips" | "affiliate_clicks" | "analytics_events";
+export type BackendTable = "affiliate_clicks" | "analytics_events";
 
 export type BackendRecord = Record<string, string | number | boolean | null | undefined>;
 

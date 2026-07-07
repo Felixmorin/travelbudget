@@ -69,7 +69,7 @@ const costInputs = [
     title: "Accommodation",
     icon: Hotel,
     body:
-      "Modeled per traveler per night by destination and travel style, from hostels and shared spaces to private hotels and premium stays.",
+      "Modeled per traveler per night by destination and travel style, from hostels and shared spaces to private hotels and higher-cost stays.",
     sampleLabel: "Paris comfort hotel",
     sampleValue: "$220 CAD / night",
   },

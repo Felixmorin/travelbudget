@@ -46,6 +46,7 @@ export async function generateMetadata({ params }: TravelBudgetPageProps): Promi
     path: getTravelBudgetPath(page.destination.slug),
     image: page.destination.image,
     imageAlt: `${destinationLabel} travel budget`,
+    noIndex: true,
   });
 }
 

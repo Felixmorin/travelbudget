@@ -374,7 +374,7 @@ const destinationSeeds: DestinationSeed[] = [
     travelStyles: ["Culture", "Food", "Cities"],
     weather: "Comfortable spring and fall",
     dataConfidence: "high",
-    shortDescription: "A premium-value classic where trains, regional food, and shoulder-season stays help manage a naturally higher Europe budget.",
+    shortDescription: "A higher-value classic where trains, regional food, and shoulder-season stays help manage a naturally higher Europe budget.",
     itineraryPreview: ["Rome ruins, piazzas, and trattoria meals", "Florence art, markets, and Tuscan day trips", "Venice, Naples, or coastal add-ons depending on budget"],
   },
   {
@@ -509,7 +509,7 @@ const destinationSeeds: DestinationSeed[] = [
     travelStyles: ["Nature", "Cities", "Beach"],
     weather: "Mild shoulder-season touring",
     dataConfidence: "medium",
-    shortDescription: "A premium long-haul trip where the experience is excellent but both flights and daily costs demand a larger budget.",
+    shortDescription: "A higher-cost long-haul trip where the experience is excellent but both flights and daily costs demand a larger budget.",
     itineraryPreview: ["Sydney harbor, beaches, and neighborhoods", "Great Barrier Reef or coastal Queensland planning", "Melbourne food, laneways, and day trips"],
   },
   {

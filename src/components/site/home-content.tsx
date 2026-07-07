@@ -14,7 +14,6 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 
-import { EmailCapture } from "@/components/leads/email-capture";
 import { SearchCard } from "@/components/site/search-card";
 
 const matches = [
@@ -326,20 +325,23 @@ export function HomeContent() {
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#2563eb] to-[#7c3aed] p-8 text-center text-white sm:p-12 lg:p-20">
           <div className="relative z-10 mx-auto max-w-2xl">
-            <h2 className="text-4xl font-bold tracking-tight sm:text-5xl">Save your trip budget</h2>
+            <h2 className="text-4xl font-bold tracking-tight sm:text-5xl">Compare realistic trip costs</h2>
             <p className="mt-6 text-lg leading-8 text-white/90">
-              Found a destination you love? Send the full breakdown to your email or set a price alert for when
-              flights drop.
+              Start with a budget estimate, browse destination guides, and check the methodology before booking.
             </p>
-            <div className="mt-10 text-left text-slate-950">
-              <EmailCapture
-                intent="trip_budget"
-                origin="Montreal"
-                budget={2500}
-                duration={10}
-                source="home_save_budget_cta"
-                variant="inline"
-              />
+            <div className="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
+              <Link
+                href="/tools/travel-budget-calculator"
+                className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-6 font-bold text-[#004ac6] transition hover:bg-white/90"
+              >
+                Estimate a trip budget
+              </Link>
+              <Link
+                href="/methodology"
+                className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/40 px-6 font-bold text-white transition hover:bg-white/10"
+              >
+                View methodology
+              </Link>
             </div>
           </div>
           <div className="absolute -left-12 -top-12 h-64 w-64 rounded-full bg-white/10 blur-3xl" />

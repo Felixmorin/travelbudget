@@ -45,6 +45,7 @@ export async function generateMetadata({ params }: DurationCostPageProps): Promi
     path: getTravelCostDurationPath(page.destination.slug, page.durationDays),
     image: page.destination.image,
     imageAlt: `${destinationLabel} ${page.durationDays}-day travel cost`,
+    noIndex: true,
   });
 }
 

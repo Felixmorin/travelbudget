@@ -24,7 +24,6 @@ import {
 } from "lucide-react";
 
 import { AnalyticsView } from "@/components/analytics/analytics-view";
-import { SaveDestinationButton } from "@/components/analytics/save-destination-button";
 import { TrackedFilterForm } from "@/components/analytics/tracked-form";
 import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Badge } from "@/components/ui/badge";
@@ -552,18 +551,6 @@ function DestinationCard({
             </Badge>
           ) : null}
         </div>
-        <SaveDestinationButton
-          storageKey={`travelbudget:saved-destination:${destination.href}`}
-          eventProperties={{
-            page: "/results",
-            ...analyticsContext,
-            destinationName: destination.title,
-            destinationSlug: destination.slug,
-            resultRank: destination.rank,
-            source: "results_grid",
-            tripLength: analyticsContext.days,
-          }}
-        />
       </div>
 
       <div className="flex flex-1 flex-col p-6">

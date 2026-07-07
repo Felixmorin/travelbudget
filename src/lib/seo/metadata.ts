@@ -5,7 +5,7 @@ import { getCityCountryLabel } from "@/lib/data/unified-destinations";
 
 export const siteConfig = {
   name: "TravelBudget.ai",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://travelbudget.ai",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://travelbudget-omega.vercel.app",
   title: "TravelBudget.ai",
   titleTemplate: "%s | TravelBudget.ai",
   description: "Discover the best destinations based on your real travel budget.",

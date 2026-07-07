@@ -10,11 +10,10 @@ The app currently uses a curated planning dataset of 30 country destinations wit
 - Category, destination, and sort controls on `/results`
 - Trip cost breakdowns for flights, accommodation, food, local transport, activities, and miscellaneous spend
 - Destination detail pages with best months, itinerary previews, FAQs, data-confidence notes, and booking modules
-- Programmatic SEO pages for destination budgets, trip durations, and `/from/[origin]/under-[budget]` combinations
+- Programmatic budget pages for destination budgets, trip durations, and `/from/[origin]/under-[budget]` combinations, kept out of the V1 sitemap until reviewed for indexing
 - Booking.com, Airalo, GetYourGuide, flight, and insurance partner link wiring
 - Analytics events for page views, searches, destination clicks, affiliate modules, and CTAs
 - Optional GA4, Microsoft Clarity, Plausible, and PostHog script loading from production environment variables
-- Lead capture via a configurable server-side provider webhook, with local-only development storage
 
 ## Tech Stack
 
@@ -101,7 +100,6 @@ Starts the production server after a build.
 - `/results` - dynamic recommendation results using `budget`, `currency`, `origin`, `days`, `month`, `travelers`, `style`, `category`, `destination`, and `sort`
 - `/destinations` - destination explorer
 - `/destinations/[slug]` - 54 generated destination detail pages: 30 country guides and 24 city guides
-- `/deals` - email conversion page for saved budgets and price alert intent
 - `/compare` - destination comparison table and comparison guide hub
 - `/compare/[comparison]` - 4 generated comparison SEO pages
 - `/tools` - travel tools directory
@@ -111,9 +109,9 @@ Starts the production server after a build.
 - `/about` - product/about page
 - `/methodology` - methodology and estimate explanation
 - `/privacy`, `/terms`, and `/affiliate-disclosure` - launch-ready legal basics
-- `/travel-budget/[destination]` - 30 generated destination budget SEO pages
-- `/travel-cost/[destination]/[duration]` - 90 generated duration-based cost pages
-- `/from/[origin]/under-[budget]` - 30 generated pages from Montreal, Toronto, Vancouver, Quebec, Ottawa, and Calgary across CAD 1,500, 2,000, 2,500, 3,000, and 4,000 budgets
+- `/travel-budget/[destination]` - generated destination budget pages, currently `noindex`
+- `/travel-cost/[destination]/[duration]` - generated duration-based cost pages, currently `noindex`
+- `/from/[origin]/under-[budget]` - generated budget pages from Montreal, Toronto, Vancouver, Quebec, Ottawa, and Calgary, currently `noindex`
 - `/robots.txt` and `/sitemap.xml` - generated metadata routes
 
 ## Data Model
@@ -163,12 +161,6 @@ Optional public environment variables:
 - `NEXT_PUBLIC_INSURANCE_AFFILIATE_QUERY_PARAM` - destination query parameter for insurance links, defaults to `destination`
 - `NEXT_PUBLIC_INSURANCE_AFFILIATE_PROVIDER` and `NEXT_PUBLIC_INSURANCE_AFFILIATE_PARTNER` - labels insurance provider and commercial partner
 - `NEXT_PUBLIC_INSURANCE_AFFILIATE_ID_PARAM` and `NEXT_PUBLIC_INSURANCE_AFFILIATE_ID` - optional insurance partner ID query parameter and value
-
-Server-side lead capture variables:
-
-- `LEAD_CAPTURE_WEBHOOK_URL` - required in production; receives `lead_capture.created` events for a CRM, database API, email provider, or automation tool
-- `LEAD_CAPTURE_WEBHOOK_SECRET` - optional bearer token sent to the webhook as `Authorization: Bearer <secret>`
-- `LEAD_CAPTURE_LOG_TO_CONSOLE` - optional local-development logging; production does not fall back to memory storage
 
 ## Current Limitations
 
