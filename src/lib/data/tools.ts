@@ -18,18 +18,18 @@ export const tools = [
     status: "available",
   },
   {
-    title: "Itinerary Builder",
-    description: "Turn a destination and trip length into a practical daily plan.",
-    icon: Map,
-    href: "/tools",
-    status: "coming-soon",
-  },
-  {
     title: "Destination Comparator",
     description: "Compare trip totals, weather, and value scores side by side.",
     icon: Scale,
     href: "/compare",
     status: "available",
+  },
+  {
+    title: "Itinerary Builder",
+    description: "Turn a destination and trip length into a practical daily plan.",
+    icon: Map,
+    href: "/tools",
+    status: "coming-soon",
   },
   {
     title: "Price Calendar",
