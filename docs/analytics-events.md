@@ -38,3 +38,4 @@ Legacy aliases `budget_calculator_started`, `budget_calculator_updated`, `budget
 | Event | Fires when | Required properties | Optional properties | Business question |
 | --- | --- | --- | --- | --- |
 | `guide_clicked` | A guide navigation or guide card link is clicked. | `page`, `guideTitle`, `href` | `guideCategory` | Which editorial topics earn clicks? |
+| `guide_viewed` | A guide slug page renders. | `page`, `guideTitle` | `guideCategory`, `destinationSlug` | Which guide pages should be promoted in the guide hub? |

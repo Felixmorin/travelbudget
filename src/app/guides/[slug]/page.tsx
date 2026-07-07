@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArrowRight, CalendarDays, Plane, ReceiptText, WalletCards } from "lucide-react";
 
+import { AnalyticsView } from "@/components/analytics/analytics-view";
 import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -116,6 +117,15 @@ export default async function LongTailGuidePage({ params }: GuidePageProps) {
 
   return (
     <main className="bg-slate-50 text-slate-950">
+      <AnalyticsView
+        eventName="guide_viewed"
+        eventProperties={{
+          page: `/guides/${guide.slug}`,
+          guideTitle: guide.title,
+          guideCategory: guide.category,
+          destinationSlug: guide.destinationSlug,
+        }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

@@ -55,6 +55,10 @@ export type AnalyticsEventProperties = {
     linkType?: string;
     title?: string;
   };
+  guide_viewed: CommonAnalyticsProperties & {
+    guideTitle?: string;
+    guideCategory?: string;
+  };
   result_clicked: CommonAnalyticsProperties & {
     resultRank?: number;
   };
@@ -92,6 +96,7 @@ export const analyticsEventNames = [
   "cta_clicked",
   "affiliate_module_viewed",
   "affiliate_link_clicked",
+  "guide_viewed",
   "result_clicked",
   "filter_changed",
   "guide_clicked",

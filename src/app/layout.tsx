@@ -1,4 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { AnalyticsScripts } from "@/components/analytics/analytics-scripts";
 import { LanguageProvider } from "@/components/i18n/language-provider";
@@ -35,6 +37,8 @@ export default function RootLayout({
           <div className="flex-1">{children}</div>
           <Footer />
         </LanguageProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
