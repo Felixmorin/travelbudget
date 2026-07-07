@@ -10,6 +10,8 @@ import {
   Car,
   CheckCircle2,
   Clock,
+  Database,
+  ExternalLink,
   Diamond,
   Eye,
   Home,
@@ -159,6 +161,26 @@ const freshness = [
   { title: "Currency", body: "CAD planning estimates and FX movement.", icon: RefreshCcw },
 ];
 
+const estimateLastUpdated = "July 7, 2026";
+
+const sourceGroups = [
+  {
+    title: "Booking-market signals",
+    body:
+      "Flight and accommodation baselines are calibrated from current public booking-market ranges, then normalized into CAD planning estimates.",
+  },
+  {
+    title: "Destination cost references",
+    body:
+      "Food, transit, activities, tourist taxes, and local fees are checked against destination guides, official tourism information, and traveler cost references.",
+  },
+  {
+    title: "Internal sanity checks",
+    body:
+      "Outliers are reviewed against comparable cities, seasonality, trip length, travel style, and whether the final total still feels bookable.",
+  },
+];
+
 const comparisons = [
   {
     city: "Lisbon",
@@ -269,6 +291,18 @@ export default function MethodologyPage() {
               >
                 <Link href="#included">See what is included</Link>
               </Button>
+            </div>
+            <div className="mt-8 rounded-2xl border border-[#c3c6d7]/60 bg-[#f7f9fb] p-4 text-sm leading-6 text-[#434655]">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <span className="inline-flex items-center gap-2 font-semibold text-[#191c1e]">
+                  <RefreshCcw className="size-4 text-[#004ac6]" />
+                  Estimate assumptions last reviewed: {estimateLastUpdated}
+                </span>
+                <Link href="#sources" className="inline-flex items-center gap-1 font-semibold text-[#004ac6]">
+                  View sources and limits
+                  <ExternalLink className="size-4" />
+                </Link>
+              </div>
             </div>
             <div className="mt-8 flex flex-wrap gap-2">
               {chips.map((chip) => {
@@ -390,6 +424,38 @@ export default function MethodologyPage() {
                 </article>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      <section id="sources" className="border-y border-[#c3c6d7]/35 bg-[#f7f9fb] py-16">
+        <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
+          <div>
+            <div className="flex size-12 items-center justify-center rounded-xl bg-[#004ac6]/10 text-[#004ac6]">
+              <Database className="size-6" />
+            </div>
+            <h2 className="mt-5 text-3xl font-semibold tracking-normal">Sources behind the budgets</h2>
+            <p className="mt-4 text-base leading-7 text-[#434655]">
+              TravelBudget.ai does not treat estimates as live quotes. We use public price signals, destination cost
+              references, and structured assumptions to produce a realistic pre-booking range. The current estimate
+              dataset was last reviewed on {estimateLastUpdated}.
+            </p>
+            <p className="mt-4 text-sm leading-6 text-[#434655]">
+              Affiliate relationships can affect which booking partners are linked, but the budget methodology is
+              designed around trip cost assumptions first. See the{" "}
+              <Link href="/affiliate-disclosure" className="font-semibold text-[#004ac6] hover:text-blue-800">
+                affiliate disclosure
+              </Link>
+              .
+            </p>
+          </div>
+          <div className="grid gap-4">
+            {sourceGroups.map((source) => (
+              <article key={source.title} className="rounded-2xl border border-[#c3c6d7]/45 bg-white p-6 shadow-sm">
+                <h3 className="text-lg font-semibold text-[#191c1e]">{source.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-[#434655]">{source.body}</p>
+              </article>
+            ))}
           </div>
         </div>
       </section>
@@ -585,6 +651,28 @@ export default function MethodologyPage() {
                 <p className="mt-3 text-sm leading-6 text-[#434655]">{faq.answer}</p>
               </details>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white py-16">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+          <div className="rounded-[24px] border border-[#c3c6d7]/45 bg-[#f7f9fb] p-8 text-center">
+            <ShieldCheck className="mx-auto size-10 text-[#004ac6]" />
+            <h2 className="mt-4 text-3xl font-semibold tracking-normal">Planning disclaimer</h2>
+            <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-[#434655]">
+              Estimates are informational planning ranges, not financial advice, live availability, or guaranteed
+              prices. Always confirm live fares, lodging rules, cancellation policies, exchange rates, and visa or
+              insurance requirements before booking.
+            </p>
+            <div className="mt-6 flex flex-wrap justify-center gap-3">
+              <Button asChild variant="outline" className="rounded-full border-[#737686] bg-white px-5 text-[#004ac6]">
+                <Link href="/contact">Report a price issue</Link>
+              </Button>
+              <Button asChild variant="outline" className="rounded-full border-[#737686] bg-white px-5 text-[#004ac6]">
+                <Link href="/affiliate-disclosure">Affiliate disclosure</Link>
+              </Button>
+            </div>
           </div>
         </div>
       </section>

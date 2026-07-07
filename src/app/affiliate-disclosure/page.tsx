@@ -40,6 +40,14 @@ export default function AffiliateDisclosurePage() {
               should compare live providers before purchasing.
             </p>
           </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-slate-950">Budget independence</h2>
+            <p className="mt-2">
+              Affiliate commissions do not guarantee placement in a destination budget or change the core methodology
+              used to estimate flights, accommodation, food, local transport, activities, and safety buffers.
+            </p>
+          </section>
         </div>
       </article>
     </main>

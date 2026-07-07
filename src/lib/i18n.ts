@@ -87,6 +87,17 @@ export const translations = {
         "A destination can look affordable until hotel prices, local transport, activities, and peak-season demand are included. TravelBudget.ai brings those parts into one planning view, so tradeoffs are visible earlier.",
       approachCopyTwo:
         "The V1 focuses on budget estimates, destination comparisons, practical guides, and a clear methodology for understanding how trip costs are calculated.",
+      trustEyebrow: "Trust and transparency",
+      trustTitle: "Built to make the estimate easy to audit.",
+      trustCopy:
+        "TravelBudget.ai shows how budgets are assembled, when the planning assumptions were last reviewed, and how to reach us if a price looks off.",
+      methodologyTitle: "Price methodology",
+      methodologyCopy:
+        "Budget ranges are built from flights, stays, meals, local transport, activities, and a safety buffer.",
+      updatedTitle: "Estimate freshness",
+      updatedCopy: "The current planning dataset was last reviewed on July 7, 2026.",
+      contactTitle: "Contact path",
+      contactCopy: "Questions, corrections, and partnership notes can be sent through the contact page.",
     },
     footer: {
       description: "Budget-first travel planning with estimates, comparisons, guides, and transparent methodology.",
@@ -225,6 +236,17 @@ export const translations = {
         "Une destination peut sembler abordable jusqu'a ce que les hotels, le transport local, les activites et la haute saison soient inclus. TravelBudget.ai regroupe ces elements pour rendre les compromis visibles plus tot.",
       approachCopyTwo:
         "La V1 se concentre sur les estimations de budget, les comparaisons de destinations, les guides pratiques et une methodologie claire pour comprendre les couts.",
+      trustEyebrow: "Confiance et transparence",
+      trustTitle: "Concu pour rendre l'estimation facile a verifier.",
+      trustCopy:
+        "TravelBudget.ai explique comment les budgets sont composes, quand les hypotheses ont ete revues et comment nous contacter si un prix semble incorrect.",
+      methodologyTitle: "Methodologie des prix",
+      methodologyCopy:
+        "Les fourchettes incluent vols, hebergements, repas, transport local, activites et marge de securite.",
+      updatedTitle: "Fraicheur des estimations",
+      updatedCopy: "Le jeu de donnees de planification actuel a ete revu le 7 juillet 2026.",
+      contactTitle: "Contact",
+      contactCopy: "Questions, corrections et partenariats peuvent etre envoyes via la page contact.",
     },
     footer: {
       description: "Planification de voyage centree sur le budget, avec estimations, comparaisons, guides et methodologie transparente.",

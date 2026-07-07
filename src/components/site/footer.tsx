@@ -17,6 +17,7 @@ const footerSections = [
     titleKey: "company",
     links: [
       { labelKey: "aboutUs", href: "/about" },
+      { labelKey: "contact", href: "/contact" },
     ],
   },
   {

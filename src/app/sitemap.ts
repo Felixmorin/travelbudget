@@ -33,6 +33,11 @@ const staticRoutes: MetadataRoute.Sitemap = [
     priority: 0.6,
   },
   {
+    url: createCanonicalUrl("/contact"),
+    changeFrequency: "yearly",
+    priority: 0.4,
+  },
+  {
     url: createCanonicalUrl("/compare"),
     changeFrequency: "monthly",
     priority: 0.7,

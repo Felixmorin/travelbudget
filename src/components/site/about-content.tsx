@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { BarChart3, Compass, ShieldCheck } from "lucide-react";
+import { BarChart3, Compass, Mail, RefreshCcw, ShieldCheck } from "lucide-react";
 
 import { useTranslation } from "@/components/i18n/language-provider";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,27 @@ const principles = [
     titleKey: "assumptionsTitle",
     descriptionKey: "assumptionsCopy",
     icon: ShieldCheck,
+  },
+] as const;
+
+const trustDetails = [
+  {
+    titleKey: "methodologyTitle",
+    descriptionKey: "methodologyCopy",
+    href: "/methodology",
+    icon: BarChart3,
+  },
+  {
+    titleKey: "updatedTitle",
+    descriptionKey: "updatedCopy",
+    href: "/methodology",
+    icon: RefreshCcw,
+  },
+  {
+    titleKey: "contactTitle",
+    descriptionKey: "contactCopy",
+    href: "/contact",
+    icon: Mail,
   },
 ] as const;
 
@@ -99,6 +120,35 @@ export function AboutContent() {
             <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">{t.about.approachTitle}</h2>
             <p className="mt-4 text-base leading-7 text-slate-500">{t.about.approachCopyOne}</p>
             <p className="mt-4 text-base leading-7 text-slate-500">{t.about.approachCopyTwo}</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-slate-200 bg-white py-16 sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl">
+            <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">{t.about.trustEyebrow}</p>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">{t.about.trustTitle}</h2>
+            <p className="mt-4 text-base leading-7 text-slate-500">{t.about.trustCopy}</p>
+          </div>
+          <div className="mt-10 grid gap-4 md:grid-cols-3">
+            {trustDetails.map((detail) => {
+              const Icon = detail.icon;
+
+              return (
+                <Link
+                  key={detail.titleKey}
+                  href={detail.href}
+                  className="rounded-lg border border-slate-200 bg-slate-50 p-5 transition hover:border-blue-200 hover:bg-white hover:shadow-sm"
+                >
+                  <div className="flex size-10 items-center justify-center rounded-lg bg-white text-blue-700 shadow-sm">
+                    <Icon className="size-5" />
+                  </div>
+                  <h3 className="mt-4 text-base font-semibold text-slate-950">{t.about[detail.titleKey]}</h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-500">{t.about[detail.descriptionKey]}</p>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
