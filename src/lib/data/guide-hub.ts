@@ -14,6 +14,8 @@ export type GuideHubCard = {
   href: string;
   title: string;
   description: string;
+  image: string;
+  imageAlt: string;
   category: LongTailGuide["category"];
   destinationLabel: string;
   region: DestinationContinent | "General";
@@ -144,6 +146,8 @@ function toGuideHubCard(
     href: `/guides/${guide.slug}`,
     title: guide.title,
     description: guide.summary,
+    image: guide.image,
+    imageAlt: guide.imageAlt,
     category: guide.category,
     destinationLabel,
     region: getRegion(guide),

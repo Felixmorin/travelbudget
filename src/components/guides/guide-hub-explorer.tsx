@@ -1,7 +1,20 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ChevronsUpDown, Eye, Filter, Search, SlidersHorizontal, X } from "lucide-react";
+import {
+  ArrowRight,
+  BadgeDollarSign,
+  CalendarDays,
+  ChevronsUpDown,
+  Eye,
+  Filter,
+  HelpCircle,
+  Search,
+  SlidersHorizontal,
+  Sparkles,
+  X,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +28,7 @@ import type {
 import { cn } from "@/lib/utils";
 
 type Filters = {
+  query: string;
   region: "all" | string;
   travelStyle: "all" | string;
   duration: "all" | GuideDurationBucket;
@@ -22,6 +36,7 @@ type Filters = {
 };
 
 const defaultFilters: Filters = {
+  query: "",
   region: "all",
   travelStyle: "all",
   duration: "all",
@@ -61,14 +76,22 @@ export function GuideHubExplorer({
   );
 
   const filteredGuides = useMemo(() => {
+    const normalizedQuery = filters.query.trim().toLowerCase();
+
     return guides
       .filter((guide) => {
+        const matchesQuery =
+          !normalizedQuery ||
+          [guide.title, guide.description, guide.destinationLabel, guide.region, guide.category]
+            .join(" ")
+            .toLowerCase()
+            .includes(normalizedQuery);
         const matchesRegion = filters.region === "all" || guide.region === filters.region;
         const matchesStyle = filters.travelStyle === "all" || guide.travelStyle === filters.travelStyle;
         const matchesDuration = filters.duration === "all" || guide.durationBucket === filters.duration;
         const matchesBudget = filters.budgetLevel === "all" || guide.budgetLevel === filters.budgetLevel;
 
-        return matchesRegion && matchesStyle && matchesDuration && matchesBudget;
+        return matchesQuery && matchesRegion && matchesStyle && matchesDuration && matchesBudget;
       })
       .toSorted((a, b) => {
         if (sort === "newest") {
@@ -87,6 +110,8 @@ export function GuideHubExplorer({
       });
   }, [filters, guides, sort]);
 
+  const totalViews = guides.reduce((sum, guide) => sum + guide.viewCount, 0);
+
   function updateFilter<Key extends keyof Filters>(key: Key, value: Filters[Key]) {
     setFilters((current) => ({ ...current, [key]: value }));
   }
@@ -98,86 +123,89 @@ export function GuideHubExplorer({
 
   return (
     <>
-      <section className="border-b border-slate-200 bg-white">
-        <div className="mx-auto grid max-w-7xl gap-6 px-4 py-10 sm:px-6 lg:grid-cols-[1fr_320px] lg:px-8">
-          <div>
-            <Badge className="mb-4 rounded-full bg-blue-50 px-3 text-blue-700">Hub Guide</Badge>
-            <h1 className="max-w-4xl text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
+      <section className="mx-auto max-w-7xl px-4 pb-10 pt-8 sm:px-6 lg:px-8">
+        <div className="flex flex-col justify-between gap-6 border-b border-slate-200 pb-8 md:flex-row md:items-end">
+          <div className="max-w-3xl">
+            <Badge className="mb-4 rounded-full bg-blue-50 px-3 text-blue-700 ring-1 ring-blue-100">
+              Hub Guide
+            </Badge>
+            <h1 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
               Guides de voyage classés par intérêt réel
             </h1>
-            <p className="mt-4 max-w-3xl text-base leading-7 text-slate-600">
-              Explorez les guides budget, destinations et itinéraires selon les pages les plus consultées, la durée,
-              le style de voyage et le budget estimé.
+            <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
+              Optimisez votre budget avec des guides triés par visites, destination, durée et style de voyage.
             </p>
             {!hasVisitData ? (
-              <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
+              <p className="mt-4 max-w-2xl rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
                 Aucune donnée de visite exploitable n&apos;est encore disponible. Le classement utilise un jeu de données
-                temporaire, isolé dans le module guide hub et prêt à être remplacé.
+                temporaire, prêt à être remplacé par une source analytics.
               </p>
             ) : null}
           </div>
-          <div className="grid content-start gap-3 rounded-lg border border-slate-200 bg-slate-50 p-5">
-            <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">Découverte interne</p>
-            <div className="grid grid-cols-2 gap-3">
-              <Metric label="Guides" value={String(guides.length)} />
-              <Metric label="Top vues" value={popularGuides[0]?.formattedViews ?? "0 vue"} />
-            </div>
-            <Link href="#guides-list" className="mt-2 inline-flex items-center gap-2 text-sm font-semibold text-blue-700 hover:underline">
-              Voir tous les guides
-              <ArrowRight className="size-4" />
-            </Link>
+          <div className="flex w-full gap-4 rounded-xl border border-white/70 bg-white/75 p-4 shadow-sm backdrop-blur md:w-auto">
+            <Metric label="Guides actifs" value={`${guides.length}`} />
+            <div className="w-px bg-slate-200" />
+            <Metric label="Vues classées" value={formatCompactViews(totalViews)} />
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
-          <div>
-            <h2 className="text-3xl font-semibold text-slate-950">Guides populaires</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-600">
-              Les pages guide les plus demandées, enrichies par les visites destination quand un slug est lié.
-            </p>
-          </div>
-          <Link href="#guides-list" className="text-sm font-semibold text-blue-700 hover:underline">
-            Parcourir la bibliothèque
+      <section className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
+        <div className="mb-6 flex items-center justify-between gap-4">
+          <h2 className="text-3xl font-semibold tracking-tight text-slate-950">Guides populaires</h2>
+          <Link href="#explorer" className="inline-flex items-center gap-1 text-sm font-semibold text-blue-700 hover:underline">
+            Tout voir
+            <ArrowRight className="size-4" />
           </Link>
         </div>
-        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {popularGuides.map((guide) => (
-            <GuideCard key={guide.slug} guide={guide} compact />
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          {popularGuides.slice(0, 3).map((guide) => (
+            <PopularGuideCard key={guide.slug} guide={guide} />
           ))}
         </div>
       </section>
 
-      <section id="guides-list" className="mx-auto grid max-w-7xl gap-8 px-4 pb-10 sm:px-6 lg:grid-cols-[280px_1fr] lg:px-8">
-        <aside className="hidden lg:block">
-          <div className="sticky top-24 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-            <FilterHeader />
-            <GuideFilters filters={filters} options={options} onChange={updateFilter} />
-            <Button type="button" className="mt-6 h-10 w-full bg-blue-700 text-white hover:bg-blue-800" onClick={resetFilters}>
-              Réinitialiser
-            </Button>
+      <section id="explorer" className="mx-auto flex max-w-7xl flex-col gap-8 px-4 pb-12 sm:px-6 md:flex-row lg:px-8">
+        <aside className="hidden w-full md:block md:w-72 md:shrink-0">
+          <div className="sticky top-24 space-y-6">
+            <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div className="mb-5 flex items-center justify-between gap-3">
+                <FilterHeader />
+                <button type="button" className="text-sm font-semibold text-blue-700 hover:underline" onClick={resetFilters}>
+                  Réinitialiser
+                </button>
+              </div>
+              <GuideFilters filters={filters} options={options} onChange={updateFilter} />
+            </div>
+            <div className="rounded-xl border border-blue-200 bg-blue-50/70 p-5">
+              <HelpCircle className="mb-3 size-5 text-blue-700" />
+              <h3 className="font-semibold text-blue-800">Besoin d&apos;aide ?</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                Consultez la méthode de calcul avant de comparer vos prochains itinéraires.
+              </p>
+              <Link href="/methodology" className="mt-3 inline-flex items-center gap-1 text-sm font-bold text-blue-700 hover:underline">
+                Voir la méthodologie
+                <ArrowRight className="size-4" />
+              </Link>
+            </div>
           </div>
         </aside>
 
-        <div className="min-w-0">
-          <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h2 className="text-2xl font-semibold text-slate-950">{filteredGuides.length} guides disponibles</h2>
-              <p className="mt-1 text-sm text-slate-600">Liens internes crawlables vers chaque page slug.</p>
-            </div>
+        <div className="min-w-0 flex-1">
+          <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <span className="text-sm font-medium text-slate-600">{filteredGuides.length} guides trouvés</span>
             <div className="flex items-center gap-3">
-              <Button type="button" variant="outline" className="h-10 bg-white lg:hidden" onClick={() => setMobileFiltersOpen(true)}>
+              <Button type="button" variant="outline" className="h-10 bg-white md:hidden" onClick={() => setMobileFiltersOpen(true)}>
                 <SlidersHorizontal className="size-4" />
                 Filtres
               </Button>
-              <label className="flex items-center gap-2 text-sm font-medium text-slate-600">
+              <label className="flex items-center gap-2 text-sm text-slate-600">
                 <ChevronsUpDown className="size-4 text-blue-700" />
-                <span className="sr-only sm:not-sr-only">Tri</span>
+                <span>Trier par :</span>
                 <select
                   value={sort}
                   onChange={(event) => setSort(event.target.value as GuideSortOption)}
-                  className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-900 outline-none focus:border-blue-700 focus:ring-3 focus:ring-blue-700/20"
+                  className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-blue-700 outline-none focus:border-blue-700 focus:ring-3 focus:ring-blue-700/20"
                 >
                   {Object.entries(sortLabels).map(([value, label]) => (
                     <option key={value} value={value}>
@@ -190,9 +218,9 @@ export function GuideHubExplorer({
           </div>
 
           {filteredGuides.length > 0 ? (
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
               {filteredGuides.map((guide) => (
-                <GuideCard key={guide.slug} guide={guide} />
+                <ResultGuideCard key={guide.slug} guide={guide} />
               ))}
             </div>
           ) : (
@@ -201,27 +229,21 @@ export function GuideHubExplorer({
         </div>
       </section>
 
-      <section className="border-y border-slate-200 bg-white">
-        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-semibold text-slate-950">Les voyageurs consultent aussi</h2>
-          <div className="mt-5 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-            {alsoViewedGuides.map((guide) => (
-              <Link
-                key={guide.slug}
-                href={guide.href}
-                className="rounded-lg border border-slate-200 bg-slate-50 p-4 transition hover:border-blue-300 hover:bg-blue-50"
-              >
-                <span className="text-xs font-semibold uppercase tracking-wide text-blue-700">{guide.category}</span>
-                <span className="mt-2 block font-semibold leading-6 text-slate-950">{guide.title}</span>
-                <span className="mt-2 block text-sm text-slate-600">{guide.formattedViews}</span>
-              </Link>
-            ))}
-          </div>
+      <section className="mx-auto max-w-7xl border-t border-slate-200 px-4 py-12 sm:px-6 lg:px-8">
+        <h2 className="text-3xl font-semibold tracking-tight text-slate-950">Les voyageurs consultent aussi</h2>
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {alsoViewedGuides.map((guide) => (
+            <Link key={guide.slug} href={guide.href} className="group rounded-lg p-1">
+              <h3 className="text-lg font-semibold text-slate-950 transition group-hover:text-blue-700">{guide.category}</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-600">{guide.title}</p>
+              <span className="mt-2 block text-sm font-semibold text-blue-700">{guide.formattedViews}</span>
+            </Link>
+          ))}
         </div>
       </section>
 
       {mobileFiltersOpen ? (
-        <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Filtres des guides">
+        <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true" aria-label="Filtres des guides">
           <button type="button" className="absolute inset-0 bg-slate-950/45" aria-label="Fermer les filtres" onClick={() => setMobileFiltersOpen(false)} />
           <div className="absolute inset-x-0 bottom-0 max-h-[88vh] overflow-y-auto rounded-t-2xl bg-white p-5 shadow-2xl">
             <div className="mb-5 flex items-center justify-between">
@@ -246,33 +268,88 @@ export function GuideHubExplorer({
   );
 }
 
-function GuideCard({ guide, compact = false }: { guide: GuideHubCard; compact?: boolean }) {
+function PopularGuideCard({ guide }: { guide: GuideHubCard }) {
   return (
-    <article className="group flex h-full flex-col rounded-lg border border-slate-200 bg-white p-5 shadow-sm transition hover:border-blue-300 hover:shadow-md">
-      <div className="flex items-start justify-between gap-3">
-        <Badge className={getBadgeClassName(guide.badge)}>{guide.badge}</Badge>
-        <span className="inline-flex shrink-0 items-center gap-1 font-mono text-sm font-semibold text-slate-600">
-          <Eye className="size-4 text-blue-700" />
-          {guide.formattedViews}
-        </span>
-      </div>
-      <h3 className="mt-4 text-xl font-semibold leading-7 text-slate-950 group-hover:text-blue-700">{guide.title}</h3>
-      <p className={cn("mt-2 text-sm leading-6 text-slate-600", compact ? "line-clamp-2" : "line-clamp-3")}>{guide.description}</p>
-      <dl className="mt-5 grid grid-cols-2 gap-2 text-sm">
-        <CardFact label="Destination" value={guide.destinationLabel} />
-        <CardFact label="Région" value={guide.region} />
-        <CardFact label="Durée" value={guide.durationDays ? `${guide.durationDays} jours` : "Flexible"} />
-        <CardFact label="Budget" value={guide.budgetLabel} />
-      </dl>
-      <div className="mt-4 flex flex-wrap gap-2">
-        <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">{guide.travelStyle}</span>
-        <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">{guide.budgetLevel}</span>
-      </div>
-      <Link href={guide.href} className="mt-auto inline-flex items-center gap-2 pt-5 text-sm font-semibold text-blue-700 hover:underline">
-        Ouvrir le guide
-        <ArrowRight className="size-4" />
+    <article className="group relative overflow-hidden rounded-xl border border-slate-200 bg-white transition duration-300 hover:shadow-lg">
+      <Link href={guide.href} className="block">
+        <div className="absolute left-4 top-4 z-10">
+          <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-800 shadow-sm">
+            <Sparkles className="size-3.5" />
+            {guide.badge}
+          </span>
+        </div>
+        <div className="relative h-48 overflow-hidden bg-slate-100">
+          <Image
+            src={guide.image}
+            alt={guide.imageAlt}
+            fill
+            loading="eager"
+            sizes="(min-width: 768px) 33vw, 100vw"
+            className="object-cover transition duration-500 group-hover:scale-105"
+          />
+          <div className="absolute bottom-4 right-4 inline-flex items-center gap-1 rounded-lg bg-black/55 px-2 py-1 text-xs font-semibold text-white backdrop-blur">
+            <Eye className="size-3.5" />
+            {guide.formattedViews}
+          </div>
+        </div>
+        <div className="p-5">
+          <div className="mb-2 flex flex-wrap items-center gap-2 text-xs">
+            <span className="font-semibold uppercase tracking-wide text-blue-700">{guide.destinationLabel}</span>
+            <span className="text-slate-400">•</span>
+            <span className="font-medium text-slate-600">{guide.budgetLevel}</span>
+          </div>
+          <h3 className="text-xl font-semibold leading-7 text-slate-950 transition group-hover:text-blue-700">{guide.title}</h3>
+          <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">{guide.description}</p>
+          <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-slate-600">
+            <span className="inline-flex items-center gap-1">
+              <CalendarDays className="size-4" />
+              {guide.durationDays ? `${guide.durationDays} jours` : "Flexible"}
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <BadgeDollarSign className="size-4" />
+              {budgetSymbol(guide.budgetLevel)}
+            </span>
+          </div>
+        </div>
       </Link>
     </article>
+  );
+}
+
+function ResultGuideCard({ guide }: { guide: GuideHubCard }) {
+  return (
+    <Link
+      href={guide.href}
+      className="group flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-4 transition duration-300 hover:border-blue-700 sm:flex-row"
+    >
+      <div className="relative h-40 w-full shrink-0 overflow-hidden rounded-lg bg-slate-100 sm:size-32">
+        <Image
+          src={guide.image}
+          alt={guide.imageAlt}
+          fill
+          sizes="(min-width: 1024px) 128px, 100vw"
+          className="object-cover transition duration-500 group-hover:scale-110"
+        />
+      </div>
+      <div className="flex min-w-0 flex-1 flex-col justify-between">
+        <div>
+          <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
+            <span className="text-xs font-semibold uppercase tracking-wide text-blue-700">
+              {guide.region} • {guide.destinationLabel}
+            </span>
+            <span className="text-xs text-slate-500">{relativeDateLabel(guide.publishedAt)}</span>
+          </div>
+          <h3 className="text-lg font-semibold leading-6 text-slate-950 transition group-hover:text-blue-700">{guide.title}</h3>
+          <p className="mt-1 line-clamp-2 text-sm leading-6 text-slate-600">{guide.description}</p>
+        </div>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <Pill>{guide.durationDays ? `${guide.durationDays} jours` : "Flexible"}</Pill>
+          <Pill>{budgetSymbol(guide.budgetLevel)}</Pill>
+          <Pill>{guide.travelStyle}</Pill>
+          <Pill>{guide.formattedViews}</Pill>
+        </div>
+      </div>
+    </Link>
   );
 }
 
@@ -291,9 +368,23 @@ function GuideFilters({
   onChange: <Key extends keyof Filters>(key: Key, value: Filters[Key]) => void;
 }) {
   return (
-    <div className="mt-5 grid gap-5">
+    <div className="grid gap-6">
+      <label htmlFor="guide-search" className="grid gap-2">
+        <span className="text-sm font-medium text-slate-600">Rechercher</span>
+        <span className="relative">
+          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+          <input
+            id="guide-search"
+            value={filters.query}
+            onChange={(event) => onChange("query", event.target.value)}
+            placeholder="Destination, guide..."
+            className="h-10 w-full rounded-lg border border-slate-200 bg-[#f7f9fb] pl-9 pr-3 text-sm outline-none focus:border-blue-700 focus:ring-3 focus:ring-blue-700/20"
+          />
+        </span>
+      </label>
+
       <FilterSelect
-        label="Région ou continent"
+        label="Région"
         value={filters.region}
         onChange={(value) => onChange("region", value)}
         options={[{ label: "Toutes les régions", value: "all" }, ...options.regions.map((value) => ({ label: value, value }))]}
@@ -310,12 +401,20 @@ function GuideFilters({
         onChange={(value) => onChange("duration", value as Filters["duration"])}
         options={[{ label: "Toutes les durées", value: "all" }, ...options.durations.map((value) => ({ label: value, value }))]}
       />
-      <FilterSelect
-        label="Niveau de budget"
-        value={filters.budgetLevel}
-        onChange={(value) => onChange("budgetLevel", value as Filters["budgetLevel"])}
-        options={[{ label: "Tous les budgets", value: "all" }, ...options.budgetLevels.map((value) => ({ label: value, value }))]}
-      />
+
+      <div>
+        <p className="mb-2 text-sm font-medium text-slate-600">Niveau de budget</p>
+        <div className="grid grid-cols-2 gap-2">
+          <BudgetButton active={filters.budgetLevel === "all"} onClick={() => onChange("budgetLevel", "all")}>
+            Tous
+          </BudgetButton>
+          {options.budgetLevels.map((level) => (
+            <BudgetButton key={level} active={filters.budgetLevel === level} onClick={() => onChange("budgetLevel", level)}>
+              {budgetSymbol(level)}
+            </BudgetButton>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -335,12 +434,12 @@ function FilterSelect({
 
   return (
     <label htmlFor={id} className="grid gap-2">
-      <span className="text-xs font-semibold text-slate-600">{label}</span>
+      <span className="text-sm font-medium text-slate-600">{label}</span>
       <select
         id={id}
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm font-medium text-slate-900 outline-none focus:border-blue-700 focus:ring-3 focus:ring-blue-700/20"
+        className="h-10 rounded-lg border border-slate-200 bg-[#f7f9fb] px-3 text-sm text-slate-900 outline-none focus:border-blue-700 focus:ring-3 focus:ring-blue-700/20"
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>
@@ -352,41 +451,56 @@ function FilterSelect({
   );
 }
 
-function FilterHeader() {
+function BudgetButton({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
   return (
-    <div className="flex items-center gap-3">
-      <span className="flex size-9 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
-        <Filter className="size-5" />
-      </span>
-      <div>
-        <h3 className="font-semibold text-slate-950">Filtres</h3>
-        <p className="text-sm text-slate-500">Affiner les guides</p>
-      </div>
-    </div>
+    <button
+      type="button"
+      className={cn(
+        "h-10 rounded-lg border px-3 text-sm font-semibold transition focus:outline-none focus:ring-3 focus:ring-blue-700/20",
+        active
+          ? "border-blue-700 bg-blue-50 text-blue-800"
+          : "border-slate-200 bg-white text-slate-700 hover:bg-blue-50 hover:text-blue-800"
+      )}
+      onClick={onClick}
+    >
+      {children}
+    </button>
   );
 }
 
-function CardFact({ label, value }: { label: string; value: string }) {
+function FilterHeader() {
   return (
-    <div className="rounded-lg bg-slate-50 p-3">
-      <dt className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{label}</dt>
-      <dd className="mt-1 line-clamp-1 font-semibold text-slate-950">{value}</dd>
+    <div className="flex items-center gap-2">
+      <Filter className="size-5 text-blue-700" />
+      <h3 className="text-lg font-semibold text-slate-950">Filtres</h3>
     </div>
   );
 }
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg bg-white p-4">
-      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
-      <p className="mt-1 text-lg font-semibold text-slate-950">{value}</p>
+    <div className="flex min-w-0 flex-col">
+      <span className="text-2xl font-bold text-blue-700 sm:text-3xl">{value}</span>
+      <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{label}</span>
     </div>
   );
 }
 
+function Pill({ children }: { children: React.ReactNode }) {
+  return <span className="rounded border border-slate-200 bg-[#f7f9fb] px-2 py-0.5 text-xs text-slate-600">{children}</span>;
+}
+
 function EmptyState({ onReset }: { onReset: () => void }) {
   return (
-    <div className="rounded-lg border border-dashed border-slate-300 bg-white px-6 py-14 text-center">
+    <div className="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center">
       <Search className="mx-auto size-8 text-slate-400" />
       <h3 className="mt-4 text-xl font-semibold text-slate-950">Aucun guide ne correspond aux filtres</h3>
       <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-600">
@@ -399,16 +513,42 @@ function EmptyState({ onReset }: { onReset: () => void }) {
   );
 }
 
-function getBadgeClassName(badge: GuideHubCard["badge"]) {
-  if (badge === "Populaire") {
-    return "bg-blue-700 text-white";
+function budgetSymbol(level: GuideBudgetLevel) {
+  if (level === "Budget") {
+    return "$";
   }
 
-  if (badge === "Tendance") {
-    return "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100";
+  if (level === "Mid-range" || level === "Flexible") {
+    return "$$";
   }
 
-  return "bg-amber-50 text-amber-800 ring-1 ring-amber-100";
+  return "$$$";
+}
+
+function relativeDateLabel(date: string) {
+  const diffDays = Math.max(0, Math.round((Date.now() - Date.parse(date)) / 86_400_000));
+
+  if (diffDays <= 1) {
+    return "Il y a 1j";
+  }
+
+  if (diffDays < 7) {
+    return `Il y a ${diffDays}j`;
+  }
+
+  if (diffDays < 14) {
+    return "Il y a 1 sem";
+  }
+
+  return `Il y a ${Math.round(diffDays / 7)} sem`;
+}
+
+function formatCompactViews(value: number) {
+  if (value >= 1000) {
+    return `${new Intl.NumberFormat("fr-CA", { maximumFractionDigits: 1 }).format(value / 1000)}k`;
+  }
+
+  return new Intl.NumberFormat("fr-CA").format(value);
 }
 
 function unique<T extends string>(values: T[]) {
