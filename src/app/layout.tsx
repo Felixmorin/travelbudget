@@ -5,6 +5,7 @@ import { LanguageProvider } from "@/components/i18n/language-provider";
 import { Footer } from "@/components/site/footer";
 import { Header } from "@/components/site/header";
 import { createMetadata } from "@/lib/seo/metadata";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,6 +31,7 @@ export default function RootLayout({
     >
       <body className="flex min-h-full flex-col">
         <AnalyticsScripts />
+        <SpeedInsights />
         <LanguageProvider>
           <Header />
           <div className="flex-1">{children}</div>
