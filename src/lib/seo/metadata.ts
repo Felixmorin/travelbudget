@@ -77,6 +77,9 @@ export function createMetadata({
         },
       ],
     },
+    verification: {
+      google: "jVJI4xkMBorppRHJEYHJvFSzE7Eo_QAS-YJYiJVVR20",
+    },
     robots:
       robots ??
       (noIndex
