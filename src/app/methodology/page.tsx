@@ -126,7 +126,7 @@ const travelStyles = [
     title: "Comfort",
     subtitle: "More flexibility, fewer compromises.",
     icon: Diamond,
-    points: ["Higher-rated hotels", "Transfers and rental cars when useful", "Premium meals and guided tours"],
+    points: ["Higher-rated hotels", "Transfers and rental cars when useful", "Higher-cost meals and guided tours"],
   },
 ];
 

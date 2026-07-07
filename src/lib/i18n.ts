@@ -88,10 +88,10 @@ export const translations = {
       approachCopyOne:
         "A destination can look affordable until hotel prices, local transport, activities, and peak-season demand are included. TravelBudget.ai brings those parts into one planning view, so tradeoffs are visible earlier.",
       approachCopyTwo:
-        "The product is designed for fast exploration today, with saved trips, richer provider pricing, and booking integrations ready to layer in as the planning workflow grows.",
+        "The V1 focuses on budget estimates, destination comparisons, practical guides, and a clear methodology for understanding how trip costs are calculated.",
     },
     footer: {
-      description: "Premium AI Financial Travel Planner for the modern explorer. Make your money go further.",
+      description: "Budget-first travel planning with estimates, comparisons, guides, and transparent methodology.",
       products: "Products",
       company: "Company",
       legal: "Legal",
@@ -107,7 +107,7 @@ export const translations = {
       privacy: "Privacy Policy",
       terms: "Terms of Service",
       affiliateDisclosure: "Affiliate Disclosure",
-      copyright: "2026 TravelBudget.ai - Premium AI Financial Travel Planner",
+      copyright: "2026 TravelBudget.ai - Travel budget estimates and destination comparisons",
     },
     trust: {
       transparent: "Transparent estimates",
@@ -123,7 +123,7 @@ export const translations = {
     tools: {
       pageEyebrow: "Free travel tools",
       pageTitle: "Practical planning tools for budget-aware travelers",
-      pageCopy: "The first MVP ships these as polished entry points, ready to connect to APIs and saved trips later.",
+      pageCopy: "Estimate trip costs, compare destinations, and see which planning tools are available in this V1.",
       budgetCalculatorTitle: "Budget Calculator",
       budgetCalculatorDescription: "Estimate flights, stays, food, transport, and activities in seconds.",
       itineraryBuilderTitle: "Itinerary Builder",
@@ -137,7 +137,7 @@ export const translations = {
       packingListTitle: "Packing List",
       packingListDescription: "Build a packing plan based on destination, season, and style.",
       flightWatchTitle: "Flight Watch",
-      flightWatchDescription: "Planning alerts for routes where airfare drives most of the budget.",
+      flightWatchDescription: "Review routes where airfare drives most of the trip budget.",
       styleMatcherTitle: "Style Matcher",
       styleMatcherDescription: "Discover destinations that fit your pace, comfort, and priorities.",
     },
@@ -229,10 +229,10 @@ export const translations = {
       approachCopyOne:
         "Une destination peut sembler abordable jusqu'a ce que les hotels, le transport local, les activites et la haute saison soient inclus. TravelBudget.ai regroupe ces elements pour rendre les compromis visibles plus tot.",
       approachCopyTwo:
-        "Le produit est concu pour explorer rapidement aujourd'hui, avec des voyages sauvegardes, des prix en direct plus riches et des integrations de reservation a ajouter ensuite.",
+        "La V1 se concentre sur les estimations de budget, les comparaisons de destinations, les guides pratiques et une methodologie claire pour comprendre les couts.",
     },
     footer: {
-      description: "Planificateur financier de voyage premium par IA pour les explorateurs modernes.",
+      description: "Planification de voyage centree sur le budget, avec estimations, comparaisons, guides et methodologie transparente.",
       products: "Produits",
       company: "Entreprise",
       legal: "Legal",
@@ -248,7 +248,7 @@ export const translations = {
       privacy: "Confidentialite",
       terms: "Conditions d'utilisation",
       affiliateDisclosure: "Divulgation d'affiliation",
-      copyright: "2026 TravelBudget.ai - Planificateur financier de voyage premium",
+      copyright: "2026 TravelBudget.ai - Estimations de budget voyage et comparaisons de destinations",
     },
     trust: {
       transparent: "Estimations transparentes",
@@ -265,7 +265,7 @@ export const translations = {
       pageEyebrow: "Outils de voyage gratuits",
       pageTitle: "Des outils pratiques pour les voyageurs attentifs au budget",
       pageCopy:
-        "Ce premier MVP presente ces outils comme points d'entree soignes, prets a etre connectes aux API et aux voyages sauvegardes.",
+        "Estimez les couts de voyage, comparez les destinations et voyez quels outils sont disponibles dans cette V1.",
       budgetCalculatorTitle: "Calculateur de budget",
       budgetCalculatorDescription: "Estimez vols, hebergements, repas, transport et activites en quelques secondes.",
       itineraryBuilderTitle: "Createur d'itineraire",
@@ -279,7 +279,7 @@ export const translations = {
       packingListTitle: "Liste de bagages",
       packingListDescription: "Creez une liste selon la destination, la saison et le style.",
       flightWatchTitle: "Suivi des vols",
-      flightWatchDescription: "Alertes de planification pour les trajets ou le vol pese lourd dans le budget.",
+      flightWatchDescription: "Reperez les trajets ou le vol pese lourd dans le budget total.",
       styleMatcherTitle: "Recherche par style",
       styleMatcherDescription: "Decouvrez les destinations adaptees a votre rythme, confort et priorites.",
     },

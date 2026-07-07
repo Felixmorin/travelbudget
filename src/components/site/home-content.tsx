@@ -103,7 +103,7 @@ const methodology = [
 const travelStyles = [
   [Wallet, "Budget", "Hostels, local street food, and free walking tours. Maximum adventure for minimum spend.", "$40 - $70 / day"],
   [Bed, "Comfort", "Private boutique hotels, sit-down dinners, and curated tours. The sweet spot of travel.", "$120 - $180 / day"],
-  [Diamond, "Premium", "5-star resorts, private transfers, and fine dining experiences. No compromises made.", "$350+ / day"],
+  [Diamond, "Higher comfort", "Higher-rated stays, more private transport, and more flexibility in daily spending.", "$250+ / day"],
 ];
 
 const faqs = [

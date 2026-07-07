@@ -11,15 +11,60 @@ type Tool = {
   description: string;
   href: string;
   icon: React.ComponentType<{ className?: string }>;
+  status?: "available" | "coming-soon";
 };
 
 export function ToolCard({ tool }: { tool: Tool }) {
   const Icon = tool.icon;
   const { t } = useTranslation();
+  const isComingSoon = tool.status === "coming-soon";
   const localizedTool = getLocalizedTool(tool.title, t.tools) ?? {
     title: tool.title,
     description: tool.description,
   };
+
+  const card = (
+    <Card
+      className={
+        isComingSoon
+          ? "h-full border-slate-200 bg-slate-100 opacity-75"
+          : "h-full border-slate-200 bg-white transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-slate-200/80"
+      }
+    >
+      <CardContent className="grid h-full gap-4 pt-6">
+        <div className="flex items-start justify-between gap-3">
+          <span
+            className={
+              isComingSoon
+                ? "flex size-11 items-center justify-center rounded-xl bg-slate-200 text-slate-500"
+                : "flex size-11 items-center justify-center rounded-xl bg-blue-50 text-blue-600"
+            }
+          >
+            <Icon className="size-5" />
+          </span>
+          {isComingSoon ? (
+            <span className="rounded-full bg-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-600">
+              Coming soon
+            </span>
+          ) : (
+            <ArrowUpRight className="size-4 text-slate-400" />
+          )}
+        </div>
+        <div>
+          <h3 className={isComingSoon ? "font-semibold text-slate-600" : "font-semibold text-slate-950"}>
+            {localizedTool.title}
+          </h3>
+          <p className={isComingSoon ? "mt-2 text-sm leading-6 text-slate-500" : "mt-2 text-sm leading-6 text-slate-500"}>
+            {localizedTool.description}
+          </p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  if (isComingSoon) {
+    return <div aria-disabled="true">{card}</div>;
+  }
 
   return (
     <TrackedLink
@@ -32,20 +77,7 @@ export function ToolCard({ tool }: { tool: Tool }) {
         ctaLocation: "tool_card",
       }}
     >
-      <Card className="h-full border-slate-200 bg-white transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-slate-200/80">
-        <CardContent className="grid h-full gap-4 pt-6">
-          <div className="flex items-start justify-between">
-            <span className="flex size-11 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-              <Icon className="size-5" />
-            </span>
-            <ArrowUpRight className="size-4 text-slate-400" />
-          </div>
-          <div>
-            <h3 className="font-semibold text-slate-950">{localizedTool.title}</h3>
-            <p className="mt-2 text-sm leading-6 text-slate-500">{localizedTool.description}</p>
-          </div>
-        </CardContent>
-      </Card>
+      {card}
     </TrackedLink>
   );
 }

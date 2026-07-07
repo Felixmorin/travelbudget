@@ -7,18 +7,15 @@ import {
   ChevronDown,
   CircleDollarSign,
   Compass,
-  CreditCard,
   Hotel,
   Map,
   PlaneTakeoff,
   ReceiptText,
-  Search,
   TrendingUp,
   Utensils,
   WalletCards,
 } from "lucide-react";
 
-import { NewsletterForm } from "@/components/analytics/newsletter-form";
 import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Button } from "@/components/ui/button";
 import { longTailGuides } from "@/lib/data/guides";
@@ -27,14 +24,14 @@ import { createMetadata } from "@/lib/seo/metadata";
 export const metadata = createMetadata({
   title: "Travel Guides Library",
   description:
-    "Explore TravelBudget.ai guides for destination costs, daily travel budgets, flight savings, travel rewards, and smarter trip planning.",
+    "Explore TravelBudget.ai guides for destination costs, daily travel budgets, comparisons, and trip budget methodology.",
   path: "/guides",
 });
 
 const featuredGuides = [
   {
-    title: "How to plan a trip budget from scratch",
-    description: "A step-by-step masterclass on tracking expenses before you even book.",
+    title: "How to estimate a trip budget",
+    description: "A practical breakdown of flights, stays, meals, transport, activities, and buffers.",
     label: "Essential",
     labelClass: "bg-[#004ac6] text-white",
     image:
@@ -42,18 +39,18 @@ const featuredGuides = [
     alt: "Minimal workspace with a laptop, notebook, and travel planning materials",
   },
   {
-    title: "Cheapest months to travel internationally",
-    description: "Seasonal price patterns for timing long-haul flights with fewer surprises.",
-    label: "Money Saving",
+    title: "How seasonality changes trip cost",
+    description: "Use travel month, weather, and peak-demand context to compare destinations more realistically.",
+    label: "Methodology",
     labelClass: "bg-[#006b5f] text-white",
     image:
       "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=85",
     alt: "Airplane wing above clouds at sunset",
   },
   {
-    title: "Maximizing luxury on a mid-range budget",
-    description: "The affordable luxury blueprint for destinations where your money goes further.",
-    label: "AI Insights",
+    title: "How to compare destination value",
+    description: "Look beyond airfare and compare the full daily cost profile before choosing a trip.",
+    label: "Comparison",
     labelClass: "bg-[#b54e00] text-white",
     image:
       "https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=1200&q=85",
@@ -62,10 +59,10 @@ const featuredGuides = [
 ];
 
 const categories = [
-  { title: "Budget Planning", icon: CircleDollarSign, color: "text-[#004ac6]", bg: "bg-[#dbe1ff]" },
-  { title: "Destination Guides", icon: Map, color: "text-[#006b5f]", bg: "bg-[#d9fbf4]" },
-  { title: "Flight Savings", icon: PlaneTakeoff, color: "text-[#8e3c00]", bg: "bg-[#ffdbca]" },
-  { title: "Travel Rewards", icon: CreditCard, color: "text-[#2563eb]", bg: "bg-blue-50" },
+  { title: "Budget estimates", href: "/tools/travel-budget-calculator", icon: CircleDollarSign, color: "text-[#004ac6]", bg: "bg-[#dbe1ff]" },
+  { title: "Destination guides", href: "/destinations", icon: Map, color: "text-[#006b5f]", bg: "bg-[#d9fbf4]" },
+  { title: "Cost comparisons", href: "/compare", icon: PlaneTakeoff, color: "text-[#8e3c00]", bg: "bg-[#ffdbca]" },
+  { title: "Methodology", href: "/methodology", icon: ReceiptText, color: "text-[#2563eb]", bg: "bg-blue-50" },
 ];
 
 const dailyGuides = [
@@ -137,18 +134,18 @@ const destinations = [
 
 const learningItems = [
   {
-    title: "Expense Tracking 101",
-    description: "A low-friction method for logging daily costs without turning the trip into admin work.",
+    title: "Estimate the full trip",
+    description: "Include flights, accommodation, food, local transport, activities, and a practical buffer.",
     icon: ReceiptText,
   },
   {
-    title: "The 50/30/20 Travel Rule",
-    description: "A personal finance framework adapted for consistent yearly travel planning.",
+    title: "Compare realistic options",
+    description: "Use the same origin, duration, month, and travel style when comparing destinations.",
     icon: WalletCards,
   },
   {
-    title: "AI Budget Forecasting",
-    description: "Use TravelBudget.ai to account for seasonal pricing, inflation, and currency shifts.",
+    title: "Check the assumptions",
+    description: "Review how estimates are built before using them as a starting point for booking research.",
     icon: TrendingUp,
   },
 ];
@@ -162,12 +159,12 @@ const faqs = [
   {
     question: "Is TravelBudget.ai free to use?",
     answer:
-      "The public guide library and basic planning tools are free. Advanced forecasting and saved planning workflows can be layered into premium features later.",
+      "Yes. The V1 planning tools, destination guides, comparison pages, and methodology are public.",
   },
   {
-    question: "Can I export my trip budget?",
+    question: "What should I do after I get an estimate?",
     answer:
-      "Yes. The product direction supports exports to shareable plans, spreadsheets, and printable itineraries once saved trips are connected.",
+      "Use the estimate to compare destinations, then verify live flight and accommodation prices before booking.",
   },
 ];
 
@@ -184,19 +181,8 @@ export default function GuidesPage() {
             Travel guides to plan smarter trips on any budget
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-[#434655]">
-            Unlock expert strategies, local cost breakdowns, and budget-first financial planning for your next adventure.
+            Compare destination costs, read practical budget guides, and understand the assumptions behind each estimate.
           </p>
-          <div className="mx-auto mt-10 flex max-w-2xl items-center rounded-full border border-white/70 bg-white/75 p-2 shadow-xl shadow-slate-200/70 backdrop-blur-xl">
-            <Search className="ml-4 size-5 shrink-0 text-[#004ac6]" />
-            <input
-              className="min-w-0 flex-1 bg-transparent px-4 py-3 text-sm outline-none placeholder:text-slate-400"
-              placeholder="Where do you want to go? e.g. Kyoto Budget"
-              type="search"
-            />
-            <Button className="hidden h-12 rounded-full bg-gradient-to-r from-[#2563eb] to-[#7c3aed] px-6 text-white hover:opacity-90 sm:inline-flex">
-              Search Guides
-            </Button>
-          </div>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Button asChild variant="outline" className="h-12 rounded-xl border-[#c3c6d7] bg-white px-6">
               <TrackedLink
@@ -281,15 +267,15 @@ export default function GuidesPage() {
 
       <section className="bg-[#f2f4f6] px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <h2 className="text-3xl font-semibold text-slate-950">Browse by Category</h2>
-          <p className="mt-2 text-[#434655]">Everything you need to master your travel finances.</p>
+          <h2 className="text-3xl font-semibold text-slate-950">Browse by planning task</h2>
+          <p className="mt-2 text-[#434655]">Start from the V1 tools and pages that are ready today.</p>
           <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
             {categories.map((category) => {
               const Icon = category.icon;
               return (
                 <Link
                   key={category.title}
-                  href="/tools"
+                  href={category.href}
                   className="flex flex-col items-center rounded-xl border border-white/70 bg-white/70 p-6 text-center shadow-sm backdrop-blur transition hover:-translate-y-1 hover:shadow-md"
                 >
                   <span className={`mb-4 flex size-12 items-center justify-center rounded-full ${category.bg} ${category.color}`}>
@@ -344,7 +330,7 @@ export default function GuidesPage() {
           <div className="mb-8 flex flex-col justify-between gap-6 md:flex-row md:items-center">
             <div>
               <h2 className="text-3xl font-semibold">Destination Hub</h2>
-              <p className="mt-2 text-slate-400">Find your next trip based on your financial comfort zone.</p>
+              <p className="mt-2 text-slate-400">Review sample daily spend ranges before comparing full trip estimates.</p>
             </div>
             <div className="flex flex-wrap gap-3">
               {["All Regions", "Europe", "Asia", "Americas", "Africa"].map((region, index) => (
@@ -367,9 +353,12 @@ export default function GuidesPage() {
                 <div className="absolute inset-x-0 bottom-0 p-5">
                   <h3 className="text-xl font-semibold">{destination.name}</h3>
                   <p className="mt-1 text-xs text-slate-300">{destination.meta}</p>
-                  <Button className="mt-4 h-10 w-full rounded-lg border border-white/20 bg-white/10 text-xs text-white backdrop-blur hover:bg-[#004ac6]">
-                    View Budget Profile
-                  </Button>
+                  <Link
+                    href="/destinations"
+                    className="mt-4 inline-flex h-10 w-full items-center justify-center rounded-lg border border-white/20 bg-white/10 text-xs font-semibold text-white backdrop-blur transition hover:bg-[#004ac6]"
+                  >
+                    Browse destinations
+                  </Link>
                 </div>
               </article>
             ))}
@@ -380,7 +369,7 @@ export default function GuidesPage() {
       <section className="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:items-center lg:px-8">
         <div>
           <p className="text-sm font-semibold uppercase text-[#004ac6]">Education</p>
-          <h2 className="mt-3 text-3xl font-semibold text-slate-950">Learn how to plan like a pro</h2>
+          <h2 className="mt-3 text-3xl font-semibold text-slate-950">Use estimates with the right context</h2>
           <div className="mt-8 space-y-6">
             {learningItems.map((item) => {
               const Icon = item.icon;
@@ -409,8 +398,8 @@ export default function GuidesPage() {
             />
           </div>
           <div className="mx-auto -mt-10 max-w-sm rounded-2xl border border-white/70 bg-white/80 p-6 shadow-xl backdrop-blur md:absolute md:-bottom-6 md:-left-6 md:mt-0">
-            <p className="text-lg font-semibold text-slate-950">Planned my 2-month Europe trip down to the cent. No surprises.</p>
-            <p className="mt-2 text-sm text-[#434655]">Alex R., Premium User</p>
+            <p className="text-lg font-semibold text-slate-950">Every estimate is a planning range, not a live fare quote.</p>
+            <p className="mt-2 text-sm text-[#434655]">Check the methodology before booking.</p>
           </div>
         </div>
       </section>
@@ -446,17 +435,6 @@ export default function GuidesPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="overflow-hidden rounded-3xl bg-gradient-to-r from-[#2563eb] to-[#7c3aed] p-8 text-center text-white sm:p-12">
-          <h2 className="text-3xl font-semibold">The Weekly Budgeter</h2>
-          <p className="mx-auto mt-4 max-w-xl text-lg leading-8 text-white/85">
-            Join travelers receiving cost alerts and money-saving ideas every Tuesday.
-          </p>
-          <NewsletterForm />
-          <p className="mt-5 text-xs font-semibold uppercase text-white/65">No spam. Only high-value data.</p>
-        </div>
-      </section>
-
       <section className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
         <h2 className="text-center text-3xl font-semibold text-slate-950">Frequently Asked Questions</h2>
         <div className="mt-8 space-y-4">
@@ -476,7 +454,7 @@ export default function GuidesPage() {
         <div className="mx-auto max-w-2xl">
           <h2 className="text-4xl font-semibold leading-tight text-slate-950">Ready to plan a trip that fits your budget?</h2>
           <p className="mt-5 text-lg leading-8 text-[#434655]">
-            Stop guessing and start planning with a travel financial platform built around real budgets.
+            Start with an estimate, compare destinations, and use the methodology to understand the assumptions.
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Button asChild className="h-12 rounded-full bg-[#004ac6] px-8 text-white hover:bg-blue-700">
@@ -485,26 +463,26 @@ export default function GuidesPage() {
                 eventName="cta_clicked"
                 eventProperties={{
                   page: "/guides",
-                  label: "Start Planning for Free",
+                  label: "Estimate a trip budget",
                   href: "/",
                   ctaLocation: "guides_bottom_cta",
                 }}
               >
-                Start Planning for Free
+                Estimate a trip budget
               </TrackedLink>
             </Button>
             <Button asChild variant="outline" className="h-12 rounded-full border-[#004ac6] px-8 text-[#004ac6]">
               <TrackedLink
-                href="/tools"
+                href="/methodology"
                 eventName="cta_clicked"
                 eventProperties={{
                   page: "/guides",
-                  label: "View Tools",
-                  href: "/tools",
+                  label: "View methodology",
+                  href: "/methodology",
                   ctaLocation: "guides_bottom_cta",
                 }}
               >
-                View Tools
+                View methodology
               </TrackedLink>
             </Button>
           </div>

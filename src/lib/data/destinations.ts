@@ -1324,7 +1324,11 @@ function roundToNearest(value: number, nearest: number) {
   return Math.round(value / nearest) * nearest;
 }
 
-export const destinations: Destination[] = destinationSeeds.map((seed) =>
+const uniqueDestinationSeeds = Array.from(
+  destinationSeeds.reduce((seedBySlug, seed) => seedBySlug.set(seed.slug, seed), new Map<string, DestinationSeed>()).values()
+);
+
+export const destinations: Destination[] = uniqueDestinationSeeds.map((seed) =>
   buildDestination({
     slug: seed.slug,
     name: seed.name,

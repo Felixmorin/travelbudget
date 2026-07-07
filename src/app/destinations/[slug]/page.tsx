@@ -818,7 +818,7 @@ function getBudgetInsight(destination: Destination) {
   }
 
   return {
-    label: "Premium/stretch",
+    label: "Comfort/stretch",
     badgeClassName: "bg-orange-50 text-orange-700 ring-1 ring-orange-100",
     copy: `${destination.name} is a stretch destination in this planning model. It can still work, but flights, hotels, or peak-season timing need closer control.`,
   };

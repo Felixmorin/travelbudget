@@ -12,16 +12,12 @@ const footerSections = [
       { labelKey: "deals", href: "/deals" },
       { labelKey: "budgetCalculator", href: "/tools/travel-budget-calculator" },
       { labelKey: "methodology", href: "/methodology" },
-      { labelKey: "itineraryBuilder", href: "/tools" },
-      { labelKey: "esimFinder", href: "/tools" },
     ],
   },
   {
     titleKey: "company",
     links: [
       { labelKey: "aboutUs", href: "/about" },
-      { labelKey: "careers", href: "/about" },
-      { labelKey: "contact", href: "/about" },
     ],
   },
   {

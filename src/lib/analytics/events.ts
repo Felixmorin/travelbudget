@@ -88,9 +88,6 @@ export type AnalyticsEventProperties = {
     variant?: string;
     error?: string;
   };
-  newsletter_submitted: CommonAnalyticsProperties & {
-    newsletterLocation?: string;
-  };
   guide_clicked: CommonAnalyticsProperties & {
     guideTitle?: string;
     guideCategory?: string;
@@ -128,6 +125,5 @@ export const analyticsEventNames = [
   "email_capture_submitted",
   "email_capture_success",
   "email_capture_error",
-  "newsletter_submitted",
   "guide_clicked",
 ] as const satisfies readonly AnalyticsEventName[];
