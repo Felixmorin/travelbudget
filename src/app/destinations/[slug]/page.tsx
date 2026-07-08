@@ -1,8 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
+import Script from "next/script";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ArrowRight, CalendarDays, Home, Route, Search, Sparkles, WalletCards } from "lucide-react";
+import { ArrowRight, CalendarDays, Home, Route, Search, Sparkles, Ticket, WalletCards } from "lucide-react";
 
 import { AnalyticsView } from "@/components/analytics/analytics-view";
 import { TrackedLink } from "@/components/analytics/tracked-link";
@@ -282,6 +283,8 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
               </CardContent>
             </Card>
 
+            {destination.slug === "japan" ? <JapanToursWidget destination={destination} /> : null}
+
             <Card className="border-slate-200 bg-white">
               <CardHeader>
                 <CardTitle className="text-xl text-slate-950">{destination.name} travel budget FAQ</CardTitle>
@@ -405,6 +408,70 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
       </main>
       <CTASection />
     </>
+  );
+}
+
+function JapanToursWidget({ destination }: { destination: Destination }) {
+  const getYourGuideJapanUrl = "https://www.getyourguide.com/japan-l169034/?partner_id=4ZWE6DU";
+
+  return (
+    <Card className="border-slate-200 bg-white shadow-lg shadow-slate-200/60">
+      <CardHeader>
+        <div className="flex items-start gap-3">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-600">
+            <Ticket className="size-5" />
+          </span>
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">Tours and activities</p>
+            <CardTitle className="mt-1 text-xl text-slate-950">Book Japan experiences with GetYourGuide</CardTitle>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="grid gap-5">
+        <div className="grid gap-3 text-sm leading-6 text-slate-600">
+          <p>
+            Compare Japan tours, tickets, food experiences, day trips, and cultural activities while keeping your
+            activity budget in view. For a balanced first trip, travelers often pair Tokyo neighborhoods with Kyoto
+            temples, Osaka food stops, and one or two guided day trips.
+          </p>
+          <p>
+            Use the live widget below to check current options, then verify final availability, cancellation terms,
+            and total price before booking.
+          </p>
+        </div>
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 p-4">
+          <div
+            data-gyg-href="https://widget.getyourguide.com/default/city.frame"
+            data-gyg-location-id="169034"
+            data-gyg-locale-code="en-US"
+            data-gyg-widget="city"
+            data-gyg-partner-id="4ZWE6DU"
+          />
+          <noscript>
+            <p className="text-sm leading-6 text-slate-600">
+              JavaScript is required to display the live GetYourGuide city widget. You can still browse Japan tours
+              directly on GetYourGuide.
+            </p>
+          </noscript>
+        </div>
+        <Button asChild variant="outline" className="w-fit rounded-xl bg-white">
+          <a href={getYourGuideJapanUrl} target="_blank" rel="sponsored noopener noreferrer">
+            Browse Japan tours
+            <ArrowRight className="ml-2 size-4" />
+          </a>
+        </Button>
+        <p className="text-xs leading-5 text-slate-500">
+          TravelBudget.ai may earn a commission from qualifying bookings. Activity prices are live partner prices and
+          are separate from the static {destination.name} budget estimates above.
+        </p>
+      </CardContent>
+      <Script
+        id="getyourguide-japan-city-widget"
+        src="https://widget.getyourguide.com/dist/pa.umd.production.min.js"
+        data-gyg-partner-id="4ZWE6DU"
+        strategy="lazyOnload"
+      />
+    </Card>
   );
 }
 

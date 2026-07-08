@@ -124,17 +124,161 @@ const fallbackGuideImages: Record<
   },
 };
 
+const uniqueGuideImagePool = [
+  {
+    image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Open road through a green mountain travel landscape",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Bright tropical beach with turquoise water",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Traveler looking at a scenic mountain road from a van",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1526772662000-3f88f10405ff?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Backpacker walking near a mountain lake",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1503220317375-aaad61436b1b?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Traveler with backpack looking over a city skyline",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Passport, camera, and travel map on a table",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1530789253388-582c481c54b0?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Travel planning flat lay with map and camera",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Open travel notebook with map and pen",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Airplane wing above clouds",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1556388158-158ea5ccacbd?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Airport terminal with travelers and departure boards",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Travel budget paperwork with calculator",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Coins and calculator for budget planning",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Payment card used for travel rewards planning",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Checklist notebook and pen for trip planning",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Camera and travel accessories on a table",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1499591934245-40b55745b905?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Mountain road trip landscape at sunset",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Traveler overlooking a dramatic valley",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Lake and mountain landscape for outdoor travel",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Car driving beside a mountain lake",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1527631746610-bca00a040d60?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Travelers walking through a sunny historic square",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1517760444937-f6397edcbbcd?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Campfire and outdoor travel setup at dusk",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1522199710521-72d69614c702?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Laptop workspace for digital travel planning",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Couple planning a trip together",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1504150558240-0b4fd8946624?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Family walking through a scenic travel destination",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Travel couple near a scenic coastal view",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Resort pool and skyline for premium travel planning",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1498307833015-e7b400441eb8?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Colorful European street scene",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1500835556837-99ac94a94552?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Traveler at a station checking route options",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Starry mountain sky above a travel camp",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Modern city skyline for urban travel planning",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80",
+    imageAlt: "Wide landscape viewpoint for itinerary planning",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Venice canal and historic buildings",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Colorful coastal town above blue water",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1518638150340-f706e86654de?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Colorful Mexican street with bright buildings",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Japanese temple beside cherry blossoms",
+  },
+];
+
 export async function getGuideHubData(): Promise<GuideHubData> {
   const visitCounts = await getVisitCountsBySlug();
   const hasVisitData = visitCounts.hasVisitData;
   const guides = longTailGuides
     .map((guide, index) => toGuideHubCard(guide, index, visitCounts, hasVisitData))
     .toSorted((a, b) => b.viewCount - a.viewCount || Date.parse(b.publishedAt) - Date.parse(a.publishedAt));
+  const uniqueImageGuides = ensureUniqueImages(guides);
 
   return {
-    guides,
-    popularGuides: guides.slice(0, 6),
-    alsoViewedGuides: getAlsoViewedGuides(guides),
+    guides: uniqueImageGuides,
+    popularGuides: uniqueImageGuides.slice(0, 6),
+    alsoViewedGuides: getAlsoViewedGuides(uniqueImageGuides),
     hasVisitData,
   };
 }
@@ -361,6 +505,50 @@ function getAlsoViewedGuides(guides: GuideHubCard[]) {
       return true;
     })
     .slice(0, 4);
+}
+
+function ensureUniqueImages(guides: GuideHubCard[]) {
+  const usedImages = new Set<string>();
+  let poolIndex = 0;
+
+  return guides.map((guide) => {
+    if (!usedImages.has(guide.image)) {
+      usedImages.add(guide.image);
+      return guide;
+    }
+
+    const replacement = getNextUnusedImage(usedImages, poolIndex);
+    poolIndex = replacement.nextIndex;
+    usedImages.add(replacement.image.image);
+
+    return {
+      ...guide,
+      image: replacement.image.image,
+      imageAlt: replacement.image.imageAlt,
+    };
+  });
+}
+
+function getNextUnusedImage(usedImages: Set<string>, startIndex: number) {
+  for (let offset = 0; offset < uniqueGuideImagePool.length; offset += 1) {
+    const index = (startIndex + offset) % uniqueGuideImagePool.length;
+    const image = uniqueGuideImagePool[index];
+
+    if (!usedImages.has(image.image)) {
+      return {
+        image,
+        nextIndex: index + 1,
+      };
+    }
+  }
+
+  return {
+    image: {
+      image: `https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=${1200 + usedImages.size}&q=85`,
+      imageAlt: "Unique travel landscape fallback image",
+    },
+    nextIndex: startIndex,
+  };
 }
 
 function getSlugFromPath(path: string, prefix: "/guides/" | "/destinations/") {
