@@ -26,16 +26,16 @@ const copy = {
     eyebrow: "AI-powered trip intelligence",
     title: "The most realistic way to plan and compare travel budgets.",
     intro:
-      "TravelBudget.ai helps you decide where you can travel based on real-world trip costs, not just a cheap flight. Compare destinations with estimates for flights, stays, meals, local transport, activities, seasonality, and a practical safety buffer.",
+      "GoByBudget.com helps you decide where you can travel based on real-world trip costs, not just a cheap flight. Compare destinations with estimates for flights, stays, meals, local transport, activities, seasonality, and a practical safety buffer.",
     primaryCta: "Start planning",
     secondaryCta: "Our methodology",
     liveLabel: "Planning example",
     liveMetric: "Paris estimate: $182/day",
-    missionTitle: "Why we built TravelBudget.ai",
+    missionTitle: "Why we built GoByBudget.com",
     missionOne:
       "Planning a trip often starts with an attractive fare, then gets complicated once lodging, meals, transfers, activities, taxes, and peak-season demand enter the picture.",
     missionTwo:
-      "We built TravelBudget.ai to make the full trip easier to compare before booking. The goal is not fake precision; it is a clear planning range that helps you choose a destination with fewer budget surprises.",
+      "We built GoByBudget.com to make the full trip easier to compare before booking. The goal is not fake precision; it is a clear planning range that helps you choose a destination with fewer budget surprises.",
     usefulTitle: "What makes our estimates useful",
     transparencyTitle: "Total transparency",
     transparencyCopy: "How we define our commitment to realistic travel budget planning.",
@@ -53,7 +53,7 @@ const copy = {
       "Effective budget travel planning starts with a realistic view of your total trip cost. Whether you are comparing a city break, a long-haul vacation, or a flexible month-by-month plan, the right estimate should include both fixed costs and daily spending.",
     seoSubtitle: "Compare destinations by budget efficiently",
     seoTwo:
-      "TravelBudget.ai is designed to help you compare destinations by budget before you commit to flights or hotels. Instead of opening dozens of tabs, you can start with your budget, trip length, departure city, and travel style, then narrow the world to destinations that make financial sense.",
+      "GoByBudget.com is designed to help you compare destinations by budget before you commit to flights or hotels. Instead of opening dozens of tabs, you can start with your budget, trip length, departure city, and travel style, then narrow the world to destinations that make financial sense.",
     seoFactorsTitle: "Key factors in travel budget planning",
     finalTitle: "Ready to see where your budget can take you?",
     finalCopy:
@@ -65,16 +65,16 @@ const copy = {
     eyebrow: "Intelligence voyage orientee budget",
     title: "La facon la plus realiste de planifier et comparer des budgets voyage.",
     intro:
-      "TravelBudget.ai vous aide a choisir ou partir selon le cout complet du voyage, pas seulement le prix d'un vol. Comparez des destinations avec des estimations pour vols, hebergements, repas, transport local, activites, saisonnalite et marge de securite.",
+      "GoByBudget.com vous aide a choisir ou partir selon le cout complet du voyage, pas seulement le prix d'un vol. Comparez des destinations avec des estimations pour vols, hebergements, repas, transport local, activites, saisonnalite et marge de securite.",
     primaryCta: "Commencer la planification",
     secondaryCta: "Notre methodologie",
     liveLabel: "Exemple de planification",
     liveMetric: "Estimation Paris: 182 $/jour",
-    missionTitle: "Pourquoi nous avons cree TravelBudget.ai",
+    missionTitle: "Pourquoi nous avons cree GoByBudget.com",
     missionOne:
       "La planification commence souvent par un vol interessant, puis devient floue quand on ajoute hebergement, repas, transferts, activites, taxes et demande en haute saison.",
     missionTwo:
-      "Nous avons cree TravelBudget.ai pour rendre le cout total plus facile a comparer avant de reserver. L'objectif n'est pas une fausse precision, mais une fourchette claire qui aide a choisir avec moins de surprises.",
+      "Nous avons cree GoByBudget.com pour rendre le cout total plus facile a comparer avant de reserver. L'objectif n'est pas une fausse precision, mais une fourchette claire qui aide a choisir avec moins de surprises.",
     usefulTitle: "Ce qui rend nos estimations utiles",
     transparencyTitle: "Transparence totale",
     transparencyCopy: "Notre engagement pour une planification de budget voyage realiste.",
@@ -92,7 +92,7 @@ const copy = {
       "Une bonne planification commence par une vision realiste du cout total. Que vous compariez une escapade urbaine, un long voyage ou une periode flexible, l'estimation doit inclure les couts fixes et les depenses quotidiennes.",
     seoSubtitle: "Comparer les destinations par budget efficacement",
     seoTwo:
-      "TravelBudget.ai aide a comparer les destinations selon votre budget avant de vous engager sur les vols ou hotels. Au lieu d'ouvrir des dizaines d'onglets, vous partez de votre budget, duree, ville de depart et style de voyage.",
+      "GoByBudget.com aide a comparer les destinations selon votre budget avant de vous engager sur les vols ou hotels. Au lieu d'ouvrir des dizaines d'onglets, vous partez de votre budget, duree, ville de depart et style de voyage.",
     seoFactorsTitle: "Facteurs cles du budget voyage",
     finalTitle: "Pret a voir jusqu'ou votre budget peut vous mener?",
     finalCopy:
@@ -199,11 +199,11 @@ export function AboutContent() {
             <h1 className="mt-6 max-w-3xl text-4xl font-bold leading-tight tracking-tight text-slate-950 sm:text-6xl">
               {language === "en" ? (
                 <>
-                  The most realistic way to <span className="text-[#004ac6]">plan and compare</span> travel budgets.
+                  The most realistic way to <span className="text-[#0B1D34]">plan and compare</span> travel budgets.
                 </>
               ) : (
                 <>
-                  La facon la plus realiste de <span className="text-[#004ac6]">planifier et comparer</span> des budgets
+                  La facon la plus realiste de <span className="text-[#0B1D34]">planifier et comparer</span> des budgets
                   voyage.
                 </>
               )}
@@ -212,7 +212,7 @@ export function AboutContent() {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
                 href="/tools/travel-budget-calculator"
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#004ac6] px-7 font-semibold text-white shadow-lg shadow-blue-900/15 transition hover:bg-blue-700"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#0B1D34] px-7 font-semibold text-white shadow-lg shadow-[#0B1D34]/15 transition hover:bg-[#0B1D34]"
               >
                 {text.primaryCta}
                 <ArrowRight className="size-4" />
@@ -240,10 +240,10 @@ export function AboutContent() {
               </div>
               <div className="absolute bottom-5 left-5 right-5 flex items-center justify-between gap-4 rounded-2xl border border-white/60 bg-white/75 p-4 shadow-lg backdrop-blur">
                 <div>
-                  <p className="text-xs font-bold uppercase tracking-wider text-[#004ac6]">{text.liveLabel}</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-[#0B1D34]">{text.liveLabel}</p>
                   <p className="mt-1 font-semibold text-slate-950">{text.liveMetric}</p>
                 </div>
-                <RefreshCcw className="size-6 text-[#004ac6]" />
+                <RefreshCcw className="size-6 text-[#0B1D34]" />
               </div>
             </div>
           </div>
@@ -258,13 +258,13 @@ export function AboutContent() {
             <p className="mt-4 leading-7 text-[#434655]">{text.missionTwo}</p>
           </div>
           <div>
-            <h3 className="text-xl font-semibold text-[#004ac6]">{text.usefulTitle}</h3>
+            <h3 className="text-xl font-semibold text-[#0B1D34]">{text.usefulTitle}</h3>
             <div className="mt-5 grid gap-4">
               {estimateInputs.map((item) => {
                 const Icon = item.icon;
                 return (
                   <article key={item.enTitle} className="flex gap-4 rounded-xl border border-[#c3c6d7]/55 bg-[#f7f9fb] p-4">
-                    <div className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-[#004ac6]/10 text-[#004ac6]">
+                    <div className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-[#0B1D34]/10 text-[#0B1D34]">
                       <Icon className="size-5" />
                     </div>
                     <div>
@@ -291,12 +291,12 @@ export function AboutContent() {
       </section>
 
       <section className="relative overflow-hidden bg-slate-950 py-16 text-white sm:py-20">
-        <div className="absolute right-0 top-0 h-72 w-72 rounded-full bg-[#004ac6]/30 blur-[110px]" />
+        <div className="absolute right-0 top-0 h-72 w-72 rounded-full bg-[#0B1D34]/30 blur-[110px]" />
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <div>
               <div className="mb-4 flex flex-wrap items-center gap-3">
-                <span className="rounded bg-[#004ac6] px-3 py-1 text-xs font-bold uppercase tracking-widest">{text.trustLabel}</span>
+                <span className="rounded bg-[#0B1D34] px-3 py-1 text-xs font-bold uppercase tracking-widest">{text.trustLabel}</span>
                 <span className="text-sm text-slate-300">{text.trustDate}</span>
               </div>
               <h2 className="max-w-2xl text-3xl font-semibold tracking-tight">{text.trustTitle}</h2>
@@ -328,11 +328,11 @@ export function AboutContent() {
           <h3 className="mt-8 text-xl font-semibold text-slate-950">{text.seoSubtitle}</h3>
           <p className="mt-4 leading-7 text-[#434655]">{text.seoTwo}</p>
           <div className="my-8 rounded-2xl bg-[#eceef0] p-6">
-            <h4 className="text-sm font-bold uppercase tracking-wider text-[#004ac6]">{text.seoFactorsTitle}</h4>
+            <h4 className="text-sm font-bold uppercase tracking-wider text-[#0B1D34]">{text.seoFactorsTitle}</h4>
             <ul className="mt-4 grid gap-3 text-[#434655] sm:grid-cols-2">
               {seoFactors[language].map((factor) => (
                 <li key={factor} className="flex gap-2">
-                  <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-[#004ac6]" />
+                  <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-[#0B1D34]" />
                   <span>{factor}</span>
                 </li>
               ))}
@@ -352,7 +352,7 @@ export function AboutContent() {
             <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
               <Link
                 href="/tools/travel-budget-calculator"
-                className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-8 font-semibold text-[#004ac6] shadow-xl transition hover:bg-white/90"
+                className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-8 font-semibold text-[#0B1D34] shadow-xl transition hover:bg-white/90"
               >
                 {text.finalPrimary}
               </Link>
@@ -395,7 +395,7 @@ function TransparencyCard({
       <ul className="mt-6 space-y-4">
         {items.map((item) => (
           <li key={item} className="flex gap-3 leading-7 text-[#434655]">
-            <WalletCards className={`mt-1 size-5 shrink-0 ${positive ? "text-[#004ac6]" : "text-[#737686]"}`} />
+            <WalletCards className={`mt-1 size-5 shrink-0 ${positive ? "text-[#0B1D34]" : "text-[#737686]"}`} />
             <span>{item}</span>
           </li>
         ))}

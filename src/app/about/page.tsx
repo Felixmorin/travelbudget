@@ -3,9 +3,9 @@ import { createMetadata } from "@/lib/seo/metadata";
 import { createBreadcrumbSchema, createOrganizationSchema, serializeJsonLd } from "@/lib/seo/schema";
 
 export const metadata = createMetadata({
-  title: "About TravelBudget.ai - Realistic Travel Budget Planning",
+  title: "About GoByBudget.com - Realistic Travel Budget Planning",
   description:
-    "Learn how TravelBudget.ai helps travelers compare destinations by budget with realistic trip cost estimates, transparent assumptions, and practical planning tools.",
+    "Learn how GoByBudget.com helps travelers compare destinations by budget with realistic trip cost estimates, transparent assumptions, and practical planning tools.",
   path: "/about",
 });
 
@@ -14,7 +14,7 @@ export default function AboutPage() {
     createOrganizationSchema(),
     createBreadcrumbSchema([
       { name: "Home", url: "/" },
-      { name: "About TravelBudget.ai", url: "/about" },
+      { name: "About GoByBudget.com", url: "/about" },
     ]),
   ];
 

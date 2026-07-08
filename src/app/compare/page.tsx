@@ -36,7 +36,7 @@ export default function ComparePage() {
       <main className="bg-slate-50">
         <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
-            <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">Compare destinations</p>
+            <p className="text-sm font-semibold uppercase tracking-wide text-[#0B1D34]">Compare destinations</p>
             <h1 className="mt-2 text-4xl font-semibold tracking-tight text-slate-950">
               Japan, Portugal, and Vietnam side by side
             </h1>
@@ -83,7 +83,7 @@ export default function ComparePage() {
                     <div className="h-2 rounded-full bg-teal-600" style={{ width: `${destination.score}%` }} />
                   </div>
                   <p className="mt-2 text-sm text-slate-500">Value score: {destination.score}/100</p>
-                  <Button asChild className="mt-5 h-10 w-full rounded-xl bg-blue-600 text-white hover:bg-blue-700">
+                  <Button asChild className="mt-5 h-10 w-full rounded-xl bg-[#0B1D34] text-white hover:bg-[#0B1D34]">
                     <Link href={`/destinations/${destination.slug}`}>
                       View details
                       <ArrowRight className="ml-2 size-4" />
@@ -95,7 +95,7 @@ export default function ComparePage() {
           </div>
 
           <section className="mt-12">
-            <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">SEO comparison guides</p>
+            <p className="text-sm font-semibold uppercase tracking-wide text-[#0B1D34]">SEO comparison guides</p>
             <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">
               Popular travel budget comparisons
             </h2>
@@ -104,9 +104,9 @@ export default function ComparePage() {
                 <Link
                   key={page.slug}
                   href={getComparisonPath(page)}
-                  className="rounded-xl border border-slate-200 bg-white p-5 transition-colors hover:bg-blue-50"
+                  className="rounded-xl border border-slate-200 bg-white p-5 transition-colors hover:bg-[#14B8A6]/10"
                 >
-                  <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-[#0B1D34]">
                     {page.searchIntent}
                   </p>
                   <h3 className="mt-2 text-xl font-semibold text-slate-950">{page.title}</h3>

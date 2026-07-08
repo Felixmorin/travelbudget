@@ -3,9 +3,9 @@ import { createMetadata } from "@/lib/seo/metadata";
 import { createOrganizationSchema, createWebSiteSchema, serializeJsonLd } from "@/lib/seo/schema";
 
 export const metadata = createMetadata({
-  title: "Find the Best Travel Destinations for Your Budget",
-  description:
-    "Discover where you can travel based on your budget, trip length, departure city, and travel style. TravelBudget.ai helps you compare destinations with realistic cost breakdowns and smart recommendations.",
+  title: "GoByBudget.com",
+  description: "AI-powered destination discovery that fits your budget.",
+  socialDescription: "Discover the best places to travel based on your budget.",
   path: "/",
   robots: {
     index: true,

@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: ComparePageProps): Promise<Me
   if (!page) {
     return createMetadata({
       title: "Comparison Not Found",
-      description: "This TravelBudget.ai comparison guide could not be found.",
+      description: "This GoByBudget.com comparison guide could not be found.",
       path: getComparisonPath(comparison),
       noIndex: true,
     });
@@ -92,7 +92,7 @@ export default async function ComparisonPage({ params }: ComparePageProps) {
       />
       <section className="border-b border-slate-200 bg-white">
         <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
-          <Badge className="rounded-full bg-blue-100 px-4 py-1 text-blue-800">
+          <Badge className="rounded-full bg-[#14B8A6]/10 px-4 py-1 text-[#0B1D34]">
             {page.searchIntent}
           </Badge>
           <h1 className="mt-5 max-w-4xl text-4xl font-semibold tracking-tight sm:text-6xl">
@@ -111,7 +111,7 @@ export default async function ComparisonPage({ params }: ComparePageProps) {
         <EstimateDisclaimer className="mb-8" />
         <div className="rounded-[24px] border border-slate-200 bg-white p-6">
           <div className="flex items-start gap-3">
-            <Trophy className="mt-1 size-5 shrink-0 text-blue-700" />
+            <Trophy className="mt-1 size-5 shrink-0 text-[#0B1D34]" />
             <div>
               <h2 className="text-2xl font-semibold">Quick answer</h2>
               <p className="mt-3 text-sm leading-7 text-slate-600">{summary}</p>
@@ -144,7 +144,7 @@ export default async function ComparisonPage({ params }: ComparePageProps) {
                   </div>
                 </div>
                 <div className="grid gap-3">
-                  <Button asChild className="rounded-full bg-blue-600 text-white hover:bg-blue-700">
+                  <Button asChild className="rounded-full bg-[#0B1D34] text-white hover:bg-[#0B1D34]">
                     <Link href={`/destinations/${item.destination.slug}`}>
                       Destination guide
                       <ArrowRight className="ml-2 size-4" />
@@ -185,7 +185,7 @@ function HeroMetric({
 }) {
   return (
     <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-      <Icon className="mb-3 size-5 text-blue-700" />
+      <Icon className="mb-3 size-5 text-[#0B1D34]" />
       <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
       <p className="mt-1 font-semibold text-slate-950">{value}</p>
     </div>
@@ -203,8 +203,8 @@ function Metric({ label, value }: { label: string; value: string }) {
 
 function InternalLink({ href, label, title }: { href: string; label: string; title: string }) {
   return (
-    <Link href={href} className="rounded-xl bg-white p-4 transition-colors hover:bg-blue-50">
-      <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">{label}</p>
+    <Link href={href} className="rounded-xl bg-white p-4 transition-colors hover:bg-[#14B8A6]/10">
+      <p className="text-xs font-semibold uppercase tracking-wide text-[#0B1D34]">{label}</p>
       <p className="mt-1 font-bold text-slate-950">{title}</p>
     </Link>
   );

@@ -122,7 +122,7 @@ export function GuideHubExplorer({
       <section className="mx-auto max-w-7xl px-4 pb-10 pt-8 sm:px-6 lg:px-8">
         <div className="flex flex-col justify-between gap-6 border-b border-slate-200 pb-8 md:flex-row md:items-end">
           <div className="max-w-3xl">
-            <Badge className="mb-4 rounded-full bg-blue-50 px-3 text-blue-700 ring-1 ring-blue-100">
+            <Badge className="mb-4 rounded-full bg-[#14B8A6]/10 px-3 text-[#0B1D34] ring-1 ring-[#14B8A6]/20">
               Hub
             </Badge>
             <h1 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
@@ -143,7 +143,7 @@ export function GuideHubExplorer({
       <section className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
         <div className="mb-6 flex items-center justify-between gap-4">
           <h2 className="text-3xl font-semibold tracking-tight text-slate-950">Popular guides</h2>
-          <Link href="#explorer" className="inline-flex items-center gap-1 text-sm font-semibold text-blue-700 hover:underline">
+          <Link href="#explorer" className="inline-flex items-center gap-1 text-sm font-semibold text-[#0B1D34] hover:underline">
             See all
             <ArrowRight className="size-4" />
           </Link>
@@ -161,19 +161,19 @@ export function GuideHubExplorer({
             <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
               <div className="mb-5 flex items-center justify-between gap-3">
                 <FilterHeader />
-                <button type="button" className="text-sm font-semibold text-blue-700 hover:underline" onClick={resetFilters}>
+                <button type="button" className="text-sm font-semibold text-[#0B1D34] hover:underline" onClick={resetFilters}>
                   Reset
                 </button>
               </div>
               <GuideFilters filters={filters} options={options} onChange={updateFilter} />
             </div>
-            <div className="rounded-xl border border-blue-200 bg-blue-50/70 p-5">
-              <HelpCircle className="mb-3 size-5 text-blue-700" />
-              <h3 className="font-semibold text-blue-800">Need help?</h3>
+            <div className="rounded-xl border border-[#14B8A6]/30 bg-[#14B8A6]/10 p-5">
+              <HelpCircle className="mb-3 size-5 text-[#0B1D34]" />
+              <h3 className="font-semibold text-[#0B1D34]">Need help?</h3>
               <p className="mt-2 text-sm leading-6 text-slate-600">
                 Read the methodology before comparing your next itineraries.
               </p>
-              <Link href="/methodology" className="mt-3 inline-flex items-center gap-1 text-sm font-bold text-blue-700 hover:underline">
+              <Link href="/methodology" className="mt-3 inline-flex items-center gap-1 text-sm font-bold text-[#0B1D34] hover:underline">
                 View methodology
                 <ArrowRight className="size-4" />
               </Link>
@@ -190,12 +190,12 @@ export function GuideHubExplorer({
                 Filters
               </Button>
               <label className="flex items-center gap-2 text-sm text-slate-600">
-                <ChevronsUpDown className="size-4 text-blue-700" />
+                <ChevronsUpDown className="size-4 text-[#0B1D34]" />
                 <span>Sort by:</span>
                 <select
                   value={sort}
                   onChange={(event) => setSort(event.target.value as GuideSortOption)}
-                  className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-blue-700 outline-none focus:border-blue-700 focus:ring-3 focus:ring-blue-700/20"
+                  className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-[#0B1D34] outline-none focus:border-[#14B8A6] focus:ring-3 focus:ring-[#14B8A6]/20"
                 >
                   {Object.entries(sortLabels).map(([value, label]) => (
                     <option key={value} value={value}>
@@ -224,7 +224,7 @@ export function GuideHubExplorer({
         <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {alsoViewedGuides.map((guide) => (
             <Link key={guide.slug} href={guide.href} className="group rounded-lg p-1">
-              <h3 className="text-lg font-semibold text-slate-950 transition group-hover:text-blue-700">{guide.category}</h3>
+              <h3 className="text-lg font-semibold text-slate-950 transition group-hover:text-[#0B1D34]">{guide.category}</h3>
               <p className="mt-2 text-sm leading-6 text-slate-600">{guide.title}</p>
             </Link>
           ))}
@@ -246,7 +246,7 @@ export function GuideHubExplorer({
               <Button type="button" variant="outline" className="h-11" onClick={resetFilters}>
                 Clear
               </Button>
-              <Button type="button" className="h-11 bg-blue-700 text-white hover:bg-blue-800" onClick={() => setMobileFiltersOpen(false)}>
+              <Button type="button" className="h-11 bg-[#0B1D34] text-white hover:bg-[#14B8A6]" onClick={() => setMobileFiltersOpen(false)}>
                 See results
               </Button>
             </div>
@@ -262,7 +262,7 @@ function PopularGuideCard({ guide }: { guide: GuideHubCard }) {
     <article className="group relative overflow-hidden rounded-xl border border-slate-200 bg-white transition duration-300 hover:shadow-lg">
       <Link href={guide.href} className="block">
         <div className="absolute left-4 top-4 z-10">
-          <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-800 shadow-sm">
+          <span className="inline-flex items-center gap-1 rounded-full bg-[#14B8A6]/10 px-2.5 py-1 text-xs font-semibold text-[#0B1D34] shadow-sm">
             <Sparkles className="size-3.5" />
             {guide.badge}
           </span>
@@ -282,11 +282,11 @@ function PopularGuideCard({ guide }: { guide: GuideHubCard }) {
         </div>
         <div className="p-5">
           <div className="mb-2 flex flex-wrap items-center gap-2 text-xs">
-            <span className="font-semibold uppercase tracking-wide text-blue-700">{guide.destinationLabel}</span>
+            <span className="font-semibold uppercase tracking-wide text-[#0B1D34]">{guide.destinationLabel}</span>
             <span className="text-slate-400">•</span>
             <span className="font-medium text-slate-600">{guide.budgetLevel}</span>
           </div>
-          <h3 className="text-xl font-semibold leading-7 text-slate-950 transition group-hover:text-blue-700">{guide.title}</h3>
+          <h3 className="text-xl font-semibold leading-7 text-slate-950 transition group-hover:text-[#0B1D34]">{guide.title}</h3>
           <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">{guide.description}</p>
           <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-slate-600">
             <span className="inline-flex items-center gap-1">
@@ -308,7 +308,7 @@ function ResultGuideCard({ guide }: { guide: GuideHubCard }) {
   return (
     <Link
       href={guide.href}
-      className="group flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-4 transition duration-300 hover:border-blue-700 sm:flex-row"
+      className="group flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-4 transition duration-300 hover:border-[#14B8A6] sm:flex-row"
     >
       <div className="relative h-40 w-full shrink-0 overflow-hidden rounded-lg bg-slate-100 sm:size-32">
         <Image
@@ -322,12 +322,12 @@ function ResultGuideCard({ guide }: { guide: GuideHubCard }) {
       <div className="flex min-w-0 flex-1 flex-col justify-between">
         <div>
           <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
-            <span className="text-xs font-semibold uppercase tracking-wide text-blue-700">
+            <span className="text-xs font-semibold uppercase tracking-wide text-[#0B1D34]">
               {guide.region} • {guide.destinationLabel}
             </span>
             <span className="text-xs text-slate-500">{relativeDateLabel(guide.publishedAt)}</span>
           </div>
-          <h3 className="text-lg font-semibold leading-6 text-slate-950 transition group-hover:text-blue-700">{guide.title}</h3>
+          <h3 className="text-lg font-semibold leading-6 text-slate-950 transition group-hover:text-[#0B1D34]">{guide.title}</h3>
           <p className="mt-1 line-clamp-2 text-sm leading-6 text-slate-600">{guide.description}</p>
         </div>
         <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -365,7 +365,7 @@ function GuideFilters({
             value={filters.query}
             onChange={(event) => onChange("query", event.target.value)}
             placeholder="Destination, guide..."
-            className="h-10 w-full rounded-lg border border-slate-200 bg-[#f7f9fb] pl-9 pr-3 text-sm outline-none focus:border-blue-700 focus:ring-3 focus:ring-blue-700/20"
+            className="h-10 w-full rounded-lg border border-slate-200 bg-[#f7f9fb] pl-9 pr-3 text-sm outline-none focus:border-[#14B8A6] focus:ring-3 focus:ring-[#14B8A6]/20"
           />
         </span>
       </label>
@@ -426,7 +426,7 @@ function FilterSelect({
         id={id}
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="h-10 rounded-lg border border-slate-200 bg-[#f7f9fb] px-3 text-sm text-slate-900 outline-none focus:border-blue-700 focus:ring-3 focus:ring-blue-700/20"
+        className="h-10 rounded-lg border border-slate-200 bg-[#f7f9fb] px-3 text-sm text-slate-900 outline-none focus:border-[#14B8A6] focus:ring-3 focus:ring-[#14B8A6]/20"
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>
@@ -451,10 +451,10 @@ function BudgetButton({
     <button
       type="button"
       className={cn(
-        "h-10 rounded-lg border px-3 text-sm font-semibold transition focus:outline-none focus:ring-3 focus:ring-blue-700/20",
+        "h-10 rounded-lg border px-3 text-sm font-semibold transition focus:outline-none focus:ring-3 focus:ring-[#14B8A6]/20",
         active
-          ? "border-blue-700 bg-blue-50 text-blue-800"
-          : "border-slate-200 bg-white text-slate-700 hover:bg-blue-50 hover:text-blue-800"
+          ? "border-[#14B8A6] bg-[#14B8A6]/10 text-[#0B1D34]"
+          : "border-slate-200 bg-white text-slate-700 hover:bg-[#14B8A6]/10 hover:text-[#0B1D34]"
       )}
       onClick={onClick}
     >
@@ -466,7 +466,7 @@ function BudgetButton({
 function FilterHeader() {
   return (
     <div className="flex items-center gap-2">
-      <Filter className="size-5 text-blue-700" />
+      <Filter className="size-5 text-[#0B1D34]" />
       <h3 className="text-lg font-semibold text-slate-950">Filters</h3>
     </div>
   );
@@ -475,7 +475,7 @@ function FilterHeader() {
 function Metric({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex min-w-0 flex-col">
-      <span className="text-2xl font-bold text-blue-700 sm:text-3xl">{value}</span>
+      <span className="text-2xl font-bold text-[#0B1D34] sm:text-3xl">{value}</span>
       <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{label}</span>
     </div>
   );
@@ -493,7 +493,7 @@ function EmptyState({ onReset }: { onReset: () => void }) {
       <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-600">
         Broaden the region, duration, or budget level to find matching guides.
       </p>
-      <Button type="button" className="mt-5 bg-blue-700 text-white hover:bg-blue-800" onClick={onReset}>
+      <Button type="button" className="mt-5 bg-[#0B1D34] text-white hover:bg-[#14B8A6]" onClick={onReset}>
         Reset
       </Button>
     </div>

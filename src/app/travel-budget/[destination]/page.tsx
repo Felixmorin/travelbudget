@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: TravelBudgetPageProps): Promi
   if (!page) {
     return createMetadata({
       title: "Travel Budget Guide Not Found",
-      description: "This TravelBudget.ai budget guide could not be found.",
+      description: "This GoByBudget.com budget guide could not be found.",
       path: getTravelBudgetPath(destinationSlug),
       noIndex: true,
     });
@@ -86,7 +86,7 @@ export default async function TravelBudgetPage({ params }: TravelBudgetPageProps
       />
       <section className="border-b border-slate-200 bg-white">
         <div className="mx-auto max-w-5xl px-4 py-14 sm:px-6 lg:px-8">
-          <Badge className="rounded-full bg-blue-100 px-4 py-1 text-blue-800">Destination budget guide</Badge>
+          <Badge className="rounded-full bg-[#14B8A6]/10 px-4 py-1 text-[#0B1D34]">Destination budget guide</Badge>
           <h1 className="mt-5 text-4xl font-semibold tracking-tight sm:text-6xl">
             Travel budget for {destinationLabel}
           </h1>
@@ -95,7 +95,7 @@ export default async function TravelBudgetPage({ params }: TravelBudgetPageProps
             flight baselines, mid-range daily costs, and one traveler.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
-            <p className="text-4xl font-semibold text-blue-700">{estimate.totalLabel}</p>
+            <p className="text-4xl font-semibold text-[#0B1D34]">{estimate.totalLabel}</p>
             <span className="text-sm font-medium text-slate-500">estimated total in CAD</span>
           </div>
         </div>
@@ -123,7 +123,7 @@ export default async function TravelBudgetPage({ params }: TravelBudgetPageProps
         <aside className="h-fit rounded-[24px] border border-slate-200 bg-white p-6">
           <h2 className="text-xl font-semibold">Plan the next step</h2>
           <div className="mt-5 grid gap-3">
-            <Button asChild className="rounded-full bg-blue-600 text-white hover:bg-blue-700">
+            <Button asChild className="rounded-full bg-[#0B1D34] text-white hover:bg-[#0B1D34]">
               <Link href={`/destinations/${page.destination.slug}`}>Open destination guide</Link>
             </Button>
             <Button asChild variant="outline" className="rounded-full bg-white">
@@ -155,7 +155,7 @@ function CostCard({
 }) {
   return (
     <article className="rounded-[24px] border border-slate-200 bg-white p-6">
-      <Icon className="size-6 text-blue-700" />
+      <Icon className="size-6 text-[#0B1D34]" />
       <h2 className="mt-4 font-semibold">{title}</h2>
       <p className="mt-2 text-2xl font-semibold text-slate-950">
         {new Intl.NumberFormat("en-CA", {

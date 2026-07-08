@@ -124,10 +124,10 @@ export function HomeContent() {
   return (
     <main className="bg-[#f7f9fb] text-[#191c1e]">
       <section className="relative mx-auto grid max-w-7xl gap-8 overflow-hidden px-4 pb-20 pt-16 sm:px-6 lg:grid-cols-12 lg:items-center lg:px-8 lg:pt-24">
-        <div className="absolute -right-24 -top-24 -z-10 h-96 w-96 rounded-full bg-blue-600/5 blur-3xl" />
+        <div className="absolute -right-24 -top-24 -z-10 h-96 w-96 rounded-full bg-[#0B1D34]/5 blur-3xl" />
         <div className="z-10 lg:col-span-7">
           <h1 className="max-w-4xl text-5xl font-extrabold leading-tight tracking-tight text-slate-950 sm:text-6xl lg:text-7xl">
-            Find the best travel destinations for your <span className="text-[#004ac6]">budget</span>
+            Find the best travel destinations for your <span className="text-[#0B1D34]">budget</span>
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-[#434655]">
             Enter your budget, trip length, and departure city. Compare the current planning dataset of 30 country
@@ -144,7 +144,7 @@ export function HomeContent() {
         </div>
 
         <div className="hidden lg:col-span-5 lg:block">
-          <div className="space-y-4 rounded-3xl border border-white/70 bg-white/70 p-6 shadow-2xl shadow-blue-950/10 backdrop-blur">
+          <div className="space-y-4 rounded-3xl border border-white/70 bg-white/70 p-6 shadow-2xl shadow-[#0B1D34]/10 backdrop-blur">
             <div className="mb-6 flex items-center justify-between gap-4">
               <h2 className="text-xl font-semibold">Budget Matches</h2>
               <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold uppercase tracking-widest text-emerald-700">
@@ -170,7 +170,7 @@ export function HomeContent() {
                   <p className="text-sm text-slate-500">{match.country} - 10 Days</p>
                 </div>
                 <div className="text-right">
-                  <div className="text-lg font-bold text-[#004ac6]">{match.price}</div>
+                  <div className="text-lg font-bold text-[#0B1D34]">{match.price}</div>
                   <div className="text-[10px] font-bold uppercase text-emerald-600">{match.variance}</div>
                 </div>
               </article>
@@ -201,7 +201,7 @@ export function HomeContent() {
                     height={600}
                     className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
                   />
-                  <div className="absolute right-4 top-4 rounded-full border border-white/50 bg-white/75 px-4 py-2 font-bold text-[#004ac6] backdrop-blur">
+                  <div className="absolute right-4 top-4 rounded-full border border-white/50 bg-white/75 px-4 py-2 font-bold text-[#0B1D34] backdrop-blur">
                     {destination.price}
                   </div>
                 </div>
@@ -211,7 +211,7 @@ export function HomeContent() {
                     {destination.costs.map(([label, amount, Icon]) => (
                       <div key={label as string} className="flex items-center justify-between text-base">
                         <span className="flex items-center gap-2 text-slate-500">
-                          <Icon className="size-5 text-[#004ac6]" />
+                          <Icon className="size-5 text-[#0B1D34]" />
                           {label as string}
                         </span>
                         <span className="font-bold">{amount as string}</span>
@@ -220,7 +220,7 @@ export function HomeContent() {
                   </div>
                   <div className="flex flex-wrap gap-2 border-t border-[#c3c6d7] pt-6">
                     {destination.tags.map((tag) => (
-                      <span key={tag} className="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold uppercase text-[#004ac6]">
+                      <span key={tag} className="rounded-full bg-[#14B8A6]/10 px-3 py-1 text-xs font-bold uppercase text-[#0B1D34]">
                         {tag}
                       </span>
                     ))}
@@ -238,7 +238,7 @@ export function HomeContent() {
             <h2 className="text-3xl font-semibold tracking-tight text-slate-950">Popular budget trips from Montreal</h2>
             <p className="mt-3 text-[#434655]">Top searched routes and curated budget experiences.</p>
           </div>
-          <Link href="/destinations" className="inline-flex items-center gap-2 font-bold text-[#004ac6] transition hover:gap-3">
+          <Link href="/destinations" className="inline-flex items-center gap-2 font-bold text-[#0B1D34] transition hover:gap-3">
             Explore all destinations
             <ArrowRight className="size-5" />
           </Link>
@@ -248,18 +248,18 @@ export function HomeContent() {
             <Link
               key={route}
               href="/destinations"
-              className="group block rounded-3xl border border-[#c3c6d7]/40 bg-white p-7 transition hover:border-blue-600/40 hover:shadow-lg"
+              className="group block rounded-3xl border border-[#c3c6d7]/40 bg-white p-7 transition hover:border-[#14B8A6]/40 hover:shadow-lg"
             >
               <div className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">{category}</div>
-              <h3 className="mb-2 text-xl font-semibold transition group-hover:text-[#004ac6]">{route}</h3>
-              <p className="font-bold text-[#004ac6]">{budget}</p>
+              <h3 className="mb-2 text-xl font-semibold transition group-hover:text-[#0B1D34]">{route}</h3>
+              <p className="font-bold text-[#0B1D34]">{budget}</p>
             </Link>
           ))}
         </div>
       </section>
 
       <section id="methodology" className="relative overflow-hidden bg-slate-950 px-4 py-20 text-white sm:px-6 lg:px-8">
-        <div className="absolute bottom-0 right-0 h-72 w-72 rounded-full bg-blue-600/20 blur-[110px]" />
+        <div className="absolute bottom-0 right-0 h-72 w-72 rounded-full bg-[#0B1D34]/20 blur-[110px]" />
         <div className="relative z-10 mx-auto max-w-7xl">
           <div className="mb-12 max-w-2xl">
             <h2 className="text-3xl font-semibold tracking-tight">How we estimate your travel budget</h2>
@@ -271,7 +271,7 @@ export function HomeContent() {
           <div className="mb-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {methodology.map(([Icon, title, copy]) => (
               <article key={title as string} className="rounded-3xl border border-white/10 bg-white/5 p-7 backdrop-blur">
-                <Icon className="mb-6 size-10 text-blue-200" />
+                <Icon className="mb-6 size-10 text-[#38BDF8]" />
                 <h3 className="mb-3 text-xl font-semibold">{title as string}</h3>
                 <p className="leading-7 text-slate-400">{copy as string}</p>
               </article>
@@ -286,10 +286,10 @@ export function HomeContent() {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-        <h2 className="mb-12 text-center text-3xl font-semibold tracking-tight">Why use TravelBudget.ai?</h2>
+        <h2 className="mb-12 text-center text-3xl font-semibold tracking-tight">Why use GoByBudget.com?</h2>
         <div className="grid gap-8 lg:grid-cols-2">
           <ComparisonCard title="Manual Planning" tone="muted" />
-          <ComparisonCard title="TravelBudget.ai" tone="smart" />
+          <ComparisonCard title="GoByBudget.com" tone="smart" />
         </div>
       </section>
 
@@ -303,18 +303,18 @@ export function HomeContent() {
                 <article
                   key={title as string}
                   className={`relative rounded-3xl bg-white p-9 shadow-sm transition hover:-translate-y-1 ${
-                    featured ? "border-2 border-[#004ac6] shadow-xl" : "border border-[#c3c6d7]/40"
+                    featured ? "border-2 border-[#0B1D34] shadow-xl" : "border border-[#c3c6d7]/40"
                   }`}
                 >
                   {featured ? (
-                    <div className="absolute right-6 top-6 rounded-full bg-blue-50 px-3 py-1 text-[10px] font-bold uppercase text-[#004ac6]">
+                    <div className="absolute right-6 top-6 rounded-full bg-[#14B8A6]/10 px-3 py-1 text-[10px] font-bold uppercase text-[#0B1D34]">
                       Popular
                     </div>
                   ) : null}
-                  <Icon className="mb-6 size-10 text-[#004ac6]" />
+                  <Icon className="mb-6 size-10 text-[#0B1D34]" />
                   <h3 className="mb-4 text-2xl font-semibold">{title as string}</h3>
                   <p className="mb-8 leading-7 text-[#434655]">{copy as string}</p>
-                  <div className="font-bold text-[#004ac6]">{price as string}</div>
+                  <div className="font-bold text-[#0B1D34]">{price as string}</div>
                 </article>
               );
             })}
@@ -332,7 +332,7 @@ export function HomeContent() {
             <div className="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
               <Link
                 href="/tools/travel-budget-calculator"
-                className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-6 font-bold text-[#004ac6] transition hover:bg-white/90"
+                className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-6 font-bold text-[#0B1D34] transition hover:bg-white/90"
               >
                 Estimate a trip budget
               </Link>
@@ -345,7 +345,7 @@ export function HomeContent() {
             </div>
           </div>
           <div className="absolute -left-12 -top-12 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
-          <div className="absolute -bottom-12 -right-12 h-64 w-64 rounded-full bg-blue-100/20 blur-3xl" />
+          <div className="absolute -bottom-12 -right-12 h-64 w-64 rounded-full bg-[#14B8A6]/10 blur-3xl" />
         </div>
       </section>
 
@@ -353,7 +353,7 @@ export function HomeContent() {
         <h2 className="mb-12 text-center text-3xl font-semibold tracking-tight">Frequently Asked Questions</h2>
         <div className="space-y-4">
           {faqs.map(([question, answer]) => (
-            <details key={question} className="group rounded-2xl border border-[#c3c6d7]/40 bg-white p-6 open:ring-1 open:ring-[#004ac6]">
+            <details key={question} className="group rounded-2xl border border-[#c3c6d7]/40 bg-white p-6 open:ring-1 open:ring-[#0B1D34]">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold">
                 {question}
                 <ArrowRight className="size-5 shrink-0 rotate-90 transition group-open:-rotate-90" />
@@ -399,15 +399,15 @@ function ComparisonCard({ title, tone }: { title: string; tone: "muted" | "smart
   return (
     <article
       className={`relative rounded-3xl p-8 sm:p-10 ${
-        smart ? "border-2 border-[#004ac6] bg-white shadow-2xl" : "border border-[#c3c6d7]/40 bg-[#f2f4f6]"
+        smart ? "border-2 border-[#0B1D34] bg-white shadow-2xl" : "border border-[#c3c6d7]/40 bg-[#f2f4f6]"
       }`}
     >
       {smart ? (
-        <div className="absolute -top-4 left-10 rounded-full bg-[#004ac6] px-4 py-1 text-xs font-bold uppercase tracking-widest text-white">
+        <div className="absolute -top-4 left-10 rounded-full bg-[#0B1D34] px-4 py-1 text-xs font-bold uppercase tracking-widest text-white">
           The Smart Way
         </div>
       ) : null}
-      <h3 className={`mb-8 text-3xl font-semibold tracking-tight ${smart ? "text-[#004ac6]" : "text-[#434655]"}`}>
+      <h3 className={`mb-8 text-3xl font-semibold tracking-tight ${smart ? "text-[#0B1D34]" : "text-[#434655]"}`}>
         {title}
       </h3>
       <ul className="space-y-5">

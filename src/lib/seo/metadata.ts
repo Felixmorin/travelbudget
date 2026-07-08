@@ -4,12 +4,13 @@ import type { Destination } from "@/lib/data/destinations";
 import { getCityCountryLabel } from "@/lib/data/unified-destinations";
 
 export const siteConfig = {
-  name: "TravelBudget.ai",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://travelbudget-omega.vercel.app",
-  title: "TravelBudget.ai",
-  titleTemplate: "%s | TravelBudget.ai",
-  description: "Discover the best destinations based on your real travel budget.",
-  ogImage: "/og/default.jpg",
+  name: "GoByBudget.com",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://gobybudget.com",
+  title: "GoByBudget.com",
+  titleTemplate: "%s | GoByBudget.com",
+  description: "AI-powered destination discovery that fits your budget.",
+  socialDescription: "Discover the best places to travel based on your budget.",
+  ogImage: "/opengraph-image.png",
 };
 
 type CreateMetadataOptions = {
@@ -18,6 +19,7 @@ type CreateMetadataOptions = {
   path?: string;
   image?: string;
   imageAlt?: string;
+  socialDescription?: string;
   robots?: Metadata["robots"];
   noIndex?: boolean;
 };
@@ -32,12 +34,13 @@ export function createMetadata({
   path = "/",
   image = siteConfig.ogImage,
   imageAlt = siteConfig.name,
+  socialDescription = siteConfig.socialDescription,
   robots,
   noIndex = false,
 }: CreateMetadataOptions = {}): Metadata {
   const canonicalUrl = createCanonicalUrl(path);
   const imageUrl = createCanonicalUrl(image);
-  const socialTitle = title ? `${title} | ${siteConfig.name}` : siteConfig.title;
+  const socialTitle = title && title !== siteConfig.title ? `${title} | ${siteConfig.name}` : siteConfig.title;
 
   return {
     metadataBase: new URL(normalizedSiteUrl()),
@@ -53,7 +56,7 @@ export function createMetadata({
     },
     openGraph: {
       title: socialTitle,
-      description,
+      description: socialDescription,
       url: canonicalUrl,
       siteName: siteConfig.name,
       type: "website",
@@ -69,7 +72,7 @@ export function createMetadata({
     twitter: {
       card: "summary_large_image",
       title: socialTitle,
-      description,
+      description: socialDescription,
       images: [
         {
           url: imageUrl,

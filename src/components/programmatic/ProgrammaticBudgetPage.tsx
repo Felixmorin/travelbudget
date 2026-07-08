@@ -75,7 +75,7 @@ export function ProgrammaticBudgetPage({
         <div className="grid items-center gap-12 lg:grid-cols-[1fr_520px]">
           <div className="space-y-6">
             <nav aria-label="Breadcrumb" className="text-sm text-slate-500">
-              <Link href="/" className="hover:text-blue-700">
+              <Link href="/" className="hover:text-[#0B1D34]">
                 Home
               </Link>
               <span aria-hidden="true" className="mx-2">
@@ -84,19 +84,19 @@ export function ProgrammaticBudgetPage({
               <span>Best trips from {page.origin.city} under {budgetLabel}</span>
             </nav>
 
-            <Badge className="rounded-full bg-blue-100 px-4 py-1 text-xs font-bold uppercase tracking-wider text-blue-950">
+            <Badge className="rounded-full bg-[#14B8A6]/10 px-4 py-1 text-xs font-bold uppercase tracking-wider text-[#0B1D34]">
               From {page.origin.city}
             </Badge>
             <div>
               <h1 className="max-w-4xl text-4xl font-bold leading-tight tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
                 Best destinations from {page.origin.city}{" "}
-                <span className="bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-[#0B1D34] to-[#14B8A6] bg-clip-text text-transparent">
                   under {budgetLabel}
                 </span>
               </h1>
               <p className="mt-6 max-w-xl text-lg leading-8 text-slate-600">
                 Uncover realistic trips from {page.origin.city} with flight estimates, daily costs, and
-                practical {travelStyleLabel.toLowerCase()} budget breakdowns based on the current TravelBudget.ai destination data.
+                practical {travelStyleLabel.toLowerCase()} budget breakdowns based on the current GoByBudget.com destination data.
               </p>
             </div>
 
@@ -107,7 +107,7 @@ export function ProgrammaticBudgetPage({
             </div>
 
             <div className="flex flex-col gap-3 pt-2 sm:flex-row">
-              <Button asChild size="lg" className="rounded-full bg-blue-600 px-8 text-white shadow-lg shadow-blue-600/20 hover:bg-blue-700">
+              <Button asChild size="lg" className="rounded-full bg-[#0B1D34] px-8 text-white shadow-lg shadow-[#0B1D34]/20 hover:bg-[#0B1D34]">
                 <TrackedLink
                   href="#destinations"
                   eventName="cta_clicked"
@@ -171,7 +171,7 @@ export function ProgrammaticBudgetPage({
                 type="button"
                 className={
                   index === 0
-                    ? "shrink-0 rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white"
+                    ? "shrink-0 rounded-full bg-[#0B1D34] px-6 py-2 text-sm font-semibold text-white"
                     : "shrink-0 rounded-full border border-slate-200 bg-white px-6 py-2 text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-100"
                 }
               >
@@ -192,7 +192,7 @@ export function ProgrammaticBudgetPage({
 
         <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-blue-700">Recommended for you</p>
+            <p className="text-sm font-semibold uppercase tracking-wide text-[#0B1D34]">Recommended for you</p>
             <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">
               Destinations from {page.origin.city} under {budgetLabel}
             </h2>
@@ -239,7 +239,7 @@ export function ProgrammaticBudgetPage({
             icon={Plane}
             title="Flights"
             body={`Round-trip flight estimates from ${page.origin.code}, using destination origin pricing when available.`}
-            iconClassName="bg-blue-100 text-blue-700"
+            iconClassName="bg-[#14B8A6]/10 text-[#0B1D34]"
           />
           <IncludedCard
             icon={BedDouble}
@@ -298,7 +298,7 @@ export function ProgrammaticBudgetPage({
             <Link
               key={getProgrammaticBudgetPath(relatedPage)}
               href={getProgrammaticBudgetPath(relatedPage)}
-              className="rounded-xl bg-slate-100 p-4 transition-colors hover:bg-blue-100"
+              className="rounded-xl bg-slate-100 p-4 transition-colors hover:bg-[#14B8A6]/10"
             >
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                 From {relatedPage.origin.city}
@@ -308,7 +308,7 @@ export function ProgrammaticBudgetPage({
               </p>
             </Link>
           ))}
-          <Link href="/tools/travel-budget-calculator" className="rounded-xl bg-slate-100 p-4 transition-colors hover:bg-blue-100">
+          <Link href="/tools/travel-budget-calculator" className="rounded-xl bg-slate-100 p-4 transition-colors hover:bg-[#14B8A6]/10">
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Tool</p>
             <p className="mt-1 font-bold text-slate-950">Custom budget</p>
           </Link>
@@ -330,7 +330,7 @@ export function ProgrammaticBudgetPage({
                 <Link
                   key={origin.slug}
                   href={getProgrammaticBudgetPath(relatedOriginPage)}
-                  className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:border-blue-200 hover:text-blue-700"
+                  className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:border-[#14B8A6]/30 hover:text-[#0B1D34]"
                 >
                   From {origin.city}
                 </Link>
@@ -344,7 +344,7 @@ export function ProgrammaticBudgetPage({
             {matches.slice(0, 3).map((item) => (
               <div key={item.destination.slug} className="rounded-xl bg-white p-4">
                 <p className="font-bold text-slate-950">{getCityCountryLabel(item.destination)}</p>
-                <div className="mt-3 grid gap-2 text-sm font-semibold text-blue-700">
+                <div className="mt-3 grid gap-2 text-sm font-semibold text-[#0B1D34]">
                   <Link href={getTravelBudgetPath(item.destination.slug)} className="hover:underline">
                     Full travel budget
                   </Link>
@@ -366,17 +366,17 @@ export function ProgrammaticBudgetPage({
 
       <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
         <div className="relative overflow-hidden rounded-[40px] bg-slate-950 p-8 text-center sm:p-12">
-          <div className="absolute right-0 top-0 h-72 w-72 rounded-full bg-blue-600/25 blur-[100px]" />
-          <div className="absolute bottom-0 left-0 h-72 w-72 rounded-full bg-violet-600/25 blur-[100px]" />
+          <div className="absolute right-0 top-0 h-72 w-72 rounded-full bg-[#0B1D34]/25 blur-[100px]" />
+          <div className="absolute bottom-0 left-0 h-72 w-72 rounded-full bg-[#FF6B6B]/25 blur-[100px]" />
           <div className="relative z-10 mx-auto max-w-2xl">
             <h2 className="text-3xl font-bold tracking-tight text-white sm:text-5xl">
               Plan your trip from {page.origin.city} with confidence
             </h2>
-            <p className="mt-4 text-lg leading-8 text-blue-100">
+            <p className="mt-4 text-lg leading-8 text-white/80">
               Stop guessing and compare realistic destination costs before you book.
             </p>
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-              <Button asChild size="lg" className="rounded-full bg-blue-600 px-8 text-white hover:bg-blue-700">
+              <Button asChild size="lg" className="rounded-full bg-[#0B1D34] px-8 text-white hover:bg-[#0B1D34]">
                 <TrackedLink
                   href="/tools/travel-budget-calculator"
                   eventName="cta_clicked"
@@ -447,7 +447,7 @@ function HeroPill({
 }) {
   return (
     <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2">
-      <Icon className="size-5 text-blue-700" />
+      <Icon className="size-5 text-[#0B1D34]" />
       <span className="text-sm font-medium text-slate-600">{label}</span>
     </div>
   );
@@ -462,7 +462,7 @@ function BudgetSnapshot({
 }) {
   const legend = item
     ? [
-        { label: "Flights", value: item.costBreakdown.flights, color: "#004ac6" },
+        { label: "Flights", value: item.costBreakdown.flights, color: "#0B1D34" },
         { label: "Hotels", value: item.costBreakdown.accommodation, color: "#7c3aed" },
         { label: "Food", value: item.costBreakdown.food, color: "#f97316" },
         { label: "Transport", value: item.costBreakdown.localTransport, color: "#14b8a6" },
@@ -472,8 +472,8 @@ function BudgetSnapshot({
 
   return (
     <div className="relative">
-      <div className="absolute -right-10 -top-10 h-64 w-64 rounded-full bg-blue-100/70 blur-[90px]" />
-      <div className="absolute -bottom-10 -left-10 h-64 w-64 rounded-full bg-violet-100/80 blur-[90px]" />
+      <div className="absolute -right-10 -top-10 h-64 w-64 rounded-full bg-[#14B8A6]/10 blur-[90px]" />
+      <div className="absolute -bottom-10 -left-10 h-64 w-64 rounded-full bg-[#FF6B6B]/10 blur-[90px]" />
       <div className="relative z-10 rounded-[32px] border border-white/70 bg-white/75 p-6 shadow-2xl shadow-slate-200/70 backdrop-blur">
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
@@ -482,7 +482,7 @@ function BudgetSnapshot({
               {item ? `${getCityCountryLabel(item.destination)} matching estimate` : "Estimated trip total"}
             </p>
           </div>
-          <p className="text-right text-3xl font-bold text-blue-700">
+          <p className="text-right text-3xl font-bold text-[#0B1D34]">
             {item ? formatMoney(item.totalEstimate, page.currency) : formatMoney(page.budget, page.currency)}
             <span className="block text-sm font-normal text-slate-500">CAD</span>
           </p>
@@ -576,8 +576,8 @@ function SummaryMetric({ label, value }: { label: string; value: string }) {
 
 function InternalLink({ href, label, title }: { href: string; label: string; title: string }) {
   return (
-    <Link href={href} className="rounded-xl bg-white p-4 transition-colors hover:bg-blue-50">
-      <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">{label}</p>
+    <Link href={href} className="rounded-xl bg-white p-4 transition-colors hover:bg-[#14B8A6]/10">
+      <p className="text-xs font-semibold uppercase tracking-wide text-[#0B1D34]">{label}</p>
       <p className="mt-1 font-bold text-slate-950">{title}</p>
     </Link>
   );

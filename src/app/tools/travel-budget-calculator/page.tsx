@@ -72,7 +72,7 @@ export default function TravelBudgetCalculatorPage() {
         <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
           <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">Free travel tool</p>
+              <p className="text-sm font-semibold uppercase tracking-wide text-[#0B1D34]">Free travel tool</p>
               <h1 className="mt-3 text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
                 Travel Budget Calculator
               </h1>
@@ -81,7 +81,7 @@ export default function TravelBudgetCalculatorPage() {
                 transport, insurance, and a planning buffer to see a realistic travel budget instantly.
               </p>
             </div>
-            <div className="rounded-xl border border-blue-100 bg-white p-5 shadow-sm">
+            <div className="rounded-xl border border-[#14B8A6]/20 bg-white p-5 shadow-sm">
               <p className="text-sm font-semibold text-slate-950">Plan with cleaner numbers</p>
               <p className="mt-2 text-sm leading-6 text-slate-500">
                 Use one currency for every field, enter flights and insurance per traveler, and keep accommodation as
@@ -170,7 +170,7 @@ export default function TravelBudgetCalculatorPage() {
         <section className="bg-white py-14 sm:py-16">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
             <div className="text-center">
-              <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">FAQ</p>
+              <p className="text-sm font-semibold uppercase tracking-wide text-[#0B1D34]">FAQ</p>
               <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">
                 Travel Budget Calculator FAQ
               </h2>

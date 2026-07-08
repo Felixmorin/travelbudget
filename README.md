@@ -1,6 +1,6 @@
-# TravelBudget.ai
+# GoByBudget.com
 
-TravelBudget.ai is a budget-first travel planning MVP built with Next.js App Router. It helps travelers compare destinations, estimate total trip costs from Canadian origins, and understand where their money goes before they book.
+GoByBudget.com is a budget-first travel planning MVP built with Next.js App Router. It helps travelers compare destinations, estimate total trip costs from Canadian origins, and understand where their money goes before they book.
 
 The app currently uses a curated planning dataset of 30 country destinations with origin-specific flight estimates from Montreal (YUL), Toronto (YYZ), and Vancouver (YVR), plus 24 city destination guides. Prices are directional estimates in CAD, not live fares or guarantees.
 

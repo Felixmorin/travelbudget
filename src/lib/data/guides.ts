@@ -65,7 +65,7 @@ export const longTailGuides: LongTailGuide[] = [
     title: "Travel budget calculator: how to estimate a trip before booking",
     category: "Budget planning",
     intent: "Use a travel budget calculator to compare flights, stays, food, transport, activities, insurance, and a cash buffer before choosing a destination.",
-    summary: "A practical guide to using TravelBudget.ai as a trip cost calculator, with the inputs that matter most.",
+    summary: "A practical guide to using GoByBudget.com as a trip cost calculator, with the inputs that matter most.",
     quickAnswer:
       "A serious travel budget calculator should start with origin, destination, trip length, travel style, and traveler count, then separate fixed costs from daily costs before adding a buffer.",
     costNotes: [
@@ -538,7 +538,7 @@ function guide(input: GuideInput): LongTailGuide {
         {
           question: "Are these live booking prices?",
           answer:
-            "No. TravelBudget.ai guide numbers are planning estimates. Use them to compare options, then verify live flights and lodging before booking.",
+            "No. GoByBudget.com guide numbers are planning estimates. Use them to compare options, then verify live flights and lodging before booking.",
         },
         {
           question: "How can I reduce the total without ruining the trip?",

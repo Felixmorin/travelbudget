@@ -37,7 +37,7 @@ import { createBreadcrumbSchema, createGuideArticleSchema, serializeJsonLd } fro
 export const metadata = createMetadata({
   title: "Budget Methodology",
   description:
-    "Learn how TravelBudget.ai estimates trip budgets using flight, accommodation, daily food, local transport, activity, optional extras, and safety-margin assumptions.",
+    "Learn how GoByBudget.com estimates trip budgets using flight, accommodation, daily food, local transport, activity, optional extras, and safety-margin assumptions.",
   path: "/methodology",
 });
 
@@ -266,9 +266,9 @@ const faqs = [
 export default function MethodologyPage() {
   const jsonLd = [
     createGuideArticleSchema({
-      title: "TravelBudget.ai Budget Methodology",
+      title: "GoByBudget.com Budget Methodology",
       description:
-        "How TravelBudget.ai estimates trip budgets from flights, accommodation, meals, local transport, activities, optional extras, and safety margins.",
+        "How GoByBudget.com estimates trip budgets from flights, accommodation, meals, local transport, activities, optional extras, and safety margins.",
       path: "/methodology",
       datePublished: "2026-06-24",
       dateModified: "2026-07-08",
@@ -291,16 +291,16 @@ export default function MethodologyPage() {
       <section className="overflow-hidden bg-white">
         <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:px-8 lg:py-20">
           <div>
-            <p className="text-sm font-semibold uppercase text-[#004ac6]">Methodology</p>
+            <p className="text-sm font-semibold uppercase text-[#0B1D34]">Methodology</p>
             <h1 className="mt-4 max-w-3xl text-4xl font-bold leading-tight tracking-normal text-[#191c1e] sm:text-6xl">
-              How TravelBudget.ai estimates your travel budget
+              How GoByBudget.com estimates your travel budget
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-[#434655]">
               We combine flight baselines, destination-level daily costs, trip length, travelers, departure city,
               and travel style to build a realistic planning estimate before you compare live booking prices.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Button asChild className="h-12 rounded-full bg-[#004ac6] px-6 text-white hover:bg-blue-700">
+              <Button asChild className="h-12 rounded-full bg-[#0B1D34] px-6 text-white hover:bg-[#0B1D34]">
                 <Link href="/tools/travel-budget-calculator">
                   Try the budget planner
                   <ArrowRight className="size-4" />
@@ -309,7 +309,7 @@ export default function MethodologyPage() {
               <Button
                 asChild
                 variant="outline"
-                className="h-12 rounded-full border-[#737686] bg-white px-6 text-[#004ac6] hover:bg-[#f2f4f6]"
+                className="h-12 rounded-full border-[#737686] bg-white px-6 text-[#0B1D34] hover:bg-[#f2f4f6]"
               >
                 <Link href="#included">See what is included</Link>
               </Button>
@@ -317,10 +317,10 @@ export default function MethodologyPage() {
             <div className="mt-8 rounded-2xl border border-[#c3c6d7]/60 bg-[#f7f9fb] p-4 text-sm leading-6 text-[#434655]">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <span className="inline-flex items-center gap-2 font-semibold text-[#191c1e]">
-                  <RefreshCcw className="size-4 text-[#004ac6]" />
+                  <RefreshCcw className="size-4 text-[#0B1D34]" />
                   Estimate assumptions last reviewed: {estimateLastUpdated}
                 </span>
-                <Link href="#sources" className="inline-flex items-center gap-1 font-semibold text-[#004ac6]">
+                <Link href="#sources" className="inline-flex items-center gap-1 font-semibold text-[#0B1D34]">
                   View sources and limits
                   <ExternalLink className="size-4" />
                 </Link>
@@ -350,14 +350,14 @@ export default function MethodologyPage() {
           <div className="relative hidden lg:block">
             <div className="relative z-10 rounded-[24px] border border-[#c3c6d7]/60 bg-white/75 p-8 shadow-[0_20px_40px_-10px_rgba(15,23,42,0.12)] backdrop-blur-xl">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-[#004ac6]">Travel Intelligence Report</span>
+                <span className="text-sm font-semibold text-[#0B1D34]">Travel Intelligence Report</span>
                 <BarChart3 className="size-6 text-[#737686]" />
               </div>
               <div className="mt-8 space-y-4">
                 <div className="h-3 w-3/4 rounded-full bg-[#e0e3e5]" />
                 <div className="h-3 w-1/2 rounded-full bg-[#e0e3e5]" />
-                <div className="flex h-36 items-center justify-center rounded-xl border border-[#004ac6]/20 bg-[#004ac6]/5">
-                  <BarChart3 className="size-14 text-[#004ac6]" />
+                <div className="flex h-36 items-center justify-center rounded-xl border border-[#0B1D34]/20 bg-[#0B1D34]/5">
+                  <BarChart3 className="size-14 text-[#0B1D34]" />
                 </div>
                 <div className="grid grid-cols-3 gap-3 pt-2">
                   <div className="rounded-xl bg-[#f2f4f6] p-3">
@@ -404,7 +404,7 @@ export default function MethodologyPage() {
                           : "border-[#c3c6d7]/70 bg-white"
                       }`}
                     >
-                      <Icon className={`mx-auto size-5 ${item.featured ? "text-[#006b5f]" : "text-[#004ac6]"}`} />
+                      <Icon className={`mx-auto size-5 ${item.featured ? "text-[#006b5f]" : "text-[#0B1D34]"}`} />
                       <p className="mt-1 text-xs font-semibold uppercase text-[#434655]">{item.label}</p>
                     </div>
                   </div>
@@ -432,7 +432,7 @@ export default function MethodologyPage() {
                 >
                   <div
                     className={`flex size-12 items-center justify-center rounded-xl ${
-                      input.featured ? "bg-[#006b5f] text-white" : "bg-[#004ac6]/10 text-[#004ac6]"
+                      input.featured ? "bg-[#006b5f] text-white" : "bg-[#0B1D34]/10 text-[#0B1D34]"
                     }`}
                   >
                     <Icon className="size-6" />
@@ -441,7 +441,7 @@ export default function MethodologyPage() {
                   <p className="mt-3 text-sm leading-6 text-[#434655]">{input.body}</p>
                   <div className="mt-5 rounded-lg border border-transparent bg-[#f7f9fb] p-3">
                     <span className="text-xs font-semibold uppercase text-[#737686]">{input.sampleLabel}</span>
-                    <span className="mt-1 block text-sm font-semibold text-[#004ac6]">{input.sampleValue}</span>
+                    <span className="mt-1 block text-sm font-semibold text-[#0B1D34]">{input.sampleValue}</span>
                   </div>
                 </article>
               );
@@ -453,12 +453,12 @@ export default function MethodologyPage() {
       <section id="sources" className="border-y border-[#c3c6d7]/35 bg-[#f7f9fb] py-16">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
           <div>
-            <div className="flex size-12 items-center justify-center rounded-xl bg-[#004ac6]/10 text-[#004ac6]">
+            <div className="flex size-12 items-center justify-center rounded-xl bg-[#0B1D34]/10 text-[#0B1D34]">
               <Database className="size-6" />
             </div>
             <h2 className="mt-5 text-3xl font-semibold tracking-normal">Sources behind the budgets</h2>
             <p className="mt-4 text-base leading-7 text-[#434655]">
-              TravelBudget.ai does not treat estimates as live quotes. We use public price signals, destination cost
+              GoByBudget.com does not treat estimates as live quotes. We use public price signals, destination cost
               references, and structured assumptions to produce a realistic pre-booking range. The current estimate
               dataset was last reviewed on {estimateLastUpdated}.
             </p>
@@ -466,7 +466,7 @@ export default function MethodologyPage() {
               Affiliate relationships can affect which booking partners are linked, but the budget methodology is
               designed around trip cost assumptions first. Optional extras are only included when they are relevant to
               the selected trip or clearly presented as add-ons. See the{" "}
-              <Link href="/affiliate-disclosure" className="font-semibold text-[#004ac6] hover:text-blue-800">
+              <Link href="/affiliate-disclosure" className="font-semibold text-[#0B1D34] hover:text-[#0B1D34]">
                 affiliate disclosure
               </Link>
               .
@@ -497,21 +497,21 @@ export default function MethodologyPage() {
                 <article
                   key={style.title}
                   className={`relative rounded-[24px] bg-white p-8 text-center shadow-sm ${
-                    style.featured ? "border-2 border-[#004ac6] md:-translate-y-2" : "border border-[#c3c6d7]/50"
+                    style.featured ? "border-2 border-[#0B1D34] md:-translate-y-2" : "border border-[#c3c6d7]/50"
                   }`}
                 >
                   {style.featured ? (
-                    <span className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#004ac6] px-4 py-1 text-xs font-semibold text-white">
+                    <span className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#0B1D34] px-4 py-1 text-xs font-semibold text-white">
                       MOST POPULAR
                     </span>
                   ) : null}
-                  <Icon className={`mx-auto size-12 ${style.featured ? "text-[#004ac6]" : "text-[#737686]"}`} />
+                  <Icon className={`mx-auto size-12 ${style.featured ? "text-[#0B1D34]" : "text-[#737686]"}`} />
                   <h3 className="mt-5 text-xl font-semibold">{style.title}</h3>
                   <p className="mt-2 text-sm text-[#434655]">{style.subtitle}</p>
                   <ul className="mt-6 space-y-3 text-left text-sm leading-6 text-[#434655]">
                     {style.points.map((point) => (
                       <li key={point} className="flex gap-2">
-                        <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-[#004ac6]" />
+                        <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-[#0B1D34]" />
                         <span>{point}</span>
                       </li>
                     ))}
@@ -528,7 +528,7 @@ export default function MethodologyPage() {
           <div className="overflow-hidden rounded-[32px] bg-[#0f172a] text-white lg:flex">
             <div className="flex-1 p-8 sm:p-12">
               <div className="flex items-center gap-3">
-                <span className="flex size-10 items-center justify-center rounded-full bg-[#004ac6]">
+                <span className="flex size-10 items-center justify-center rounded-full bg-[#0B1D34]">
                   <Sparkles className="size-5" />
                 </span>
                 <span className="text-xl font-semibold">Example: real calculation</span>
@@ -549,7 +549,7 @@ export default function MethodologyPage() {
                 ))}
               </div>
             </div>
-            <div className="flex flex-col items-center justify-center bg-[#004ac6] p-8 text-center lg:w-1/3">
+            <div className="flex flex-col items-center justify-center bg-[#0B1D34] p-8 text-center lg:w-1/3">
               <span className="text-sm font-semibold uppercase tracking-[0.16em] text-white/75">
                 Total estimated trip
               </span>
@@ -569,7 +569,7 @@ export default function MethodologyPage() {
           <article className="rounded-[24px] border border-[#6df5e1]/30 bg-white p-8 shadow-sm">
             <div className="flex items-center gap-3 text-[#006b5f]">
               <BadgeCheck className="size-6" />
-              <h2 className="text-xl font-semibold">What TravelBudget.ai is good at</h2>
+              <h2 className="text-xl font-semibold">What GoByBudget.com is good at</h2>
             </div>
             <ul className="mt-6 space-y-4 text-sm leading-6 text-[#434655]">
               {strengths.map((item) => (
@@ -608,7 +608,7 @@ export default function MethodologyPage() {
               return (
                 <article key={item.title} className="text-center">
                   <div className="mx-auto flex size-16 items-center justify-center rounded-full border border-[#c3c6d7]/70 bg-[#f7f9fb]">
-                    <Icon className="size-6 text-[#004ac6]" />
+                    <Icon className="size-6 text-[#0B1D34]" />
                   </div>
                   <h3 className="mt-4 text-sm font-semibold">{item.title}</h3>
                   <p className="mt-2 text-xs leading-5 text-[#434655]">{item.body}</p>
@@ -635,7 +635,7 @@ export default function MethodologyPage() {
                   aria-label={`${item.city} travel destination`}
                 />
                 <h3 className="mt-5 text-xl font-semibold">{item.city}</h3>
-                <div className="mt-3 flex justify-between gap-4 text-sm font-semibold text-[#004ac6]">
+                <div className="mt-3 flex justify-between gap-4 text-sm font-semibold text-[#0B1D34]">
                   <span>Total trip</span>
                   <span>{item.total}</span>
                 </div>
@@ -654,7 +654,7 @@ export default function MethodologyPage() {
 
               return (
                 <article key={item.title}>
-                  <Icon className="mx-auto size-10 text-[#004ac6]" />
+                  <Icon className="mx-auto size-10 text-[#0B1D34]" />
                   <h3 className="mt-4 text-xl font-semibold">{item.title}</h3>
                   <p className="mt-3 text-sm leading-6 text-[#434655]">{item.body}</p>
                 </article>
@@ -681,7 +681,7 @@ export default function MethodologyPage() {
       <section className="bg-white py-16">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <div className="rounded-[24px] border border-[#c3c6d7]/45 bg-[#f7f9fb] p-8 text-center">
-            <ShieldCheck className="mx-auto size-10 text-[#004ac6]" />
+            <ShieldCheck className="mx-auto size-10 text-[#0B1D34]" />
             <h2 className="mt-4 text-3xl font-semibold tracking-normal">Planning disclaimer</h2>
             <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-[#434655]">
               Estimates are informational planning ranges, not financial advice, live availability, or guaranteed
@@ -689,10 +689,10 @@ export default function MethodologyPage() {
               insurance requirements before booking.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
-              <Button asChild variant="outline" className="rounded-full border-[#737686] bg-white px-5 text-[#004ac6]">
+              <Button asChild variant="outline" className="rounded-full border-[#737686] bg-white px-5 text-[#0B1D34]">
                 <Link href="/contact">Report a price issue</Link>
               </Button>
-              <Button asChild variant="outline" className="rounded-full border-[#737686] bg-white px-5 text-[#004ac6]">
+              <Button asChild variant="outline" className="rounded-full border-[#737686] bg-white px-5 text-[#0B1D34]">
                 <Link href="/affiliate-disclosure">Affiliate disclosure</Link>
               </Button>
             </div>
@@ -701,7 +701,7 @@ export default function MethodologyPage() {
       </section>
 
       <section className="bg-[#f7f9fb] px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl overflow-hidden rounded-[40px] bg-[#004ac6] p-8 text-center text-white sm:p-12">
+        <div className="mx-auto max-w-7xl overflow-hidden rounded-[40px] bg-[#0B1D34] p-8 text-center text-white sm:p-12">
           <Landmark className="mx-auto size-10 text-[#b4c5ff]" />
           <h2 className="mx-auto mt-5 max-w-3xl text-4xl font-bold tracking-normal">
             Ready to see where your budget can take you?
@@ -709,7 +709,7 @@ export default function MethodologyPage() {
           <p className="mx-auto mt-4 max-w-xl text-lg text-[#dbe1ff]">
             Compare destinations with a clearer all-in planning number before you start booking.
           </p>
-          <Button asChild className="mt-8 h-12 rounded-full bg-white px-7 text-[#004ac6] hover:bg-[#eef2ff]">
+          <Button asChild className="mt-8 h-12 rounded-full bg-white px-7 text-[#0B1D34] hover:bg-[#eef2ff]">
             <Link href="/results">Compare destinations</Link>
           </Button>
         </div>

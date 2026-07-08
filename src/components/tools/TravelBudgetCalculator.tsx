@@ -86,7 +86,7 @@ const numericFields: NumericField[] = [
 
 const categoryStyles = {
   budget: "bg-emerald-50 text-emerald-700 ring-emerald-100",
-  "mid-range": "bg-blue-50 text-blue-700 ring-blue-100",
+  "mid-range": "bg-[#14B8A6]/10 text-[#0B1D34] ring-[#14B8A6]/20",
   luxury: "bg-amber-50 text-amber-700 ring-amber-100",
 };
 
@@ -127,7 +127,7 @@ export function TravelBudgetCalculator() {
       dailyAverage,
       category,
       breakdown: [
-        { label: "Flights", amount: flights, icon: Plane, colorClassName: "bg-blue-500" },
+        { label: "Flights", amount: flights, icon: Plane, colorClassName: "bg-[#14B8A6]" },
         { label: "Accommodation", amount: accommodation, icon: BedDouble, colorClassName: "bg-teal-500" },
         { label: "Food", amount: food, icon: Utensils, colorClassName: "bg-amber-500" },
         { label: "Activities", amount: activities, icon: Sparkles, colorClassName: "bg-fuchsia-500" },
@@ -289,7 +289,7 @@ export function TravelBudgetCalculator() {
                   </TrackedLink>
                 </Button>
               </div>
-              <span className="flex size-11 items-center justify-center rounded-xl bg-white/10 text-blue-200">
+              <span className="flex size-11 items-center justify-center rounded-xl bg-white/10 text-[#38BDF8]">
                 <WalletCards className="size-5" />
               </span>
             </div>

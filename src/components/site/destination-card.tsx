@@ -26,7 +26,7 @@ export function DestinationCard({ destination, ranked = false }: { destination: 
           className="object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 to-transparent" />
-        <Badge className="absolute left-4 top-4 bg-white text-blue-600 shadow">
+        <Badge className="absolute left-4 top-4 bg-white text-[#0B1D34] shadow">
           {ranked ? `${t.destinationCard.score} ${destination.score}` : destination.countryCode}
         </Badge>
         <div className="absolute bottom-4 left-4 text-white">
@@ -51,7 +51,7 @@ export function DestinationCard({ destination, ranked = false }: { destination: 
         </div>
         <div className="grid gap-2 text-sm text-slate-600">
           <span className="flex items-center gap-2">
-            <CalendarDays className="size-4 text-blue-600" />
+            <CalendarDays className="size-4 text-[#0B1D34]" />
             {t.destinationCard.bestMonths}: {destination.bestMonths.slice(0, 2).join(", ")}
           </span>
           <span className="flex items-center gap-2">

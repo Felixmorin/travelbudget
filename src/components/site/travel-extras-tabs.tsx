@@ -66,7 +66,7 @@ export function TravelExtrasTabs() {
     <section className="mt-16" aria-labelledby="category-tabs-title">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">By category</p>
+          <p className="text-sm font-semibold uppercase tracking-wide text-[#0B1D34]">By category</p>
           <h2 id="category-tabs-title" className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">
             Compare option tiers
           </h2>
@@ -91,10 +91,10 @@ export function TravelExtrasTabs() {
                 aria-selected={selected}
                 onClick={() => setActiveCategory(category.label)}
                 className={cn(
-                  "inline-flex min-w-max items-center rounded-full border px-4 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#004ac6]/20",
+                  "inline-flex min-w-max items-center rounded-full border px-4 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#14B8A6]/20",
                   selected
                     ? "border-[#2563eb] bg-[#2563eb] text-white"
-                    : "border-[#c3c6d7]/60 bg-white text-[#434655] hover:border-[#004ac6] hover:text-[#004ac6]",
+                    : "border-[#c3c6d7]/60 bg-white text-[#434655] hover:border-[#0B1D34] hover:text-[#0B1D34]",
                 )}
               >
                 {category.label}
@@ -115,7 +115,7 @@ export function TravelExtrasTabs() {
             key={option.title}
             className={cn(
               "border-slate-200 bg-white shadow-sm",
-              index === 1 ? "border-[#004ac6]/40 shadow-lg shadow-slate-200/60" : "",
+              index === 1 ? "border-[#0B1D34]/40 shadow-lg shadow-slate-200/60" : "",
             )}
           >
             <CardContent className="pt-5">
@@ -130,7 +130,7 @@ export function TravelExtrasTabs() {
                 </div>
                 <div>
                   <dt className="font-semibold text-slate-500">Estimated cost</dt>
-                  <dd className="mt-1 text-lg font-semibold text-[#004ac6]">{option.estimatedCost}</dd>
+                  <dd className="mt-1 text-lg font-semibold text-[#0B1D34]">{option.estimatedCost}</dd>
                 </div>
               </dl>
               <Button
@@ -138,7 +138,7 @@ export function TravelExtrasTabs() {
                 variant={index === 1 ? "default" : "outline"}
                 className={cn(
                   "mt-6 h-10 w-full rounded-xl",
-                  index === 1 ? "bg-[#004ac6] text-white hover:bg-blue-700" : "border-[#c3c6d7] bg-white",
+                  index === 1 ? "bg-[#0B1D34] text-white hover:bg-[#0B1D34]" : "border-[#c3c6d7] bg-white",
                 )}
               >
                 Compare {option.title.toLowerCase()}

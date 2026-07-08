@@ -1,6 +1,6 @@
 # Analytics Events
 
-TravelBudget.ai uses typed product events from `src/lib/analytics/events.ts` and `trackEvent` from `src/lib/analytics/track.ts`. Payloads should avoid sensitive data and should truncate normalized free-form city or destination text.
+GoByBudget.com uses typed product events from `src/lib/analytics/events.ts` and `trackEvent` from `src/lib/analytics/track.ts`. Payloads should avoid sensitive data and should truncate normalized free-form city or destination text.
 
 ## Core Search And Results
 

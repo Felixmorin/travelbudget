@@ -191,7 +191,7 @@ export default function TravelExtrasPage() {
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid gap-6 lg:grid-cols-[1fr_360px] lg:items-end">
           <div className="max-w-3xl">
-            <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">Travel add-ons</p>
+            <p className="text-sm font-semibold uppercase tracking-wide text-[#0B1D34]">Travel add-ons</p>
             <h1 className="mt-2 text-4xl font-bold leading-tight tracking-normal text-[#191c1e] sm:text-5xl">
               Compare Travel Extras
             </h1>
@@ -207,7 +207,7 @@ export default function TravelExtrasPage() {
           <Card className="border-[#c3c6d7]/35 bg-white/80 shadow-[0_18px_45px_-28px_rgba(15,23,42,0.45)] backdrop-blur-xl">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg text-slate-950">
-                <PlaneTakeoff className="size-5 text-[#004ac6]" />
+                <PlaneTakeoff className="size-5 text-[#0B1D34]" />
                 Trip summary
               </CardTitle>
             </CardHeader>
@@ -224,7 +224,7 @@ export default function TravelExtrasPage() {
         </div>
 
         <section className="mt-14" aria-labelledby="recommended-extras-title">
-          <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">Recommended extras</p>
+          <p className="text-sm font-semibold uppercase tracking-wide text-[#0B1D34]">Recommended extras</p>
           <h2 id="recommended-extras-title" className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">
             Recommended for this trip
           </h2>
@@ -236,7 +236,7 @@ export default function TravelExtrasPage() {
         </section>
 
         <section className="mt-16" aria-labelledby="comparison-title">
-          <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">Side by side</p>
+          <p className="text-sm font-semibold uppercase tracking-wide text-[#0B1D34]">Side by side</p>
           <h2 id="comparison-title" className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">
             Compare extras
           </h2>
@@ -258,7 +258,7 @@ export default function TravelExtrasPage() {
                     <TableRow key={row.extra}>
                       <TableCell className="font-semibold text-slate-950">{row.extra}</TableCell>
                       <TableCell className="min-w-44 text-slate-600">{row.bestFor}</TableCell>
-                      <TableCell className="font-semibold text-[#004ac6]">{row.estimatedCost}</TableCell>
+                      <TableCell className="font-semibold text-[#0B1D34]">{row.estimatedCost}</TableCell>
                       <TableCell className="min-w-56 text-slate-600">{row.worthItWhen}</TableCell>
                       <TableCell className="min-w-56 text-slate-600">{row.skipItIf}</TableCell>
                       <TableCell>
@@ -290,7 +290,7 @@ export default function TravelExtrasPage() {
         </section>
 
         <section className="mt-16" aria-labelledby="budget-impact-title">
-          <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">Budget impact</p>
+          <p className="text-sm font-semibold uppercase tracking-wide text-[#0B1D34]">Budget impact</p>
           <h2 id="budget-impact-title" className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">
             Real budget impact
           </h2>
@@ -298,7 +298,7 @@ export default function TravelExtrasPage() {
             <CardContent className="grid gap-8 pt-6 lg:grid-cols-[1fr_1.1fr] lg:items-center">
               <div className="grid gap-5">
                 <Metric label="Base trip budget" value="$2,500 CAD" />
-                <Metric label="Recommended extras" value="$185 CAD" className="text-[#004ac6]" />
+                <Metric label="Recommended extras" value="$185 CAD" className="text-[#0B1D34]" />
                 <div className="border-t border-slate-200 pt-5">
                   <Metric label="Estimated total" value="$2,685 CAD" className="text-3xl text-slate-950 sm:text-4xl" />
                 </div>
@@ -310,7 +310,7 @@ export default function TravelExtrasPage() {
                     <span className="font-semibold text-slate-950">{value}</span>
                   </div>
                 ))}
-                <Button className="mt-2 h-12 rounded-xl bg-[#004ac6] font-bold text-white hover:bg-blue-700">
+                <Button className="mt-2 h-12 rounded-xl bg-[#0B1D34] font-bold text-white hover:bg-[#0B1D34]">
                   Send me this complete trip budget
                 </Button>
               </div>
@@ -321,7 +321,7 @@ export default function TravelExtrasPage() {
         <TravelExtrasTabs />
 
         <div className="mt-16 flex gap-3 rounded-2xl border border-[#c3c6d7]/35 bg-white p-5 text-sm leading-6 text-[#434655] shadow-sm">
-          <Info className="mt-0.5 size-5 shrink-0 text-[#004ac6]" />
+          <Info className="mt-0.5 size-5 shrink-0 text-[#0B1D34]" />
           <p>
             <span className="font-semibold text-[#191c1e]">Trust note:</span> Estimates are based on common travel
             add-ons and may vary by destination, season, trip length, and traveler needs.
@@ -348,7 +348,7 @@ function RecommendedExtraCard({ extra }: { extra: RecommendedExtra }) {
     <Card className="h-full border-slate-200 bg-white shadow-sm transition hover:shadow-lg hover:shadow-slate-200/70">
       <CardContent className="flex h-full flex-col pt-5">
         <div className="flex items-start justify-between gap-4">
-          <span className="flex size-11 items-center justify-center rounded-xl bg-blue-50 text-[#004ac6]">
+          <span className="flex size-11 items-center justify-center rounded-xl bg-[#14B8A6]/10 text-[#0B1D34]">
             <Icon className="size-5" />
           </span>
           <PriorityBadge priority={extra.priority} />
@@ -358,7 +358,7 @@ function RecommendedExtraCard({ extra }: { extra: RecommendedExtra }) {
         <dl className="mt-6 grid grid-cols-2 gap-4 border-t border-slate-200 pt-4 text-sm">
           <div>
             <dt className="font-semibold text-slate-500">Estimated cost</dt>
-            <dd className="mt-1 font-semibold text-[#004ac6]">{extra.estimatedCost}</dd>
+            <dd className="mt-1 font-semibold text-[#0B1D34]">{extra.estimatedCost}</dd>
           </div>
           <div className="text-right">
             <dt className="font-semibold text-slate-500">Worth it</dt>
@@ -378,7 +378,7 @@ function PriorityBadge({ priority }: { priority: Priority }) {
     <Badge
       className={cn(
         "rounded-full px-3 py-1 text-xs font-bold",
-        priority === "High" ? "bg-[#004ac6] text-white" : "",
+        priority === "High" ? "bg-[#0B1D34] text-white" : "",
         priority === "Medium" ? "bg-teal-100 text-teal-800" : "",
         priority === "Optional" ? "bg-slate-100 text-slate-600" : "",
       )}
@@ -413,7 +413,7 @@ function ChecklistCard({
         <ul className="grid gap-3 text-sm leading-6 text-slate-700">
           {items.map((item) => (
             <li key={item} className="flex gap-2">
-              <BadgeCheck className="mt-1 size-4 shrink-0 text-[#004ac6]" />
+              <BadgeCheck className="mt-1 size-4 shrink-0 text-[#0B1D34]" />
               <span>{item}</span>
             </li>
           ))}

@@ -1,6 +1,6 @@
 # Revenue Funnel
 
-TravelBudget.ai's MVP funnel is designed to measure budget-first travel intent before adding databases, live pricing APIs, or deeper affiliate conversion reporting.
+GoByBudget.com's MVP funnel is designed to measure budget-first travel intent before adding databases, live pricing APIs, or deeper affiliate conversion reporting.
 
 ## MVP Funnel
 

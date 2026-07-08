@@ -12,10 +12,10 @@ export function EstimateDisclaimer({
 }: EstimateDisclaimerProps) {
   return (
     <div
-      className={`rounded-2xl border border-blue-100 bg-blue-50/70 p-4 text-sm leading-6 text-slate-600 ${className}`}
+      className={`rounded-2xl border border-[#14B8A6]/20 bg-[#14B8A6]/10 p-4 text-sm leading-6 text-slate-600 ${className}`}
     >
       <div className="flex gap-3">
-        <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-white text-blue-700 shadow-sm">
+        <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-white text-[#0B1D34] shadow-sm">
           <Info className="size-4" />
         </span>
         <div>
@@ -23,7 +23,7 @@ export function EstimateDisclaimer({
           <p className="mt-1">
             Estimates are for planning only. Actual prices can vary with flights, hotels, availability,
             seasonality, exchange rates, booking timing, departure city, and traveler choices.{" "}
-            <Link href="/methodology" className="font-semibold text-blue-700 hover:text-blue-900">
+            <Link href="/methodology" className="font-semibold text-[#0B1D34] hover:text-[#0B1D34]">
               See methodology
             </Link>
             .

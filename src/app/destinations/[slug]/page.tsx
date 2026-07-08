@@ -66,7 +66,7 @@ export async function generateMetadata({ params }: DestinationPageProps): Promis
   if (!destination) {
     return createMetadata({
       title: "Destination Not Found",
-      description: "This TravelBudget.ai destination budget guide could not be found.",
+      description: "This GoByBudget.com destination budget guide could not be found.",
       path: `/destinations/${slug}`,
       noIndex: true,
     });
@@ -135,7 +135,7 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-slate-950/80 via-slate-950/45 to-transparent" />
         <div className="mx-auto flex min-h-[520px] max-w-7xl items-end px-4 py-12 sm:px-6 lg:px-8">
           <div className="max-w-3xl text-white">
-            <Badge className="mb-4 bg-white text-blue-600">{destination.countryCode} budget guide</Badge>
+            <Badge className="mb-4 bg-white text-[#0B1D34]">{destination.countryCode} budget guide</Badge>
             <h1 className="text-5xl font-semibold tracking-tight sm:text-6xl">
               {destinationLabel} travel budget
             </h1>
@@ -227,7 +227,7 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
                 <ul className="grid gap-2 text-sm leading-6 text-slate-600">
                   {destination.sourceNotes.map((note) => (
                     <li key={note} className="flex gap-2">
-                      <span className="mt-2 size-1.5 shrink-0 rounded-full bg-blue-600" />
+                      <span className="mt-2 size-1.5 shrink-0 rounded-full bg-[#0B1D34]" />
                       <span>{note}</span>
                     </li>
                   ))}
@@ -244,13 +244,13 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
               <CardContent className="grid gap-5">
                 <div className="flex flex-wrap gap-2">
                   {destination.bestMonths.map((month) => (
-                    <Badge key={month} variant="secondary" className="bg-blue-50 text-blue-700">
+                    <Badge key={month} variant="secondary" className="bg-[#14B8A6]/10 text-[#0B1D34]">
                       {month}
                     </Badge>
                   ))}
                 </div>
                 <div className="grid gap-3 rounded-2xl bg-slate-50 p-5 sm:grid-cols-[auto_1fr]">
-                  <CalendarDays className="size-5 text-blue-600" />
+                  <CalendarDays className="size-5 text-[#0B1D34]" />
                   <div>
                     <p className="font-semibold text-slate-950">{destination.weather}</p>
                     <p className="mt-2 text-sm leading-6 text-slate-600">
@@ -271,7 +271,7 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
               <CardContent className="grid gap-4">
                 {destination.itineraryPreview.map((item, index) => (
                   <div key={item} className="flex gap-4">
-                    <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-semibold text-white">
+                    <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#0B1D34] text-sm font-semibold text-white">
                       {index + 1}
                     </span>
                     <p className="pt-1 text-sm leading-6 text-slate-600">{item}</p>
@@ -461,7 +461,7 @@ function JapanToursWidget({ destination }: { destination: Destination }) {
           </a>
         </Button>
         <p className="text-xs leading-5 text-slate-500">
-          TravelBudget.ai may earn a commission from qualifying bookings. Activity prices are live partner prices and
+          GoByBudget.com may earn a commission from qualifying bookings. Activity prices are live partner prices and
           are separate from the static {destination.name} budget estimates above.
         </p>
       </CardContent>
@@ -497,7 +497,7 @@ export function CityDestinationPage({ destination }: { destination: CityDestinat
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-slate-950/80 via-slate-950/50 to-slate-950/10" />
         <div className="mx-auto flex min-h-[520px] max-w-7xl items-end px-4 py-12 sm:px-6 lg:px-8">
           <div className="max-w-3xl text-white">
-            <Badge className="mb-4 bg-white text-blue-600">
+            <Badge className="mb-4 bg-white text-[#0B1D34]">
               {destination.continent} budget guide
             </Badge>
             <h1 className="text-5xl font-semibold tracking-tight sm:text-6xl">
@@ -591,7 +591,7 @@ export function CityDestinationPage({ destination }: { destination: CityDestinat
                 <p className="text-sm font-semibold text-slate-950">Best months</p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {destination.bestMonths.map((month) => (
-                    <Badge key={month} className="bg-blue-50 text-blue-700">
+                    <Badge key={month} className="bg-[#14B8A6]/10 text-[#0B1D34]">
                       {month}
                     </Badge>
                   ))}
@@ -609,7 +609,7 @@ export function CityDestinationPage({ destination }: { destination: CityDestinat
               </div>
               <p className="text-sm leading-6 text-slate-600">
                 Estimated costs may vary based on dates and availability. Read more about the assumptions behind
-                TravelBudget.ai estimates in our{" "}
+                GoByBudget.com estimates in our{" "}
                 <TrackedLink
                   href="/methodology"
                   eventName="cta_clicked"
@@ -621,7 +621,7 @@ export function CityDestinationPage({ destination }: { destination: CityDestinat
                     href: "/methodology",
                     ctaLocation: "city_destination_methodology_note",
                   }}
-                  className="font-semibold text-blue-600 hover:underline"
+                  className="font-semibold text-[#0B1D34] hover:underline"
                 >
                   methodology
                 </TrackedLink>
@@ -690,7 +690,7 @@ export function CityDestinationPage({ destination }: { destination: CityDestinat
                   From {destination.departureCity} for {destination.durationDays} days
                 </p>
               </div>
-              <Button asChild className="h-11 rounded-xl bg-blue-600 text-white hover:bg-blue-700">
+              <Button asChild className="h-11 rounded-xl bg-[#0B1D34] text-white hover:bg-[#0B1D34]">
                 <TrackedLink
                   href={`/results?${planParams.toString()}`}
                   eventName="cta_clicked"
@@ -748,8 +748,8 @@ function InternalPlanningLink({
   title: string;
 }) {
   return (
-    <Link href={href} className="rounded-xl bg-slate-50 p-4 transition-colors hover:bg-blue-50">
-      <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">{label}</p>
+    <Link href={href} className="rounded-xl bg-slate-50 p-4 transition-colors hover:bg-[#14B8A6]/10">
+      <p className="text-xs font-semibold uppercase tracking-wide text-[#0B1D34]">{label}</p>
       <p className="mt-1 font-semibold text-slate-950">{title}</p>
     </Link>
   );
@@ -830,7 +830,7 @@ function Metric({
   return (
     <Card className="border-slate-200 bg-white shadow-sm">
       <CardContent className="pt-5">
-        <Icon className="mb-4 size-5 text-blue-600" />
+        <Icon className="mb-4 size-5 text-[#0B1D34]" />
         <p className="text-xs uppercase tracking-wide text-slate-500">{label}</p>
         <p className="mt-1 text-lg font-semibold text-slate-950">{value}</p>
       </CardContent>
@@ -850,7 +850,7 @@ function getBudgetInsight(destination: Destination) {
   if (destination.estimatedCost <= 2300) {
     return {
       label: "Mid-range",
-      badgeClassName: "bg-blue-50 text-blue-700 ring-1 ring-blue-100",
+      badgeClassName: "bg-[#14B8A6]/10 text-[#0B1D34] ring-1 ring-[#14B8A6]/20",
       copy: `${destination.name} fits a balanced budget when you watch flight timing and choose practical stays. It is realistic for travelers who want comfort without overspending.`,
     };
   }
@@ -872,7 +872,7 @@ function getDataConfidenceClassName(confidence: Destination["dataConfidence"]) {
   }
 
   if (confidence === "medium") {
-    return "bg-blue-50 text-blue-700 ring-1 ring-blue-100";
+    return "bg-[#14B8A6]/10 text-[#0B1D34] ring-1 ring-[#14B8A6]/20";
   }
 
   return "bg-amber-50 text-amber-700 ring-1 ring-amber-100";

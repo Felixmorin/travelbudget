@@ -59,7 +59,7 @@ function decodeTargetUrl(value: string | null) {
 
   try {
     const decoded = Buffer.from(value, "base64url").toString("utf8");
-    const targetUrl = new URL(decoded, process.env.NEXT_PUBLIC_SITE_URL ?? "https://travelbudget-omega.vercel.app");
+    const targetUrl = new URL(decoded, process.env.NEXT_PUBLIC_SITE_URL ?? "https://gobybudget.com");
 
     if (targetUrl.protocol !== "https:") {
       return null;

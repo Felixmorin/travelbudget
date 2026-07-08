@@ -25,7 +25,7 @@ export function LanguageSwitcher() {
         aria-label={t.nav.changeLanguage}
         aria-expanded={isOpen}
         onClick={() => setIsOpen((value) => !value)}
-        className="rounded-full text-[#434655] hover:text-[#004ac6]"
+        className="rounded-full text-[#434655] hover:text-[#0B1D34]"
       >
         <Globe2 className="size-4" />
       </Button>
@@ -39,7 +39,7 @@ export function LanguageSwitcher() {
               className="flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-slate-700 hover:bg-slate-50"
             >
               <span>{languageLabels[item]}</span>
-              {item === language ? <Check className="size-4 text-blue-600" /> : null}
+              {item === language ? <Check className="size-4 text-[#0B1D34]" /> : null}
             </button>
           ))}
         </div>

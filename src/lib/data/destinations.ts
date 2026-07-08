@@ -1027,8 +1027,8 @@ function buildBookingHref(seed: DestinationSeed) {
   const aid = process.env.NEXT_PUBLIC_BOOKING_AFFILIATE_AID;
 
   url.searchParams.set("ss", seed.name);
-  url.searchParams.set("label", `travelbudget-${seed.slug}`);
-  url.searchParams.set("utm_source", "travelbudget.ai");
+  url.searchParams.set("label", `gobybudget-${seed.slug}`);
+  url.searchParams.set("utm_source", "gobybudget.com");
   url.searchParams.set("utm_medium", "affiliate");
 
   if (aid) {
@@ -1099,7 +1099,7 @@ function buildProviderSearchHref({
   }
 
   url.searchParams.set(queryParam, searchTerm);
-  url.searchParams.set("utm_source", "travelbudget.ai");
+  url.searchParams.set("utm_source", "gobybudget.com");
   url.searchParams.set("utm_medium", "affiliate");
 
   if (partnerParam && partnerValue) {

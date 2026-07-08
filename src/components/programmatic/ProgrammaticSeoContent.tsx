@@ -163,7 +163,7 @@ function Highlight({
 }) {
   return (
     <div className="space-y-4">
-      <Icon className="size-8 text-blue-700" />
+      <Icon className="size-8 text-[#0B1D34]" />
       <h3 className="text-xl font-semibold text-slate-950">{title}</h3>
       <p className="text-sm leading-6 text-slate-600">{body}</p>
     </div>

@@ -30,12 +30,12 @@ export function BudgetDestinationCard({
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/45 via-transparent to-transparent" />
         <div className="absolute left-4 top-4 flex gap-2">
-          <Badge className="rounded-full bg-blue-600 px-3 py-1 text-xs font-bold uppercase text-white">
+          <Badge className="rounded-full bg-[#0B1D34] px-3 py-1 text-xs font-bold uppercase text-white">
             {primaryStyle}
           </Badge>
         </div>
         <div className="absolute bottom-4 right-4 rounded-lg bg-white/90 px-3 py-1 backdrop-blur">
-          <span className="font-bold text-blue-700">{(destination.score / 10).toFixed(1)}</span>
+          <span className="font-bold text-[#0B1D34]">{(destination.score / 10).toFixed(1)}</span>
           <span className="text-xs text-slate-500">/10</span>
         </div>
       </div>
@@ -70,7 +70,7 @@ export function BudgetDestinationCard({
         <div className="flex items-end justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Total Est.</p>
-            <p className="text-2xl font-bold text-blue-700">{formatMoney(item.totalEstimate, page.currency)}</p>
+            <p className="text-2xl font-bold text-[#0B1D34]">{formatMoney(item.totalEstimate, page.currency)}</p>
           </div>
           <TrackedLink
             href={`/destinations/${destination.slug}`}
@@ -91,7 +91,7 @@ export function BudgetDestinationCard({
               href: `/destinations/${destination.slug}`,
             }}
             aria-label={`View budget breakdown for ${destinationLabel}`}
-            className="flex size-12 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-700 transition-colors hover:bg-blue-600 hover:text-white"
+            className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#14B8A6]/10 text-[#0B1D34] transition-colors hover:bg-[#0B1D34] hover:text-white"
           >
             <ArrowRight className="size-5" />
           </TrackedLink>
@@ -116,7 +116,7 @@ function CompactMetric({
 }) {
   return (
     <div className="rounded-xl bg-slate-50 p-2 text-center">
-      <Icon className="mx-auto mb-1 size-4 text-blue-700" />
+      <Icon className="mx-auto mb-1 size-4 text-[#0B1D34]" />
       <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{label}</p>
       <p className="mt-1 text-sm font-bold text-slate-950">{value}</p>
     </div>

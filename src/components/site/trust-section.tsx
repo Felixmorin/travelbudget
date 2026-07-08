@@ -21,7 +21,7 @@ export function TrustSection() {
           const Icon = item.icon;
           return (
             <div key={item.labelKey} className="flex items-center gap-3">
-              <span className="flex size-10 items-center justify-center rounded-full bg-white text-blue-600 shadow-sm">
+              <span className="flex size-10 items-center justify-center rounded-full bg-white text-[#0B1D34] shadow-sm">
                 <Icon className="size-5" />
               </span>
               <span className="text-sm font-semibold text-slate-800">{t.trust[item.labelKey]}</span>

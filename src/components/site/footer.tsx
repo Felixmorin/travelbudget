@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 
 import { useTranslation } from "@/components/i18n/language-provider";
@@ -37,8 +38,18 @@ export function Footer() {
     <footer className="border-t border-[#c3c6d7]/35 bg-white">
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-[1.5fr_1fr_1fr_1fr] lg:px-8">
         <div>
-          <Link href="/" className="font-semibold text-blue-600">
-            TravelBudget.ai
+          <Link
+            href="/"
+            aria-label="Go to GoByBudget homepage"
+            className="inline-flex items-center"
+          >
+            <Image
+              src="/brand/gobybudget-logo-horizontal.png"
+              alt="GoByBudget.com"
+              width={187}
+              height={48}
+              className="h-10 w-auto object-contain"
+            />
           </Link>
           <p className="mt-3 max-w-sm text-sm leading-6 text-[#434655]">{t.footer.description}</p>
         </div>
@@ -47,7 +58,7 @@ export function Footer() {
             <p className="text-sm font-semibold text-[#191c1e]">{t.footer[section.titleKey]}</p>
             <div className="mt-3 grid gap-2 text-sm text-[#434655]">
               {section.links.map((link) => (
-                <Link key={link.labelKey} href={link.href} className="hover:text-blue-600">
+                <Link key={link.labelKey} href={link.href} className="hover:text-[#14B8A6]">
                   {t.footer[link.labelKey]}
                 </Link>
               ))}

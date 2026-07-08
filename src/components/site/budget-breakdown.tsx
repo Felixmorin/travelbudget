@@ -8,11 +8,11 @@ const rows: Array<
     key: keyof ReturnType<typeof getDestinationCostBreakdown>;
   }
 > = [
-  { key: "flights", label: "Flights", icon: Plane, colorClassName: "bg-blue-600" },
+  { key: "flights", label: "Flights", icon: Plane, colorClassName: "bg-[#0B1D34]" },
   { key: "accommodation", label: "Accommodation", icon: Hotel, colorClassName: "bg-teal-600" },
   { key: "food", label: "Food", icon: Utensils, colorClassName: "bg-orange-500" },
   { key: "localTransport", label: "Local transport", icon: Bus, colorClassName: "bg-slate-500" },
-  { key: "activities", label: "Activities", icon: Ticket, colorClassName: "bg-violet-600" },
+  { key: "activities", label: "Activities", icon: Ticket, colorClassName: "bg-[#FF6B6B]" },
   { key: "misc", label: "Misc", icon: Ticket, colorClassName: "bg-amber-500" },
 ] as const;
 

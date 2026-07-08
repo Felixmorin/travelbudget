@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: DurationCostPageProps): Promi
   if (!page) {
     return createMetadata({
       title: "Travel Cost Guide Not Found",
-      description: "This TravelBudget.ai duration cost guide could not be found.",
+      description: "This GoByBudget.com duration cost guide could not be found.",
       path: `/travel-cost/${destination}/${duration}`,
       noIndex: true,
     });
@@ -86,7 +86,7 @@ export default async function DurationCostPage({ params }: DurationCostPageProps
       />
       <section className="border-b border-slate-200 bg-white">
         <div className="mx-auto max-w-5xl px-4 py-14 sm:px-6 lg:px-8">
-          <Badge className="rounded-full bg-blue-100 px-4 py-1 text-blue-800">Trip length estimate</Badge>
+          <Badge className="rounded-full bg-[#14B8A6]/10 px-4 py-1 text-[#0B1D34]">Trip length estimate</Badge>
           <h1 className="mt-5 text-4xl font-semibold tracking-tight sm:text-6xl">
             How much does it cost to travel to {destinationLabel} for {page.durationDays} days?
           </h1>
@@ -121,7 +121,7 @@ export default async function DurationCostPage({ params }: DurationCostPageProps
         <aside className="h-fit rounded-[24px] border border-slate-200 bg-white p-6">
           <h2 className="text-xl font-semibold">Related planning pages</h2>
           <div className="mt-5 grid gap-3">
-            <Button asChild className="rounded-full bg-blue-600 text-white hover:bg-blue-700">
+            <Button asChild className="rounded-full bg-[#0B1D34] text-white hover:bg-[#0B1D34]">
               <Link href={getTravelBudgetPath(page.destination.slug)}>Full travel budget</Link>
             </Button>
             <Button asChild variant="outline" className="rounded-full bg-white">

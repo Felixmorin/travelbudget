@@ -2,7 +2,7 @@ import { createMetadata } from "@/lib/seo/metadata";
 
 export const metadata = createMetadata({
   title: "Affiliate Disclosure",
-  description: "How TravelBudget.ai uses affiliate links and booking partner referrals.",
+  description: "How GoByBudget.com uses affiliate links and booking partner referrals.",
   path: "/affiliate-disclosure",
 });
 
@@ -10,7 +10,7 @@ export default function AffiliateDisclosurePage() {
   return (
     <main className="bg-[#f7f9fb] px-4 py-16 text-[#191c1e] sm:px-6 lg:px-8">
       <article className="mx-auto max-w-3xl rounded-lg border border-[#c3c6d7]/45 bg-white p-8 shadow-sm">
-        <p className="text-sm font-semibold uppercase tracking-wide text-blue-700">Legal</p>
+        <p className="text-sm font-semibold uppercase tracking-wide text-[#0B1D34]">Legal</p>
         <h1 className="mt-3 text-4xl font-semibold tracking-normal text-slate-950">Affiliate Disclosure</h1>
         <p className="mt-3 text-sm text-[#434655]">Last updated: July 6, 2026</p>
 
@@ -18,7 +18,7 @@ export default function AffiliateDisclosurePage() {
           <section>
             <h2 className="text-xl font-semibold text-slate-950">Affiliate links</h2>
             <p className="mt-2">
-              TravelBudget.ai may earn a commission when you click an affiliate link and book or buy through a partner
+              GoByBudget.com may earn a commission when you click an affiliate link and book or buy through a partner
               website. This may include links for hotels, flights, activities, eSIMs, insurance, or other travel
               products.
             </p>

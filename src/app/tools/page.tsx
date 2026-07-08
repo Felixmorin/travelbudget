@@ -3,7 +3,7 @@ import { createToolMetadata } from "@/lib/seo/metadata";
 
 export const metadata = createToolMetadata({
   title: "Free Travel Budget Tools",
-  description: "Use TravelBudget.ai tools to compare trip costs, estimate budgets, and choose realistic destinations before booking.",
+  description: "Use GoByBudget.com tools to compare trip costs, estimate budgets, and choose realistic destinations before booking.",
   path: "/tools",
 });
 

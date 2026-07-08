@@ -12,8 +12,8 @@ type LanguageContextValue = {
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
-const storageKey = "travelbudget-language";
-const languageChangeEvent = "travelbudget-language-change";
+const storageKey = "gobybudget-language";
+const languageChangeEvent = "gobybudget-language-change";
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const language = useSyncExternalStore(subscribeToLanguage, getLanguageSnapshot, getServerLanguageSnapshot);

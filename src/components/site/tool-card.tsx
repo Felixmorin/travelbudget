@@ -37,7 +37,7 @@ export function ToolCard({ tool }: { tool: Tool }) {
             className={
               isComingSoon
                 ? "flex size-11 items-center justify-center rounded-xl bg-slate-200 text-slate-500"
-                : "flex size-11 items-center justify-center rounded-xl bg-blue-50 text-blue-600"
+                : "flex size-11 items-center justify-center rounded-xl bg-[#14B8A6]/10 text-[#0B1D34]"
             }
           >
             <Icon className="size-5" />

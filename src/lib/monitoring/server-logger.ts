@@ -11,11 +11,11 @@ export async function logServerEvent(level: LogLevel, message: string, context: 
   };
 
   if (level === "error") {
-    console.error("[travelbudget]", payload);
+    console.error("[gobybudget]", payload);
   } else if (level === "warn") {
-    console.warn("[travelbudget]", payload);
+    console.warn("[gobybudget]", payload);
   } else if (process.env.API_LOG_LEVEL === "info" || process.env.NODE_ENV !== "production") {
-    console.info("[travelbudget]", payload);
+    console.info("[gobybudget]", payload);
   }
 
   await sendMonitoringWebhook(payload);
@@ -60,7 +60,7 @@ async function sendMonitoringWebhook(payload: {
   try {
     url = new URL(webhookUrl);
   } catch {
-    console.error("[travelbudget]", {
+    console.error("[gobybudget]", {
       level: "error",
       message: "MONITORING_WEBHOOK_URL is invalid.",
       timestamp: new Date().toISOString(),
@@ -84,7 +84,7 @@ async function sendMonitoringWebhook(payload: {
       signal: controller.signal,
     });
   } catch {
-    console.warn("[travelbudget]", {
+    console.warn("[gobybudget]", {
       level: "warn",
       message: "Monitoring webhook delivery failed.",
       timestamp: new Date().toISOString(),

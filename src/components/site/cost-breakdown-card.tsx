@@ -191,7 +191,7 @@ export function CostBreakdownList({
                 role="progressbar"
               >
                 <div
-                  className={cn("h-2 rounded-full bg-blue-600", item.colorClassName)}
+                  className={cn("h-2 rounded-full bg-[#0B1D34]", item.colorClassName)}
                   style={{ backgroundColor: item.color, width: `${width}%` }}
                 />
               </div>

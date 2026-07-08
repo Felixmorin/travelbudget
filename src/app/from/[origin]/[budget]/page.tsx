@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: BudgetPageProps): Promise<Met
   if (!page) {
     return createMetadata({
       title: "Budget Trip Page Not Found",
-      description: "This TravelBudget.ai programmatic budget page could not be found.",
+      description: "This GoByBudget.com programmatic budget page could not be found.",
       path: `/from/${origin}/${budget}`,
       noIndex: true,
     });
@@ -146,7 +146,7 @@ function createBudgetFaqs({
   return [
     {
       question: `What are the best destinations from ${originCity} under ${budgetLabel} ${currency}?`,
-      answer: `Based on the current TravelBudget.ai estimates, the matching destinations are ${destinationList}.`,
+      answer: `Based on the current GoByBudget.com estimates, the matching destinations are ${destinationList}.`,
     },
     {
       question: "Does this budget include flights?",

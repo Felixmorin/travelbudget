@@ -49,7 +49,7 @@ describe("affiliate domain whitelist", () => {
 });
 
 function decodeTrackedHref(href: string) {
-  const url = new URL(href, "https://travelbudget.ai");
+  const url = new URL(href, "https://gobybudget.com");
   const encodedUrl = url.searchParams.get("url");
 
   return encodedUrl ? Buffer.from(encodedUrl, "base64url").toString("utf8") : null;

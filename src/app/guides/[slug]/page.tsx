@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: GuidePageProps): Promise<Meta
   if (!guide) {
     return createMetadata({
       title: "Guide Not Found",
-      description: "This TravelBudget.ai guide could not be found.",
+      description: "This GoByBudget.com guide could not be found.",
       path: `/guides/${slug}`,
       noIndex: true,
     });
@@ -137,7 +137,7 @@ export default async function LongTailGuidePage({ params }: GuidePageProps) {
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-slate-950/85 via-slate-950/55 to-slate-950/20" />
         <div className="mx-auto flex min-h-[460px] max-w-5xl items-end px-4 py-12 sm:px-6 lg:px-8">
           <div className="max-w-3xl text-white">
-            <Badge className="mb-4 bg-white text-blue-700">{guide.category}</Badge>
+            <Badge className="mb-4 bg-white text-[#0B1D34]">{guide.category}</Badge>
             <h1 className="text-4xl font-semibold leading-tight sm:text-5xl">{guide.title}</h1>
             <p className="mt-5 text-lg leading-8 text-white/85">{guide.summary}</p>
           </div>
@@ -147,7 +147,7 @@ export default async function LongTailGuidePage({ params }: GuidePageProps) {
       <section className="mx-auto grid max-w-5xl gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[1fr_280px] lg:px-8">
         <article className="grid gap-6">
           <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-            <p className="text-sm font-semibold uppercase tracking-wide text-blue-700">Search intent</p>
+            <p className="text-sm font-semibold uppercase tracking-wide text-[#0B1D34]">Search intent</p>
             <p className="mt-2 text-lg leading-8 text-slate-700">{guide.intent}</p>
           </div>
 
@@ -165,7 +165,7 @@ export default async function LongTailGuidePage({ params }: GuidePageProps) {
             <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-wide text-blue-700">Estimated cost snapshot</p>
+                  <p className="text-sm font-semibold uppercase tracking-wide text-[#0B1D34]">Estimated cost snapshot</p>
                   <h2 className="mt-2 text-2xl font-semibold">
                     {costSnapshot.totalLabel} for {getCityCountryLabel(costSnapshot.destination)}
                   </h2>
@@ -201,14 +201,14 @@ export default async function LongTailGuidePage({ params }: GuidePageProps) {
                   <Link
                     key={match.destination.slug}
                     href={`/destinations/${match.destination.slug}`}
-                    className="rounded-lg border border-slate-200 p-4 transition hover:border-blue-300 hover:bg-blue-50"
+                    className="rounded-lg border border-slate-200 p-4 transition hover:border-[#14B8A6] hover:bg-[#14B8A6]/10"
                   >
                     <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                       <div>
                         <h3 className="font-semibold">{getCityCountryLabel(match.destination)}</h3>
                         <p className="mt-1 text-sm text-slate-600">{match.destination.shortDescription}</p>
                       </div>
-                      <span className="shrink-0 text-sm font-semibold text-blue-700">{match.totalLabel}</span>
+                      <span className="shrink-0 text-sm font-semibold text-[#0B1D34]">{match.totalLabel}</span>
                     </div>
                   </Link>
                 ))}
@@ -221,7 +221,7 @@ export default async function LongTailGuidePage({ params }: GuidePageProps) {
             <ul className="mt-4 grid gap-3">
               {guide.costNotes.map((note) => (
                 <li key={note} className="flex gap-3 leading-7 text-slate-600">
-                  <ReceiptText className="mt-1 size-5 shrink-0 text-blue-700" />
+                  <ReceiptText className="mt-1 size-5 shrink-0 text-[#0B1D34]" />
                   <span>{note}</span>
                 </li>
               ))}
@@ -240,7 +240,7 @@ export default async function LongTailGuidePage({ params }: GuidePageProps) {
             <ol className="mt-4 grid gap-3">
               {guide.itinerary.map((item, index) => (
                 <li key={item} className="flex gap-3 leading-7 text-slate-600">
-                  <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-700">
+                  <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#14B8A6]/10 text-sm font-semibold text-[#0B1D34]">
                     {index + 1}
                   </span>
                   <span>{item}</span>
@@ -284,7 +284,7 @@ export default async function LongTailGuidePage({ params }: GuidePageProps) {
               Turn this guide into a concrete estimate by comparing dates, origin airports, travel style, and trip
               length in the TravelBudget calculator.
             </p>
-            <Button asChild className="mt-5 rounded-lg bg-blue-600 text-white hover:bg-blue-700">
+            <Button asChild className="mt-5 rounded-lg bg-[#0B1D34] text-white hover:bg-[#0B1D34]">
               <TrackedLink
                 href="/tools/travel-budget-calculator"
                 eventName="cta_clicked"
@@ -306,9 +306,9 @@ export default async function LongTailGuidePage({ params }: GuidePageProps) {
           {destination ? (
             <Link
               href={`/destinations/${destination.slug}`}
-              className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm transition hover:border-blue-300"
+              className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm transition hover:border-[#14B8A6]"
             >
-              <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">Destination profile</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-[#0B1D34]">Destination profile</p>
               <p className="mt-2 text-lg font-semibold">{destination.name}</p>
               <p className="mt-2 text-sm leading-6 text-slate-600">{destination.shortDescription}</p>
             </Link>
@@ -317,8 +317,8 @@ export default async function LongTailGuidePage({ params }: GuidePageProps) {
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Planning links</p>
             <div className="mt-4 grid gap-3">
               {guide.internalLinks.map((item) => (
-                <Link key={item.href} href={item.href} className="rounded-lg bg-slate-50 p-3 transition hover:bg-blue-50">
-                  <span className="text-sm font-semibold text-blue-700">{item.label}</span>
+                <Link key={item.href} href={item.href} className="rounded-lg bg-slate-50 p-3 transition hover:bg-[#14B8A6]/10">
+                  <span className="text-sm font-semibold text-[#0B1D34]">{item.label}</span>
                   <span className="mt-1 block text-xs leading-5 text-slate-600">{item.description}</span>
                 </Link>
               ))}
@@ -328,7 +328,7 @@ export default async function LongTailGuidePage({ params }: GuidePageProps) {
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Related guides</p>
             <div className="mt-4 grid gap-3">
               {relatedGuides.map((relatedGuide) => (
-                <Link key={relatedGuide.slug} href={`/guides/${relatedGuide.slug}`} className="text-sm font-semibold text-blue-700 hover:underline">
+                <Link key={relatedGuide.slug} href={`/guides/${relatedGuide.slug}`} className="text-sm font-semibold text-[#0B1D34] hover:underline">
                   {relatedGuide.title}
                 </Link>
               ))}
@@ -351,7 +351,7 @@ function GuideMetric({
 }) {
   return (
     <div className="rounded-lg bg-slate-50 p-4">
-      <Icon className="mb-2 size-5 text-blue-700" />
+      <Icon className="mb-2 size-5 text-[#0B1D34]" />
       <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
       <p className="mt-1 font-semibold">{value}</p>
     </div>

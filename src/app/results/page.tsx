@@ -279,7 +279,7 @@ function SearchSummaryBar({
             href: "/",
             ctaLocation: "results_summary_bar",
           }}
-          className="inline-flex items-center gap-2 text-sm font-bold text-[#004ac6] hover:underline"
+          className="inline-flex items-center gap-2 text-sm font-bold text-[#0B1D34] hover:underline"
         >
           <Edit3 className="size-4" />
           Edit search
@@ -310,7 +310,7 @@ function HeroSection({
             We found realistic trip options based on your budget, trip length, departure city, and travel style.
           </p>
           <div className="mt-4 flex items-start gap-2 text-sm font-medium text-[#737686]">
-            <ShieldCheck className="mt-0.5 size-5 shrink-0 text-[#004ac6]" />
+            <ShieldCheck className="mt-0.5 size-5 shrink-0 text-[#0B1D34]" />
             <span>
               Estimates include flights, accommodation, food, local transport, activities, and a safety buffer.
             </span>
@@ -350,7 +350,7 @@ function HeroSection({
               name="sort"
               defaultValue={parsedParams.sort}
               aria-label={`Sort results for ${summaryText}`}
-              className="h-11 appearance-none rounded-xl border border-[#c3c6d7] bg-[#eceef0] px-4 text-sm font-semibold text-[#191c1e] outline-none focus:border-[#004ac6] focus:ring-3 focus:ring-[#004ac6]/15"
+              className="h-11 appearance-none rounded-xl border border-[#c3c6d7] bg-[#eceef0] px-4 text-sm font-semibold text-[#191c1e] outline-none focus:border-[#0B1D34] focus:ring-3 focus:ring-[#0B1D34]/15"
             >
               <option value="relevance">Best match</option>
               <option value="price-asc">Cheapest</option>
@@ -361,7 +361,7 @@ function HeroSection({
               type="submit"
               size="icon"
               aria-label="Apply sort"
-              className="h-11 w-11 rounded-xl bg-[#004ac6] text-white hover:bg-blue-700"
+              className="h-11 w-11 rounded-xl bg-[#0B1D34] text-white hover:bg-[#0B1D34]"
             >
               <SlidersHorizontal className="size-4" />
             </Button>
@@ -445,7 +445,7 @@ function ResultsControls({
           />
         </Field>
         <div className="flex items-end">
-          <Button className="h-11 w-full rounded-full bg-[#004ac6] text-white hover:bg-blue-700" type="submit">
+          <Button className="h-11 w-full rounded-full bg-[#0B1D34] text-white hover:bg-[#0B1D34]" type="submit">
             Apply
           </Button>
         </div>
@@ -485,7 +485,7 @@ function ResultsControls({
               className={`inline-flex min-w-max items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition ${
                 isActive
                   ? "border-[#2563eb] bg-[#2563eb] text-white"
-                  : "border-[#c3c6d7]/60 bg-white text-[#434655] hover:border-[#004ac6] hover:text-[#004ac6]"
+                  : "border-[#c3c6d7]/60 bg-white text-[#434655] hover:border-[#0B1D34] hover:text-[#0B1D34]"
               }`}
             >
               <Icon className="size-4" />
@@ -560,7 +560,7 @@ function DestinationCard({
             <p className="mt-1 line-clamp-2 text-sm leading-6 text-[#434655]">{destination.summary}</p>
           </div>
           <div className="shrink-0 text-right">
-            <div className={`text-xl font-semibold ${isOverBudget ? "text-red-600" : "text-[#004ac6]"}`}>
+            <div className={`text-xl font-semibold ${isOverBudget ? "text-red-600" : "text-[#0B1D34]"}`}>
               {destination.total}
             </div>
             <div className={`text-xs font-bold ${isOverBudget ? "text-red-600" : "text-[#006b5f]"}`}>
@@ -578,7 +578,7 @@ function DestinationCard({
           </div>
           <div className={`h-2 overflow-hidden rounded-full ${isOverBudget ? "bg-red-100" : "bg-[#eceef0]"}`}>
             <div
-              className={`h-full rounded-full ${isOverBudget ? "bg-red-600" : "bg-[#004ac6]"}`}
+              className={`h-full rounded-full ${isOverBudget ? "bg-red-600" : "bg-[#0B1D34]"}`}
               style={{ width: `${Math.min(destination.budgetFitPercent, 100)}%` }}
             />
           </div>
@@ -711,7 +711,7 @@ function TrustModule() {
               guideTitle: "Methodology",
               href: "/methodology",
             }}
-            className="mt-6 inline-flex items-center gap-2 font-bold text-[#004ac6] hover:underline"
+            className="mt-6 inline-flex items-center gap-2 font-bold text-[#0B1D34] hover:underline"
           >
             See our methodology
             <ArrowRight className="size-4" />
@@ -724,7 +724,7 @@ function TrustModule() {
             return (
               <div key={item.label} className="flex flex-col items-center gap-3">
                 <div className="flex size-12 items-center justify-center rounded-full bg-white shadow-sm">
-                  <Icon className="size-5 text-[#004ac6]" />
+                  <Icon className="size-5 text-[#0B1D34]" />
                 </div>
                 <span className="text-sm font-semibold text-[#191c1e]">{item.label}</span>
               </div>
@@ -761,7 +761,7 @@ function SeoLinks({ budget, origin }: { budget: string; origin: string }) {
               guideTitle: link,
               href: "/guides",
             }}
-            className="text-base text-[#434655] transition hover:text-[#004ac6]"
+            className="text-base text-[#434655] transition hover:text-[#0B1D34]"
           >
             {link}
           </TrackedLink>
@@ -778,7 +778,7 @@ function FinalCta() {
       <p className="mx-auto mt-4 max-w-xl text-lg leading-8 text-[#434655]">
         Adjust your preferences or increase your budget to see more exotic long-haul destinations.
       </p>
-      <Button asChild className="mt-8 h-14 rounded-full bg-[#004ac6] px-10 text-lg font-bold text-white hover:bg-blue-700">
+      <Button asChild className="mt-8 h-14 rounded-full bg-[#0B1D34] px-10 text-lg font-bold text-white hover:bg-[#0B1D34]">
         <TrackedLink
           href="/"
           eventName="cta_clicked"
@@ -803,7 +803,7 @@ function ComparisonTray({ destinations }: { destinations: ResultDestination[] })
 
   return (
     <div className="fixed bottom-6 left-1/2 z-40 hidden w-[90%] max-w-4xl -translate-x-1/2 md:block">
-      <div className="flex items-center justify-between gap-6 rounded-full border border-[#004ac6]/20 bg-white/80 px-8 py-4 shadow-2xl backdrop-blur-xl">
+      <div className="flex items-center justify-between gap-6 rounded-full border border-[#0B1D34]/20 bg-white/80 px-8 py-4 shadow-2xl backdrop-blur-xl">
         <div className="flex min-w-0 items-center gap-4">
           <div className="flex -space-x-3">
             {destinations.map((destination) => (
@@ -821,10 +821,10 @@ function ComparisonTray({ destinations }: { destinations: ResultDestination[] })
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-4">
-          <button type="button" className="text-sm font-bold text-[#434655] transition hover:text-[#004ac6]">
+          <button type="button" className="text-sm font-bold text-[#434655] transition hover:text-[#0B1D34]">
             Clear
           </button>
-          <Button asChild className="rounded-full bg-[#004ac6] px-6 font-bold text-white hover:bg-blue-700">
+          <Button asChild className="rounded-full bg-[#0B1D34] px-6 font-bold text-white hover:bg-[#0B1D34]">
             <TrackedLink
               href="/compare"
               eventName="cta_clicked"
@@ -852,7 +852,7 @@ function EmptyResultsState({ parsedParams }: { parsedParams: ParsedSearchParams 
         Try increasing your budget, reducing the trip length, changing your travel style, or picking a different
         departure city.
       </p>
-      <Button asChild className="mt-5 rounded-full bg-[#004ac6] px-5 text-white hover:bg-blue-700">
+      <Button asChild className="mt-5 rounded-full bg-[#0B1D34] px-5 text-white hover:bg-[#0B1D34]">
         <TrackedLink
           href={createResultsHref(parsedParams, {
             budget: Math.max(parsedParams.budget + 500, 1000),

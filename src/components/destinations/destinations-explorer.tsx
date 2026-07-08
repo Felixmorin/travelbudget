@@ -132,12 +132,12 @@ export function DestinationsExplorer({ searchParams }: { searchParams: Destinati
         className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[300px_1fr] lg:px-8 lg:py-14"
       >
         <aside className="hidden lg:block">
-          <div className="sticky top-24 rounded-2xl border border-slate-200 bg-white p-6 shadow-lg shadow-blue-950/5">
+          <div className="sticky top-24 rounded-2xl border border-slate-200 bg-white p-6 shadow-lg shadow-[#0B1D34]/5">
             <FilterHeader />
             <DestinationFilters filters={filters} onChange={updateFilter} />
             <Button
               type="button"
-              className="mt-6 h-11 w-full rounded-xl bg-[#004ac6] text-white hover:bg-blue-700"
+              className="mt-6 h-11 w-full rounded-xl bg-[#0B1D34] text-white hover:bg-[#0B1D34]"
               onClick={resetFilters}
             >
               Reset filters
@@ -166,12 +166,12 @@ export function DestinationsExplorer({ searchParams }: { searchParams: Destinati
                 Filters
               </Button>
               <label className="flex items-center gap-2 text-sm font-medium text-slate-600">
-                <ChevronsUpDown className="size-4 text-[#004ac6]" />
+                <ChevronsUpDown className="size-4 text-[#0B1D34]" />
                 <span className="sr-only sm:not-sr-only">Sort</span>
                 <select
                   value={sort}
                   onChange={(event) => setSort(event.target.value as SortOption)}
-                  className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-[#004ac6] focus:ring-3 focus:ring-[#004ac6]/20"
+                  className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-[#0B1D34] focus:ring-3 focus:ring-[#0B1D34]/20"
                 >
                   {Object.entries(sortLabels).map(([value, label]) => (
                     <option key={value} value={value}>
@@ -230,7 +230,7 @@ export function DestinationsExplorer({ searchParams }: { searchParams: Destinati
               </Button>
               <Button
                 type="button"
-                className="h-11 rounded-xl bg-[#004ac6] text-white hover:bg-blue-700"
+                className="h-11 rounded-xl bg-[#0B1D34] text-white hover:bg-[#0B1D34]"
                 onClick={() => setMobileFiltersOpen(false)}
               >
                 Show results
@@ -252,7 +252,7 @@ function DestinationsHero({
 }) {
   return (
     <section className="relative isolate overflow-hidden border-b border-slate-200 bg-white">
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(#004ac6_0.7px,transparent_0.7px)] bg-[length:22px_22px] opacity-[0.06]" />
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(#0B1D34_0.7px,transparent_0.7px)] bg-[length:22px_22px] opacity-[0.06]" />
       <div className="mx-auto max-w-7xl px-4 py-14 text-center sm:px-6 lg:px-8 lg:py-20">
         <Badge className="mb-5 h-7 rounded-full bg-[#6cf8bb]/35 px-3 text-[#005236]">
           Budget-first destination discovery
@@ -264,7 +264,7 @@ function DestinationsHero({
           Explore cities around the world and estimate how much your trip could cost before you book.
         </p>
 
-        <div className="mx-auto mt-10 grid max-w-5xl gap-2 rounded-2xl border border-slate-200 bg-white p-2 text-left shadow-2xl shadow-blue-950/10 md:grid-cols-[1.1fr_1fr_1fr_1fr_auto]">
+        <div className="mx-auto mt-10 grid max-w-5xl gap-2 rounded-2xl border border-slate-200 bg-white p-2 text-left shadow-2xl shadow-[#0B1D34]/10 md:grid-cols-[1.1fr_1fr_1fr_1fr_auto]">
           <HeroField icon={PlaneTakeoff} label="Departure city">
             <select
               value={filters.departureCity}
@@ -324,7 +324,7 @@ function DestinationsHero({
           </HeroField>
           <Button
             asChild
-            className="h-14 rounded-xl bg-[#004ac6] px-5 text-white shadow-lg shadow-blue-700/20 hover:bg-blue-700"
+            className="h-14 rounded-xl bg-[#0B1D34] px-5 text-white shadow-lg shadow-[#0B1D34]/20 hover:bg-[#0B1D34]"
           >
             <Link href="#destination-results">
               Find destinations
@@ -347,7 +347,7 @@ function HeroField({
   children: React.ReactNode;
 }) {
   return (
-    <label className="flex min-h-14 items-center gap-3 rounded-xl px-3 py-2 transition focus-within:bg-slate-50 focus-within:ring-2 focus-within:ring-[#004ac6]/20 md:border-r md:border-slate-200 last:md:border-r-0">
+    <label className="flex min-h-14 items-center gap-3 rounded-xl px-3 py-2 transition focus-within:bg-slate-50 focus-within:ring-2 focus-within:ring-[#0B1D34]/20 md:border-r md:border-slate-200 last:md:border-r-0">
       <Icon className="size-5 shrink-0 text-[#64748b]" />
       <span className="grid min-w-0 flex-1 gap-0.5">
         <span className="text-[11px] font-semibold text-[#64748b]">{label}</span>
@@ -360,7 +360,7 @@ function HeroField({
 function FilterHeader() {
   return (
     <div className="flex items-center gap-3">
-      <span className="flex size-10 items-center justify-center rounded-xl bg-[#004ac6]/10 text-[#004ac6]">
+      <span className="flex size-10 items-center justify-center rounded-xl bg-[#0B1D34]/10 text-[#0B1D34]">
         <Filter className="size-5" />
       </span>
       <div>
@@ -395,7 +395,7 @@ function DestinationFilters({
           <label htmlFor="max-budget" className="text-xs font-semibold text-[#434655]">
             Total budget
           </label>
-          <span className="font-mono text-sm font-semibold text-[#004ac6]">
+          <span className="font-mono text-sm font-semibold text-[#0B1D34]">
             Up to {formatDestinationMoney(filters.maxBudget, "CAD")}
           </span>
         </div>
@@ -407,7 +407,7 @@ function DestinationFilters({
           step={250}
           value={filters.maxBudget}
           onChange={(event) => onChange("maxBudget", Number(event.target.value))}
-          className="w-full accent-[#004ac6]"
+          className="w-full accent-[#0B1D34]"
         />
       </div>
 
@@ -490,7 +490,7 @@ function FilterSelect({
         id={id}
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="h-11 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-medium text-slate-900 outline-none focus:border-[#004ac6] focus:ring-3 focus:ring-[#004ac6]/20"
+        className="h-11 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-medium text-slate-900 outline-none focus:border-[#0B1D34] focus:ring-3 focus:ring-[#0B1D34]/20"
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>
@@ -515,10 +515,10 @@ function SegmentButton({
     <button
       type="button"
       className={cn(
-        "h-10 rounded-xl border px-3 text-sm font-semibold transition focus:outline-none focus:ring-3 focus:ring-[#004ac6]/20",
+        "h-10 rounded-xl border px-3 text-sm font-semibold transition focus:outline-none focus:ring-3 focus:ring-[#0B1D34]/20",
         active
-          ? "border-[#004ac6] bg-[#004ac6] text-white"
-          : "border-slate-200 bg-slate-50 text-[#434655] hover:border-[#004ac6]/40 hover:text-[#004ac6]"
+          ? "border-[#0B1D34] bg-[#0B1D34] text-white"
+          : "border-slate-200 bg-slate-50 text-[#434655] hover:border-[#0B1D34]/40 hover:text-[#0B1D34]"
       )}
       onClick={onClick}
     >
@@ -540,10 +540,10 @@ function ChipButton({
     <button
       type="button"
       className={cn(
-        "rounded-full border px-3 py-1.5 text-xs font-semibold transition focus:outline-none focus:ring-3 focus:ring-[#004ac6]/20",
+        "rounded-full border px-3 py-1.5 text-xs font-semibold transition focus:outline-none focus:ring-3 focus:ring-[#0B1D34]/20",
         active
-          ? "border-[#004ac6] bg-[#004ac6] text-white"
-          : "border-slate-200 bg-slate-50 text-[#434655] hover:border-[#004ac6]/40 hover:text-[#004ac6]"
+          ? "border-[#0B1D34] bg-[#0B1D34] text-white"
+          : "border-slate-200 bg-slate-50 text-[#434655] hover:border-[#0B1D34]/40 hover:text-[#0B1D34]"
       )}
       onClick={onClick}
     >
@@ -571,14 +571,14 @@ function ActiveFilterChips({
         <button
           key={filter.key}
           type="button"
-          className="inline-flex items-center gap-1 rounded-full bg-[#004ac6]/10 px-3 py-1.5 text-xs font-semibold text-[#004ac6] focus:outline-none focus:ring-3 focus:ring-[#004ac6]/20"
+          className="inline-flex items-center gap-1 rounded-full bg-[#0B1D34]/10 px-3 py-1.5 text-xs font-semibold text-[#0B1D34] focus:outline-none focus:ring-3 focus:ring-[#0B1D34]/20"
           onClick={() => onRemove(filter.key)}
         >
           {filter.label}
           <X className="size-3" />
         </button>
       ))}
-      <button type="button" className="text-xs font-semibold text-[#004ac6] hover:underline" onClick={onClear}>
+      <button type="button" className="text-xs font-semibold text-[#0B1D34] hover:underline" onClick={onClear}>
         Clear all
       </button>
     </div>
@@ -594,7 +594,7 @@ function DestinationCard({ destination }: { destination: CityDestination }) {
   });
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg shadow-blue-950/5 transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-950/10">
+    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg shadow-[#0B1D34]/5 transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#0B1D34]/10">
       <div className="relative h-56 overflow-hidden">
         <Image
           src={destination.imageUrl}
@@ -605,7 +605,7 @@ function DestinationCard({ destination }: { destination: CityDestination }) {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/65 via-transparent to-transparent" />
         {destination.badge ? (
-          <span className="absolute right-4 top-4 rounded-full bg-white/95 px-3 py-1 text-[11px] font-semibold text-[#004ac6] shadow-sm">
+          <span className="absolute right-4 top-4 rounded-full bg-white/95 px-3 py-1 text-[11px] font-semibold text-[#0B1D34] shadow-sm">
             {destination.badge}
           </span>
         ) : null}
@@ -629,7 +629,7 @@ function DestinationCard({ destination }: { destination: CityDestination }) {
             </p>
           </div>
           <div className="text-right">
-            <p className="text-2xl font-semibold text-[#004ac6]">
+            <p className="text-2xl font-semibold text-[#0B1D34]">
               {formatDestinationMoney(destination.estimatedTotalCost, destination.currency)}
             </p>
             <p className="font-mono text-sm font-semibold text-[#006c49]">
@@ -649,7 +649,7 @@ function DestinationCard({ destination }: { destination: CityDestination }) {
 
         <p className="text-xs leading-5 text-[#64748b]">
           Estimated costs may vary based on dates and availability.{" "}
-          <Link href="/methodology" className="font-semibold text-[#004ac6] hover:underline">
+          <Link href="/methodology" className="font-semibold text-[#0B1D34] hover:underline">
             How we estimate
           </Link>
         </p>
@@ -658,7 +658,7 @@ function DestinationCard({ destination }: { destination: CityDestination }) {
           <Button
             asChild
             variant="outline"
-            className="h-11 rounded-xl border-[#004ac6]/25 bg-[#004ac6]/5 text-[#004ac6] hover:bg-[#004ac6] hover:text-white"
+            className="h-11 rounded-xl border-[#0B1D34]/25 bg-[#0B1D34]/5 text-[#0B1D34] hover:bg-[#0B1D34] hover:text-white"
           >
             <Link href={`/destinations/${destination.slug}`}>
               View destination
@@ -667,7 +667,7 @@ function DestinationCard({ destination }: { destination: CityDestination }) {
           </Button>
           <Link
             href={`/results?${planParams.toString()}`}
-            className="text-center text-sm font-semibold text-[#434655] hover:text-[#004ac6]"
+            className="text-center text-sm font-semibold text-[#434655] hover:text-[#0B1D34]"
           >
             Plan this trip
           </Link>
@@ -696,7 +696,7 @@ function EmptyState({ onReset }: { onReset: () => void }) {
       <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#64748b]">
         Try increasing your budget, changing your dates, or selecting more regions.
       </p>
-      <Button className="mt-6 h-11 rounded-xl bg-[#004ac6] text-white hover:bg-blue-700" onClick={onReset}>
+      <Button className="mt-6 h-11 rounded-xl bg-[#0B1D34] text-white hover:bg-[#0B1D34]" onClick={onReset}>
         Reset filters
       </Button>
     </div>
@@ -713,13 +713,13 @@ function DestinationComparisonStrip({ destinations }: { destinations: CityDestin
 
   return (
     <section className="mx-auto max-w-7xl px-4 pb-14 sm:px-6 lg:px-8">
-      <div className="rounded-2xl border border-[#004ac6]/10 bg-[#004ac6]/5 p-6 sm:p-8">
+      <div className="rounded-2xl border border-[#0B1D34]/10 bg-[#0B1D34]/5 p-6 sm:p-8">
         <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight text-[#004ac6]">Head-to-head comparisons</h2>
+            <h2 className="text-2xl font-semibold tracking-tight text-[#0B1D34]">Head-to-head comparisons</h2>
             <p className="mt-1 text-sm text-[#434655]">Compare similar destinations by estimated total cost.</p>
           </div>
-          <Link href="/compare" className="inline-flex items-center gap-1 text-sm font-semibold text-[#004ac6] hover:underline">
+          <Link href="/compare" className="inline-flex items-center gap-1 text-sm font-semibold text-[#0B1D34] hover:underline">
             Compare all <ArrowRight className="size-4" />
           </Link>
         </div>
@@ -740,7 +740,7 @@ function ComparisonCard({ destinations }: { destinations: CityDestination[] }) {
   return (
     <Link
       href={`/compare?destination=${first.slug}&destination=${second.slug}`}
-      className="flex items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-[#004ac6]/40"
+      className="flex items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-[#0B1D34]/40"
     >
       <div className="flex items-center gap-3">
         <span className="flex -space-x-3">
@@ -787,7 +787,7 @@ function DestinationsSeoSection() {
           </h2>
           <div className="mt-6 grid gap-5 text-sm leading-7 text-[#434655]">
             <p>
-              TravelBudget.ai estimates trip costs by combining typical flight ranges, lodging, food, local
+              GoByBudget.com estimates trip costs by combining typical flight ranges, lodging, food, local
               transport, and activity budgets into one comparable planning number. These estimates are intended for
               discovery and planning, not guaranteed booking prices.
             </p>
@@ -809,7 +809,7 @@ function DestinationsSeoSection() {
               <Link
                 key={search.label}
                 href={search.href}
-                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-[#434655] transition hover:border-[#004ac6] hover:text-[#004ac6]"
+                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-[#434655] transition hover:border-[#0B1D34] hover:text-[#0B1D34]"
               >
                 {search.label}
               </Link>
@@ -823,14 +823,14 @@ function DestinationsSeoSection() {
 
 function BottomCta() {
   return (
-    <section className="bg-[#004ac6] px-4 py-16 text-white sm:px-6 lg:px-8">
+    <section className="bg-[#0B1D34] px-4 py-16 text-white sm:px-6 lg:px-8">
       <div className="mx-auto max-w-4xl text-center">
         <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">Start planning with realistic trip estimates</h2>
         <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-white/85">
           Compare destinations, adjust your budget, and move from discovery to a personalized travel plan.
         </p>
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-          <Button asChild className="h-12 rounded-xl bg-white px-6 text-[#004ac6] hover:bg-slate-100">
+          <Button asChild className="h-12 rounded-xl bg-white px-6 text-[#0B1D34] hover:bg-slate-100">
             <Link href="/results">
               Plan a trip
               <ArrowRight className="size-4" />

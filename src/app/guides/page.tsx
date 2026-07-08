@@ -6,7 +6,7 @@ import { createMetadata } from "@/lib/seo/metadata";
 export const metadata = createMetadata({
   title: "Travel Guides Hub",
   description:
-    "Discover popular TravelBudget.ai guides by destination, travel style, duration, budget level, and page views.",
+    "Discover popular GoByBudget.com guides by destination, travel style, duration, budget level, and page views.",
   path: "/guides",
 });
 
@@ -18,7 +18,7 @@ export default async function GuidesPage() {
     createCollectionPageSchema({
       name: "Travel Guides Hub",
       description:
-        "A discovery hub for TravelBudget.ai guides, organized by destination, travel style, trip duration, estimated budget, and popularity.",
+        "A discovery hub for GoByBudget.com guides, organized by destination, travel style, trip duration, estimated budget, and popularity.",
       path: "/guides",
     }),
     createItemListSchema(

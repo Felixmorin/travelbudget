@@ -45,11 +45,11 @@ export function BudgetComparisonTable({
           {items.map((item) => (
             <TableRow key={item.destination.slug} className="hover:bg-slate-50">
               <TableCell className="px-4 py-5 font-bold text-slate-950">
-                <Link href={`/destinations/${item.destination.slug}`} className="hover:text-blue-700">
+                <Link href={`/destinations/${item.destination.slug}`} className="hover:text-[#0B1D34]">
                   {getCityCountryLabel(item.destination)}
                 </Link>
               </TableCell>
-              <TableCell className="px-4 py-5 font-bold text-blue-700">
+              <TableCell className="px-4 py-5 font-bold text-[#0B1D34]">
                 {formatMoney(item.totalEstimate, page.currency)}
               </TableCell>
               <TableCell className="px-4 py-5 text-slate-600">
@@ -62,7 +62,7 @@ export function BudgetComparisonTable({
                 {item.destination.bestMonths.slice(0, 2).join(" - ")}
               </TableCell>
               <TableCell className="px-4 py-5">
-                <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+                <span className="rounded-full bg-[#14B8A6]/10 px-3 py-1 text-xs font-semibold text-[#0B1D34]">
                   {item.destination.travelStyles[0] ?? "Value"}
                 </span>
               </TableCell>

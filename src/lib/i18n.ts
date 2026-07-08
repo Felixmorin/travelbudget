@@ -65,10 +65,10 @@ export const translations = {
     },
     about: {
       metadataTitle: "About",
-      heroEyebrow: "About TravelBudget.ai",
+      heroEyebrow: "About GoByBudget.com",
       heroTitle: "Better trips start with a realistic budget.",
       heroCopy:
-        "TravelBudget.ai helps travelers choose where to go by turning a budget, trip length, departure city, and travel style into clear destination comparisons.",
+        "GoByBudget.com helps travelers choose where to go by turning a budget, trip length, departure city, and travel style into clear destination comparisons.",
       planTrip: "Plan trip",
       exploreTools: "Explore tools",
       principlesEyebrow: "What we build for",
@@ -78,20 +78,20 @@ export const translations = {
         "We start with what travelers can actually spend, then compare flights, stays, food, transit, activities, and seasonal value.",
       discoveryTitle: "Practical destination discovery",
       discoveryCopy:
-        "TravelBudget.ai is built to narrow choices quickly, so a flexible idea turns into a short list of realistic trips.",
+        "GoByBudget.com is built to narrow choices quickly, so a flexible idea turns into a short list of realistic trips.",
       assumptionsTitle: "Clear assumptions",
       assumptionsCopy:
         "Every estimate is designed to be understandable and adjustable, with room for travel style, trip length, and departure city.",
       approachEyebrow: "Our approach",
       approachTitle: "Compare the whole trip, not just the cheapest flight.",
       approachCopyOne:
-        "A destination can look affordable until hotel prices, local transport, activities, and peak-season demand are included. TravelBudget.ai brings those parts into one planning view, so tradeoffs are visible earlier.",
+        "A destination can look affordable until hotel prices, local transport, activities, and peak-season demand are included. GoByBudget.com brings those parts into one planning view, so tradeoffs are visible earlier.",
       approachCopyTwo:
         "The V1 focuses on budget estimates, destination comparisons, practical guides, and a clear methodology for understanding how trip costs are calculated.",
       trustEyebrow: "Trust and transparency",
       trustTitle: "Built to make the estimate easy to audit.",
       trustCopy:
-        "TravelBudget.ai shows how budgets are assembled, when the planning assumptions were last reviewed, and how to reach us if a price looks off.",
+        "GoByBudget.com shows how budgets are assembled, when the planning assumptions were last reviewed, and how to reach us if a price looks off.",
       methodologyTitle: "Price methodology",
       methodologyCopy:
         "Budget ranges are built from flights, stays, meals, local transport, activities, and a safety buffer.",
@@ -116,7 +116,7 @@ export const translations = {
       privacy: "Privacy Policy",
       terms: "Terms of Service",
       affiliateDisclosure: "Affiliate Disclosure",
-      copyright: "2026 TravelBudget.ai - Travel budget estimates and destination comparisons",
+      copyright: "2026 GoByBudget.com - Travel budget estimates and destination comparisons",
     },
     trust: {
       transparent: "Transparent estimates",
@@ -215,10 +215,10 @@ export const translations = {
     },
     about: {
       metadataTitle: "A propos",
-      heroEyebrow: "A propos de TravelBudget.ai",
+      heroEyebrow: "A propos de GoByBudget.com",
       heroTitle: "Les meilleurs voyages commencent avec un budget realiste.",
       heroCopy:
-        "TravelBudget.ai aide les voyageurs a choisir ou partir en transformant un budget, une duree, une ville de depart et un style de voyage en comparaisons claires.",
+        "GoByBudget.com aide les voyageurs a choisir ou partir en transformant un budget, une duree, une ville de depart et un style de voyage en comparaisons claires.",
       planTrip: "Planifier",
       exploreTools: "Voir les outils",
       principlesEyebrow: "Ce qui guide le produit",
@@ -228,20 +228,20 @@ export const translations = {
         "Nous partons de ce que les voyageurs peuvent vraiment depenser, puis comparons vols, hebergements, repas, transport, activites et valeur saisonniere.",
       discoveryTitle: "Decouverte pratique des destinations",
       discoveryCopy:
-        "TravelBudget.ai aide a reduire rapidement les options, pour transformer une idee flexible en courte liste de voyages realistes.",
+        "GoByBudget.com aide a reduire rapidement les options, pour transformer une idee flexible en courte liste de voyages realistes.",
       assumptionsTitle: "Hypotheses claires",
       assumptionsCopy:
         "Chaque estimation est concue pour etre comprehensible et ajustable selon le style de voyage, la duree et la ville de depart.",
       approachEyebrow: "Notre approche",
       approachTitle: "Comparez tout le voyage, pas seulement le vol le moins cher.",
       approachCopyOne:
-        "Une destination peut sembler abordable jusqu'a ce que les hotels, le transport local, les activites et la haute saison soient inclus. TravelBudget.ai regroupe ces elements pour rendre les compromis visibles plus tot.",
+        "Une destination peut sembler abordable jusqu'a ce que les hotels, le transport local, les activites et la haute saison soient inclus. GoByBudget.com regroupe ces elements pour rendre les compromis visibles plus tot.",
       approachCopyTwo:
         "La V1 se concentre sur les estimations de budget, les comparaisons de destinations, les guides pratiques et une methodologie claire pour comprendre les couts.",
       trustEyebrow: "Confiance et transparence",
       trustTitle: "Concu pour rendre l'estimation facile a verifier.",
       trustCopy:
-        "TravelBudget.ai explique comment les budgets sont composes, quand les hypotheses ont ete revues et comment nous contacter si un prix semble incorrect.",
+        "GoByBudget.com explique comment les budgets sont composes, quand les hypotheses ont ete revues et comment nous contacter si un prix semble incorrect.",
       methodologyTitle: "Methodologie des prix",
       methodologyCopy:
         "Les fourchettes incluent vols, hebergements, repas, transport local, activites et marge de securite.",
@@ -266,7 +266,7 @@ export const translations = {
       privacy: "Confidentialite",
       terms: "Conditions d'utilisation",
       affiliateDisclosure: "Divulgation d'affiliation",
-      copyright: "2026 TravelBudget.ai - Estimations de budget voyage et comparaisons de destinations",
+      copyright: "2026 GoByBudget.com - Estimations de budget voyage et comparaisons de destinations",
     },
     trust: {
       transparent: "Estimations transparentes",

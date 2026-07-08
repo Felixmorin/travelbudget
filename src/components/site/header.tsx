@@ -1,8 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, PlaneTakeoff, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useState } from "react";
 
 import { useTranslation } from "@/components/i18n/language-provider";
@@ -27,11 +28,27 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-[#c3c6d7]/40 bg-white/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="flex items-center gap-2 font-semibold text-[#004ac6]">
-          <span className="flex size-8 items-center justify-center rounded-xl bg-[#004ac6] text-white shadow-sm">
-            <PlaneTakeoff className="size-4" />
-          </span>
-          <span>TravelBudget.ai</span>
+        <Link
+          href="/"
+          aria-label="Go to GoByBudget homepage"
+          className="flex shrink-0 items-center"
+        >
+          <Image
+            src="/brand/gobybudget-logo-horizontal.png"
+            alt="GoByBudget.com"
+            width={187}
+            height={48}
+            priority
+            className="hidden h-10 w-auto object-contain sm:block lg:h-11"
+          />
+          <Image
+            src="/brand/gobybudget-mark-gb.png"
+            alt="GoByBudget.com"
+            width={38}
+            height={38}
+            priority
+            className="h-9 w-9 rounded-xl object-contain sm:hidden"
+          />
         </Link>
         <nav className="hidden items-center gap-7 text-sm font-medium text-[#434655] md:flex">
           {navItems.map((item) => {
@@ -51,7 +68,7 @@ export function Header() {
                   href: item.href,
                 }}
                 aria-current={isActive ? "page" : undefined}
-                className={`transition hover:text-[#004ac6] ${isActive ? "font-semibold text-[#004ac6]" : ""}`}
+                className={`transition hover:text-[#14B8A6] ${isActive ? "font-semibold text-[#0B1D34]" : ""}`}
               >
                 {label}
               </TrackedLink>
@@ -60,7 +77,7 @@ export function Header() {
                 key={item.labelKey}
                 href={item.href}
                 aria-current={isActive ? "page" : undefined}
-                className={`transition hover:text-[#004ac6] ${isActive ? "font-semibold text-[#004ac6]" : ""}`}
+                className={`transition hover:text-[#14B8A6] ${isActive ? "font-semibold text-[#0B1D34]" : ""}`}
               >
                 {label}
               </Link>
@@ -69,7 +86,7 @@ export function Header() {
         </nav>
         <div className="flex items-center gap-2">
           <LanguageSwitcher />
-          <Button asChild className="h-9 rounded-full bg-[#004ac6] px-4 text-white hover:bg-blue-700">
+          <Button asChild className="h-9 rounded-full bg-[#0B1D34] px-4 text-white hover:bg-[#14B8A6]">
             <TrackedLink
               href="/tools/travel-budget-calculator"
               eventName="cta_clicked"
@@ -108,8 +125,8 @@ export function Header() {
               activePath === "/" ? pathname === "/" : pathname === activePath || pathname.startsWith(`${activePath}/`)
             );
             const label = t.nav[item.labelKey];
-            const className = `rounded-lg px-3 py-3 transition hover:bg-[#f2f4f6] hover:text-[#004ac6] ${
-              isActive ? "bg-blue-50 text-[#004ac6]" : ""
+            const className = `rounded-lg px-3 py-3 transition hover:bg-[#f2f4f6] hover:text-[#14B8A6] ${
+              isActive ? "bg-[#14B8A6]/10 text-[#0B1D34]" : ""
             }`;
 
             return item.labelKey === "guides" ? (
