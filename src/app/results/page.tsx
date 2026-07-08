@@ -525,6 +525,7 @@ function DestinationCard({
   destination: ResultDestination;
 }) {
   const isOverBudget = destination.budgetRemainingValue < 0;
+  const compareHref = getResultCompareHref(destination.slug);
 
   return (
     <article
@@ -643,13 +644,17 @@ function DestinationCard({
             className="h-11 w-12 rounded-xl border-[#c3c6d7] bg-white/60 hover:bg-[#eceef0]"
           >
             <TrackedLink
-              href="/compare"
-              eventName="cta_clicked"
+              href={compareHref}
+              eventName="compare_click"
               eventProperties={{
                 page: "/results",
                 label: "Compare destination",
-                href: "/compare",
+                href: compareHref,
                 ctaLocation: "result_card",
+                destinationName: destination.title,
+                destinationSlug: destination.slug,
+                selectedDestinations: 3,
+                source: "result_card",
               }}
               aria-label={`Compare ${destination.title}`}
             >
@@ -801,6 +806,10 @@ function ComparisonTray({ destinations }: { destinations: ResultDestination[] })
     return null;
   }
 
+  const compareHref = `/compare?${destinations
+    .map((destination) => `destination=${encodeURIComponent(destination.slug)}`)
+    .join("&")}`;
+
   return (
     <div className="fixed bottom-6 left-1/2 z-40 hidden w-[90%] max-w-4xl -translate-x-1/2 md:block">
       <div className="flex items-center justify-between gap-6 rounded-full border border-[#0B1D34]/20 bg-white/80 px-8 py-4 shadow-2xl backdrop-blur-xl">
@@ -811,7 +820,13 @@ function ComparisonTray({ destinations }: { destinations: ResultDestination[] })
                 key={destination.href}
                 className="relative size-10 overflow-hidden rounded-full border-2 border-white bg-[#eceef0]"
               >
-                <Image src={destination.image} alt="" fill sizes="40px" className="object-cover" />
+                <Image
+                  src={destination.image}
+                  alt={`${destination.title} comparison thumbnail`}
+                  fill
+                  sizes="40px"
+                  className="object-cover"
+                />
               </div>
             ))}
           </div>
@@ -821,19 +836,29 @@ function ComparisonTray({ destinations }: { destinations: ResultDestination[] })
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-4">
-          <button type="button" className="text-sm font-bold text-[#434655] transition hover:text-[#0B1D34]">
-            Clear
-          </button>
           <Button asChild className="rounded-full bg-[#0B1D34] px-6 font-bold text-white hover:bg-[#0B1D34]">
             <TrackedLink
-              href="/compare"
-              eventName="cta_clicked"
+              href={compareHref}
+              eventName="compare_click"
               eventProperties={{
                 page: "/results",
                 label: "Compare selected",
-                href: "/compare",
+                href: compareHref,
                 ctaLocation: "comparison_tray",
+                selectedDestinations: destinations.length,
+                source: "comparison_tray",
               }}
+              secondaryEvents={[
+                {
+                  eventName: "cta_clicked",
+                  eventProperties: {
+                    page: "/results",
+                    label: "Compare selected",
+                    href: compareHref,
+                    ctaLocation: "comparison_tray",
+                  },
+                },
+              ]}
             >
               Compare selected
             </TrackedLink>
@@ -909,14 +934,20 @@ function toResultDestination(
     flightCost: formatMoney(costBreakdown.flights, currency),
     stayCost: formatMoney(costBreakdown.hotel, currency),
     foodCost: formatMoney(costBreakdown.food, currency),
-    href: `/destinations/${destination.slug}`,
+    href: `/travel-budget/${destination.slug}`,
     image: destination.image,
-    alt: `${title} travel view`,
+    alt: `${title} destination cost preview`,
     flightTime: flightTimeBySlug[destination.slug] ?? (days > 12 ? "10h+" : "7h 30m"),
     climate,
     entry: destination.countryCode === "CA" ? "Domestic" : "No visa",
     summary: recommendation.reasons[0] ?? destination.shortDescription,
   };
+}
+
+function getResultCompareHref(destinationSlug: string) {
+  const comparisonSlugs = Array.from(new Set([destinationSlug, "portugal", "vietnam"])).slice(0, 3);
+
+  return `/compare?${comparisonSlugs.map((slug) => `destination=${encodeURIComponent(slug)}`).join("&")}`;
 }
 
 function Pill({ children }: { children: React.ReactNode }) {

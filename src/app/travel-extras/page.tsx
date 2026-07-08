@@ -13,6 +13,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+import { EmailCaptureForm } from "@/components/analytics/email-capture-form";
+import { TrackedLink } from "@/components/analytics/tracked-link";
 import { TravelExtrasTabs } from "@/components/site/travel-extras-tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -22,7 +24,7 @@ import { createMetadata } from "@/lib/seo/metadata";
 import { cn } from "@/lib/utils";
 
 export const metadata = createMetadata({
-  title: "Compare Travel Extras | BudgetTrip",
+  title: "Compare Travel Extras",
   description:
     "Compare eSIMs, travel insurance, airport transfers, activity passes, travel cards, VPNs, and other travel extras before your trip.",
   path: "/travel-extras",
@@ -198,9 +200,20 @@ export default function TravelExtrasPage() {
             <p className="mt-4 text-lg leading-8 text-[#434655]">
               See which add-ons are worth paying for and how much they add to your real trip budget.
             </p>
-            <Button className="mt-8 h-12 rounded-full bg-gradient-to-br from-[#2563eb] to-[#7c3aed] px-6 text-base font-bold text-white hover:opacity-90">
-              Compare extras for my trip
-              <ArrowRight className="size-4" />
+            <Button asChild className="mt-8 h-12 rounded-full bg-gradient-to-br from-[#2563eb] to-[#7c3aed] px-6 text-base font-bold text-white hover:opacity-90">
+              <TrackedLink
+                href="#comparison-title"
+                eventName="cta_clicked"
+                eventProperties={{
+                  page: "/travel-extras",
+                  label: "Compare extras for my trip",
+                  href: "#comparison-title",
+                  ctaLocation: "travel_extras_hero",
+                }}
+              >
+                Compare extras for my trip
+                <ArrowRight className="size-4" />
+              </TrackedLink>
             </Button>
           </div>
 
@@ -310,9 +323,18 @@ export default function TravelExtrasPage() {
                     <span className="font-semibold text-slate-950">{value}</span>
                   </div>
                 ))}
-                <Button className="mt-2 h-12 rounded-xl bg-[#0B1D34] font-bold text-white hover:bg-[#0B1D34]">
-                  Send me this complete trip budget
-                </Button>
+                <EmailCaptureForm
+                  buttonLabel="Send me this complete trip budget"
+                  inputLabel="Email for complete trip budget"
+                  eventProperties={{
+                    page: "/travel-extras",
+                    label: "Send me this complete trip budget",
+                    ctaLocation: "travel_extras_budget_impact",
+                    budget: 2685,
+                    currency: "CAD",
+                    source: "travel_extras_budget_impact",
+                  }}
+                />
               </div>
             </CardContent>
           </Card>

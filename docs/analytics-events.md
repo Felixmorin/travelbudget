@@ -30,6 +30,8 @@ Legacy aliases `budget_calculator_started`, `budget_calculator_updated`, `budget
 | Event | Fires when | Required properties | Optional properties | Business question |
 | --- | --- | --- | --- | --- |
 | `cta_clicked` | A primary navigation, hero, bottom, or tool CTA is clicked. | `page`, `label`, `href`, `ctaLocation` | `source`, `originCode`, `originCity`, `destinationSlug`, `destinationName`, `budget`, `currency`, `days`, `tripLength`, `travelers`, `travelStyle` | Which calls to action move users deeper into the funnel? |
+| `compare_click` | A destination comparison CTA is clicked. | `page`, `label`, `href`, `ctaLocation` | `destinationSlug`, `destinationName`, `selectedDestinations`, `source` | Which comparison entry points users choose. |
+| `email_capture` | A user submits an email capture form. | `page`, `label`, `ctaLocation` | `budget`, `currency`, `emailDomain`, `source` | Which budget handoff surfaces collect leads. |
 | `affiliate_module_viewed` | An affiliate card becomes visible at least once. | `page`, `destinationSlug`, `destinationName`, `affiliateType`, `href`, `ctaLocation` | `affiliatePartner`, `affiliateProvider`, `source`, `label` | Which destinations, providers, and affiliate categories get impressions? |
 | `affiliate_link_clicked` | A user clicks an affiliate/planning link. | `page`, `destinationSlug`, `destinationName`, `affiliateType`, `href`, `ctaLocation` | `affiliatePartner`, `affiliateProvider`, `source`, `label`, `linkType`, `title` | Which providers, destinations, and categories drive revenue intent? |
 

@@ -282,7 +282,7 @@ export default async function LongTailGuidePage({ params }: GuidePageProps) {
             <h2 className="text-2xl font-semibold">Next planning step</h2>
             <p className="mt-4 leading-8 text-slate-600">
               Turn this guide into a concrete estimate by comparing dates, origin airports, travel style, and trip
-              length in the TravelBudget calculator.
+              length in the GoByBudget.com calculator.
             </p>
             <Button asChild className="mt-5 rounded-lg bg-[#0B1D34] text-white hover:bg-[#0B1D34]">
               <TrackedLink

@@ -15,6 +15,9 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { SearchCard } from "@/components/site/search-card";
+import { cityDestinations } from "@/lib/data/destination-hub";
+import { destinations as countryDestinations } from "@/lib/data/destinations";
+import { longTailGuides } from "@/lib/data/guides";
 
 const matches = [
   {
@@ -121,6 +124,10 @@ const faqs = [
 ];
 
 export function HomeContent() {
+  const countryDestinationCount = countryDestinations.length;
+  const cityDestinationCount = cityDestinations.length;
+  const guideCount = longTailGuides.length;
+
   return (
     <main className="bg-[#f7f9fb] text-[#191c1e]">
       <section className="relative mx-auto grid max-w-7xl gap-8 overflow-hidden px-4 pb-20 pt-16 sm:px-6 lg:grid-cols-12 lg:items-center lg:px-8 lg:pt-24">
@@ -130,8 +137,9 @@ export function HomeContent() {
             Find the best travel destinations for your <span className="text-[#0B1D34]">budget</span>
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-[#434655]">
-            Enter your budget, trip length, and departure city. Compare the current planning dataset of 30 country
-            budgets and 24 city guides to see where your money can realistically go.
+            Enter your budget, trip length, and departure city. Compare the current planning dataset of{" "}
+            {countryDestinationCount} country budgets, {cityDestinationCount} city destinations, and {guideCount}{" "}
+            planning guides to see where your money can realistically go.
           </p>
 
           <div className="mt-10">
@@ -148,7 +156,7 @@ export function HomeContent() {
             <div className="mb-6 flex items-center justify-between gap-4">
               <h2 className="text-xl font-semibold">Budget Matches</h2>
               <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold uppercase tracking-widest text-emerald-700">
-                54 Guides Available
+                {guideCount} Guides Available
               </span>
             </div>
             {matches.map((match) => (
@@ -159,7 +167,7 @@ export function HomeContent() {
                 <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl">
                   <Image
                     src={match.image}
-                    alt={`${match.city} travel destination`}
+                    alt={`${match.city}, ${match.country} budget match thumbnail`}
                     width={128}
                     height={128}
                     className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
@@ -196,7 +204,7 @@ export function HomeContent() {
                 <div className="relative h-64 overflow-hidden">
                   <Image
                     src={destination.image}
-                    alt={`${destination.city} destination preview`}
+                    alt={`${destination.city} cost breakdown preview`}
                     width={900}
                     height={600}
                     className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
@@ -384,7 +392,7 @@ function ComparisonCard({ title, tone }: { title: string; tone: "muted" | "smart
   const smart = tone === "smart";
   const items = smart
     ? [
-        "One search compares 30 country budgets plus 24 city guides.",
+        "One search compares the current country budget and city destination datasets.",
         "Transparent planning estimates from curated destination data.",
         "Transparent breakdowns for every penny spent.",
         "AI-curated travel styles for your comfort level.",

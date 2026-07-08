@@ -219,7 +219,7 @@ const uniqueGuideImagePool = [
   },
   {
     image: "https://images.unsplash.com/photo-1504150558240-0b4fd8946624?auto=format&fit=crop&w=1400&q=85",
-    imageAlt: "Family walking through a scenic travel destination",
+    imageAlt: "Family walking together through a scenic outdoor itinerary stop",
   },
   {
     image: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1400&q=85",

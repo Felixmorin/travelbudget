@@ -2,7 +2,7 @@
 
 GoByBudget.com is a budget-first travel planning MVP built with Next.js App Router. It helps travelers compare destinations, estimate total trip costs from Canadian origins, and understand where their money goes before they book.
 
-The app currently uses a curated planning dataset of 30 country destinations with origin-specific flight estimates from Montreal (YUL), Toronto (YYZ), and Vancouver (YVR), plus 24 city destination guides. Prices are directional estimates in CAD, not live fares or guarantees.
+The app currently uses curated country and city destination datasets with origin-specific flight estimates from major Canadian and US departure cities, plus long-tail planning guides. Prices are directional estimates in CAD, not live fares or guarantees.
 
 ## Features
 
@@ -99,7 +99,7 @@ Starts the production server after a build.
 - `/` - homepage with budget search and featured destinations
 - `/results` - dynamic recommendation results using `budget`, `currency`, `origin`, `days`, `month`, `travelers`, `style`, `category`, `destination`, and `sort`
 - `/destinations` - destination explorer
-- `/destinations/[slug]` - 54 generated destination detail pages: 30 country guides and 24 city guides
+- `/destinations/[slug]` - generated destination detail pages for country and city budget guides
 - `/compare` - destination comparison table and comparison guide hub
 - `/compare/[comparison]` - 4 generated comparison SEO pages
 - `/tools` - travel tools directory

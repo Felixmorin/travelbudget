@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 
+import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +28,7 @@ import {
   destinationTravelStyles,
   formatDestinationMoney,
 } from "@/lib/data/destination-hub";
+import { trackEvent } from "@/lib/analytics/track";
 import { cn } from "@/lib/utils";
 
 type SortOption = "best-match" | "price-low" | "price-high" | "popular";
@@ -44,7 +46,7 @@ export type DestinationSearchParams = Record<string, string | string[] | undefin
 
 const defaultFilters: Filters = {
   departureCity: destinationDepartureCities[0] ?? "Montreal (YUL)",
-  maxBudget: 5000,
+  maxBudget: 10000,
   durationDays: "any",
   month: "any",
   continent: "any",
@@ -106,7 +108,18 @@ export function DestinationsExplorer({ searchParams }: { searchParams: Destinati
   const activeFilters = getActiveFilters(filters);
 
   function updateFilter<Key extends keyof Filters>(key: Key, value: Filters[Key]) {
-    setFilters((current) => ({ ...current, [key]: value }));
+    setFilters((current) => {
+      trackEvent("filter_changed", {
+        page: "/destinations",
+        filterName: key,
+        filterValue: String(value),
+        previousValue: String(current[key]),
+        resultCount: filteredDestinations.length,
+        source: "destinations_explorer",
+      });
+
+      return { ...current, [key]: value };
+    });
   }
 
   function resetFilters() {
@@ -125,7 +138,7 @@ export function DestinationsExplorer({ searchParams }: { searchParams: Destinati
 
   return (
     <main className="bg-[#f7f9fb] text-[#191c1e]">
-      <DestinationsHero filters={filters} onChange={updateFilter} />
+      <DestinationsHero filters={filters} onChange={updateFilter} resultCount={filteredDestinations.length} />
 
       <section
         id="destination-results"
@@ -170,7 +183,17 @@ export function DestinationsExplorer({ searchParams }: { searchParams: Destinati
                 <span className="sr-only sm:not-sr-only">Sort</span>
                 <select
                   value={sort}
-                  onChange={(event) => setSort(event.target.value as SortOption)}
+                  onChange={(event) => {
+                    trackEvent("filter_changed", {
+                      page: "/destinations",
+                      filterName: "sort",
+                      filterValue: event.target.value,
+                      previousValue: sort,
+                      resultCount: filteredDestinations.length,
+                      source: "destinations_sort_select",
+                    });
+                    setSort(event.target.value as SortOption);
+                  }}
                   className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-900 shadow-sm outline-none focus:border-[#0B1D34] focus:ring-3 focus:ring-[#0B1D34]/20"
                 >
                   {Object.entries(sortLabels).map(([value, label]) => (
@@ -246,9 +269,11 @@ export function DestinationsExplorer({ searchParams }: { searchParams: Destinati
 function DestinationsHero({
   filters,
   onChange,
+  resultCount,
 }: {
   filters: Filters;
   onChange: <Key extends keyof Filters>(key: Key, value: Filters[Key]) => void;
+  resultCount: number;
 }) {
   return (
     <section className="relative isolate overflow-hidden border-b border-slate-200 bg-white">
@@ -326,10 +351,24 @@ function DestinationsHero({
             asChild
             className="h-14 rounded-xl bg-[#0B1D34] px-5 text-white shadow-lg shadow-[#0B1D34]/20 hover:bg-[#0B1D34]"
           >
-            <Link href="#destination-results">
+            <TrackedLink
+              href="#destination-results"
+              eventName="search_completed"
+              eventProperties={{
+                page: "/destinations",
+                budget: filters.maxBudget,
+                originCity: filters.departureCity,
+                days: filters.durationDays === "any" ? undefined : filters.durationDays,
+                month: filters.month === "any" ? undefined : filters.month,
+                travelStyle: filters.travelStyle === "any" ? undefined : filters.travelStyle,
+                resultCount,
+                resultsCount: resultCount,
+                source: "destinations_hero",
+              }}
+            >
               Find destinations
               <Search className="size-4" />
-            </Link>
+            </TrackedLink>
           </Button>
         </div>
       </div>
@@ -660,17 +699,39 @@ function DestinationCard({ destination }: { destination: CityDestination }) {
             variant="outline"
             className="h-11 rounded-xl border-[#0B1D34]/25 bg-[#0B1D34]/5 text-[#0B1D34] hover:bg-[#0B1D34] hover:text-white"
           >
-            <Link href={`/destinations/${destination.slug}`}>
+            <TrackedLink
+              href={`/destinations/${destination.slug}`}
+              eventName="destination_card_clicked"
+              eventProperties={{
+                page: "/destinations",
+                destinationName: `${destination.city}, ${destination.country}`,
+                destinationSlug: destination.slug,
+                href: `/destinations/${destination.slug}`,
+                source: "destinations_grid",
+              }}
+            >
               View destination
               <ArrowRight className="size-4" />
-            </Link>
+            </TrackedLink>
           </Button>
-          <Link
+          <TrackedLink
             href={`/results?${planParams.toString()}`}
+            eventName="cta_clicked"
+            eventProperties={{
+              page: "/destinations",
+              label: "Plan this trip",
+              href: `/results?${planParams.toString()}`,
+              ctaLocation: "destination_card",
+              destinationName: `${destination.city}, ${destination.country}`,
+              destinationSlug: destination.slug,
+              budget: destination.estimatedTotalCost,
+              currency: destination.currency,
+              days: destination.durationDays,
+            }}
             className="text-center text-sm font-semibold text-[#434655] hover:text-[#0B1D34]"
           >
             Plan this trip
-          </Link>
+          </TrackedLink>
         </div>
       </div>
     </article>
@@ -719,9 +780,20 @@ function DestinationComparisonStrip({ destinations }: { destinations: CityDestin
             <h2 className="text-2xl font-semibold tracking-tight text-[#0B1D34]">Head-to-head comparisons</h2>
             <p className="mt-1 text-sm text-[#434655]">Compare similar destinations by estimated total cost.</p>
           </div>
-          <Link href="/compare" className="inline-flex items-center gap-1 text-sm font-semibold text-[#0B1D34] hover:underline">
+          <TrackedLink
+            href="/compare"
+            eventName="compare_click"
+            eventProperties={{
+              page: "/destinations",
+              label: "Compare all",
+              href: "/compare",
+              ctaLocation: "destination_comparison_strip",
+              source: "destination_comparison_strip",
+            }}
+            className="inline-flex items-center gap-1 text-sm font-semibold text-[#0B1D34] hover:underline"
+          >
             Compare all <ArrowRight className="size-4" />
-          </Link>
+          </TrackedLink>
         </div>
         <div className="grid gap-4 md:grid-cols-2">
           <ComparisonCard destinations={firstPair} />
@@ -738,15 +810,32 @@ function ComparisonCard({ destinations }: { destinations: CityDestination[] }) {
   const cheaper = first.estimatedTotalCost <= second.estimatedTotalCost ? first : second;
 
   return (
-    <Link
+    <TrackedLink
       href={`/compare?destination=${first.slug}&destination=${second.slug}`}
+      eventName="compare_click"
+      eventProperties={{
+        page: "/destinations",
+        label: `${first.city} vs ${second.city}`,
+        href: `/compare?destination=${first.slug}&destination=${second.slug}`,
+        ctaLocation: "destination_comparison_card",
+        destinationSlug: first.slug,
+        destinationName: first.city,
+        selectedDestinations: destinations.length,
+        source: "destination_comparison_card",
+      }}
       className="flex items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-[#0B1D34]/40"
     >
       <div className="flex items-center gap-3">
         <span className="flex -space-x-3">
           {destinations.map((destination) => (
             <span key={destination.slug} className="relative block size-12 overflow-hidden rounded-full border-2 border-white bg-slate-100">
-              <Image src={destination.imageUrl} alt="" fill sizes="48px" className="object-cover" />
+              <Image
+                src={destination.imageUrl}
+                alt={`${destination.city}, ${destination.country} comparison thumbnail`}
+                fill
+                sizes="48px"
+                className="object-cover"
+              />
             </span>
           ))}
         </span>
@@ -760,7 +849,7 @@ function ComparisonCard({ destinations }: { destinations: CityDestination[] }) {
         </span>
         <span className="text-xs text-[#64748b]">{cheaper.city} is lower</span>
       </span>
-    </Link>
+    </TrackedLink>
   );
 }
 

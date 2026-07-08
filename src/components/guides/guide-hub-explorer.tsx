@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 
+import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type {
@@ -24,6 +25,7 @@ import type {
   GuideHubCard,
   GuideSortOption,
 } from "@/lib/data/guide-hub";
+import { trackEvent } from "@/lib/analytics/track";
 import { cn } from "@/lib/utils";
 
 type Filters = {
@@ -109,7 +111,18 @@ export function GuideHubExplorer({
   }, [filters, guides, sort]);
 
   function updateFilter<Key extends keyof Filters>(key: Key, value: Filters[Key]) {
-    setFilters((current) => ({ ...current, [key]: value }));
+    setFilters((current) => {
+      trackEvent("filter_changed", {
+        page: "/guides",
+        filterName: key,
+        filterValue: String(value),
+        previousValue: String(current[key]),
+        resultCount: filteredGuides.length,
+        source: "guides_explorer",
+      });
+
+      return { ...current, [key]: value };
+    });
   }
 
   function resetFilters() {
@@ -194,7 +207,17 @@ export function GuideHubExplorer({
                 <span>Sort by:</span>
                 <select
                   value={sort}
-                  onChange={(event) => setSort(event.target.value as GuideSortOption)}
+                  onChange={(event) => {
+                    trackEvent("filter_changed", {
+                      page: "/guides",
+                      filterName: "sort",
+                      filterValue: event.target.value,
+                      previousValue: sort,
+                      resultCount: filteredGuides.length,
+                      source: "guides_sort_select",
+                    });
+                    setSort(event.target.value as GuideSortOption);
+                  }}
                   className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-[#0B1D34] outline-none focus:border-[#14B8A6] focus:ring-3 focus:ring-[#14B8A6]/20"
                 >
                   {Object.entries(sortLabels).map(([value, label]) => (
@@ -223,10 +246,22 @@ export function GuideHubExplorer({
         <h2 className="text-3xl font-semibold tracking-tight text-slate-950">Travelers also viewed</h2>
         <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {alsoViewedGuides.map((guide) => (
-            <Link key={guide.slug} href={guide.href} className="group rounded-lg p-1">
+            <TrackedLink
+              key={guide.slug}
+              href={guide.href}
+              eventName="guide_clicked"
+              eventProperties={{
+                page: "/guides",
+                guideTitle: guide.title,
+                guideCategory: guide.category,
+                href: guide.href,
+                source: "also_viewed_guides",
+              }}
+              className="group rounded-lg p-1"
+            >
               <h3 className="text-lg font-semibold text-slate-950 transition group-hover:text-[#0B1D34]">{guide.category}</h3>
               <p className="mt-2 text-sm leading-6 text-slate-600">{guide.title}</p>
-            </Link>
+            </TrackedLink>
           ))}
         </div>
       </section>
@@ -260,7 +295,18 @@ export function GuideHubExplorer({
 function PopularGuideCard({ guide }: { guide: GuideHubCard }) {
   return (
     <article className="group relative overflow-hidden rounded-xl border border-slate-200 bg-white transition duration-300 hover:shadow-lg">
-      <Link href={guide.href} className="block">
+      <TrackedLink
+        href={guide.href}
+        eventName="guide_clicked"
+        eventProperties={{
+          page: "/guides",
+          guideTitle: guide.title,
+          guideCategory: guide.category,
+          href: guide.href,
+          source: "popular_guides",
+        }}
+        className="block"
+      >
         <div className="absolute left-4 top-4 z-10">
           <span className="inline-flex items-center gap-1 rounded-full bg-[#14B8A6]/10 px-2.5 py-1 text-xs font-semibold text-[#0B1D34] shadow-sm">
             <Sparkles className="size-3.5" />
@@ -299,15 +345,23 @@ function PopularGuideCard({ guide }: { guide: GuideHubCard }) {
             </span>
           </div>
         </div>
-      </Link>
+      </TrackedLink>
     </article>
   );
 }
 
 function ResultGuideCard({ guide }: { guide: GuideHubCard }) {
   return (
-    <Link
+    <TrackedLink
       href={guide.href}
+      eventName="guide_clicked"
+      eventProperties={{
+        page: "/guides",
+        guideTitle: guide.title,
+        guideCategory: guide.category,
+        href: guide.href,
+        source: "guide_results",
+      }}
       className="group flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-4 transition duration-300 hover:border-[#14B8A6] sm:flex-row"
     >
       <div className="relative h-40 w-full shrink-0 overflow-hidden rounded-lg bg-slate-100 sm:size-32">
@@ -336,7 +390,7 @@ function ResultGuideCard({ guide }: { guide: GuideHubCard }) {
           <Pill>{guide.travelStyle}</Pill>
         </div>
       </div>
-    </Link>
+    </TrackedLink>
   );
 }
 

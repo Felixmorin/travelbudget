@@ -50,6 +50,12 @@ export type AnalyticsEventProperties = {
     resultsCount?: number;
   };
   cta_clicked: CommonAnalyticsProperties;
+  compare_click: CommonAnalyticsProperties & {
+    selectedDestinations?: number;
+  };
+  email_capture: CommonAnalyticsProperties & {
+    emailDomain?: string;
+  };
   affiliate_module_viewed: CommonAnalyticsProperties;
   affiliate_link_clicked: CommonAnalyticsProperties & {
     linkType?: string;
@@ -94,6 +100,8 @@ export const analyticsEventNames = [
   "budget_calculator_cta_clicked",
   "budget_result_viewed",
   "cta_clicked",
+  "compare_click",
+  "email_capture",
   "affiliate_module_viewed",
   "affiliate_link_clicked",
   "guide_viewed",

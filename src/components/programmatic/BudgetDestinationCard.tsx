@@ -23,7 +23,7 @@ export function BudgetDestinationCard({
       <div className="relative h-64 overflow-hidden">
         <Image
           src={destination.image}
-          alt={`${destinationLabel} travel destination`}
+          alt={`${destinationLabel} budget comparison image`}
           fill
           sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
           className="object-cover transition-transform duration-700 group-hover:scale-110"

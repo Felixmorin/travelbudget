@@ -20,7 +20,7 @@ export function DestinationCard({ destination, ranked = false }: { destination: 
       <div className="relative h-56">
         <Image
           src={destination.image}
-          alt={`${destination.name} travel view`}
+          alt={`${destination.name} budget guide hero image`}
           fill
           sizes="(min-width: 768px) 33vw, 100vw"
           className="object-cover"
