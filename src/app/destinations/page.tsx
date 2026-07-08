@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 
-import { DestinationsExplorer } from "@/components/destinations/destinations-explorer";
+import {
+  type DestinationSearchParams,
+  DestinationsExplorer,
+} from "@/components/destinations/destinations-explorer";
 import { createMetadata } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = createMetadata({
@@ -10,6 +13,12 @@ export const metadata: Metadata = createMetadata({
   path: "/destinations",
 });
 
-export default function DestinationsPage() {
-  return <DestinationsExplorer />;
+export default async function DestinationsPage({
+  searchParams,
+}: {
+  searchParams: Promise<DestinationSearchParams>;
+}) {
+  const resolvedSearchParams = await searchParams;
+
+  return <DestinationsExplorer key={JSON.stringify(resolvedSearchParams)} searchParams={resolvedSearchParams} />;
 }

@@ -123,7 +123,7 @@ export function GuideHubExplorer({
         <div className="flex flex-col justify-between gap-6 border-b border-slate-200 pb-8 md:flex-row md:items-end">
           <div className="max-w-3xl">
             <Badge className="mb-4 rounded-full bg-blue-50 px-3 text-blue-700 ring-1 ring-blue-100">
-              Hub Guide
+              Hub
             </Badge>
             <h1 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
               Travel guides ranked by real interest

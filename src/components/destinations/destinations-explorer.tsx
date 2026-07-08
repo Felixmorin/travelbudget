@@ -40,6 +40,8 @@ type Filters = {
   travelStyle: "any" | string;
 };
 
+export type DestinationSearchParams = Record<string, string | string[] | undefined>;
+
 const defaultFilters: Filters = {
   departureCity: destinationDepartureCities[0] ?? "Montreal (YUL)",
   maxBudget: 5000,
@@ -56,9 +58,9 @@ const sortLabels: Record<SortOption, string> = {
   popular: "Most popular",
 };
 
-export function DestinationsExplorer() {
-  const [filters, setFilters] = useState<Filters>(defaultFilters);
-  const [sort, setSort] = useState<SortOption>("best-match");
+export function DestinationsExplorer({ searchParams }: { searchParams: DestinationSearchParams }) {
+  const [filters, setFilters] = useState<Filters>(() => getFiltersFromSearchParams(searchParams));
+  const [sort, setSort] = useState<SortOption>(() => getSortFromSearchParams(searchParams));
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const filteredDestinations = useMemo(() => {
@@ -764,16 +766,16 @@ function ComparisonCard({ destinations }: { destinations: CityDestination[] }) {
 
 function DestinationsSeoSection() {
   const popularSearches = [
-    { label: "Destinations under $2,000 CAD", href: "/destinations?budget=2000" },
-    { label: "Best cities for 10 days from Montreal", href: "/destinations?days=10&from=montreal" },
-    { label: "Cheap Europe trips", href: "/destinations?continent=europe" },
-    { label: "Beach destinations under $2,500 CAD", href: "/destinations?style=beach&budget=2500" },
-    { label: "Family-friendly destinations", href: "/destinations?style=family" },
-    { label: "Best winter escapes", href: "/destinations?month=december" },
-    { label: "Romantic city breaks", href: "/destinations?style=romantic" },
-    { label: "Solo travel destinations", href: "/destinations?style=solo" },
-    { label: "Warm destinations in December", href: "/destinations?month=december&style=warm-escape" },
-    { label: "Best value destinations from Canada", href: "/destinations?from=canada" },
+    { label: "Destinations under $2,000 CAD", href: "/destinations?budget=2000#destination-results" },
+    { label: "Best cities for 10 days from Montreal", href: "/destinations?days=10&from=montreal#destination-results" },
+    { label: "Cheap Europe trips", href: "/destinations?continent=europe#destination-results" },
+    { label: "Beach destinations under $2,500 CAD", href: "/destinations?style=beach&budget=2500#destination-results" },
+    { label: "Family-friendly destinations", href: "/destinations?style=family#destination-results" },
+    { label: "Best winter escapes", href: "/destinations?month=december#destination-results" },
+    { label: "Romantic city breaks", href: "/destinations?style=romantic#destination-results" },
+    { label: "Solo travel destinations", href: "/destinations?style=solo#destination-results" },
+    { label: "Warm destinations in December", href: "/destinations?month=december&style=warm-escape#destination-results" },
+    { label: "Best value destinations from Canada", href: "/destinations?sort=price-low#destination-results" },
   ];
 
   return (
@@ -870,6 +872,81 @@ function getActiveFilters(filters: Filters) {
   }
 
   return activeFilters;
+}
+
+function getFiltersFromSearchParams(searchParams: DestinationSearchParams): Filters {
+  return {
+    departureCity: getDepartureCityFromParam(readSearchParam(searchParams, "from")),
+    maxBudget: getBudgetFromParam(readSearchParam(searchParams, "budget")),
+    durationDays: getDurationFromParam(readSearchParam(searchParams, "days")),
+    month: getMatchedOption(readSearchParam(searchParams, "month"), destinationMonths) ?? defaultFilters.month,
+    continent: getMatchedOption(readSearchParam(searchParams, "continent"), destinationContinents) ?? defaultFilters.continent,
+    travelStyle: getMatchedOption(readSearchParam(searchParams, "style"), destinationTravelStyles) ?? defaultFilters.travelStyle,
+  };
+}
+
+function getSortFromSearchParams(searchParams: DestinationSearchParams): SortOption {
+  const sort = readSearchParam(searchParams, "sort");
+
+  return sort === "price-low" || sort === "price-high" || sort === "popular" || sort === "best-match"
+    ? sort
+    : "best-match";
+}
+
+function readSearchParam(searchParams: DestinationSearchParams, key: string) {
+  const value = searchParams[key];
+
+  return Array.isArray(value) ? value[0] : value;
+}
+
+function getBudgetFromParam(value: string | null | undefined) {
+  const budget = Number(value);
+
+  if (!Number.isFinite(budget)) {
+    return defaultFilters.maxBudget;
+  }
+
+  return Math.min(Math.max(Math.round(budget), 1000), 10000);
+}
+
+function getDurationFromParam(value: string | null | undefined): Filters["durationDays"] {
+  const duration = Number(value);
+
+  return destinationDurations.includes(duration as (typeof destinationDurations)[number])
+    ? duration
+    : defaultFilters.durationDays;
+}
+
+function getDepartureCityFromParam(value: string | null | undefined) {
+  const normalizedValue = normalizeSearchParam(value);
+
+  if (!normalizedValue || normalizedValue === "canada") {
+    return defaultFilters.departureCity;
+  }
+
+  return (
+    destinationDepartureCities.find((departureCity) => {
+      const normalizedDeparture = normalizeSearchParam(departureCity);
+      const normalizedCity = normalizeSearchParam(departureCity.split("(")[0]);
+      const normalizedCode = normalizeSearchParam(departureCity.match(/\(([^)]+)\)/)?.[1]);
+
+      return [normalizedDeparture, normalizedCity, normalizedCode].includes(normalizedValue);
+    }) ?? defaultFilters.departureCity
+  );
+}
+
+function getMatchedOption<T extends string>(value: string | null | undefined, options: readonly T[]) {
+  const normalizedValue = normalizeSearchParam(value);
+
+  if (!normalizedValue) {
+    return undefined;
+  }
+
+  return options.find((option) => normalizeSearchParam(option) === normalizedValue);
+}
+
+function normalizeSearchParam(value: string | null | undefined) {
+  return value?.trim().toLowerCase().replace(/[\s_]+/g, "-") ?? "";
 }
 
 function scoreDestination(destination: CityDestination, filters: Filters) {
