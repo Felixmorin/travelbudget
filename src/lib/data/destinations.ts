@@ -1055,8 +1055,8 @@ function buildActivitiesHref(seed: DestinationSeed) {
     queryParam: process.env.NEXT_PUBLIC_ACTIVITIES_AFFILIATE_QUERY_PARAM ?? "q",
     searchTerm: seed.name,
     fallbackPath: "/s/",
-    partnerParam: process.env.NEXT_PUBLIC_ACTIVITIES_AFFILIATE_ID_PARAM,
-    partnerValue: process.env.NEXT_PUBLIC_ACTIVITIES_AFFILIATE_ID,
+    partnerParam: process.env.NEXT_PUBLIC_ACTIVITIES_AFFILIATE_ID_PARAM || "partner_id",
+    partnerValue: process.env.NEXT_PUBLIC_ACTIVITIES_AFFILIATE_ID || "4ZWE6DU",
   });
 }
 
