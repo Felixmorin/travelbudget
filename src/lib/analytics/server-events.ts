@@ -36,7 +36,7 @@ export async function saveAnalyticsEvent({
     await insertBackendRecord("analytics_events", {
       id: event.id,
       event_name: event.eventName,
-      properties: JSON.stringify(event.properties),
+      properties: event.properties,
       pathname: event.pathname,
       referrer: event.referrer,
       user_agent: event.userAgent,

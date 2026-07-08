@@ -1,6 +1,14 @@
-export type BackendTable = "affiliate_clicks" | "analytics_events";
+export type BackendTable = "affiliate_clicks" | "analytics_events" | "email_leads";
 
-export type BackendRecord = Record<string, string | number | boolean | null | undefined>;
+export type BackendRecord = Record<
+  string,
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | Record<string, string | number | boolean | null | undefined>
+>;
 
 type SupabaseConfig = {
   url: string;
@@ -131,6 +139,10 @@ export async function selectBackendRecords<TRecord extends BackendRecord>(
 function getSupabaseConfig(): SupabaseConfig | null {
   const url = process.env.SUPABASE_URL?.trim();
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() ?? process.env.SUPABASE_ANON_KEY?.trim();
+
+  if (process.env.NODE_ENV === "production" && !url) {
+    throw new BackendStorageError("Supabase URL is required in production.", 500);
+  }
 
   if (!url || !key) {
     if (process.env.NODE_ENV === "production" && url && !process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()) {

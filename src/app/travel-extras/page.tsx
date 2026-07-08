@@ -324,11 +324,11 @@ export default function TravelExtrasPage() {
                   </div>
                 ))}
                 <EmailCaptureForm
-                  buttonLabel="Send me this complete trip budget"
-                  inputLabel="Email for complete trip budget"
+                  buttonLabel="Save this trip budget request"
+                  inputLabel="Email for trip budget request"
                   eventProperties={{
                     page: "/travel-extras",
-                    label: "Send me this complete trip budget",
+                    label: "Save this trip budget request",
                     ctaLocation: "travel_extras_budget_impact",
                     budget: 2685,
                     currency: "CAD",

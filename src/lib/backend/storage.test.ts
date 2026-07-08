@@ -30,6 +30,17 @@ describe("backend storage configuration", () => {
     });
   });
 
+  it("requires a Supabase URL in production", () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("SUPABASE_SERVICE_ROLE_KEY", "service-role");
+
+    expect(() => isBackendStorageConfigured()).toThrow("Supabase URL is required in production.");
+    expect(getBackendStorageStatus()).toMatchObject({
+      configured: false,
+      mode: "Misconfigured",
+    });
+  });
+
   it("accepts production Supabase with a service role key", () => {
     vi.stubEnv("NODE_ENV", "production");
     vi.stubEnv("SUPABASE_URL", "https://example.supabase.co");

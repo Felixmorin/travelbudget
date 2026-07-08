@@ -50,6 +50,7 @@ The local validation suite matches CI:
 npm ci
 npm run lint
 npm run typecheck
+npm run security:audit
 npm test
 npm run build
 ```
@@ -81,6 +82,12 @@ npm test
 ```
 
 Runs Vitest unit tests.
+
+```bash
+npm run security:audit
+```
+
+Runs `npm audit --audit-level=moderate`.
 
 ```bash
 npm run build
@@ -168,3 +175,7 @@ Optional public environment variables:
 - Affiliate commission tracking depends on configured partner IDs or partner-provided base URLs.
 - Supported currencies are CAD, USD, and EUR.
 - Supported recommendation styles are budget, balanced, and comfort.
+
+## Go-Live Operations
+
+Production launch readiness, migration order, health checks, monitoring, backup, and rollback steps are documented in `docs/go-live-runbook.md`.
