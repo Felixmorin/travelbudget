@@ -43,10 +43,10 @@ const defaultFilters: Filters = {
 };
 
 const sortLabels: Record<GuideSortOption, string> = {
-  "most-visited": "Plus visité",
-  newest: "Plus récent",
+  "most-visited": "Most visited",
+  newest: "Newest",
   destination: "Destination",
-  budget: "Budget estimé",
+  budget: "Estimated budget",
 };
 
 export function GuideHubExplorer({
@@ -126,25 +126,25 @@ export function GuideHubExplorer({
               Hub Guide
             </Badge>
             <h1 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
-              Guides de voyage classés par intérêt réel
+              Travel guides ranked by real interest
             </h1>
             <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
-              Optimisez votre budget avec des guides triés par visites, destination, durée et style de voyage.
+              Make your budget go further with guides sorted by visits, destination, duration, and travel style.
             </p>
           </div>
           <div className="flex w-full gap-4 rounded-xl border border-white/70 bg-white/75 p-4 shadow-sm backdrop-blur md:w-auto">
-            <Metric label="Guides actifs" value={`${guides.length}`} />
+            <Metric label="Active guides" value={`${guides.length}`} />
             <div className="w-px bg-slate-200" />
-            <Metric label="Guides populaires" value={`${popularGuides.length}`} />
+            <Metric label="Popular guides" value={`${popularGuides.length}`} />
           </div>
         </div>
       </section>
 
       <section className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
         <div className="mb-6 flex items-center justify-between gap-4">
-          <h2 className="text-3xl font-semibold tracking-tight text-slate-950">Guides populaires</h2>
+          <h2 className="text-3xl font-semibold tracking-tight text-slate-950">Popular guides</h2>
           <Link href="#explorer" className="inline-flex items-center gap-1 text-sm font-semibold text-blue-700 hover:underline">
-            Tout voir
+            See all
             <ArrowRight className="size-4" />
           </Link>
         </div>
@@ -162,19 +162,19 @@ export function GuideHubExplorer({
               <div className="mb-5 flex items-center justify-between gap-3">
                 <FilterHeader />
                 <button type="button" className="text-sm font-semibold text-blue-700 hover:underline" onClick={resetFilters}>
-                  Réinitialiser
+                  Reset
                 </button>
               </div>
               <GuideFilters filters={filters} options={options} onChange={updateFilter} />
             </div>
             <div className="rounded-xl border border-blue-200 bg-blue-50/70 p-5">
               <HelpCircle className="mb-3 size-5 text-blue-700" />
-              <h3 className="font-semibold text-blue-800">Besoin d&apos;aide ?</h3>
+              <h3 className="font-semibold text-blue-800">Need help?</h3>
               <p className="mt-2 text-sm leading-6 text-slate-600">
-                Consultez la méthode de calcul avant de comparer vos prochains itinéraires.
+                Read the methodology before comparing your next itineraries.
               </p>
               <Link href="/methodology" className="mt-3 inline-flex items-center gap-1 text-sm font-bold text-blue-700 hover:underline">
-                Voir la méthodologie
+                View methodology
                 <ArrowRight className="size-4" />
               </Link>
             </div>
@@ -183,15 +183,15 @@ export function GuideHubExplorer({
 
         <div className="min-w-0 flex-1">
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <span className="text-sm font-medium text-slate-600">{filteredGuides.length} guides trouvés</span>
+            <span className="text-sm font-medium text-slate-600">{filteredGuides.length} guides found</span>
             <div className="flex items-center gap-3">
               <Button type="button" variant="outline" className="h-10 bg-white md:hidden" onClick={() => setMobileFiltersOpen(true)}>
                 <SlidersHorizontal className="size-4" />
-                Filtres
+                Filters
               </Button>
               <label className="flex items-center gap-2 text-sm text-slate-600">
                 <ChevronsUpDown className="size-4 text-blue-700" />
-                <span>Trier par :</span>
+                <span>Sort by:</span>
                 <select
                   value={sort}
                   onChange={(event) => setSort(event.target.value as GuideSortOption)}
@@ -220,7 +220,7 @@ export function GuideHubExplorer({
       </section>
 
       <section className="mx-auto max-w-7xl border-t border-slate-200 px-4 py-12 sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-semibold tracking-tight text-slate-950">Les voyageurs consultent aussi</h2>
+        <h2 className="text-3xl font-semibold tracking-tight text-slate-950">Travelers also viewed</h2>
         <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {alsoViewedGuides.map((guide) => (
             <Link key={guide.slug} href={guide.href} className="group rounded-lg p-1">
@@ -232,22 +232,22 @@ export function GuideHubExplorer({
       </section>
 
       {mobileFiltersOpen ? (
-        <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true" aria-label="Filtres des guides">
-          <button type="button" className="absolute inset-0 bg-slate-950/45" aria-label="Fermer les filtres" onClick={() => setMobileFiltersOpen(false)} />
+        <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true" aria-label="Guide filters">
+          <button type="button" className="absolute inset-0 bg-slate-950/45" aria-label="Close filters" onClick={() => setMobileFiltersOpen(false)} />
           <div className="absolute inset-x-0 bottom-0 max-h-[88vh] overflow-y-auto rounded-t-2xl bg-white p-5 shadow-2xl">
             <div className="mb-5 flex items-center justify-between">
               <FilterHeader />
-              <Button type="button" variant="ghost" size="icon" aria-label="Fermer les filtres" onClick={() => setMobileFiltersOpen(false)}>
+              <Button type="button" variant="ghost" size="icon" aria-label="Close filters" onClick={() => setMobileFiltersOpen(false)}>
                 <X className="size-5" />
               </Button>
             </div>
             <GuideFilters filters={filters} options={options} onChange={updateFilter} />
             <div className="sticky bottom-0 mt-6 grid grid-cols-2 gap-3 bg-white pt-4">
               <Button type="button" variant="outline" className="h-11" onClick={resetFilters}>
-                Effacer
+                Clear
               </Button>
               <Button type="button" className="h-11 bg-blue-700 text-white hover:bg-blue-800" onClick={() => setMobileFiltersOpen(false)}>
-                Voir les résultats
+                See results
               </Button>
             </div>
           </div>
@@ -291,7 +291,7 @@ function PopularGuideCard({ guide }: { guide: GuideHubCard }) {
           <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-slate-600">
             <span className="inline-flex items-center gap-1">
               <CalendarDays className="size-4" />
-              {guide.durationDays ? `${guide.durationDays} jours` : "Flexible"}
+              {guide.durationDays ? `${guide.durationDays} days` : "Flexible"}
             </span>
             <span className="inline-flex items-center gap-1">
               <BadgeDollarSign className="size-4" />
@@ -331,7 +331,7 @@ function ResultGuideCard({ guide }: { guide: GuideHubCard }) {
           <p className="mt-1 line-clamp-2 text-sm leading-6 text-slate-600">{guide.description}</p>
         </div>
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          <Pill>{guide.durationDays ? `${guide.durationDays} jours` : "Flexible"}</Pill>
+          <Pill>{guide.durationDays ? `${guide.durationDays} days` : "Flexible"}</Pill>
           <Pill>{budgetSymbol(guide.budgetLevel)}</Pill>
           <Pill>{guide.travelStyle}</Pill>
         </div>
@@ -357,7 +357,7 @@ function GuideFilters({
   return (
     <div className="grid gap-6">
       <label htmlFor="guide-search" className="grid gap-2">
-        <span className="text-sm font-medium text-slate-600">Rechercher</span>
+        <span className="text-sm font-medium text-slate-600">Search</span>
         <span className="relative">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
           <input
@@ -371,29 +371,29 @@ function GuideFilters({
       </label>
 
       <FilterSelect
-        label="Région"
+        label="Region"
         value={filters.region}
         onChange={(value) => onChange("region", value)}
-        options={[{ label: "Toutes les régions", value: "all" }, ...options.regions.map((value) => ({ label: value, value }))]}
+        options={[{ label: "All regions", value: "all" }, ...options.regions.map((value) => ({ label: value, value }))]}
       />
       <FilterSelect
-        label="Style de voyage"
+        label="Travel style"
         value={filters.travelStyle}
         onChange={(value) => onChange("travelStyle", value)}
-        options={[{ label: "Tous les styles", value: "all" }, ...options.styles.map((value) => ({ label: value, value }))]}
+        options={[{ label: "All styles", value: "all" }, ...options.styles.map((value) => ({ label: value, value }))]}
       />
       <FilterSelect
-        label="Durée"
+        label="Duration"
         value={filters.duration}
         onChange={(value) => onChange("duration", value as Filters["duration"])}
-        options={[{ label: "Toutes les durées", value: "all" }, ...options.durations.map((value) => ({ label: value, value }))]}
+        options={[{ label: "All durations", value: "all" }, ...options.durations.map((value) => ({ label: value, value }))]}
       />
 
       <div>
-        <p className="mb-2 text-sm font-medium text-slate-600">Niveau de budget</p>
+        <p className="mb-2 text-sm font-medium text-slate-600">Budget level</p>
         <div className="grid grid-cols-2 gap-2">
           <BudgetButton active={filters.budgetLevel === "all"} onClick={() => onChange("budgetLevel", "all")}>
-            Tous
+            All
           </BudgetButton>
           {options.budgetLevels.map((level) => (
             <BudgetButton key={level} active={filters.budgetLevel === level} onClick={() => onChange("budgetLevel", level)}>
@@ -467,7 +467,7 @@ function FilterHeader() {
   return (
     <div className="flex items-center gap-2">
       <Filter className="size-5 text-blue-700" />
-      <h3 className="text-lg font-semibold text-slate-950">Filtres</h3>
+      <h3 className="text-lg font-semibold text-slate-950">Filters</h3>
     </div>
   );
 }
@@ -489,12 +489,12 @@ function EmptyState({ onReset }: { onReset: () => void }) {
   return (
     <div className="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center">
       <Search className="mx-auto size-8 text-slate-400" />
-      <h3 className="mt-4 text-xl font-semibold text-slate-950">Aucun guide ne correspond aux filtres</h3>
+      <h3 className="mt-4 text-xl font-semibold text-slate-950">No guides match those filters</h3>
       <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-600">
-        Élargissez la région, la durée ou le niveau de budget pour retrouver des guides.
+        Broaden the region, duration, or budget level to find matching guides.
       </p>
       <Button type="button" className="mt-5 bg-blue-700 text-white hover:bg-blue-800" onClick={onReset}>
-        Réinitialiser
+        Reset
       </Button>
     </div>
   );
@@ -516,18 +516,18 @@ function relativeDateLabel(date: string) {
   const diffDays = Math.max(0, Math.round((Date.now() - Date.parse(date)) / 86_400_000));
 
   if (diffDays <= 1) {
-    return "Il y a 1j";
+    return "1 day ago";
   }
 
   if (diffDays < 7) {
-    return `Il y a ${diffDays}j`;
+    return `${diffDays} days ago`;
   }
 
   if (diffDays < 14) {
-    return "Il y a 1 sem";
+    return "1 week ago";
   }
 
-  return `Il y a ${Math.round(diffDays / 7)} sem`;
+  return `${Math.round(diffDays / 7)} weeks ago`;
 }
 
 function unique<T extends string>(values: T[]) {

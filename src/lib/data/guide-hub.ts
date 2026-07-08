@@ -4,7 +4,7 @@ import { cityDestinations, type DestinationContinent } from "@/lib/data/destinat
 import { longTailGuides, type LongTailGuide } from "@/lib/data/guides";
 import { getCityCountryLabel, getUnifiedDestination } from "@/lib/data/unified-destinations";
 
-export type GuideBadge = "Populaire" | "Tendance" | "Nouveau";
+export type GuideBadge = "Popular" | "Trending" | "New";
 export type GuideSortOption = "most-visited" | "newest" | "destination" | "budget";
 export type GuideBudgetLevel = "Budget" | "Mid-range" | "Comfort" | "Flexible";
 export type GuideDurationBucket = "5-7 days" | "8-10 days" | "11-14 days" | "15+ days" | "Flexible";
@@ -349,7 +349,7 @@ function toGuideHubCard(
     travelStyle: formatTravelStyle(guide.travelStyle),
     durationDays: guide.durationDays,
     durationBucket: getDurationBucket(guide.durationDays),
-    budgetEstimate,
+    ...(budgetEstimate === undefined ? {} : { budgetEstimate }),
     budgetLabel: budgetEstimate ? formatMoney(budgetEstimate, "CAD") : "Flexible budget",
     budgetLevel: getBudgetLevel(budgetEstimate),
     viewCount,
@@ -482,14 +482,14 @@ function getGuideBadge(viewCount: number, publishedAt: string, index: number): G
   const daysSincePublished = Math.max(0, (Date.now() - Date.parse(publishedAt)) / 86_400_000);
 
   if (daysSincePublished <= 7 || index <= 2) {
-    return "Nouveau";
+    return "New";
   }
 
   if (viewCount >= 1600) {
-    return "Populaire";
+    return "Popular";
   }
 
-  return "Tendance";
+  return "Trending";
 }
 
 function getAlsoViewedGuides(guides: GuideHubCard[]) {
@@ -587,5 +587,5 @@ function formatTravelStyle(style: TravelStyle | undefined) {
 }
 
 function formatViews(value: number) {
-  return `${new Intl.NumberFormat("fr-CA").format(value)} vues`;
+  return `${new Intl.NumberFormat("en-CA").format(value)} views`;
 }

@@ -23,6 +23,7 @@ import {
   RefreshCcw,
   ShieldCheck,
   Sparkles,
+  Smartphone,
   Ticket,
   TrendingUp,
   Utensils,
@@ -36,7 +37,7 @@ import { createBreadcrumbSchema, createGuideArticleSchema, serializeJsonLd } fro
 export const metadata = createMetadata({
   title: "Budget Methodology",
   description:
-    "Learn how TravelBudget.ai estimates trip budgets using flight, accommodation, daily food, local transport, activity, and safety-margin assumptions.",
+    "Learn how TravelBudget.ai estimates trip budgets using flight, accommodation, daily food, local transport, activity, optional extras, and safety-margin assumptions.",
   path: "/methodology",
 });
 
@@ -46,6 +47,7 @@ const chips = [
   { label: "Food", icon: Utensils },
   { label: "Transport", icon: Car },
   { label: "Activities", icon: Ticket },
+  { label: "Extras", icon: Smartphone },
   { label: "Buffer", icon: ShieldCheck, featured: true },
 ];
 
@@ -55,6 +57,7 @@ const formulaItems = [
   { label: "Food", icon: Utensils },
   { label: "Local", icon: Car },
   { label: "Fun", icon: Sparkles },
+  { label: "Extras", icon: Smartphone },
   { label: "Buffer", icon: ShieldCheck, featured: true },
 ];
 
@@ -100,10 +103,18 @@ const costInputs = [
     sampleValue: "$32 CAD",
   },
   {
+    title: "Extras",
+    icon: Smartphone,
+    body:
+      "Optional add-ons such as eSIM plans, travel insurance, checked bags, city passes, and affiliate partner services are tracked separately from core trip costs when they materially affect the plan.",
+    sampleLabel: "7-day eSIM estimate",
+    sampleValue: "$18 - $45 CAD",
+  },
+  {
     title: "Safety buffer",
     icon: ShieldCheck,
     body:
-      "Adds a practical margin for baggage, mobile data, city taxes, tips, laundry, and modest price movement before booking.",
+      "Adds a practical margin for city taxes, tips, laundry, small fees, and modest price movement before booking.",
     sampleLabel: "Recommended margin",
     sampleValue: "+10-15% applied",
     featured: true,
@@ -137,6 +148,7 @@ const calculationRows = [
   ["9 nights, private hotel", "$1,080 CAD"],
   ["Daily food, $65/day", "$650 CAD"],
   ["Transit and activities", "$340 CAD"],
+  ["Extras, eSIM and small add-ons", "$75 CAD"],
   ["Safety buffer, 10%", "$305 CAD"],
 ];
 
@@ -173,6 +185,11 @@ const sourceGroups = [
     title: "Destination cost references",
     body:
       "Food, transit, activities, tourist taxes, and local fees are checked against destination guides, official tourism information, and traveler cost references.",
+  },
+  {
+    title: "Optional extras and partners",
+    body:
+      "Extras such as eSIMs, insurance, bags, passes, and affiliate partner offers are considered optional planning inputs. Partner availability can affect which links appear, not the baseline cost logic.",
   },
   {
     title: "Internal sanity checks",
@@ -239,6 +256,11 @@ const faqs = [
     answer:
       "Most budget stress comes from small unplanned costs. A 10-15% margin gives the estimate enough room for taxes, tips, baggage, and price movement.",
   },
+  {
+    question: "Do affiliate extras change the budget estimate?",
+    answer:
+      "No. Affiliate relationships can influence which optional partners we link to, but eSIMs, insurance, passes, and similar extras are either shown as separate add-ons or included only when the trip assumptions call for them.",
+  },
 ];
 
 export default function MethodologyPage() {
@@ -246,10 +268,10 @@ export default function MethodologyPage() {
     createGuideArticleSchema({
       title: "TravelBudget.ai Budget Methodology",
       description:
-        "How TravelBudget.ai estimates trip budgets from flights, accommodation, meals, local transport, activities, and safety margins.",
+        "How TravelBudget.ai estimates trip budgets from flights, accommodation, meals, local transport, activities, optional extras, and safety margins.",
       path: "/methodology",
       datePublished: "2026-06-24",
-      dateModified: "2026-06-25",
+      dateModified: "2026-07-08",
     }),
     createBreadcrumbSchema([
       { name: "Home", url: "/" },
@@ -442,7 +464,8 @@ export default function MethodologyPage() {
             </p>
             <p className="mt-4 text-sm leading-6 text-[#434655]">
               Affiliate relationships can affect which booking partners are linked, but the budget methodology is
-              designed around trip cost assumptions first. See the{" "}
+              designed around trip cost assumptions first. Optional extras are only included when they are relevant to
+              the selected trip or clearly presented as add-ons. See the{" "}
               <Link href="/affiliate-disclosure" className="font-semibold text-[#004ac6] hover:text-blue-800">
                 affiliate disclosure
               </Link>
