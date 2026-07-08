@@ -15,6 +15,7 @@ This runbook is the minimum operational checklist before launching GoByBudget.co
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `AFFILIATE_ALLOWED_DOMAINS`
 - At least one analytics destination or a documented decision to rely only on server-side event storage.
+- Product/legal sign-off that the cookie consent banner copy and default opt-in flow match each target market.
 - `MONITORING_WEBHOOK_URL` and `MONITORING_WEBHOOK_SECRET` if webhook alerting is used.
 
 Do not use `SUPABASE_ANON_KEY` for server writes in production. The app intentionally requires `SUPABASE_SERVICE_ROLE_KEY` when `NODE_ENV=production`.
@@ -53,6 +54,7 @@ npm run build
 - `/results` renders recommendations for a common budget query.
 - `/destinations/japan` renders without runtime errors.
 - `/travel-extras` email request saves successfully.
+- Analytics scripts do not load before accepting cookies, and load only after clicking "Accept analytics".
 - A known affiliate link redirects through `/go/...` to a whitelisted HTTPS destination.
 - An invalid `/go/...` destination returns `400`.
 

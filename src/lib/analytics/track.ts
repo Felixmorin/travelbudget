@@ -1,4 +1,5 @@
 import type { AnalyticsEventName, AnalyticsEventPayload, AnalyticsPayload, AnalyticsPrimitive } from "./events";
+import { hasAnalyticsConsent } from "./consent";
 
 type Gtag = (command: "event", eventName: string, properties?: AnalyticsPayload) => void;
 type Plausible = (eventName: string, options?: { props?: AnalyticsPayload }) => void;
@@ -23,6 +24,10 @@ export function trackEvent<EventName extends AnalyticsEventName>(
   properties?: AnalyticsEventPayload<EventName>
 ) {
   if (typeof window === "undefined") {
+    return;
+  }
+
+  if (!hasAnalyticsConsent()) {
     return;
   }
 

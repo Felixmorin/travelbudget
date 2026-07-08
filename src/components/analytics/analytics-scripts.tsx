@@ -1,4 +1,9 @@
+"use client";
+
 import Script from "next/script";
+import { useSyncExternalStore } from "react";
+
+import { getCookieConsent, subscribeToCookieConsent } from "@/lib/analytics/consent";
 
 const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 const clarityProjectId = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID;
@@ -8,6 +13,12 @@ const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
 const posthogHost = process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com";
 
 export function AnalyticsScripts() {
+  const consent = useSyncExternalStore(subscribeToCookieConsent, getCookieConsent, () => null);
+
+  if (consent !== "accepted") {
+    return null;
+  }
+
   return (
     <>
       {gaMeasurementId ? (

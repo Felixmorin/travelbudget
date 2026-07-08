@@ -2,6 +2,8 @@ import type { NextConfig } from "next";
 
 const isDevelopment = process.env.NODE_ENV === "development";
 
+// Keep inline scripts/styles allowed for static rendering and Next-managed third-party scripts.
+// A stricter CSP should move to Next nonce support or experimental SRI after validating the rendering impact.
 const contentSecurityPolicy = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""} https://www.googletagmanager.com https://www.clarity.ms https://*.clarity.ms https://plausible.io https://*.posthog.com https://*.i.posthog.com`,

@@ -12,7 +12,7 @@ export default function PrivacyPage() {
       <article className="mx-auto max-w-3xl rounded-lg border border-[#c3c6d7]/45 bg-white p-8 shadow-sm">
         <p className="text-sm font-semibold uppercase tracking-wide text-[#0B1D34]">Legal</p>
         <h1 className="mt-3 text-4xl font-semibold tracking-normal text-slate-950">Privacy Policy</h1>
-        <p className="mt-3 text-sm text-[#434655]">Last updated: July 6, 2026</p>
+        <p className="mt-3 text-sm text-[#434655]">Last updated: July 8, 2026</p>
 
         <div className="mt-8 space-y-7 text-base leading-8 text-[#434655]">
           <section>
@@ -36,7 +36,8 @@ export default function PrivacyPage() {
             <h2 className="text-xl font-semibold text-slate-950">Analytics and service providers</h2>
             <p className="mt-2">
               The site can be configured with analytics providers such as Google Analytics, Microsoft Clarity,
-              Plausible, or PostHog.
+              Plausible, PostHog, Vercel Web Analytics, or Vercel Speed Insights. These optional analytics tools are
+              only loaded after you accept analytics cookies.
             </p>
           </section>
 
@@ -52,9 +53,10 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-xl font-semibold text-slate-950">Your choices</h2>
             <p className="mt-2">
-              You can use browser privacy controls and avoid partner links if you do not want referral context shared
-              with booking providers. To request access, correction, or deletion of submitted data, contact us through
-              the contact details published on GoByBudget.com.
+              You can accept or decline optional analytics cookies in the cookie banner and reopen those preferences
+              from the footer. You can also use browser privacy controls and avoid partner links if you do not want
+              referral context shared with booking providers. To request access, correction, or deletion of submitted
+              data, contact us through the contact details published on GoByBudget.com.
             </p>
           </section>
         </div>

@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { useTranslation } from "@/components/i18n/language-provider";
+import { OPEN_COOKIE_CONSENT_EVENT } from "@/lib/analytics/consent";
 
 const footerSections = [
   {
@@ -33,6 +34,10 @@ const footerSections = [
 
 export function Footer() {
   const { t } = useTranslation();
+
+  function openCookiePreferences() {
+    window.dispatchEvent(new Event(OPEN_COOKIE_CONSENT_EVENT));
+  }
 
   return (
     <footer className="border-t border-[#c3c6d7]/35 bg-white">
@@ -66,8 +71,11 @@ export function Footer() {
           </div>
         ))}
       </div>
-      <div className="mx-auto max-w-7xl border-t border-[#c3c6d7]/35 px-4 py-5 text-sm text-[#434655] sm:px-6 lg:px-8">
-        &copy; {t.footer.copyright}
+      <div className="mx-auto flex max-w-7xl flex-col gap-3 border-t border-[#c3c6d7]/35 px-4 py-5 text-sm text-[#434655] sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+        <span>&copy; {t.footer.copyright}</span>
+        <button type="button" className="text-left font-medium text-[#0B1D34] hover:text-[#14B8A6]" onClick={openCookiePreferences}>
+          Cookie preferences
+        </button>
       </div>
     </footer>
   );

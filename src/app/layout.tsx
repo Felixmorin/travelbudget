@@ -1,8 +1,8 @@
 import { Geist_Mono, Inter } from "next/font/google";
-import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { AnalyticsScripts } from "@/components/analytics/analytics-scripts";
+import { ConsentManagedAnalytics } from "@/components/analytics/consent-managed-analytics";
+import { CookieConsentBanner } from "@/components/analytics/cookie-consent-banner";
 import { LanguageProvider } from "@/components/i18n/language-provider";
 import { Footer } from "@/components/site/footer";
 import { Header } from "@/components/site/header";
@@ -37,8 +37,8 @@ export default function RootLayout({
           <div className="flex-1">{children}</div>
           <Footer />
         </LanguageProvider>
-        <Analytics />
-        <SpeedInsights />
+        <ConsentManagedAnalytics />
+        <CookieConsentBanner />
       </body>
     </html>
   );
