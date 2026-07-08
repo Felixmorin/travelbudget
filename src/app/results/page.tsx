@@ -4,7 +4,6 @@ import {
   ArrowRight,
   BadgeCheck,
   Bed,
-  CalendarDays,
   Clock3,
   Compass,
   Edit3,
@@ -74,17 +73,6 @@ type ResultDestination = {
   entry: string;
   summary: string;
 };
-
-const sidebarFilters: { label: string; icon: LucideIcon }[] = [
-  { label: "Budget", icon: WalletCards },
-  { label: "Continent", icon: Globe2 },
-  { label: "Climate", icon: Sun },
-  { label: "Travel style", icon: Luggage },
-  { label: "Visa", icon: BadgeCheck },
-  { label: "Flight duration", icon: PlaneTakeoff },
-  { label: "Season", icon: CalendarDays },
-  { label: "Trip type", icon: Compass },
-];
 
 const categoryFilters: { label: string; value: ResultsCategory; icon: LucideIcon }[] = [
   { label: "All", value: "all", icon: Sparkles },
@@ -163,7 +151,7 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
       />
 
       <div className="flex">
-        <FilterSidebar />
+        <FilterSidebar parsedParams={parsedParams} resultCount={recommendations.length} />
 
         <div className="min-w-0 flex-1">
           <SearchSummaryBar
@@ -217,31 +205,54 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
   );
 }
 
-function FilterSidebar() {
+function FilterSidebar({
+  parsedParams,
+  resultCount,
+}: {
+  parsedParams: ParsedSearchParams;
+  resultCount: number;
+}) {
   return (
     <aside className="sticky top-16 hidden h-[calc(100vh-4rem)] w-64 shrink-0 flex-col gap-4 overflow-y-auto border-r border-[#c3c6d7]/30 bg-[#f7f9fb] p-6 lg:flex">
       <div>
-        <h2 className="text-xl font-bold text-[#191c1e]">Filters</h2>
-        <p className="text-sm font-medium text-[#434655]">Refine your results</p>
+        <h2 className="text-xl font-bold text-[#191c1e]">Quick filters</h2>
+        <p className="text-sm font-medium text-[#434655]">Refine by trip type</p>
       </div>
       <nav className="grid gap-2">
-        {sidebarFilters.map((item, index) => {
+        {categoryFilters.map((item) => {
           const Icon = item.icon;
-          const active = index === 0;
+          const active = item.value === parsedParams.category;
 
           return (
-            <button
-              key={item.label}
-              type="button"
+            <TrackedLink
+              key={item.value}
+              href={createResultsHref(parsedParams, { category: item.value })}
+              eventName="filter_changed"
+              eventProperties={{
+                page: "/results",
+                budget: parsedParams.budget,
+                currency: parsedParams.currency,
+                days: parsedParams.days,
+                filterName: "category",
+                filterValue: item.value,
+                month: parsedParams.month,
+                originCode: parsedParams.origin,
+                previousValue: parsedParams.category,
+                resultCount,
+                source: "results_sidebar_filter",
+                travelers: parsedParams.travelers,
+                travelStyle: parsedParams.style,
+                tripLength: parsedParams.days,
+              }}
               className={`flex items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-semibold transition ${
                 active
                   ? "bg-[#2563eb] text-white"
                   : "text-[#434655] hover:bg-[#e6e8ea] hover:text-[#191c1e]"
               }`}
             >
-              <Icon className="size-5" />
+              <Icon className="size-5 shrink-0" />
               {item.label}
-            </button>
+            </TrackedLink>
           );
         })}
       </nav>
@@ -396,7 +407,7 @@ function ResultsControls({
           travelStyle: parsedParams.style,
           tripLength: parsedParams.days,
         }}
-        className="grid gap-3 rounded-3xl border border-[#c3c6d7]/35 bg-white/70 p-4 shadow-[0_18px_45px_-32px_rgba(15,23,42,0.45)] backdrop-blur md:grid-cols-6"
+        className="grid grid-cols-1 gap-3 rounded-3xl border border-[#c3c6d7]/35 bg-white/70 p-4 shadow-[0_18px_45px_-32px_rgba(15,23,42,0.45)] backdrop-blur sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-[minmax(8rem,0.8fr)_minmax(7rem,0.7fr)_minmax(10rem,1fr)_minmax(10rem,1fr)_minmax(12rem,1.2fr)_minmax(8rem,0.8fr)]"
       >
         <Field label="Budget">
           <input
@@ -444,7 +455,7 @@ function ResultsControls({
             className="field-input"
           />
         </Field>
-        <div className="flex items-end">
+        <div className="flex min-w-0 items-end">
           <Button className="h-11 w-full rounded-full bg-[#0B1D34] text-white hover:bg-[#0B1D34]" type="submit">
             Apply
           </Button>
@@ -500,7 +511,7 @@ function ResultsControls({
 
 function Field({ children, label }: { children: React.ReactNode; label: string }) {
   return (
-    <label className="grid gap-2 text-sm font-semibold text-[#434655]">
+    <label className="grid min-w-0 gap-2 text-sm font-semibold text-[#434655]">
       {label}
       {children}
     </label>
