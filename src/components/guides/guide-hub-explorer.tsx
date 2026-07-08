@@ -7,7 +7,6 @@ import {
   BadgeDollarSign,
   CalendarDays,
   ChevronsUpDown,
-  Eye,
   Filter,
   HelpCircle,
   Search,
@@ -54,7 +53,6 @@ export function GuideHubExplorer({
   guides,
   popularGuides,
   alsoViewedGuides,
-  hasVisitData,
 }: {
   guides: GuideHubCard[];
   popularGuides: GuideHubCard[];
@@ -110,8 +108,6 @@ export function GuideHubExplorer({
       });
   }, [filters, guides, sort]);
 
-  const totalViews = guides.reduce((sum, guide) => sum + guide.viewCount, 0);
-
   function updateFilter<Key extends keyof Filters>(key: Key, value: Filters[Key]) {
     setFilters((current) => ({ ...current, [key]: value }));
   }
@@ -135,17 +131,11 @@ export function GuideHubExplorer({
             <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
               Optimisez votre budget avec des guides triés par visites, destination, durée et style de voyage.
             </p>
-            {!hasVisitData ? (
-              <p className="mt-4 max-w-2xl rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
-                Aucune donnée de visite exploitable n&apos;est encore disponible. Le classement utilise un jeu de données
-                temporaire, prêt à être remplacé par une source analytics.
-              </p>
-            ) : null}
           </div>
           <div className="flex w-full gap-4 rounded-xl border border-white/70 bg-white/75 p-4 shadow-sm backdrop-blur md:w-auto">
             <Metric label="Guides actifs" value={`${guides.length}`} />
             <div className="w-px bg-slate-200" />
-            <Metric label="Vues classées" value={formatCompactViews(totalViews)} />
+            <Metric label="Guides populaires" value={`${popularGuides.length}`} />
           </div>
         </div>
       </section>
@@ -236,7 +226,6 @@ export function GuideHubExplorer({
             <Link key={guide.slug} href={guide.href} className="group rounded-lg p-1">
               <h3 className="text-lg font-semibold text-slate-950 transition group-hover:text-blue-700">{guide.category}</h3>
               <p className="mt-2 text-sm leading-6 text-slate-600">{guide.title}</p>
-              <span className="mt-2 block text-sm font-semibold text-blue-700">{guide.formattedViews}</span>
             </Link>
           ))}
         </div>
@@ -287,9 +276,8 @@ function PopularGuideCard({ guide }: { guide: GuideHubCard }) {
             sizes="(min-width: 768px) 33vw, 100vw"
             className="object-cover transition duration-500 group-hover:scale-105"
           />
-          <div className="absolute bottom-4 right-4 inline-flex items-center gap-1 rounded-lg bg-black/55 px-2 py-1 text-xs font-semibold text-white backdrop-blur">
-            <Eye className="size-3.5" />
-            {guide.formattedViews}
+          <div className="absolute bottom-4 right-4 rounded-lg bg-black/55 px-2 py-1 text-xs font-semibold text-white backdrop-blur">
+            {guide.budgetLabel}
           </div>
         </div>
         <div className="p-5">
@@ -346,7 +334,6 @@ function ResultGuideCard({ guide }: { guide: GuideHubCard }) {
           <Pill>{guide.durationDays ? `${guide.durationDays} jours` : "Flexible"}</Pill>
           <Pill>{budgetSymbol(guide.budgetLevel)}</Pill>
           <Pill>{guide.travelStyle}</Pill>
-          <Pill>{guide.formattedViews}</Pill>
         </div>
       </div>
     </Link>
@@ -541,14 +528,6 @@ function relativeDateLabel(date: string) {
   }
 
   return `Il y a ${Math.round(diffDays / 7)} sem`;
-}
-
-function formatCompactViews(value: number) {
-  if (value >= 1000) {
-    return `${new Intl.NumberFormat("fr-CA", { maximumFractionDigits: 1 }).format(value / 1000)}k`;
-  }
-
-  return new Intl.NumberFormat("fr-CA").format(value);
 }
 
 function unique<T extends string>(values: T[]) {
