@@ -74,6 +74,56 @@ const countryContinentBySlug: Record<string, DestinationContinent> = {
   vietnam: "Asia",
 };
 
+const fallbackGuideImages: Record<
+  LongTailGuide["category"] | "budgetTarget" | "beach" | "couples" | "family" | "points" | "airport" | "checklist",
+  { image: string; imageAlt: string }
+> = {
+  "Budget planning": {
+    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Notebook, calculator, and travel budget planning paperwork on a desk",
+  },
+  "Destination costs": {
+    image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Scenic travel landscape used for destination cost planning",
+  },
+  "Flight savings": {
+    image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Airplane wing above clouds for flight savings planning",
+  },
+  "Travel rewards": {
+    image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Credit card and travel documents for rewards trip planning",
+  },
+  budgetTarget: {
+    image: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Coins, calculator, and savings notes for budget travel planning",
+  },
+  beach: {
+    image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Turquoise beach and bright sand for beach destination planning",
+  },
+  couples: {
+    image: "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Couple planning a trip together at a table",
+  },
+  family: {
+    image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Family-friendly outdoor travel scene",
+  },
+  points: {
+    image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Payment card and travel booking setup for points planning",
+  },
+  airport: {
+    image: "https://images.unsplash.com/photo-1556388158-158ea5ccacbd?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Airport terminal with travelers and departure boards",
+  },
+  checklist: {
+    image: "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Travel checklist notebook with pen and planning items",
+  },
+};
+
 export async function getGuideHubData(): Promise<GuideHubData> {
   const visitCounts = await getVisitCountsBySlug();
   const hasVisitData = visitCounts.hasVisitData;
@@ -135,6 +185,7 @@ function toGuideHubCard(
 ): GuideHubCard {
   const destination = guide.destinationSlug ? getUnifiedDestination(guide.destinationSlug) : null;
   const destinationLabel = destination ? getCityCountryLabel(destination) : guide.originCity ?? "Planning guide";
+  const image = getGuideHubImage(guide, destination);
   const budgetEstimate = getBudgetEstimate(guide);
   const viewCount = hasVisitData
     ? (visitCounts.guideViews.get(guide.slug) ?? 0) + Math.round((visitCounts.destinationViews.get(guide.destinationSlug ?? "") ?? 0) * 0.35)
@@ -146,8 +197,8 @@ function toGuideHubCard(
     href: `/guides/${guide.slug}`,
     title: guide.title,
     description: guide.summary,
-    image: guide.image,
-    imageAlt: guide.imageAlt,
+    image: image.image,
+    imageAlt: image.imageAlt,
     category: guide.category,
     destinationLabel,
     region: getRegion(guide),
@@ -162,6 +213,48 @@ function toGuideHubCard(
     badge: getGuideBadge(viewCount, publishedAt, index),
     publishedAt,
   };
+}
+
+function getGuideHubImage(
+  guide: LongTailGuide,
+  destination: ReturnType<typeof getUnifiedDestination> | null
+) {
+  if (destination?.image) {
+    return {
+      image: destination.image,
+      imageAlt: `${destination.name} travel budget guide`,
+    };
+  }
+
+  if (guide.slug.includes("beach")) {
+    return fallbackGuideImages.beach;
+  }
+
+  if (guide.slug.includes("couples")) {
+    return fallbackGuideImages.couples;
+  }
+
+  if (guide.slug.includes("family")) {
+    return fallbackGuideImages.family;
+  }
+
+  if (guide.slug.includes("points")) {
+    return fallbackGuideImages.points;
+  }
+
+  if (guide.slug.includes("airport")) {
+    return fallbackGuideImages.airport;
+  }
+
+  if (guide.slug.includes("checklist")) {
+    return fallbackGuideImages.checklist;
+  }
+
+  if (guide.budgetTarget) {
+    return fallbackGuideImages.budgetTarget;
+  }
+
+  return fallbackGuideImages[guide.category];
 }
 
 function getBudgetEstimate(guide: LongTailGuide) {
