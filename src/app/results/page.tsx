@@ -150,113 +150,54 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
         }}
       />
 
-      <div className="flex">
-        <FilterSidebar parsedParams={parsedParams} resultCount={recommendations.length} />
+      <div className="min-w-0">
+        <SearchSummaryBar
+          parsedParams={parsedParams}
+          resultCount={recommendations.length}
+          summaryText={summaryText}
+        />
 
-        <div className="min-w-0 flex-1">
-          <SearchSummaryBar
+        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+          <HeroSection
             parsedParams={parsedParams}
             resultCount={recommendations.length}
             summaryText={summaryText}
           />
 
-          <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-            <HeroSection
-              parsedParams={parsedParams}
-              resultCount={recommendations.length}
-              summaryText={summaryText}
-            />
+          <ResultsControls parsedParams={parsedParams} resultCount={recommendations.length} />
 
-            <ResultsControls parsedParams={parsedParams} resultCount={recommendations.length} />
+          {featuredDestinations.length > 0 ? (
+            <section className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {featuredDestinations.map((destination) => (
+                <DestinationCard
+                  key={destination.href}
+                  destination={destination}
+                  analyticsContext={{
+                    budget: parsedParams.budget,
+                    currency: parsedParams.currency,
+                    days: parsedParams.days,
+                    month: parsedParams.month,
+                    originCity: originLabel,
+                    originCode: parsedParams.origin,
+                    resultCount: recommendations.length,
+                    travelers: parsedParams.travelers,
+                    travelStyle: parsedParams.style,
+                  }}
+                />
+              ))}
+            </section>
+          ) : (
+            <EmptyResultsState parsedParams={parsedParams} />
+          )}
 
-            {featuredDestinations.length > 0 ? (
-              <section className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-                {featuredDestinations.map((destination) => (
-                  <DestinationCard
-                    key={destination.href}
-                    destination={destination}
-                    analyticsContext={{
-                      budget: parsedParams.budget,
-                      currency: parsedParams.currency,
-                      days: parsedParams.days,
-                      month: parsedParams.month,
-                      originCity: originLabel,
-                      originCode: parsedParams.origin,
-                      resultCount: recommendations.length,
-                      travelers: parsedParams.travelers,
-                      travelStyle: parsedParams.style,
-                    }}
-                  />
-                ))}
-              </section>
-            ) : (
-              <EmptyResultsState parsedParams={parsedParams} />
-            )}
-
-            <TrustModule />
-            <SeoLinks budget={formattedBudget} origin={originLabel} />
-            <FinalCta />
-          </div>
+          <TrustModule />
+          <SeoLinks budget={formattedBudget} origin={originLabel} />
+          <FinalCta />
         </div>
       </div>
 
       {topRecommendation ? <ComparisonTray destinations={featuredDestinations.slice(0, 3)} /> : null}
     </main>
-  );
-}
-
-function FilterSidebar({
-  parsedParams,
-  resultCount,
-}: {
-  parsedParams: ParsedSearchParams;
-  resultCount: number;
-}) {
-  return (
-    <aside className="sticky top-16 hidden h-[calc(100vh-4rem)] w-64 shrink-0 flex-col gap-4 overflow-y-auto border-r border-[#c3c6d7]/30 bg-[#f7f9fb] p-6 lg:flex">
-      <div>
-        <h2 className="text-xl font-bold text-[#191c1e]">Quick filters</h2>
-        <p className="text-sm font-medium text-[#434655]">Refine by trip type</p>
-      </div>
-      <nav className="grid gap-2">
-        {categoryFilters.map((item) => {
-          const Icon = item.icon;
-          const active = item.value === parsedParams.category;
-
-          return (
-            <TrackedLink
-              key={item.value}
-              href={createResultsHref(parsedParams, { category: item.value })}
-              eventName="filter_changed"
-              eventProperties={{
-                page: "/results",
-                budget: parsedParams.budget,
-                currency: parsedParams.currency,
-                days: parsedParams.days,
-                filterName: "category",
-                filterValue: item.value,
-                month: parsedParams.month,
-                originCode: parsedParams.origin,
-                previousValue: parsedParams.category,
-                resultCount,
-                source: "results_sidebar_filter",
-                travelers: parsedParams.travelers,
-                travelStyle: parsedParams.style,
-                tripLength: parsedParams.days,
-              }}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-semibold transition ${
-                active
-                  ? "bg-[#2563eb] text-white"
-                  : "text-[#434655] hover:bg-[#e6e8ea] hover:text-[#191c1e]"
-              }`}
-            >
-              <Icon className="size-5 shrink-0" />
-              {item.label}
-            </TrackedLink>
-          );
-        })}
-      </nav>
-    </aside>
   );
 }
 
