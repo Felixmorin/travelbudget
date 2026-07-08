@@ -14,6 +14,7 @@ const navItems = [
   { labelKey: "planTrip", href: "/", activePaths: ["/"] },
   { labelKey: "destinations", href: "/destinations", activePaths: ["/destinations"] },
   { labelKey: "tools", href: "/tools", activePaths: ["/tools"] },
+  { labelKey: "travelExtras", href: "/travel-extras", activePaths: ["/travel-extras"] },
   { labelKey: "guides", href: "/guides", activePaths: ["/guides", "/guide"] },
   { labelKey: "about", href: "/about", activePaths: ["/about"] },
 ] as const;

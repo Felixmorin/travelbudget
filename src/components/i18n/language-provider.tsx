@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useSyncExternalStore } from "react";
 
 import { Language, languages, translations } from "@/lib/i18n";
 
@@ -13,26 +13,19 @@ type LanguageContextValue = {
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
 const storageKey = "travelbudget-language";
+const languageChangeEvent = "travelbudget-language-change";
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguageState] = useState<Language>(() => {
-    if (typeof window === "undefined") {
-      return "en";
-    }
-
-    const storedLanguage = window.localStorage.getItem(storageKey);
-    return isLanguage(storedLanguage) ? storedLanguage : "en";
-  });
+  const language = useSyncExternalStore(subscribeToLanguage, getLanguageSnapshot, getServerLanguageSnapshot);
 
   useEffect(() => {
     document.documentElement.lang = language;
-    window.localStorage.setItem(storageKey, language);
   }, [language]);
 
   const value = useMemo(
     () => ({
       language,
-      setLanguage: setLanguageState,
+      setLanguage,
       t: translations[language],
     }),
     [language]
@@ -53,4 +46,28 @@ export function useTranslation() {
 
 function isLanguage(value: string | null): value is Language {
   return languages.some((language) => language === value);
+}
+
+function subscribeToLanguage(onStoreChange: () => void) {
+  window.addEventListener("storage", onStoreChange);
+  window.addEventListener(languageChangeEvent, onStoreChange);
+
+  return () => {
+    window.removeEventListener("storage", onStoreChange);
+    window.removeEventListener(languageChangeEvent, onStoreChange);
+  };
+}
+
+function getLanguageSnapshot(): Language {
+  const storedLanguage = window.localStorage.getItem(storageKey);
+  return isLanguage(storedLanguage) ? storedLanguage : "en";
+}
+
+function getServerLanguageSnapshot(): Language {
+  return "en";
+}
+
+function setLanguage(language: Language) {
+  window.localStorage.setItem(storageKey, language);
+  window.dispatchEvent(new Event(languageChangeEvent));
 }
