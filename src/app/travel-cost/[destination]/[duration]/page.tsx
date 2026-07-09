@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { EmailCaptureForm } from "@/components/analytics/email-capture-form";
 import { EstimateDisclaimer } from "@/components/site/estimate-disclaimer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -106,7 +107,9 @@ export default async function DurationCostPage({ params }: DurationCostPageProps
               <Metric label="Flights" value={formatCad(estimate.costBreakdown.flights)} />
               <Metric label="Accommodation" value={formatCad(estimate.costBreakdown.accommodation)} />
               <Metric label="Meals" value={formatCad(estimate.costBreakdown.food)} />
+              <Metric label="Local transport" value={formatCad(estimate.costBreakdown.localTransport)} />
               <Metric label="Activities" value={formatCad(estimate.costBreakdown.activities)} />
+              <Metric label="Buffer" value={formatCad(estimate.costBreakdown.misc)} />
             </dl>
           </section>
           <section className="rounded-[24px] border border-slate-200 bg-white p-6">
@@ -117,11 +120,78 @@ export default async function DurationCostPage({ params }: DurationCostPageProps
               paid activities, choosing simpler stays, or moving outside peak travel weeks.
             </p>
           </section>
+          <section className="rounded-[24px] border border-slate-200 bg-white p-6">
+            <h2 className="text-2xl font-semibold">Best time to go for better prices</h2>
+            <p className="mt-3 text-sm leading-6 text-slate-600">
+              For {destinationLabel}, compare the destination&apos;s stronger planning months:{" "}
+              {page.destination.bestMonths.join(", ")}. These months can offer better weather or value, but exact
+              prices still depend on dates, seasonality, availability, comfort level, and departure airport.
+            </p>
+          </section>
+          <section className="rounded-[24px] border border-slate-200 bg-white p-6">
+            <h2 className="text-2xl font-semibold">How to lower the cost</h2>
+            <ul className="mt-4 grid gap-3 text-sm leading-6 text-slate-600">
+              <li>Move the trip outside peak school breaks, major holidays, and citywide event weeks.</li>
+              <li>Choose accommodation near practical transit instead of paying for the most central blocks.</li>
+              <li>Keep paid activities selective and balance them with parks, markets, self-guided walks, and casual meals.</li>
+            </ul>
+          </section>
+          <section className="rounded-[24px] border border-slate-200 bg-white p-6">
+            <h2 className="text-2xl font-semibold">Budget assumptions</h2>
+            <p className="mt-3 text-sm leading-6 text-slate-600">
+              This is a CAD planning estimate for one mid-range traveler using Montreal as the default flight
+              baseline. It includes flights, accommodation, food, local transport, activities, and a buffer. It does
+              not guarantee live prices, and the total varies by dates, season, availability, comfort level, airport
+              choice, exchange rates, baggage, and travel style.
+            </p>
+          </section>
+          <section className="rounded-[24px] border border-slate-200 bg-white p-6">
+            <h2 className="text-2xl font-semibold">FAQ</h2>
+            <div className="mt-5 grid gap-4">
+              <FaqItem
+                question={`Does this ${page.durationDays}-day ${destinationLabel} cost include flights?`}
+                answer="Yes. The estimate includes round-trip flights plus accommodation, meals, local transport, activities, and a buffer."
+              />
+              <FaqItem
+                question="Can I use this as a booking quote?"
+                answer="No. It is a planning estimate in CAD. Always verify current flights, hotels, availability, and terms before booking."
+              />
+              <FaqItem
+                question={`What changes a ${page.durationDays}-day estimate the most?`}
+                answer="Flights, hotel location, season, trip dates, comfort level, paid activities, and exchange rates usually have the largest effect."
+              />
+            </div>
+          </section>
         </div>
         <aside className="h-fit rounded-[24px] border border-slate-200 bg-white p-6">
           <h2 className="text-xl font-semibold">Related planning pages</h2>
           <div className="mt-5 grid gap-3">
             <Button asChild className="rounded-full bg-[#0B1D34] text-white hover:bg-[#0B1D34]">
+              <Link href="/tools/travel-budget-calculator">Check flights and hotels for this trip</Link>
+            </Button>
+            <div className="rounded-2xl bg-slate-50 p-4">
+              <p className="text-sm font-semibold text-slate-950">Send me this trip budget</p>
+              <div className="mt-3">
+                <EmailCaptureForm
+                  buttonLabel="Send budget"
+                  inputLabel="Email address"
+                  eventProperties={{
+                    page: path,
+                    source: "legacy_travel_cost_page",
+                    destinationSlug: page.destination.slug,
+                    destinationName: destinationLabel,
+                    budget: estimate.totalEstimate,
+                    currency: "CAD",
+                    days: page.durationDays,
+                    tripLength: page.durationDays,
+                    travelers: page.travelers,
+                    travelStyle: page.travelStyle,
+                    ctaLocation: "travel_cost_sidebar",
+                  }}
+                />
+              </div>
+            </div>
+            <Button asChild variant="outline" className="rounded-full bg-white">
               <Link href={getTravelBudgetPath(page.destination.slug)}>Full travel budget</Link>
             </Button>
             <Button asChild variant="outline" className="rounded-full bg-white">
@@ -134,6 +204,15 @@ export default async function DurationCostPage({ params }: DurationCostPageProps
         </aside>
       </section>
     </main>
+  );
+}
+
+function FaqItem({ question, answer }: { question: string; answer: string }) {
+  return (
+    <div className="rounded-2xl bg-slate-50 p-4">
+      <h3 className="font-semibold text-slate-950">{question}</h3>
+      <p className="mt-2 text-sm leading-6 text-slate-600">{answer}</p>
+    </div>
   );
 }
 

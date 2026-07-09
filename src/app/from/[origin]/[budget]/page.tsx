@@ -53,7 +53,6 @@ export async function generateMetadata({ params }: BudgetPageProps): Promise<Met
     title: `Best Trips from ${page.origin.city} Under $${page.budget.toLocaleString("en-CA")}`,
     description: pageDescription,
     path: getProgrammaticBudgetPath(page),
-    noIndex: true,
     imageAlt: `Best trips from ${page.origin.city} under $${page.budget.toLocaleString("en-CA")}`,
   });
 }

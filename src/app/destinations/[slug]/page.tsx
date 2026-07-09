@@ -50,7 +50,7 @@ import {
   programmaticBudgetPages,
 } from "@/lib/programmatic/budget-pages";
 import { comparisonPages, getComparisonPath } from "@/lib/programmatic/comparison-pages";
-import { getStrongSeoDestinationBudgetPath } from "@/lib/programmatic/strong-seo-pages";
+import { getStrongSeoDestinationBudgetPath, strongSeoPages } from "@/lib/programmatic/strong-seo-pages";
 
 type DestinationPageProps = {
   params: Promise<{ slug: string }>;
@@ -332,6 +332,14 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
                     key={link.href}
                     href={link.href}
                     label="Comparison"
+                    title={link.title}
+                  />
+                ))}
+                {getStrongSeoLinks(destination.slug).map((link) => (
+                  <InternalPlanningLink
+                    key={link.href}
+                    href={link.href}
+                    label={link.label}
                     title={link.title}
                   />
                 ))}
@@ -793,6 +801,17 @@ function getDestinationComparisonLinks(destinationSlug: string) {
       title: page.title,
     }))
     .slice(0, 2);
+}
+
+function getStrongSeoLinks(destinationSlug: string) {
+  return strongSeoPages
+    .filter((page) => page.destinationSlug === destinationSlug && page.kind !== "destination-budget")
+    .map((page) => ({
+      href: page.path,
+      label: page.kind === "itinerary" ? "Itinerary" : "From origin",
+      title: page.title,
+    }))
+    .slice(0, 3);
 }
 
 function getDestinationBudgetPlanningPath(destinationSlug: string) {

@@ -140,6 +140,12 @@ const budgetTiers = [
     suggestedTripLength: "10 days",
   },
   {
+    budget: 3500,
+    travelStyle: "midRange",
+    tripLengthDays: 10,
+    suggestedTripLength: "10 days",
+  },
+  {
     budget: 4000,
     travelStyle: "midRange",
     tripLengthDays: 12,

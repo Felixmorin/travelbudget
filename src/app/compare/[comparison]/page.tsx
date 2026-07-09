@@ -19,8 +19,10 @@ import { createMetadata } from "@/lib/seo/metadata";
 import {
   createBreadcrumbSchema,
   createCollectionPageSchema,
+  createFAQSchema,
   createItemListSchema,
   serializeJsonLd,
+  type FAQItem,
 } from "@/lib/seo/schema";
 import { formatMoney } from "@/lib/format-money";
 
@@ -63,6 +65,7 @@ export default async function ComparisonPage({ params }: ComparePageProps) {
   const items = getComparisonItems(page);
   const path = getComparisonPath(page);
   const summary = getComparisonSummary(page, items);
+  const faqs = createComparisonFaqs(page);
   const jsonLd = [
     createCollectionPageSchema({
       name: page.title,
@@ -76,6 +79,7 @@ export default async function ComparisonPage({ params }: ComparePageProps) {
         description: item.destination.shortDescription,
       }))
     ),
+    createFAQSchema(faqs),
     createBreadcrumbSchema([
       { name: "Home", url: "/" },
       { name: "Compare", url: "/compare" },
@@ -170,6 +174,40 @@ export default async function ComparisonPage({ params }: ComparePageProps) {
           <InternalLink href="/destinations" label="Destinations" title="Browse city and country guides" />
           <InternalLink href="/tools/travel-budget-calculator" label="Tool" title="Build a custom trip budget" />
         </div>
+
+        <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_320px]">
+          <section className="rounded-[24px] border border-slate-200 bg-white p-6">
+            <h2 className="text-2xl font-semibold">Budget assumptions</h2>
+            <p className="mt-3 text-sm leading-7 text-slate-600">
+              These are CAD planning estimates for one mid-range traveler. They include flights, accommodation,
+              food, local transport, activities, and a buffer where destination data is available. Prices vary by
+              travel dates, season, availability, comfort level, departure airport, exchange rates, and travel style.
+            </p>
+          </section>
+          <aside className="rounded-[24px] border border-slate-200 bg-white p-6">
+            <h2 className="text-xl font-semibold">Plan from this comparison</h2>
+            <div className="mt-5 grid gap-3">
+              <Button asChild className="rounded-full bg-[#0B1D34] text-white hover:bg-[#0B1D34]">
+                <Link href="/tools/travel-budget-calculator">Check flights and hotels for this trip</Link>
+              </Button>
+              <Button asChild variant="outline" className="rounded-full bg-white">
+                <Link href="/tools/travel-budget-calculator">Send me this trip budget</Link>
+              </Button>
+            </div>
+          </aside>
+        </div>
+
+        <section className="mt-8 rounded-[24px] border border-slate-200 bg-white p-6">
+          <h2 className="text-2xl font-semibold">FAQ</h2>
+          <div className="mt-5 grid gap-4">
+            {faqs.map((faq) => (
+              <div key={faq.question} className="rounded-2xl bg-slate-50 p-4">
+                <h3 className="font-semibold text-slate-950">{faq.question}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{faq.answer}</p>
+              </div>
+            ))}
+          </div>
+        </section>
       </section>
     </main>
   );
@@ -217,4 +255,29 @@ function getDestinationBudgetPlanningPath(destinationSlug: string) {
 
 function formatTravelStyle(style: string) {
   return style === "midRange" ? "Mid-range" : style.charAt(0).toUpperCase() + style.slice(1);
+}
+
+function createComparisonFaqs(page: NonNullable<ReturnType<typeof getComparisonPage>>): FAQItem[] {
+  return [
+    {
+      question: `Does this ${page.title.toLowerCase()} comparison include flights?`,
+      answer:
+        "Yes. The destination estimates include flight planning amounts plus daily costs such as accommodation, food, local transport, activities, and buffer where available.",
+    },
+    {
+      question: "Are these live booking prices?",
+      answer:
+        "No. They are CAD planning estimates. Verify live flights, hotels, availability, baggage, and booking terms before making a purchase.",
+    },
+    {
+      question: "How should I choose between the destinations?",
+      answer:
+        "Compare the total estimate, the flight share, daily cost pressure, best months, and whether the destination style matches the trip you actually want.",
+    },
+    {
+      question: "What can change the final trip cost?",
+      answer:
+        "Dates, season, airport options, hotel comfort level, availability, exchange rates, activity choices, and travel style can all change the final total.",
+    },
+  ];
 }

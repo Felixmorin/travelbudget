@@ -4,6 +4,7 @@ import { destinations } from "@/lib/data/destinations";
 import { cityDestinations } from "@/lib/data/destination-hub";
 import { longTailGuides } from "@/lib/data/guides";
 import { comparisonPages, getComparisonPath } from "@/lib/programmatic/comparison-pages";
+import { getProgrammaticBudgetPath, programmaticBudgetPages } from "@/lib/programmatic/budget-pages";
 import { strongSeoPages } from "@/lib/programmatic/strong-seo-pages";
 import { createCanonicalUrl } from "@/lib/seo/metadata";
 
@@ -101,6 +102,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "monthly" as const,
     priority: 0.82,
   }));
+  const programmaticBudgetRoutes = programmaticBudgetPages.map((page) => ({
+    url: createCanonicalUrl(getProgrammaticBudgetPath(page)),
+    changeFrequency: "monthly" as const,
+    priority: 0.76,
+  }));
 
   return uniqueSitemapUrls([
     ...staticRoutes,
@@ -109,6 +115,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...comparisonRoutes,
     ...guideRoutes,
     ...strongSeoRoutes,
+    ...programmaticBudgetRoutes,
   ]);
 }
 

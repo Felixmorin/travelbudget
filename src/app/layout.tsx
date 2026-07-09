@@ -38,6 +38,14 @@ const travelpayoutDriveAttributes = {
   "data-no-defer": "1",
 } as Record<string, string>;
 
+const googleAnalyticsScript = `
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-LL509H3H2L');
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -49,6 +57,9 @@ export default function RootLayout({
       className={`${inter.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
+        {/* eslint-disable-next-line @next/next/next-script-for-ga -- Google requested this exact tag directly after <head>. */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-LL509H3H2L" />
+        <script dangerouslySetInnerHTML={{ __html: googleAnalyticsScript }} />
         <script
           {...travelpayoutDriveAttributes}
           dangerouslySetInnerHTML={{ __html: travelpayoutDriveScript }}

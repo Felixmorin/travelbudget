@@ -206,6 +206,82 @@ export const longTailGuides: LongTailGuide[] = [
     summary: "A focused Mexico City budget guide for a week of food, museums, neighborhoods, and local transport.",
     quickAnswer:
       "Mexico City can be one of the best urban value trips from Canada because food, museums, and local transport stay manageable even when flights are not at their lowest.",
+    costNotes: [
+      "Flights from Canada set the starting point, but Mexico City is often won or lost on neighborhood and hotel timing.",
+      "Food can stay controlled with markets, casual restaurants, bakeries, taquerias, and a few planned splurge meals.",
+      "Add a buffer for airport transfers, ride-hailing after dark, museum tickets, mobile data, and possible day trips.",
+    ],
+    itinerary: [
+      "Days 1-2: settle into Roma, Condesa, Centro, or a transit-friendly base and keep the first food stops simple.",
+      "Days 3-5: group museums, markets, parks, and neighborhoods by area to avoid unnecessary rides.",
+      "Days 6-7: add one bigger activity or day trip, then leave room for a slower final day and airport transfer timing.",
+    ],
+    seasonalNotes: [
+      "February, March, October, and November are useful value windows for weather and walking comfort.",
+      "Holiday weeks, major events, and last-minute stays in popular neighborhoods can lift hotel prices quickly.",
+      "Rainier months can still work if the itinerary has flexible museums, food halls, and indoor options.",
+    ],
+    internalLinks: [
+      {
+        label: "Mexico City destination guide",
+        href: "/destinations/mexico-city",
+        description: "Review city-level costs, best months, and related Mexico City planning pages.",
+      },
+      {
+        label: "Mexico City budget page",
+        href: "/destinations/mexico-city/travel-budget",
+        description: "See the stronger destination budget page with full breakdown and FAQs.",
+      },
+      {
+        label: "Montreal to Mexico City budget",
+        href: "/budget-travel/from-montreal-to-mexico-city",
+        description: "Compare the origin-specific trip budget from Montreal.",
+      },
+      {
+        label: "Travel budget calculator",
+        href: "/tools/travel-budget-calculator",
+        description: "Change origin, duration, and travel style for a custom estimate.",
+      },
+    ],
+    faqs: [
+      {
+        question: "How much should I budget for Mexico City from Canada?",
+        answer:
+          "Use a full-trip CAD estimate that includes flights, accommodation, food, local transport, activities, airport transfers, and a buffer. The exact total varies by origin, dates, season, comfort level, and availability.",
+      },
+      {
+        question: "Is Mexico City good for budget travelers?",
+        answer:
+          "Yes. Local food, transit, museums, parks, and self-guided neighborhoods can be affordable, but premium hotels and private tours can raise the total quickly.",
+      },
+      {
+        question: "Which costs are easiest to reduce in Mexico City?",
+        answer:
+          "Accommodation location, ride-hailing frequency, restaurant mix, and paid tour count are usually easier to adjust than the flight once dates are fixed.",
+      },
+      {
+        question: "Are the prices guaranteed?",
+        answer:
+          "No. GoByBudget.com uses planning estimates in CAD. Prices vary by dates, season, availability, exchange rates, airport, comfort level, and travel style.",
+      },
+    ],
+    sections: [
+      {
+        heading: "Choose the neighborhood before the hotel",
+        body:
+          "Mexico City hotel value depends heavily on neighborhood and mobility. A slightly cheaper stay can become inconvenient if it adds frequent rides, while a well-located transit-friendly area can reduce both time and local transport costs.",
+      },
+      {
+        heading: "Keep food flexible",
+        body:
+          "The city works well for mixed spending: markets and casual meals on some days, then one or two restaurants, food tours, or cocktail stops when they matter. That mix is usually better than treating every meal as either ultra-cheap or premium.",
+      },
+      {
+        heading: "Plan activity clusters",
+        body:
+          "Museums, parks, markets, and historic areas are easier to budget when grouped by area. This reduces ride-hailing, keeps days realistic, and helps protect the buffer for airport transfers or a bigger day trip.",
+      },
+    ],
   }),
   guide({
     slug: "cheap-places-to-travel-from-montreal",
@@ -307,6 +383,84 @@ export const longTailGuides: LongTailGuide[] = [
     originCity: "Montreal",
     durationDays: 10,
     summary: "Compare Spain and Portugal budget pressure for an Iberia trip.",
+    quickAnswer:
+      "Portugal often has the lower-cost edge for a focused Lisbon or Porto trip, while Spain can deliver more route variety. The better value depends on flights, hotel season, city mix, and whether you are adding trains or beaches.",
+    costNotes: [
+      "Compare the total route, not just the country: Lisbon plus Porto behaves differently from Madrid plus Barcelona or an Andalusia route.",
+      "Accommodation season is usually the biggest daily-cost swing, especially in coastal or high-demand city areas.",
+      "Add train or regional flight costs before assuming a multi-city Iberia itinerary is cheaper than one well-chosen base.",
+    ],
+    itinerary: [
+      "Option A: keep Portugal focused with Lisbon, Porto, and one day trip to reduce hotel changes.",
+      "Option B: keep Spain focused with Madrid, Barcelona, or Andalusia rather than trying to cover everything in 10 days.",
+      "Before booking: compare flights, hotels, intercity transport, food style, and activity plans in the same CAD estimate.",
+    ],
+    seasonalNotes: [
+      "May, June, September, and October are often stronger value windows for both countries than peak summer.",
+      "Beach-heavy Spain or Portugal routes can rise quickly in July and August.",
+      "City-focused winter trips can be cheaper, but weather and daylight may change the itinerary value.",
+    ],
+    internalLinks: [
+      {
+        label: "Portugal vs Spain comparison",
+        href: "/compare/portugal-vs-spain-travel-budget",
+        description: "Compare destination estimates and value tradeoffs side by side.",
+      },
+      {
+        label: "Portugal trip cost from Montreal",
+        href: "/guides/portugal-trip-cost-from-montreal",
+        description: "See a Montreal-focused Portugal budget guide.",
+      },
+      {
+        label: "Best Europe trips from Toronto under $3,000",
+        href: "/compare/best-europe-trips-from-toronto-under-3000",
+        description: "Compare Europe budget options from Toronto.",
+      },
+      {
+        label: "Travel budget calculator",
+        href: "/tools/travel-budget-calculator",
+        description: "Test Spain and Portugal with your own dates, origin, duration, and style.",
+      },
+    ],
+    faqs: [
+      {
+        question: "Is Spain or Portugal cheaper for a trip?",
+        answer:
+          "Portugal is often easier to keep lower for a focused Lisbon or Porto trip, but Spain can compete when flights, hotels, and routing line up. Compare the full itinerary in CAD before deciding.",
+      },
+      {
+        question: "What makes Spain more expensive than Portugal?",
+        answer:
+          "Barcelona, coastal summer stays, frequent city changes, premium restaurants, and paid attractions can raise the Spain budget quickly.",
+      },
+      {
+        question: "Can I visit both Spain and Portugal on one budget?",
+        answer:
+          "Yes, but add intercity transport, extra hotel changes, and buffer. A two-country trip can cost more than a focused one-country route.",
+      },
+      {
+        question: "Are the estimates guaranteed?",
+        answer:
+          "No. They are CAD planning estimates. Prices vary by dates, season, availability, departure airport, comfort level, exchange rates, and travel style.",
+      },
+    ],
+    sections: [
+      {
+        heading: "Compare route shape first",
+        body:
+          "A focused Portugal route can be cheaper than a broad Spain route, but a focused Spain route can beat an overpacked Portugal itinerary. Compare actual city choices, nights, and transport legs before comparing countries.",
+      },
+      {
+        heading: "Watch hotel seasonality",
+        body:
+          "Hotel pressure is the biggest budget risk in both countries. Peak summer, coastal weekends, and major events can erase the value advantage of either destination.",
+      },
+      {
+        heading: "Use a budget threshold",
+        body:
+          "If Spain or Portugal is within ten percent of your limit, test shoulder-season dates first. If it is well over budget, reduce city changes or choose the country where daily costs fit your travel style more naturally.",
+      },
+    ],
   }),
   guide({
     slug: "greece-island-hopping-budget",

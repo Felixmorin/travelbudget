@@ -5,7 +5,6 @@ import { useSyncExternalStore } from "react";
 
 import { getCookieConsent, subscribeToCookieConsent } from "@/lib/analytics/consent";
 
-const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 const clarityProjectId = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID;
 const plausibleDomain = process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN;
 const plausibleScriptSrc = process.env.NEXT_PUBLIC_PLAUSIBLE_SCRIPT_SRC ?? "https://plausible.io/js/script.js";
@@ -21,25 +20,6 @@ export function AnalyticsScripts() {
 
   return (
     <>
-      {gaMeasurementId ? (
-        <>
-          <Script
-            src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}
-            strategy="afterInteractive"
-          />
-          <Script id="google-analytics" strategy="afterInteractive">
-            {`
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', '${gaMeasurementId}', {
-                anonymize_ip: true,
-                send_page_view: true
-              });
-            `}
-          </Script>
-        </>
-      ) : null}
       {plausibleDomain ? (
         <Script
           defer

@@ -33,7 +33,7 @@ export type CollectionComparisonPage = BaseComparisonPage & {
   kind: "collection";
   sourceOriginSlug: string;
   sourceBudgetSlug: string;
-  destinationFilter: "warm";
+  destinationFilter: "warm" | "europe" | "asia";
 };
 
 export type ComparisonPageConfig = DestinationComparisonPage | CollectionComparisonPage;
@@ -102,6 +102,36 @@ export const comparisonPages: ComparisonPageConfig[] = [
     sourceBudgetSlug: "under-2500",
     destinationFilter: "warm",
   },
+  {
+    kind: "collection",
+    slug: "best-europe-trips-from-toronto-under-3000",
+    title: "Best Europe Trips from Toronto Under $3,000",
+    description:
+      "Compare Europe trips from Toronto under $3,000 CAD with estimated flights, daily costs, timing notes, and budget tradeoffs.",
+    searchIntent: "Best Europe trips from Toronto under $3000",
+    originCode: "YYZ",
+    originCity: "Toronto",
+    durationDays: 10,
+    travelStyle: "midRange",
+    sourceOriginSlug: "toronto",
+    sourceBudgetSlug: "under-3000",
+    destinationFilter: "europe",
+  },
+  {
+    kind: "collection",
+    slug: "best-asia-trips-from-vancouver-under-3500",
+    title: "Best Asia Trips from Vancouver Under $3,500",
+    description:
+      "Find Asia trips from Vancouver under $3,500 CAD with flight estimates, daily budgets, best-fit traveler styles, and cost-saving tradeoffs.",
+    searchIntent: "Best Asia trips from Vancouver under $3500",
+    originCode: "YVR",
+    originCity: "Vancouver",
+    durationDays: 10,
+    travelStyle: "midRange",
+    sourceOriginSlug: "vancouver",
+    sourceBudgetSlug: "under-3500",
+    destinationFilter: "asia",
+  },
 ];
 
 export function getComparisonPage(slug: string) {
@@ -126,7 +156,7 @@ export function getComparisonItems(page: ComparisonPageConfig): DestinationCompa
     }
 
     return getMatchingBudgetDestinations(budgetPage)
-      .filter((item) => isWarmDestination(item))
+      .filter((item) => matchesCollectionFilter(item, page.destinationFilter))
       .slice(0, 6)
       .map((item) => ({
         destination: item.destination,
@@ -180,7 +210,19 @@ export function getComparisonSummary(page: ComparisonPageConfig, items: Destinat
   )}. ${strongestScore.destination.name} has the stronger destination score at ${strongestScore.destination.score}/100.`;
 }
 
-function isWarmDestination(item: BudgetDestination) {
+function matchesCollectionFilter(item: BudgetDestination, filter: CollectionComparisonPage["destinationFilter"]) {
+  if (filter === "europe") {
+    return item.destination.countryName
+      ? isEuropeanDestination(item.destination.countryName)
+      : isEuropeanDestination(item.destination.name);
+  }
+
+  if (filter === "asia") {
+    return item.destination.countryName
+      ? isAsianDestination(item.destination.countryName)
+      : isAsianDestination(item.destination.name);
+  }
+
   const haystack = [
     item.destination.weather,
     item.destination.shortDescription,
@@ -191,6 +233,18 @@ function isWarmDestination(item: BudgetDestination) {
     .toLowerCase();
 
   return /warm|beach|coast|island|caribbean|tropical|sunny|january|february|march|december/.test(haystack);
+}
+
+function isEuropeanDestination(name: string) {
+  return /portugal|spain|france|italy|greece|turkey|hungary|czechia|prague|lisbon|porto|paris|rome|athens|budapest|istanbul|barcelona/i.test(
+    name
+  );
+}
+
+function isAsianDestination(name: string) {
+  return /japan|south korea|thailand|indonesia|taiwan|tokyo|osaka|kyoto|seoul|bangkok|bali|taipei/i.test(
+    name
+  );
 }
 
 function getBestFor(destination: Destination) {
