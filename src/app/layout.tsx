@@ -1,4 +1,5 @@
 import { Geist_Mono, Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { AnalyticsScripts } from "@/components/analytics/analytics-scripts";
 import { ConsentManagedAnalytics } from "@/components/analytics/consent-managed-analytics";
@@ -54,6 +55,12 @@ export default function RootLayout({
         />
       </head>
       <body className="flex min-h-full flex-col">
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6743160991638916"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
         <AnalyticsScripts />
         <LanguageProvider>
           <Header />
