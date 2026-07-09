@@ -4,6 +4,7 @@ import { destinations } from "@/lib/data/destinations";
 import { cityDestinations } from "@/lib/data/destination-hub";
 import { longTailGuides } from "@/lib/data/guides";
 import { comparisonPages, getComparisonPath } from "@/lib/programmatic/comparison-pages";
+import { strongSeoPages } from "@/lib/programmatic/strong-seo-pages";
 import { createCanonicalUrl } from "@/lib/seo/metadata";
 
 const staticRoutes: MetadataRoute.Sitemap = [
@@ -95,12 +96,31 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "monthly" as const,
     priority: 0.74,
   }));
+  const strongSeoRoutes = strongSeoPages.map((page) => ({
+    url: createCanonicalUrl(page.path),
+    changeFrequency: "monthly" as const,
+    priority: 0.82,
+  }));
 
-  return [
+  return uniqueSitemapUrls([
     ...staticRoutes,
     ...destinationRoutes,
     ...cityDestinationRoutes,
     ...comparisonRoutes,
     ...guideRoutes,
-  ];
+    ...strongSeoRoutes,
+  ]);
+}
+
+function uniqueSitemapUrls(routes: MetadataRoute.Sitemap): MetadataRoute.Sitemap {
+  const seen = new Set<string>();
+
+  return routes.filter((route) => {
+    if (seen.has(route.url)) {
+      return false;
+    }
+
+    seen.add(route.url);
+    return true;
+  });
 }

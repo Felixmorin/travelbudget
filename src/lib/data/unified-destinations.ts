@@ -32,7 +32,7 @@ export function getUnifiedDestination(slug: string) {
 }
 
 export function getUnifiedDestinationStaticParams() {
-  return unifiedDestinations.map((destination) => ({ slug: destination.slug }));
+  return uniqueSlugs(unifiedDestinations.map((destination) => destination.slug)).map((slug) => ({ slug }));
 }
 
 export function getCountryFallbackForCity(city: CityDestination) {
@@ -226,6 +226,10 @@ function getTravelStyleCostsTotal(value: number, days: number) {
 
 function roundToNearest(value: number, nearest: number) {
   return Math.round(value / nearest) * nearest;
+}
+
+function uniqueSlugs(slugs: string[]) {
+  return Array.from(new Set(slugs));
 }
 
 export { countryDestinations, getCityDestination, getDailyCostTotal, getDestination };

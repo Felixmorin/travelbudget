@@ -14,6 +14,7 @@ import {
   getComparisonSummary,
 } from "@/lib/programmatic/comparison-pages";
 import { getTravelBudgetPath, getTravelCostDurationPath } from "@/lib/programmatic/seo-pages";
+import { getStrongSeoDestinationBudgetPath } from "@/lib/programmatic/strong-seo-pages";
 import { createMetadata } from "@/lib/seo/metadata";
 import {
   createBreadcrumbSchema,
@@ -151,7 +152,7 @@ export default async function ComparisonPage({ params }: ComparePageProps) {
                     </Link>
                   </Button>
                   <Button asChild variant="outline" className="rounded-full bg-white">
-                    <Link href={getTravelBudgetPath(item.destination.slug)}>Travel budget</Link>
+                    <Link href={getDestinationBudgetPlanningPath(item.destination.slug)}>Travel budget</Link>
                   </Button>
                   <Button asChild variant="outline" className="rounded-full bg-white">
                     <Link href={getTravelCostDurationPath(item.destination.slug, page.durationDays)}>
@@ -208,6 +209,10 @@ function InternalLink({ href, label, title }: { href: string; label: string; tit
       <p className="mt-1 font-bold text-slate-950">{title}</p>
     </Link>
   );
+}
+
+function getDestinationBudgetPlanningPath(destinationSlug: string) {
+  return getStrongSeoDestinationBudgetPath(destinationSlug) ?? getTravelBudgetPath(destinationSlug);
 }
 
 function formatTravelStyle(style: string) {

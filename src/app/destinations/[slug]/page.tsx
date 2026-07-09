@@ -50,6 +50,7 @@ import {
   programmaticBudgetPages,
 } from "@/lib/programmatic/budget-pages";
 import { comparisonPages, getComparisonPath } from "@/lib/programmatic/comparison-pages";
+import { getStrongSeoDestinationBudgetPath } from "@/lib/programmatic/strong-seo-pages";
 
 type DestinationPageProps = {
   params: Promise<{ slug: string }>;
@@ -93,6 +94,7 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
     travelStyle: "midRange",
   });
   const hasSeoBudgetPage = destinationBudgetSeoSlugs.includes(destination.slug);
+  const destinationBudgetPath = getDestinationBudgetPlanningPath(destination.slug);
   const jsonLd = [
     createDestinationSchema(destination),
     createFAQSchema(destination.faqs),
@@ -305,7 +307,7 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
               </CardHeader>
               <CardContent className="grid gap-4 md:grid-cols-2">
                 <InternalPlanningLink
-                  href={getTravelBudgetPath(destination.slug)}
+                  href={destinationBudgetPath}
                   label="Travel budget"
                   title={`${destination.name} travel budget`}
                 />
@@ -374,14 +376,14 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
               {hasSeoBudgetPage ? (
                 <Button asChild variant="outline" className="rounded-xl bg-white">
                   <TrackedLink
-                    href={getTravelBudgetPath(destination.slug)}
+                    href={destinationBudgetPath}
                     eventName="cta_clicked"
                     eventProperties={{
                       page: `/destinations/${destination.slug}`,
                       destinationName: destination.name,
                       destinationSlug: destination.slug,
                       label: "Read budget methodology guide",
-                      href: getTravelBudgetPath(destination.slug),
+                      href: destinationBudgetPath,
                       ctaLocation: "destination_bottom_nav",
                     }}
                   >
@@ -644,7 +646,7 @@ export function CityDestinationPage({ destination }: { destination: CityDestinat
               ) : null}
               {getParentCountryDestination(destination) ? (
                 <InternalPlanningLink
-                  href={getTravelBudgetPath(getParentCountryDestination(destination)!.slug)}
+                  href={getDestinationBudgetPlanningPath(getParentCountryDestination(destination)!.slug)}
                   label="Travel budget"
                   title={`${destination.country} budget guide`}
                 />
@@ -791,6 +793,10 @@ function getDestinationComparisonLinks(destinationSlug: string) {
       title: page.title,
     }))
     .slice(0, 2);
+}
+
+function getDestinationBudgetPlanningPath(destinationSlug: string) {
+  return getStrongSeoDestinationBudgetPath(destinationSlug) ?? getTravelBudgetPath(destinationSlug);
 }
 
 function getParentCountryDestination(destination: CityDestination) {

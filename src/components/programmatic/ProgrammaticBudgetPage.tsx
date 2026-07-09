@@ -31,6 +31,7 @@ import {
   programmaticBudgetPages,
 } from "@/lib/programmatic/budget-pages";
 import { getTravelBudgetPath, getTravelCostDurationPath } from "@/lib/programmatic/seo-pages";
+import { getStrongSeoDestinationBudgetPath } from "@/lib/programmatic/strong-seo-pages";
 import type { FAQItem } from "@/lib/seo/schema";
 
 export function ProgrammaticBudgetPage({
@@ -345,7 +346,7 @@ export function ProgrammaticBudgetPage({
               <div key={item.destination.slug} className="rounded-xl bg-white p-4">
                 <p className="font-bold text-slate-950">{getCityCountryLabel(item.destination)}</p>
                 <div className="mt-3 grid gap-2 text-sm font-semibold text-[#0B1D34]">
-                  <Link href={getTravelBudgetPath(item.destination.slug)} className="hover:underline">
+                  <Link href={getDestinationBudgetPlanningPath(item.destination.slug)} className="hover:underline">
                     Full travel budget
                   </Link>
                   <Link
@@ -581,4 +582,8 @@ function InternalLink({ href, label, title }: { href: string; label: string; tit
       <p className="mt-1 font-bold text-slate-950">{title}</p>
     </Link>
   );
+}
+
+function getDestinationBudgetPlanningPath(destinationSlug: string) {
+  return getStrongSeoDestinationBudgetPath(destinationSlug) ?? getTravelBudgetPath(destinationSlug);
 }

@@ -15,7 +15,9 @@ export type DestinationBudgetSeoPage = {
   travelers: number;
 };
 
-export const destinationBudgetSeoSlugs = unifiedDestinations.map((destination) => destination.slug);
+export const destinationBudgetSeoSlugs = Array.from(
+  new Set(unifiedDestinations.map((destination) => destination.slug))
+);
 
 export const durationSeoPages = destinationBudgetSeoSlugs.flatMap((destinationSlug) =>
   [7, 10, 14].map((durationDays) => ({ destinationSlug, durationDays }))
