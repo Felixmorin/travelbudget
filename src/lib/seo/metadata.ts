@@ -81,7 +81,10 @@ export function createMetadata({
       ],
     },
     verification: {
-      google: "jVJI4xkMBorppRHJEYHJvFSzE7Eo_QAS-YJYiJVVR20",
+      google: [
+        "jVJI4xkMBorppRHJEYHJvFSzE7Eo_QAS-YJYiJVVR20",
+        "P_0ixPeiLlHMDQNChAQGfZWFmbV0itnPSvZkye21dFw",
+      ],
     },
     robots:
       robots ??
