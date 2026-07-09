@@ -1,4 +1,5 @@
 import { Geist_Mono, Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { AnalyticsScripts } from "@/components/analytics/analytics-scripts";
 import { ConsentManagedAnalytics } from "@/components/analytics/consent-managed-analytics";
@@ -20,6 +21,15 @@ const geistMono = Geist_Mono({
 
 export const metadata = createMetadata();
 
+const travelpayoutScriptAttributes: Record<string, string> = {
+  nowprocket: "",
+  "data-noptimize": "1",
+  "data-cfasync": "false",
+  "data-wpfc-render": "false",
+  "seraph-accel-crit": "1",
+  "data-no-defer": "1",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -40,6 +50,21 @@ export default function RootLayout({
         <ConsentManagedAnalytics />
         <CookieConsentBanner />
       </body>
+      <Script
+        id="travelpayout"
+        strategy="beforeInteractive"
+        {...travelpayoutScriptAttributes}
+        dangerouslySetInnerHTML={{
+          __html: `
+            (function () {
+              var script = document.createElement("script");
+              script.async = true;
+              script.src = "https://emrldco.com/NTQ4MTk4.js?t=548198";
+              document.head.appendChild(script);
+            })();
+          `,
+        }}
+      />
     </html>
   );
 }
