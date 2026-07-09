@@ -11,15 +11,6 @@ const plausibleDomain = process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN;
 const plausibleScriptSrc = process.env.NEXT_PUBLIC_PLAUSIBLE_SCRIPT_SRC ?? "https://plausible.io/js/script.js";
 const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
 const posthogHost = process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com";
-const travelpayoutScriptSrc = "https://emrldco.com/NTQ4MjEz.js?t=548213";
-const travelpayoutScriptAttributes: Record<string, string> = {
-  nowprocket: "",
-  "data-noptimize": "1",
-  "data-cfasync": "false",
-  "data-wpfc-render": "false",
-  "seraph-accel-crit": "1",
-  "data-no-defer": "1",
-};
 
 export function AnalyticsScripts() {
   const consent = useSyncExternalStore(subscribeToCookieConsent, getCookieConsent, () => null);
@@ -81,12 +72,6 @@ export function AnalyticsScripts() {
           `}
         </Script>
       ) : null}
-      <Script
-        id="travelpayout"
-        src={travelpayoutScriptSrc}
-        strategy="lazyOnload"
-        {...travelpayoutScriptAttributes}
-      />
     </>
   );
 }

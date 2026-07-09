@@ -20,6 +20,23 @@ const geistMono = Geist_Mono({
 
 export const metadata = createMetadata();
 
+const travelpayoutDriveScript = `
+  (function () {
+      var script = document.createElement("script");
+      script.async = 1;
+      script.src = 'https://emrldco.com/NTQ4MjEz.js?t=548213';
+      document.head.appendChild(script);
+  })();
+`;
+const travelpayoutDriveAttributes = {
+  nowprocket: "",
+  "data-noptimize": "1",
+  "data-cfasync": "false",
+  "data-wpfc-render": "false",
+  "seraph-accel-crit": "1",
+  "data-no-defer": "1",
+} as Record<string, string>;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -30,6 +47,12 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <script
+          {...travelpayoutDriveAttributes}
+          dangerouslySetInnerHTML={{ __html: travelpayoutDriveScript }}
+        />
+      </head>
       <body className="flex min-h-full flex-col">
         <AnalyticsScripts />
         <LanguageProvider>
