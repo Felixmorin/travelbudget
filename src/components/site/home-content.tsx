@@ -23,6 +23,7 @@ const matches = [
   {
     city: "Lisbon",
     country: "Portugal",
+    href: "/destinations/lisbon",
     price: "$2,320",
     variance: "-$180 Under Budget",
     image:
@@ -31,6 +32,7 @@ const matches = [
   {
     city: "Mexico City",
     country: "Mexico",
+    href: "/destinations/mexico-city",
     price: "$1,950",
     variance: "-$550 Under Budget",
     image:
@@ -39,6 +41,7 @@ const matches = [
   {
     city: "Paris",
     country: "France",
+    href: "/destinations/paris",
     price: "$2,480",
     variance: "-$20 Under Budget",
     image:
@@ -49,6 +52,7 @@ const matches = [
 const destinationCards = [
   {
     city: "Lisbon, Portugal",
+    href: "/destinations/lisbon",
     price: "$2,320 total",
     image:
       "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?auto=format&fit=crop&w=900&q=85",
@@ -62,6 +66,7 @@ const destinationCards = [
   },
   {
     city: "Mexico City, Mexico",
+    href: "/destinations/mexico-city",
     price: "$1,950 total",
     image:
       "https://images.unsplash.com/photo-1585464231875-d9ef1f5ad396?auto=format&fit=crop&w=900&q=85",
@@ -75,6 +80,7 @@ const destinationCards = [
   },
   {
     city: "Paris, France",
+    href: "/destinations/paris",
     price: "$2,480 total",
     image:
       "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=900&q=85",
@@ -89,10 +95,10 @@ const destinationCards = [
 ];
 
 const popularTrips = [
-  ["Long Haul", "Montreal to Tokyo", "Under $4,000"],
-  ["European Escape", "Montreal to Barcelona", "Under $2,200"],
-  ["Tropical Getaway", "Montreal to Bali", "Under $2,800"],
-  ["City Break", "Montreal to New York", "Under $1,200"],
+  ["Long Haul", "Montreal to Tokyo", "Under $4,000", "/destinations/tokyo"],
+  ["European Escape", "Montreal to Barcelona", "Under $2,200", "/destinations/barcelona"],
+  ["Tropical Getaway", "Montreal to Bali", "Under $2,800", "/destinations/bali"],
+  ["City Break", "Montreal to New York", "Under $1,200", "/destinations/new-york"],
 ];
 
 const methodology = [
@@ -160,8 +166,9 @@ export function HomeContent() {
               </span>
             </div>
             {matches.map((match) => (
-              <article
+              <Link
                 key={match.city}
+                href={match.href}
                 className="group flex cursor-pointer items-center gap-4 rounded-2xl border border-white/80 bg-white/60 p-4 transition hover:bg-white"
               >
                 <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl">
@@ -181,7 +188,7 @@ export function HomeContent() {
                   <div className="text-lg font-bold text-[#0B1D34]">{match.price}</div>
                   <div className="text-[10px] font-bold uppercase text-emerald-600">{match.variance}</div>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         </div>
@@ -197,8 +204,9 @@ export function HomeContent() {
           </div>
           <div className="grid gap-8 md:grid-cols-3">
             {destinationCards.map((destination) => (
-              <article
+              <Link
                 key={destination.city}
+                href={destination.href}
                 className="group overflow-hidden rounded-3xl border border-[#c3c6d7]/30 bg-white shadow-xl shadow-slate-950/5"
               >
                 <div className="relative h-64 overflow-hidden">
@@ -234,7 +242,7 @@ export function HomeContent() {
                     ))}
                   </div>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         </div>
@@ -252,10 +260,10 @@ export function HomeContent() {
           </Link>
         </div>
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {popularTrips.map(([category, route, budget]) => (
+          {popularTrips.map(([category, route, budget, href]) => (
             <Link
               key={route}
-              href="/destinations"
+              href={href}
               className="group block rounded-3xl border border-[#c3c6d7]/40 bg-white p-7 transition hover:border-[#14B8A6]/40 hover:shadow-lg"
             >
               <div className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">{category}</div>

@@ -51,6 +51,8 @@ export type AnalyticsEventProperties = {
   };
   cta_clicked: CommonAnalyticsProperties;
   compare_click: CommonAnalyticsProperties & {
+    compareAction?: string;
+    selectedDestinationSlugs?: string;
     selectedDestinations?: number;
   };
   email_capture: CommonAnalyticsProperties & {

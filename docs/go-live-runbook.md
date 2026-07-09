@@ -16,7 +16,10 @@ This runbook is the minimum operational checklist before launching GoByBudget.co
 - `AFFILIATE_ALLOWED_DOMAINS`
 - At least one analytics destination or a documented decision to rely only on server-side event storage.
 - Product/legal sign-off that the cookie consent banner copy and default opt-in flow match each target market.
-- `MONITORING_WEBHOOK_URL` and `MONITORING_WEBHOOK_SECRET` if webhook alerting is used.
+- Alerting must be configured by one of these options:
+  - `MONITORING_WEBHOOK_URL` and `MONITORING_WEBHOOK_SECRET` for webhook alerting.
+  - `INCIDENT_ALERTING_PROVIDER` and `INCIDENT_ALERTING_ESCALATION_TARGET` when alerting is handled outside this app.
+  - `INCIDENT_ALERTING_RUNBOOK_URL` is recommended for the external incident process.
 
 Do not use `SUPABASE_ANON_KEY` for server writes in production. The app intentionally requires `SUPABASE_SERVICE_ROLE_KEY` when `NODE_ENV=production`.
 
@@ -67,6 +70,22 @@ Minimum launch alerts:
 - Supabase insert failures from analytics, affiliate clicks, or email leads.
 - Deployment build failure.
 - Security audit failure in CI.
+
+Webhook verification:
+
+1. Set `MONITORING_WEBHOOK_URL` and `MONITORING_WEBHOOK_SECRET` in production.
+2. Deploy or restart the runtime so the new values are loaded.
+3. Send a protected verification request:
+
+```bash
+curl -X POST "$NEXT_PUBLIC_SITE_URL/api/monitoring/webhook-test" \
+  -H "Authorization: Bearer $MONITORING_WEBHOOK_SECRET"
+```
+
+4. Confirm the response has `ok: true`.
+5. Confirm the alert destination received `Monitoring webhook verification event.`
+
+If webhook alerting is not used, document the alternative provider and escalation target in `INCIDENT_ALERTING_PROVIDER` and `INCIDENT_ALERTING_ESCALATION_TARGET`. In production, `/api/health` is non-200 unless Supabase storage and one alerting path are configured.
 
 ## Rollback
 

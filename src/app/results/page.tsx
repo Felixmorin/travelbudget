@@ -1,22 +1,18 @@
-import Image from "next/image";
 import { connection } from "next/server";
 import {
   ArrowRight,
   BadgeCheck,
   Bed,
-  Clock3,
   Compass,
   Edit3,
   Globe2,
   Luggage,
   Plane,
   PlaneTakeoff,
-  Scale,
   ShieldCheck,
   SlidersHorizontal,
   Sparkles,
   Sun,
-  ThermometerSun,
   Utensils,
   WalletCards,
   type LucideIcon,
@@ -25,7 +21,6 @@ import {
 import { AnalyticsView } from "@/components/analytics/analytics-view";
 import { TrackedFilterForm } from "@/components/analytics/tracked-form";
 import { TrackedLink } from "@/components/analytics/tracked-link";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   recommendDestinations,
@@ -46,6 +41,7 @@ import {
   type ResultsSearchParams,
 } from "@/lib/results/filters";
 import { createResultsMetadata } from "@/lib/seo/metadata";
+import { ResultsComparisonSection } from "./compare-selection";
 
 export const metadata = createResultsMetadata();
 
@@ -53,7 +49,7 @@ type ResultsPageProps = {
   searchParams: Promise<ResultsSearchParams>;
 };
 
-type ResultDestination = {
+export type ResultDestination = {
   rank: number;
   slug: string;
   title: string;
@@ -124,11 +120,21 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
     toResultDestination(recommendation, index, parsedParams)
   );
   const featuredDestinations = destinations.slice(0, 6);
-  const topRecommendation = recommendations[0];
   const formattedBudget = formatMoney(parsedParams.budget, parsedParams.currency);
   const originLabel = formatOriginLabel(parsedParams.origin);
   const styleLabel = formatStyleLabel(parsedParams.style);
   const summaryText = `${formattedBudget} - ${parsedParams.days} days - ${originLabel} - ${styleLabel}`;
+  const analyticsContext = {
+    budget: parsedParams.budget,
+    currency: parsedParams.currency,
+    days: parsedParams.days,
+    month: parsedParams.month,
+    originCity: originLabel,
+    originCode: parsedParams.origin,
+    resultCount: recommendations.length,
+    travelers: parsedParams.travelers,
+    travelStyle: parsedParams.style,
+  };
 
   return (
     <main className="min-h-screen bg-[#f7f9fb] text-[#191c1e]">
@@ -167,25 +173,7 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
           <ResultsControls parsedParams={parsedParams} resultCount={recommendations.length} />
 
           {featuredDestinations.length > 0 ? (
-            <section className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {featuredDestinations.map((destination) => (
-                <DestinationCard
-                  key={destination.href}
-                  destination={destination}
-                  analyticsContext={{
-                    budget: parsedParams.budget,
-                    currency: parsedParams.currency,
-                    days: parsedParams.days,
-                    month: parsedParams.month,
-                    originCity: originLabel,
-                    originCode: parsedParams.origin,
-                    resultCount: recommendations.length,
-                    travelers: parsedParams.travelers,
-                    travelStyle: parsedParams.style,
-                  }}
-                />
-              ))}
-            </section>
+            <ResultsComparisonSection destinations={featuredDestinations} analyticsContext={analyticsContext} />
           ) : (
             <EmptyResultsState parsedParams={parsedParams} />
           )}
@@ -196,7 +184,6 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
         </div>
       </div>
 
-      {topRecommendation ? <ComparisonTray destinations={featuredDestinations.slice(0, 3)} /> : null}
     </main>
   );
 }
@@ -459,187 +446,6 @@ function Field({ children, label }: { children: React.ReactNode; label: string }
   );
 }
 
-function DestinationCard({
-  analyticsContext,
-  destination,
-}: {
-  analyticsContext: {
-    budget: number;
-    currency: string;
-    days: number;
-    month: string;
-    originCity: string;
-    originCode: string;
-    resultCount: number;
-    travelers: number;
-    travelStyle: string;
-  };
-  destination: ResultDestination;
-}) {
-  const isOverBudget = destination.budgetRemainingValue < 0;
-  const compareHref = getResultCompareHref(destination.slug);
-
-  return (
-    <article
-      className={`group flex h-full flex-col overflow-hidden rounded-3xl border bg-white/70 shadow-[0_18px_45px_-28px_rgba(15,23,42,0.45)] backdrop-blur-xl transition duration-500 hover:shadow-xl ${
-        isOverBudget ? "border-red-300/60" : "border-slate-200/80"
-      }`}
-    >
-      <div className="relative h-48 overflow-hidden">
-        <Image
-          src={destination.image}
-          alt={destination.alt}
-          fill
-          sizes="(min-width: 1280px) 28vw, (min-width: 768px) 45vw, 100vw"
-          className="object-cover transition duration-700 group-hover:scale-110"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/25 to-transparent" />
-        <div className="absolute left-4 top-4 flex max-w-[calc(100%-5rem)] flex-wrap gap-2">
-          <Badge className="rounded-full bg-gradient-to-br from-[#2563eb] to-[#7c3aed] px-3 py-1.5 text-xs font-bold text-white shadow-lg">
-            {destination.tag}
-          </Badge>
-          {isOverBudget ? (
-            <Badge className="rounded-full bg-red-600 px-3 py-1.5 text-xs font-bold text-white shadow-lg">
-              Over Budget
-            </Badge>
-          ) : null}
-        </div>
-      </div>
-
-      <div className="flex flex-1 flex-col p-6">
-        <div className="flex items-start justify-between gap-4">
-          <div className="min-w-0">
-            <h2 className="text-xl font-semibold leading-7 text-[#191c1e]">{destination.title}</h2>
-            <p className="mt-1 line-clamp-2 text-sm leading-6 text-[#434655]">{destination.summary}</p>
-          </div>
-          <div className="shrink-0 text-right">
-            <div className={`text-xl font-semibold ${isOverBudget ? "text-red-600" : "text-[#0B1D34]"}`}>
-              {destination.total}
-            </div>
-            <div className={`text-xs font-bold ${isOverBudget ? "text-red-600" : "text-[#006b5f]"}`}>
-              {destination.budgetDelta}
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-5">
-          <div className="mb-1 flex justify-between text-xs font-semibold">
-            <span className="text-[#737686]">Budget fit</span>
-            <span className={isOverBudget ? "text-red-600" : "text-[#191c1e]"}>
-              {destination.budgetFitPercent}%
-            </span>
-          </div>
-          <div className={`h-2 overflow-hidden rounded-full ${isOverBudget ? "bg-red-100" : "bg-[#eceef0]"}`}>
-            <div
-              className={`h-full rounded-full ${isOverBudget ? "bg-red-600" : "bg-[#0B1D34]"}`}
-              style={{ width: `${Math.min(destination.budgetFitPercent, 100)}%` }}
-            />
-          </div>
-        </div>
-
-        <dl className="mt-6 grid gap-2">
-          <BudgetLine icon={Plane} label="Flight" value={destination.flightCost} />
-          <BudgetLine icon={Bed} label="Stay" value={destination.stayCost} />
-          <BudgetLine icon={Utensils} label="Food" value={destination.foodCost} />
-        </dl>
-
-        <div className="mt-6 flex flex-wrap gap-4 border-t border-[#c3c6d7]/30 pt-4 text-xs font-medium text-[#737686]">
-          <MetaItem icon={Clock3}>{destination.flightTime}</MetaItem>
-          <MetaItem icon={destination.climate === "Tropical" ? ThermometerSun : Sun}>{destination.climate}</MetaItem>
-          <MetaItem icon={ShieldCheck}>{destination.entry}</MetaItem>
-        </div>
-
-        <div className="mt-8 flex gap-3">
-          <Button
-            asChild
-            className={`h-11 flex-1 rounded-xl font-bold text-white ${
-              isOverBudget
-                ? "bg-[#e0e3e5] text-[#434655] hover:bg-[#c3c6d7]"
-                : "bg-gradient-to-br from-[#2563eb] to-[#7c3aed] hover:opacity-90"
-            }`}
-          >
-            <TrackedLink
-              href={destination.href}
-              eventName="destination_card_clicked"
-              eventProperties={{
-                page: "/results",
-                ...analyticsContext,
-                destinationName: destination.title,
-                destinationSlug: destination.slug,
-                resultRank: destination.rank,
-                source: "results_grid",
-                tripLength: analyticsContext.days,
-              }}
-              secondaryEvents={[
-                {
-                  eventName: "result_clicked",
-                  eventProperties: {
-                    page: "/results",
-                    ...analyticsContext,
-                    destinationName: destination.title,
-                    destinationSlug: destination.slug,
-                    href: destination.href,
-                    resultRank: destination.rank,
-                    source: "results_grid",
-                    tripLength: analyticsContext.days,
-                  },
-                },
-              ]}
-            >
-              {isOverBudget ? "View details" : "View trip budget"}
-            </TrackedLink>
-          </Button>
-          <Button
-            asChild
-            variant="outline"
-            size="icon"
-            className="h-11 w-12 rounded-xl border-[#c3c6d7] bg-white/60 hover:bg-[#eceef0]"
-          >
-            <TrackedLink
-              href={compareHref}
-              eventName="compare_click"
-              eventProperties={{
-                page: "/results",
-                label: "Compare destination",
-                href: compareHref,
-                ctaLocation: "result_card",
-                destinationName: destination.title,
-                destinationSlug: destination.slug,
-                selectedDestinations: 3,
-                source: "result_card",
-              }}
-              aria-label={`Compare ${destination.title}`}
-            >
-              <Scale className="size-5" />
-            </TrackedLink>
-          </Button>
-        </div>
-      </div>
-    </article>
-  );
-}
-
-function BudgetLine({ icon: Icon, label, value }: { icon: LucideIcon; label: string; value: string }) {
-  return (
-    <div className="flex items-center justify-between text-base">
-      <dt className="flex items-center gap-2 text-[#434655]">
-        <Icon className="size-4" />
-        {label}
-      </dt>
-      <dd className="font-medium text-[#191c1e]">{value}</dd>
-    </div>
-  );
-}
-
-function MetaItem({ children, icon: Icon }: { children: React.ReactNode; icon: LucideIcon }) {
-  return (
-    <span className="inline-flex items-center gap-1">
-      <Icon className="size-4" />
-      {children}
-    </span>
-  );
-}
-
 function TrustModule() {
   const items = [
     { label: "Flights", icon: Plane },
@@ -753,74 +559,6 @@ function FinalCta() {
   );
 }
 
-function ComparisonTray({ destinations }: { destinations: ResultDestination[] }) {
-  if (destinations.length === 0) {
-    return null;
-  }
-
-  const compareHref = `/compare?${destinations
-    .map((destination) => `destination=${encodeURIComponent(destination.slug)}`)
-    .join("&")}`;
-
-  return (
-    <div className="fixed bottom-6 left-1/2 z-40 hidden w-[90%] max-w-4xl -translate-x-1/2 md:block">
-      <div className="flex items-center justify-between gap-6 rounded-full border border-[#0B1D34]/20 bg-white/80 px-8 py-4 shadow-2xl backdrop-blur-xl">
-        <div className="flex min-w-0 items-center gap-4">
-          <div className="flex -space-x-3">
-            {destinations.map((destination) => (
-              <div
-                key={destination.href}
-                className="relative size-10 overflow-hidden rounded-full border-2 border-white bg-[#eceef0]"
-              >
-                <Image
-                  src={destination.image}
-                  alt={`${destination.title} comparison thumbnail`}
-                  fill
-                  sizes="40px"
-                  className="object-cover"
-                />
-              </div>
-            ))}
-          </div>
-          <div className="truncate text-sm font-medium">
-            <span className="font-bold">{destinations.length} destinations selected:</span>{" "}
-            <span className="text-[#434655]">{destinations.map((destination) => destination.title.split(",")[0]).join(" - ")}</span>
-          </div>
-        </div>
-        <div className="flex shrink-0 items-center gap-4">
-          <Button asChild className="rounded-full bg-[#0B1D34] px-6 font-bold text-white hover:bg-[#0B1D34]">
-            <TrackedLink
-              href={compareHref}
-              eventName="compare_click"
-              eventProperties={{
-                page: "/results",
-                label: "Compare selected",
-                href: compareHref,
-                ctaLocation: "comparison_tray",
-                selectedDestinations: destinations.length,
-                source: "comparison_tray",
-              }}
-              secondaryEvents={[
-                {
-                  eventName: "cta_clicked",
-                  eventProperties: {
-                    page: "/results",
-                    label: "Compare selected",
-                    href: compareHref,
-                    ctaLocation: "comparison_tray",
-                  },
-                },
-              ]}
-            >
-              Compare selected
-            </TrackedLink>
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function EmptyResultsState({ parsedParams }: { parsedParams: ParsedSearchParams }) {
   return (
     <section className="rounded-[28px] border border-[#c3c6d7]/35 bg-white p-8 text-center shadow-[0_18px_45px_-26px_rgba(15,23,42,0.35)]">
@@ -894,12 +632,6 @@ function toResultDestination(
     entry: destination.countryCode === "CA" ? "Domestic" : "No visa",
     summary: recommendation.reasons[0] ?? destination.shortDescription,
   };
-}
-
-function getResultCompareHref(destinationSlug: string) {
-  const comparisonSlugs = Array.from(new Set([destinationSlug, "portugal", "vietnam"])).slice(0, 3);
-
-  return `/compare?${comparisonSlugs.map((slug) => `destination=${encodeURIComponent(slug)}`).join("&")}`;
 }
 
 function Pill({ children }: { children: React.ReactNode }) {
