@@ -55,6 +55,10 @@ export function EmailCaptureForm({
       ...eventProperties,
       emailDomain: normalizedEmail.split("@").at(1),
     });
+    trackEvent("email_capture_submit", {
+      ...eventProperties,
+      emailDomain: normalizedEmail.split("@").at(1),
+    });
     setSubmitted(true);
   }
 

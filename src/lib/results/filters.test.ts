@@ -86,8 +86,12 @@ describe("parseSearchParams", () => {
         travelers: "2",
         style: "mid-range",
         category: "cities",
+        continent: "Europe",
+        climate: "sunny",
         destination: "  south   korea  ",
+        flightTime: "medium",
         sort: "price-desc",
+        visaFriendly: "true",
       })
     ).toEqual({
       budget: 2750,
@@ -98,8 +102,12 @@ describe("parseSearchParams", () => {
       travelers: 2,
       style: "balanced",
       category: "city",
+      continent: "europe",
+      climate: "warm",
       destination: "south korea",
+      flightTime: "medium",
       sort: "price-desc",
+      visaFriendly: "yes",
     });
   });
 
@@ -130,11 +138,15 @@ describe("createResultsHref", () => {
     expect(
       createResultsHref(baseParams, {
         category: "food",
+        climate: "warm",
+        continent: "north-america",
         destination: "Mexico City",
+        flightTime: "short",
         sort: "score",
+        visaFriendly: "yes",
       })
     ).toBe(
-      "/results?budget=3000&currency=CAD&origin=YUL&days=10&month=october&travelers=1&style=balanced&category=food&destination=Mexico+City&sort=score"
+      "/results?budget=3000&currency=CAD&origin=YUL&days=10&month=october&travelers=1&style=balanced&category=food&continent=north-america&climate=warm&destination=Mexico+City&flightTime=short&sort=score&visaFriendly=yes"
     );
   });
 });
@@ -185,6 +197,21 @@ describe("filterAndSortRecommendations", () => {
     });
 
     expect(results.map((result) => result.destination.slug)).toContain("colombia");
+  });
+
+  it("filters by continent, climate, flight time, season, and visa-friendly values", () => {
+    const results = filterAndSortRecommendations(recommendations, {
+      ...baseParams,
+      climate: "warm",
+      continent: "north-america",
+      flightTime: "short",
+      month: "january",
+      visaFriendly: "yes",
+    });
+
+    expect(results).not.toHaveLength(0);
+    expect(results.every((result) => ["CA", "MX", "US"].includes(result.destination.countryCode))).toBe(true);
+    expect(results.every((result) => result.destination.bestMonths.map((month) => month.toLowerCase()).includes("january"))).toBe(true);
   });
 
   it("sorts by ascending and descending total price", () => {

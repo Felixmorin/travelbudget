@@ -33,7 +33,7 @@ export function buildAffiliateLink({
   return {
     href: trackedHref,
     isExternal,
-    rel: link.rel ?? (isExternal ? "sponsored noopener noreferrer" : undefined),
+    rel: link.rel ?? (isExternal ? "nofollow sponsored noopener noreferrer" : undefined),
     target: link.target ?? (isExternal ? "_blank" : undefined),
     provider: link.provider,
     partner: link.partner ?? link.provider,

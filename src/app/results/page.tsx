@@ -19,22 +19,28 @@ import {
 } from "lucide-react";
 
 import { AnalyticsView } from "@/components/analytics/analytics-view";
+import { EmailCaptureForm } from "@/components/analytics/email-capture-form";
 import { TrackedFilterForm } from "@/components/analytics/tracked-form";
 import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Button } from "@/components/ui/button";
+import { buildAffiliateLink, type BuiltAffiliateLink } from "@/lib/affiliate/build-affiliate-link";
 import {
   recommendDestinations,
   type DestinationRecommendation,
   type TravelStyle,
 } from "@/lib/budget/recommend-destinations";
+import type { AffiliateLink } from "@/lib/data/destinations";
 import {
   formatMoney,
   getOriginPricing,
 } from "@/lib/data/destinations";
-import { getCityCountryLabel, unifiedDestinations as destinationData } from "@/lib/data/unified-destinations";
+import { getCityCountryLabel, getDestinationCountryName, unifiedDestinations as destinationData } from "@/lib/data/unified-destinations";
 import {
   createResultsHref,
   filterAndSortRecommendations,
+  getClimateCategory,
+  getDestinationContinent,
+  getEstimatedFlightHours,
   parseSearchParams,
   type ParsedSearchParams,
   type ResultsCategory,
@@ -53,6 +59,7 @@ export type ResultDestination = {
   rank: number;
   slug: string;
   title: string;
+  country: string;
   tag: string;
   total: string;
   budgetDelta: string;
@@ -61,13 +68,26 @@ export type ResultDestination = {
   flightCost: string;
   stayCost: string;
   foodCost: string;
+  transportCost: string;
+  activitiesCost: string;
+  bufferCost: string;
   href: string;
   image: string;
   alt: string;
   flightTime: string;
   climate: string;
+  continent: string;
   entry: string;
+  bestFor: string;
+  bestSeason: string;
   summary: string;
+  affiliateLinks: ResultAffiliateLink[];
+};
+
+export type ResultAffiliateLink = BuiltAffiliateLink & {
+  actionLabel: string;
+  title: string;
+  type: AffiliateLink["type"];
 };
 
 const categoryFilters: { label: string; value: ResultsCategory; icon: LucideIcon }[] = [
@@ -123,7 +143,7 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
   const formattedBudget = formatMoney(parsedParams.budget, parsedParams.currency);
   const originLabel = formatOriginLabel(parsedParams.origin);
   const styleLabel = formatStyleLabel(parsedParams.style);
-  const summaryText = `${formattedBudget} - ${parsedParams.days} days - ${originLabel} - ${styleLabel}`;
+  const summaryText = `${formattedBudget} · ${parsedParams.days} days · From ${originLabel} · ${styleLabel}`;
   const analyticsContext = {
     budget: parsedParams.budget,
     currency: parsedParams.currency,
@@ -170,6 +190,8 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
             summaryText={summaryText}
           />
 
+          <TrustNote />
+
           <ResultsControls parsedParams={parsedParams} resultCount={recommendations.length} />
 
           {featuredDestinations.length > 0 ? (
@@ -178,8 +200,10 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
             <EmptyResultsState parsedParams={parsedParams} />
           )}
 
+          <EmailCaptureSection analyticsContext={analyticsContext} summaryText={summaryText} />
+          <AffiliateBookingBox analyticsContext={analyticsContext} destination={featuredDestinations[0]} />
           <TrustModule />
-          <SeoLinks budget={formattedBudget} origin={originLabel} />
+          <SeoLinks budget={formattedBudget} origin={originLabel} destinations={featuredDestinations} />
           <FinalCta />
         </div>
       </div>
@@ -242,17 +266,20 @@ function HeroSection({
     <section className="mb-10">
       <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <div>
+          <p className="mb-3 text-sm font-bold uppercase tracking-widest text-[#737686]">{summaryText}</p>
           <h1 className="max-w-3xl text-4xl font-bold leading-tight tracking-normal text-[#191c1e] sm:text-5xl">
             Best destinations for your budget
           </h1>
           <p className="mt-4 max-w-2xl text-lg leading-8 text-[#434655]">
-            We found realistic trip options based on your budget, trip length, departure city, and travel style.
+            Here are the best destinations that fit your budget.
           </p>
-          <div className="mt-4 flex items-start gap-2 text-sm font-medium text-[#737686]">
-            <ShieldCheck className="mt-0.5 size-5 shrink-0 text-[#0B1D34]" />
-            <span>
-              Estimates include flights, accommodation, food, local transport, activities, and a safety buffer.
-            </span>
+          <div className="mt-5 flex flex-wrap gap-2">
+            <Pill>{formatMoney(parsedParams.budget, parsedParams.currency)}</Pill>
+            <Pill>{parsedParams.days} days</Pill>
+            <Pill>From {formatOriginLabel(parsedParams.origin)}</Pill>
+            <Pill>{formatStyleLabel(parsedParams.style)}</Pill>
+            {parsedParams.climate !== "all" ? <Pill>{parsedParams.climate}</Pill> : null}
+            {parsedParams.continent !== "all" ? <Pill>{formatFilterLabel(parsedParams.continent)}</Pill> : null}
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-4">
@@ -284,7 +311,11 @@ function HeroSection({
             <input type="hidden" name="travelers" value={parsedParams.travelers} />
             <input type="hidden" name="style" value={parsedParams.style} />
             <input type="hidden" name="category" value={parsedParams.category} />
+            <input type="hidden" name="continent" value={parsedParams.continent} />
+            <input type="hidden" name="climate" value={parsedParams.climate} />
             <input type="hidden" name="destination" value={parsedParams.destination} />
+            <input type="hidden" name="flightTime" value={parsedParams.flightTime} />
+            <input type="hidden" name="visaFriendly" value={parsedParams.visaFriendly} />
             <select
               name="sort"
               defaultValue={parsedParams.sort}
@@ -306,6 +337,17 @@ function HeroSection({
             </Button>
           </TrackedFilterForm>
         </div>
+      </div>
+    </section>
+  );
+}
+
+function TrustNote() {
+  return (
+    <section className="mb-8 rounded-2xl border border-[#c3c6d7]/40 bg-white px-4 py-3 shadow-sm sm:px-5">
+      <div className="flex items-start gap-3 text-sm font-medium leading-6 text-[#434655]">
+        <ShieldCheck className="mt-0.5 size-5 shrink-0 text-[#006b5f]" />
+        <p>Estimate includes flights, hotel, food, local transport, activities and a buffer.</p>
       </div>
     </section>
   );
@@ -335,7 +377,7 @@ function ResultsControls({
           travelStyle: parsedParams.style,
           tripLength: parsedParams.days,
         }}
-        className="grid grid-cols-1 gap-3 rounded-3xl border border-[#c3c6d7]/35 bg-white/70 p-4 shadow-[0_18px_45px_-32px_rgba(15,23,42,0.45)] backdrop-blur sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-[minmax(8rem,0.8fr)_minmax(7rem,0.7fr)_minmax(10rem,1fr)_minmax(10rem,1fr)_minmax(12rem,1.2fr)_minmax(8rem,0.8fr)]"
+        className="grid grid-cols-1 gap-3 rounded-3xl border border-[#c3c6d7]/35 bg-white/70 p-4 shadow-[0_18px_45px_-32px_rgba(15,23,42,0.45)] backdrop-blur sm:grid-cols-2 lg:grid-cols-4"
       >
         <Field label="Budget">
           <input
@@ -357,6 +399,27 @@ function ResultsControls({
             className="field-input"
           />
         </Field>
+        <Field label="Continent">
+          <select name="continent" defaultValue={parsedParams.continent} className="field-input">
+            <option value="all">Any continent</option>
+            <option value="europe">Europe</option>
+            <option value="north-america">North America</option>
+            <option value="central-america">Central America</option>
+            <option value="south-america">South America</option>
+            <option value="asia">Asia</option>
+            <option value="africa">Africa</option>
+            <option value="oceania">Oceania</option>
+          </select>
+        </Field>
+        <Field label="Climate">
+          <select name="climate" defaultValue={parsedParams.climate} className="field-input">
+            <option value="all">Any climate</option>
+            <option value="warm">Warm</option>
+            <option value="mild">Mild</option>
+            <option value="tropical">Tropical</option>
+            <option value="cool">Cool</option>
+          </select>
+        </Field>
         <Field label="From">
           <select name="origin" defaultValue={parsedParams.origin} className="field-input">
             <option value="YUL">Montreal</option>
@@ -374,6 +437,36 @@ function ResultsControls({
             <option value="comfort">Comfort</option>
           </select>
         </Field>
+        <Field label="Flight time">
+          <select name="flightTime" defaultValue={parsedParams.flightTime} className="field-input">
+            <option value="all">Any flight time</option>
+            <option value="short">Short, up to 6h</option>
+            <option value="medium">Medium, 6-10h</option>
+            <option value="long">Long haul, 10h+</option>
+          </select>
+        </Field>
+        <Field label="Season">
+          <select name="month" defaultValue={parsedParams.month} className="field-input">
+            <option value="october">October / flexible</option>
+            <option value="january">January</option>
+            <option value="february">February</option>
+            <option value="march">March</option>
+            <option value="april">April</option>
+            <option value="may">May</option>
+            <option value="june">June</option>
+            <option value="july">July</option>
+            <option value="august">August</option>
+            <option value="september">September</option>
+            <option value="november">November</option>
+            <option value="december">December</option>
+          </select>
+        </Field>
+        <Field label="Visa">
+          <select name="visaFriendly" defaultValue={parsedParams.visaFriendly} className="field-input">
+            <option value="all">Any entry rules</option>
+            <option value="yes">Visa-friendly</option>
+          </select>
+        </Field>
         <Field label="Destination">
           <input
             name="destination"
@@ -389,7 +482,6 @@ function ResultsControls({
           </Button>
         </div>
         <input type="hidden" name="currency" value={parsedParams.currency} />
-        <input type="hidden" name="month" value={parsedParams.month} />
         <input type="hidden" name="travelers" value={parsedParams.travelers} />
         <input type="hidden" name="category" value={parsedParams.category} />
         <input type="hidden" name="sort" value={parsedParams.sort} />
@@ -499,13 +591,164 @@ function TrustModule() {
   );
 }
 
-function SeoLinks({ budget, origin }: { budget: string; origin: string }) {
+function EmailCaptureSection({
+  analyticsContext,
+  summaryText,
+}: {
+  analyticsContext: {
+    budget: number;
+    currency: string;
+    days: number;
+    month: string;
+    originCity: string;
+    originCode: string;
+    resultCount: number;
+    travelers: number;
+    travelStyle: string;
+  };
+  summaryText: string;
+}) {
+  return (
+    <section className="mt-14 rounded-3xl border border-[#c3c6d7]/35 bg-white p-6 shadow-[0_18px_45px_-32px_rgba(15,23,42,0.45)] md:p-8">
+      <div className="grid gap-5 md:grid-cols-[1fr_minmax(18rem,28rem)] md:items-center">
+        <div>
+          <h2 className="text-2xl font-semibold tracking-normal text-[#191c1e]">Send me this trip budget</h2>
+          <p className="mt-2 text-sm leading-6 text-[#434655]">
+            Get this search saved for {summaryText}. We will send the budget handoff when it is ready.
+          </p>
+        </div>
+        <EmailCaptureForm
+          buttonLabel="Send me this trip budget"
+          inputLabel="Email address for this trip budget"
+          eventProperties={{
+            page: "/results",
+            source: "results_email_capture",
+            ...analyticsContext,
+            tripLength: analyticsContext.days,
+          }}
+        />
+      </div>
+    </section>
+  );
+}
+
+function AffiliateBookingBox({
+  analyticsContext,
+  destination,
+}: {
+  analyticsContext: {
+    budget: number;
+    currency: string;
+    days: number;
+    month: string;
+    originCity: string;
+    originCode: string;
+    resultCount: number;
+    travelers: number;
+    travelStyle: string;
+  };
+  destination: ResultDestination | undefined;
+}) {
+  const links = buildBookingLinks(destination);
+
+  return (
+    <section className="mt-10 rounded-3xl border border-[#c3c6d7]/35 bg-[#f2f4f6] p-6 md:p-8">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 className="text-2xl font-semibold tracking-normal text-[#191c1e]">Book this trip smarter</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-[#434655]">
+            Check live booking prices against the estimate before you commit.
+          </p>
+        </div>
+      </div>
+      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        {links.map((link) => (
+          <TrackedLink
+            key={link.label}
+            href={link.href}
+            prefetch={false}
+            target={link.target}
+            rel={link.rel}
+            eventName="affiliate_click"
+            eventProperties={{
+              page: "/results",
+              ...analyticsContext,
+              affiliatePartner: link.partner,
+              affiliateProvider: link.provider,
+              affiliateType: link.type,
+              destinationName: destination?.title,
+              destinationSlug: destination?.slug,
+              href: link.href,
+              label: link.label,
+              source: "results_booking_box",
+              tripLength: analyticsContext.days,
+            }}
+            secondaryEvents={[
+              {
+                eventName: "affiliate_link_clicked",
+                eventProperties: {
+                  page: "/results",
+                  ...analyticsContext,
+                  affiliatePartner: link.partner,
+                  affiliateProvider: link.provider,
+                  affiliateType: link.type,
+                  destinationName: destination?.title,
+                  destinationSlug: destination?.slug,
+                  href: link.href,
+                  label: link.label,
+                  linkType: link.type,
+                  source: "results_booking_box",
+                  title: link.label,
+                  tripLength: analyticsContext.days,
+                },
+              },
+            ]}
+            className="flex min-h-24 flex-col justify-between rounded-2xl border border-[#c3c6d7]/45 bg-white p-4 text-sm font-bold text-[#0B1D34] transition hover:border-[#0B1D34]"
+          >
+            <span>{link.label}</span>
+            <span className="text-xs font-medium text-[#737686]">{link.hint}</span>
+          </TrackedLink>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function buildBookingLinks(destination: ResultDestination | undefined) {
+  const fallbackLinks = [
+    { label: "Compare flights", type: "Flights" as const, href: "https://www.skyscanner.ca/transport/flights/", hint: "Live fare search" },
+    { label: "Compare hotels", type: "Hotels" as const, href: "/destinations", hint: "Stay options" },
+    { label: "Get an eSIM", type: "eSIM" as const, href: "/tools/travel-budget-calculator", hint: "Mobile data" },
+    { label: "Compare travel insurance", type: "Insurance" as const, href: "/tools/travel-budget-calculator", hint: "Coverage check" },
+    { label: "Find activities", type: "Activities" as const, href: "/destinations", hint: "Tours and experiences" },
+  ];
+
+  return fallbackLinks.map((fallbackLink) => {
+    const destinationLink = destination?.affiliateLinks.find((link) => link.type === fallbackLink.type);
+
+    return {
+      href: destinationLink?.href ?? fallbackLink.href,
+      hint: fallbackLink.hint,
+      label: fallbackLink.label,
+      partner: destinationLink?.partner,
+      provider: destinationLink?.provider,
+      rel: destinationLink?.rel ?? (fallbackLink.href.startsWith("http") ? "nofollow sponsored noopener noreferrer" : undefined),
+      target: destinationLink?.target ?? (fallbackLink.href.startsWith("http") ? "_blank" : undefined),
+      type: fallbackLink.type,
+    };
+  });
+}
+
+function SeoLinks({ budget, destinations, origin }: { budget: string; destinations: ResultDestination[]; origin: string }) {
+  const primaryDestination = destinations[0];
+  const secondaryDestination = destinations[1];
   const links = [
-    "Best Europe trips",
-    "Best warm destinations",
-    "Cheapest 10-day trips",
-    "Montreal to Lisbon budget",
-    "Montreal to Mexico City budget",
+    { label: "Travel budget calculator", href: "/tools/travel-budget-calculator" },
+    { label: "Destinations hub", href: "/destinations" },
+    { label: `${primaryDestination?.title.split(",")[0] ?? "Portugal"} travel budget`, href: `/travel-budget/${primaryDestination?.slug ?? "portugal"}` },
+    { label: `${secondaryDestination?.title.split(",")[0] ?? "Mexico"} travel cost guide`, href: `/travel-cost/${secondaryDestination?.slug ?? "mexico"}/10-days` },
+    { label: "Compare destinations", href: "/compare" },
+    { label: "Budget travel guides", href: "/guides" },
   ];
 
   return (
@@ -516,17 +759,17 @@ function SeoLinks({ budget, origin }: { budget: string; origin: string }) {
       <div className="flex flex-wrap gap-x-12 gap-y-4">
         {links.map((link) => (
           <TrackedLink
-            key={link}
-            href="/guides"
+            key={link.href}
+            href={link.href}
             eventName="guide_clicked"
             eventProperties={{
               page: "/results",
-              guideTitle: link,
-              href: "/guides",
+              guideTitle: link.label,
+              href: link.href,
             }}
             className="text-base text-[#434655] transition hover:text-[#0B1D34]"
           >
-            {link}
+            {link.label}
           </TrackedLink>
         ))}
       </div>
@@ -605,7 +848,8 @@ function toResultDestination(
 ): ResultDestination {
   const { costBreakdown, destination } = recommendation;
   const title = getCityCountryLabel(destination);
-  const climate = destination.weather.toLowerCase().includes("tropical") ? "Tropical" : destination.weather.split(" ")[0] ?? "Mild";
+  const country = getDestinationCountryName(destination);
+  const climate = formatFilterLabel(getClimateCategory(destination.weather));
   const budgetFitPercent = budget > 0 ? Math.round((recommendation.estimatedTotal / budget) * 100) : 100;
   const budgetDelta =
     recommendation.budgetRemaining >= 0
@@ -616,6 +860,7 @@ function toResultDestination(
     rank: index + 1,
     slug: destination.slug,
     title,
+    country,
     tag: destination.travelStyles.slice(0, 2).join(" + "),
     total: formatMoney(recommendation.estimatedTotal, currency),
     budgetDelta,
@@ -624,14 +869,53 @@ function toResultDestination(
     flightCost: formatMoney(costBreakdown.flights, currency),
     stayCost: formatMoney(costBreakdown.hotel, currency),
     foodCost: formatMoney(costBreakdown.food, currency),
+    transportCost: formatMoney(costBreakdown.transport, currency),
+    activitiesCost: formatMoney(costBreakdown.activities, currency),
+    bufferCost: formatMoney(costBreakdown.misc, currency),
     href: `/travel-budget/${destination.slug}`,
     image: destination.image,
     alt: `${title} destination cost preview`,
-    flightTime: flightTimeBySlug[destination.slug] ?? (days > 12 ? "10h+" : "7h 30m"),
+    flightTime: flightTimeBySlug[destination.slug] ?? formatFlightHours(getEstimatedFlightHours(destination.slug), days),
     climate,
-    entry: destination.countryCode === "CA" ? "Domestic" : "No visa",
+    continent: formatFilterLabel(getDestinationContinent(destination.countryCode)),
+    entry: destination.countryCode === "CA" ? "Domestic" : "Visa-friendly",
+    bestFor: destination.travelStyles.slice(0, 3).join(", "),
+    bestSeason: destination.bestMonths.slice(0, 4).join(", "),
     summary: recommendation.reasons[0] ?? destination.shortDescription,
+    affiliateLinks: destination.affiliateLinks.map((link) => toResultAffiliateLink(destination, link)),
   };
+}
+
+function toResultAffiliateLink(
+  destination: DestinationRecommendation["destination"],
+  link: AffiliateLink
+): ResultAffiliateLink {
+  return {
+    ...buildAffiliateLink({ destination, link }),
+    actionLabel: getAffiliateActionLabel(link.type),
+    title: link.title,
+    type: link.type,
+  };
+}
+
+function getAffiliateActionLabel(type: AffiliateLink["type"]) {
+  if (type === "Flights") {
+    return "Check flight prices";
+  }
+
+  if (type === "Hotels") {
+    return "Compare hotels";
+  }
+
+  if (type === "eSIM") {
+    return "Get an eSIM";
+  }
+
+  if (type === "Insurance") {
+    return "Compare travel insurance";
+  }
+
+  return "Find activities";
 }
 
 function Pill({ children }: { children: React.ReactNode }) {
@@ -658,4 +942,23 @@ function formatOriginLabel(originCode: string) {
   const originPricing = destinationData[0] ? getOriginPricing(destinationData[0], originCode) : undefined;
 
   return originPricing?.originCity ? `${originPricing.originCity} (${originCode})` : originCode;
+}
+
+function formatFilterLabel(value: string) {
+  if (value === "all") {
+    return "Flexible";
+  }
+
+  return value
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+function formatFlightHours(hours: number, days: number) {
+  if (hours > 10) {
+    return "10h+";
+  }
+
+  return days > 12 ? `${Math.max(hours, 7)}h` : `${hours}h`;
 }

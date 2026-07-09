@@ -23,6 +23,11 @@ export function TrackedFilterForm({ children, eventProperties, ...props }: Track
       filterName: target.name,
       filterValue: target.value,
     });
+    trackEvent("filter_change", {
+      ...eventProperties,
+      filterName: target.name,
+      filterValue: target.value,
+    });
   }
 
   return (

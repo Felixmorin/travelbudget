@@ -10,6 +10,8 @@ import {
   ShieldCheck,
   Sun,
   ThermometerSun,
+  Ticket,
+  Train,
   Utensils,
   X,
   type LucideIcon,
@@ -59,10 +61,24 @@ export function ResultsComparisonSection({
       const isSelected = currentSlugs.includes(destination.slug);
       const nextSlugs = isSelected
         ? currentSlugs.filter((slug) => slug !== destination.slug)
-        : [...currentSlugs, destination.slug].slice(0, 4);
+        : [...currentSlugs, destination.slug].slice(0, 3);
       const compareHref = getCompareHref(nextSlugs);
 
       trackEvent("compare_click", {
+        page: "/results",
+        label: isSelected ? "Remove from compare" : "Add to compare",
+        href: compareHref,
+        ctaLocation: "result_card",
+        compareAction: isSelected ? "remove" : "add",
+        destinationName: destination.title,
+        destinationSlug: destination.slug,
+        selectedDestinationSlugs: nextSlugs.join(","),
+        selectedDestinations: nextSlugs.length,
+        source: "result_card",
+        ...context,
+        tripLength: context.days,
+      });
+      trackEvent("compare_destination", {
         page: "/results",
         label: isSelected ? "Remove from compare" : "Add to compare",
         href: compareHref,
@@ -94,6 +110,7 @@ export function ResultsComparisonSection({
       </section>
 
       <ComparisonTray destinations={selectedDestinations} />
+      <InlineComparison destinations={selectedDestinations} />
     </CompareSelectionContext.Provider>
   );
 }
@@ -140,7 +157,8 @@ function DestinationCard({
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
             <h2 className="text-xl font-semibold leading-7 text-[#191c1e]">{destination.title}</h2>
-            <p className="mt-1 line-clamp-2 text-sm leading-6 text-[#434655]">{destination.summary}</p>
+            <p className="mt-1 text-sm font-medium text-[#737686]">{destination.country}</p>
+            <p className="mt-2 line-clamp-2 text-sm leading-6 text-[#434655]">{destination.summary}</p>
           </div>
           <div className="shrink-0 text-right">
             <div className={`text-xl font-semibold ${isOverBudget ? "text-red-600" : "text-[#0B1D34]"}`}>
@@ -168,10 +186,19 @@ function DestinationCard({
         </div>
 
         <dl className="mt-6 grid gap-2">
-          <BudgetLine icon={Plane} label="Flight" value={destination.flightCost} />
-          <BudgetLine icon={Bed} label="Stay" value={destination.stayCost} />
+          <BudgetLine icon={Plane} label="Flights" value={destination.flightCost} />
+          <BudgetLine icon={Bed} label="Hotels" value={destination.stayCost} />
           <BudgetLine icon={Utensils} label="Food" value={destination.foodCost} />
+          <BudgetLine icon={Train} label="Transport" value={destination.transportCost} />
+          <BudgetLine icon={Ticket} label="Activities" value={destination.activitiesCost} />
+          <BudgetLine icon={ShieldCheck} label="Buffer" value={destination.bufferCost} />
         </dl>
+
+        <div className="mt-5 grid gap-3 rounded-2xl bg-[#f7f9fb] p-4 text-sm leading-6">
+          <InfoLine label="Best for" value={destination.bestFor} />
+          <InfoLine label="Best season" value={destination.bestSeason} />
+          <InfoLine label="Why it fits" value={destination.summary} />
+        </div>
 
         <div className="mt-6 flex flex-wrap gap-4 border-t border-[#c3c6d7]/30 pt-4 text-xs font-medium text-[#737686]">
           <MetaItem icon={Clock3}>{destination.flightTime}</MetaItem>
@@ -202,6 +229,19 @@ function DestinationCard({
               }}
               secondaryEvents={[
                 {
+                  eventName: "destination_card_click",
+                  eventProperties: {
+                    page: "/results",
+                    ...analyticsContext,
+                    destinationName: destination.title,
+                    destinationSlug: destination.slug,
+                    href: destination.href,
+                    resultRank: destination.rank,
+                    source: "results_grid",
+                    tripLength: analyticsContext.days,
+                  },
+                },
+                {
                   eventName: "result_clicked",
                   eventProperties: {
                     page: "/results",
@@ -216,7 +256,7 @@ function DestinationCard({
                 },
               ]}
             >
-              {isOverBudget ? "View details" : "View trip budget"}
+              View full budget
             </TrackedLink>
           </Button>
           <Button
@@ -235,8 +275,72 @@ function DestinationCard({
             {isSelected ? <X className="size-5" /> : <Scale className="size-5" />}
           </Button>
         </div>
+
+        <AffiliateCta analyticsContext={analyticsContext} destination={destination} />
       </div>
     </article>
+  );
+}
+
+function AffiliateCta({
+  analyticsContext,
+  destination,
+}: {
+  analyticsContext: ResultsAnalyticsContext;
+  destination: ResultDestination;
+}) {
+  const preferredLink =
+    destination.affiliateLinks.find((link) => link.type === "Flights") ??
+    destination.affiliateLinks.find((link) => link.type === "Hotels");
+
+  if (!preferredLink) {
+    return null;
+  }
+
+  return (
+    <TrackedLink
+      href={preferredLink.href}
+      prefetch={false}
+      target={preferredLink.target}
+      rel={preferredLink.rel}
+      eventName="affiliate_click"
+      eventProperties={{
+        page: "/results",
+        ...analyticsContext,
+        affiliatePartner: preferredLink.partner,
+        affiliateProvider: preferredLink.provider,
+        affiliateType: preferredLink.type,
+        destinationName: destination.title,
+        destinationSlug: destination.slug,
+        href: preferredLink.href,
+        label: preferredLink.actionLabel,
+        source: "destination_card_secondary_cta",
+        tripLength: analyticsContext.days,
+      }}
+      secondaryEvents={[
+        {
+          eventName: "affiliate_link_clicked",
+          eventProperties: {
+            page: "/results",
+            ...analyticsContext,
+            affiliatePartner: preferredLink.partner,
+            affiliateProvider: preferredLink.provider,
+            affiliateType: preferredLink.type,
+            destinationName: destination.title,
+            destinationSlug: destination.slug,
+            href: preferredLink.href,
+            label: preferredLink.actionLabel,
+            linkType: preferredLink.type,
+            source: "destination_card_secondary_cta",
+            title: preferredLink.title,
+            tripLength: analyticsContext.days,
+          },
+        },
+      ]}
+      className="mt-3 inline-flex h-11 items-center justify-center rounded-xl border border-[#c3c6d7] bg-white px-4 text-sm font-bold text-[#0B1D34] transition hover:bg-[#eceef0]"
+    >
+      {preferredLink.actionLabel}
+    </TrackedLink>
   );
 }
 
@@ -335,6 +439,65 @@ function BudgetLine({ icon: Icon, label, value }: { icon: LucideIcon; label: str
   );
 }
 
+function InfoLine({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <span className="font-bold text-[#191c1e]">{label}: </span>
+      <span className="text-[#434655]">{value}</span>
+    </div>
+  );
+}
+
+function InlineComparison({ destinations }: { destinations: ResultDestination[] }) {
+  if (destinations.length < 2) {
+    return (
+      <section className="mt-8 rounded-3xl border border-dashed border-[#c3c6d7] bg-white/60 p-6 text-sm font-medium text-[#434655]">
+        Select 2 to 3 destinations to compare total cost, flights, hotels, food, budget fit, season, and trip style.
+      </section>
+    );
+  }
+
+  return (
+    <section className="mt-10 overflow-hidden rounded-3xl border border-[#c3c6d7]/40 bg-white shadow-[0_18px_45px_-32px_rgba(15,23,42,0.45)]">
+      <div className="border-b border-[#c3c6d7]/30 p-5">
+        <h2 className="text-2xl font-semibold tracking-normal text-[#191c1e]">
+          Compare {destinations.map((destination) => destination.title.split(",")[0]).join(" vs ")}
+        </h2>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[720px] text-left text-sm">
+          <thead className="bg-[#f7f9fb] text-xs uppercase tracking-wider text-[#737686]">
+            <tr>
+              <th className="px-5 py-3">Destination</th>
+              <th className="px-5 py-3">Total cost</th>
+              <th className="px-5 py-3">Flight</th>
+              <th className="px-5 py-3">Hotel</th>
+              <th className="px-5 py-3">Food</th>
+              <th className="px-5 py-3">Budget fit</th>
+              <th className="px-5 py-3">Best season</th>
+              <th className="px-5 py-3">Best for</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-[#c3c6d7]/25">
+            {destinations.map((destination) => (
+              <tr key={destination.slug}>
+                <td className="px-5 py-4 font-semibold text-[#191c1e]">{destination.title}</td>
+                <td className="px-5 py-4 text-[#0B1D34]">{destination.total}</td>
+                <td className="px-5 py-4">{destination.flightCost}</td>
+                <td className="px-5 py-4">{destination.stayCost}</td>
+                <td className="px-5 py-4">{destination.foodCost}</td>
+                <td className="px-5 py-4">{destination.budgetFitPercent}%</td>
+                <td className="px-5 py-4">{destination.bestSeason}</td>
+                <td className="px-5 py-4">{destination.bestFor}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+
 function MetaItem({ children, icon: Icon }: { children: React.ReactNode; icon: LucideIcon }) {
   return (
     <span className="inline-flex items-center gap-1">
@@ -355,7 +518,7 @@ function useCompareSelection() {
 }
 
 function getCompareHref(destinationSlugs: string[]) {
-  const uniqueSlugs = Array.from(new Set(destinationSlugs)).slice(0, 4);
+  const uniqueSlugs = Array.from(new Set(destinationSlugs)).slice(0, 3);
   const params = new URLSearchParams();
 
   uniqueSlugs.forEach((slug) => params.append("destination", slug));

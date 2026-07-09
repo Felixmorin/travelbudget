@@ -37,6 +37,7 @@ export type AnalyticsEventProperties = {
     resultsCount?: number;
   };
   destination_card_clicked: CommonAnalyticsProperties;
+  destination_card_click: CommonAnalyticsProperties;
   destination_viewed: CommonAnalyticsProperties;
   calculator_started: CommonAnalyticsProperties;
   calculator_updated: CalculatorEventProperties;
@@ -50,12 +51,24 @@ export type AnalyticsEventProperties = {
     resultsCount?: number;
   };
   cta_clicked: CommonAnalyticsProperties;
+  affiliate_click: CommonAnalyticsProperties & {
+    linkType?: string;
+    title?: string;
+  };
   compare_click: CommonAnalyticsProperties & {
     compareAction?: string;
     selectedDestinationSlugs?: string;
     selectedDestinations?: number;
   };
+  compare_destination: CommonAnalyticsProperties & {
+    compareAction?: string;
+    selectedDestinationSlugs?: string;
+    selectedDestinations?: number;
+  };
   email_capture: CommonAnalyticsProperties & {
+    emailDomain?: string;
+  };
+  email_capture_submit: CommonAnalyticsProperties & {
     emailDomain?: string;
   };
   affiliate_module_viewed: CommonAnalyticsProperties;
@@ -71,6 +84,11 @@ export type AnalyticsEventProperties = {
     resultRank?: number;
   };
   filter_changed: CommonAnalyticsProperties & {
+    filterName?: string;
+    filterValue?: string | number | boolean | null;
+    previousValue?: string | number | boolean | null;
+  };
+  filter_change: CommonAnalyticsProperties & {
     filterName?: string;
     filterValue?: string | number | boolean | null;
     previousValue?: string | number | boolean | null;
@@ -91,6 +109,7 @@ export const analyticsEventNames = [
   "search_started",
   "search_completed",
   "destination_card_clicked",
+  "destination_card_click",
   "destination_viewed",
   "calculator_started",
   "calculator_updated",
@@ -102,12 +121,16 @@ export const analyticsEventNames = [
   "budget_calculator_cta_clicked",
   "budget_result_viewed",
   "cta_clicked",
+  "affiliate_click",
   "compare_click",
+  "compare_destination",
   "email_capture",
+  "email_capture_submit",
   "affiliate_module_viewed",
   "affiliate_link_clicked",
   "guide_viewed",
   "result_clicked",
   "filter_changed",
+  "filter_change",
   "guide_clicked",
 ] as const satisfies readonly AnalyticsEventName[];
