@@ -94,12 +94,12 @@ export function createFAQSchema(faqs: FAQItem[]): SchemaObject {
 export function createTravelToolSchema(): SchemaObject {
   return withContext({
     "@type": "WebApplication",
-    name: "Travel Budget Calculator",
+    name: "Trip Budget Test",
     url: createCanonicalUrl("/tools/travel-budget-calculator"),
     applicationCategory: "TravelApplication",
     operatingSystem: "Any",
     description:
-      "Estimate your travel budget based on destination, trip length, flights, accommodation, food, activities, transportation, insurance, and daily spending.",
+      "Answer a few questions and discover destinations that may fit your budget, departure city, trip length, timing, and travel style.",
     offers: {
       "@type": "Offer",
       price: "0",
