@@ -220,9 +220,9 @@ function DestinationCard({
             </TrackedLink>
           </Button>
           <Button
-            type="button"
             variant={isSelected ? "default" : "outline"}
             size="icon"
+            type="button"
             className={`h-11 w-12 rounded-xl ${
               isSelected
                 ? "bg-[#0B1D34] text-white hover:bg-[#0B1D34]"
@@ -249,8 +249,8 @@ function ComparisonTray({ destinations }: { destinations: ResultDestination[] })
   const canCompare = destinations.length >= 2;
 
   return (
-    <div className="fixed bottom-6 left-1/2 z-40 hidden w-[90%] max-w-4xl -translate-x-1/2 md:block">
-      <div className="flex items-center justify-between gap-6 rounded-full border border-[#0B1D34]/20 bg-white/80 px-8 py-4 shadow-2xl backdrop-blur-xl">
+    <div className="fixed inset-x-4 bottom-4 z-40 mx-auto max-w-4xl md:bottom-6">
+      <div className="flex flex-col gap-4 rounded-3xl border border-[#0B1D34]/20 bg-white/90 px-5 py-4 shadow-2xl backdrop-blur-xl md:flex-row md:items-center md:justify-between md:gap-6 md:rounded-full md:px-8">
         <div className="flex min-w-0 items-center gap-4">
           <div className="flex -space-x-3">
             {destinations.map((destination) => (
@@ -268,7 +268,7 @@ function ComparisonTray({ destinations }: { destinations: ResultDestination[] })
               </div>
             ))}
           </div>
-          <div className="truncate text-sm font-medium">
+          <div className="min-w-0 text-sm font-medium md:truncate">
             <span className="font-bold">
               {destinations.length} {destinations.length === 1 ? "destination" : "destinations"} selected:
             </span>{" "}
@@ -278,7 +278,7 @@ function ComparisonTray({ destinations }: { destinations: ResultDestination[] })
         </div>
         <div className="flex shrink-0 items-center gap-4">
           {canCompare ? (
-            <Button asChild className="rounded-full bg-[#0B1D34] px-6 font-bold text-white hover:bg-[#0B1D34]">
+            <Button asChild className="h-11 w-full rounded-full bg-[#0B1D34] px-6 font-bold text-white hover:bg-[#0B1D34] md:w-auto">
               <TrackedLink
                 href={compareHref}
                 eventName="compare_click"
@@ -312,7 +312,7 @@ function ComparisonTray({ destinations }: { destinations: ResultDestination[] })
             <Button
               type="button"
               disabled
-              className="rounded-full bg-[#c3c6d7] px-6 font-bold text-[#434655]"
+              className="h-11 w-full rounded-full bg-[#c3c6d7] px-6 font-bold text-[#434655] md:w-auto"
             >
               Compare selected
             </Button>

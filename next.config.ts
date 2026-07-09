@@ -6,7 +6,7 @@ const isDevelopment = process.env.NODE_ENV === "development";
 // A stricter CSP should move to Next nonce support or experimental SRI after validating the rendering impact.
 const contentSecurityPolicy = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""} https://www.googletagmanager.com https://www.clarity.ms https://*.clarity.ms https://plausible.io https://*.posthog.com https://*.i.posthog.com`,
+  `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""} https://www.googletagmanager.com https://www.clarity.ms https://*.clarity.ms https://plausible.io https://*.posthog.com https://*.i.posthog.com https://emrldco.com`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://images.unsplash.com https://www.google-analytics.com https://*.clarity.ms https://*.posthog.com https://*.i.posthog.com",
   "font-src 'self' data:",
