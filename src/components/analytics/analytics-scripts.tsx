@@ -5,7 +5,6 @@ import { useSyncExternalStore } from "react";
 
 import { getCookieConsent, subscribeToCookieConsent } from "@/lib/analytics/consent";
 
-const clarityProjectId = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID;
 const plausibleDomain = process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN;
 const plausibleScriptSrc = process.env.NEXT_PUBLIC_PLAUSIBLE_SCRIPT_SRC ?? "https://plausible.io/js/script.js";
 const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
@@ -38,17 +37,6 @@ export function AnalyticsScripts() {
               capture_pageleave: true,
               person_profiles: "identified_only"
             });
-          `}
-        </Script>
-      ) : null}
-      {clarityProjectId ? (
-        <Script id="microsoft-clarity" strategy="afterInteractive">
-          {`
-            (function(c,l,a,r,i,t,y){
-              c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-              t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-              y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-            })(window, document, "clarity", "script", "${clarityProjectId}");
           `}
         </Script>
       ) : null}

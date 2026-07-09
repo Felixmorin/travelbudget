@@ -46,6 +46,14 @@ const googleAnalyticsScript = `
   gtag('config', 'G-LL509H3H2L');
 `;
 
+const microsoftClarityScript = `
+  (function(c,l,a,r,i,t,y){
+      c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+      t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+      y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+  })(window, document, "clarity", "script", "xjw5swfjdp");
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -60,6 +68,7 @@ export default function RootLayout({
         {/* eslint-disable-next-line @next/next/next-script-for-ga -- Google requested this exact tag directly after <head>. */}
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-LL509H3H2L" />
         <script dangerouslySetInnerHTML={{ __html: googleAnalyticsScript }} />
+        <script type="text/javascript" dangerouslySetInnerHTML={{ __html: microsoftClarityScript }} />
         <script
           {...travelpayoutDriveAttributes}
           dangerouslySetInnerHTML={{ __html: travelpayoutDriveScript }}
