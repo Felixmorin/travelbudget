@@ -130,6 +130,16 @@ describe("trip comparison calculations", () => {
     expect(parsed.currency).toBe("CAD");
   });
 
+  it("uses the destination query parameter as destination A", () => {
+    const parsed = parseCompareParams(
+      new URLSearchParams("a=mexico-city"),
+      new Set(unifiedDestinations.map((destination) => destination.slug))
+    );
+
+    expect(parsed.destinationA).toBe("mexico-city");
+    expect(parsed.destinationB).not.toBe("mexico-city");
+  });
+
   it("calculates Budget Fit", () => {
     const comparison = compareDestinations({
       destinationA: paris,

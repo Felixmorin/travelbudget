@@ -61,7 +61,7 @@ export function parseCompareParams(searchParams: URLSearchParams, validSlugs: Se
 
   return {
     destinationA,
-    destinationB: destinationA === destinationB ? defaultCompareParams.destinationB : destinationB,
+    destinationB: destinationA === destinationB ? getFallbackDestinationB(destinationA, validSlugs) : destinationB,
     origin: normalizeOrigin(searchParams.get("from")),
     days: normalizeInteger(searchParams.get("days"), defaultCompareParams.days, 1, 60),
     travelers: normalizeInteger(searchParams.get("travelers"), defaultCompareParams.travelers, 1, 12),
@@ -70,6 +70,18 @@ export function parseCompareParams(searchParams: URLSearchParams, validSlugs: Se
     currency: normalizeCurrency(searchParams.get("currency")),
     budget: normalizeOptionalBudget(searchParams.get("budget")),
   };
+}
+
+function getFallbackDestinationB(destinationA: string, validSlugs: Set<string>) {
+  if (defaultCompareParams.destinationB !== destinationA && validSlugs.has(defaultCompareParams.destinationB)) {
+    return defaultCompareParams.destinationB;
+  }
+
+  if (defaultCompareParams.destinationA !== destinationA && validSlugs.has(defaultCompareParams.destinationA)) {
+    return defaultCompareParams.destinationA;
+  }
+
+  return Array.from(validSlugs).find((slug) => slug !== destinationA) ?? destinationA;
 }
 
 export function serializeCompareParams(params: CompareParams) {

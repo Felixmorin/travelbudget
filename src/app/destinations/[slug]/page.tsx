@@ -69,6 +69,7 @@ import {
 } from "@/lib/programmatic/budget-pages";
 import { comparisonPages, getComparisonPath } from "@/lib/programmatic/comparison-pages";
 import { getStrongSeoDestinationBudgetPath, strongSeoPages } from "@/lib/programmatic/strong-seo-pages";
+import { defaultCompareParams, serializeCompareParams } from "@/lib/compare/url-params";
 
 type DestinationPageProps = {
   params: Promise<{ slug: string }>;
@@ -117,6 +118,7 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
     travelStyle: "midRange",
   });
   const planTripPath = getDestinationPlanPath(destination, typicalEstimate);
+  const comparePath = getDestinationComparePath(destination);
   const hasSeoBudgetPage = destinationBudgetSeoSlugs.includes(destination.slug);
   const destinationBudgetPath = getDestinationBudgetPlanningPath(destination.slug);
   const jsonLd = [
@@ -186,14 +188,14 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
               </Button>
               <Button asChild size="lg" variant="outline" className="rounded-xl bg-white/95 text-slate-950">
                 <TrackedLink
-                  href={planTripPath}
+                  href={comparePath}
                   eventName="cta_clicked"
                   eventProperties={{
                     page: `/destinations/${destination.slug}`,
                     destinationName: destinationLabel,
                     destinationSlug: destination.slug,
                     label: "Compare with other destinations",
-                    href: planTripPath,
+                    href: comparePath,
                     ctaLocation: "destination_hero",
                   }}
                 >
@@ -1078,6 +1080,16 @@ function getDestinationPlanPath(destination: Destination, budget: number) {
   });
 
   return `/results?${params.toString()}`;
+}
+
+function getDestinationComparePath(destination: Destination) {
+  return serializeCompareParams({
+    ...defaultCompareParams,
+    destinationA: destination.slug,
+    destinationB: destination.slug === defaultCompareParams.destinationB
+      ? defaultCompareParams.destinationA
+      : defaultCompareParams.destinationB,
+  });
 }
 
 function getParentCountryDestination(destination: CityDestination) {
