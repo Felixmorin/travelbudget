@@ -628,7 +628,7 @@ function EmailCaptureSection({
         <div>
           <h2 className="text-2xl font-semibold tracking-normal text-[#191c1e]">Send me this trip budget</h2>
           <p className="mt-2 text-sm leading-6 text-[#434655]">
-            Get this search saved for {summaryText}. We will send the budget handoff when it is ready.
+            Keep this search on file for {summaryText}. We will send the budget handoff when it is ready.
           </p>
         </div>
         <EmailCaptureForm
