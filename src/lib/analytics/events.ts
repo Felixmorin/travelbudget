@@ -24,6 +24,15 @@ export type CommonAnalyticsProperties = {
   affiliateProvider?: string;
   href?: string;
   label?: string;
+  affiliate?: string;
+  product?: string;
+  origin?: string;
+  destination?: string;
+  departure_date?: string;
+  return_date?: string;
+  placement?: string;
+  page_type?: string;
+  page_path?: string;
 };
 
 type CalculatorEventProperties = CommonAnalyticsProperties & {

@@ -3,6 +3,8 @@ import {
   getDepartureCityByAirportCode,
   normalizeDepartureCityCode,
 } from "@/lib/data/departure-cities";
+import { buildAviasalesAffiliateUrl } from "@/lib/affiliates/aviasales";
+import { getDestinationIata } from "@/lib/affiliates/iata";
 
 export type AffiliateLink = {
   type: "Flights" | "Hotels" | "eSIM" | "Activities" | "Insurance";
@@ -930,8 +932,8 @@ function buildAffiliateLinks(seed: DestinationSeed): AffiliateLink[] {
       description: `Compare provider fares to ${seed.name} against the CAD ${seed.flightAverage.YUL} YUL planning baseline before locking the trip.`,
       priceHint: `Avg. from YUL CAD ${seed.flightAverage.YUL}`,
       href: buildFlightHref(seed),
-      provider: process.env.NEXT_PUBLIC_FLIGHTS_AFFILIATE_PROVIDER ?? "Skyscanner",
-      partner: process.env.NEXT_PUBLIC_FLIGHTS_AFFILIATE_PARTNER ?? process.env.NEXT_PUBLIC_FLIGHTS_AFFILIATE_PROVIDER ?? "Skyscanner",
+      provider: "Aviasales",
+      partner: "Travelpayouts",
       placement: "destination_sidebar",
       isExternal: true,
     },
@@ -1026,13 +1028,15 @@ function getContextualAffiliateTitle(type: AffiliateLink["type"], seed: Destinat
 }
 
 function buildFlightHref(seed: DestinationSeed) {
-  return buildProviderSearchHref({
-    baseUrl: process.env.NEXT_PUBLIC_FLIGHTS_AFFILIATE_BASE_URL ?? "https://www.skyscanner.ca/transport/flights/",
-    queryParam: process.env.NEXT_PUBLIC_FLIGHTS_AFFILIATE_QUERY_PARAM ?? "query",
-    searchTerm: `Flights to ${seed.name}`,
-    fallbackPath: "/transport/flights/",
-    partnerParam: process.env.NEXT_PUBLIC_FLIGHTS_AFFILIATE_ID_PARAM,
-    partnerValue: process.env.NEXT_PUBLIC_FLIGHTS_AFFILIATE_ID,
+  return buildAviasalesAffiliateUrl({
+    origin: "Montreal",
+    originIata: "YUL",
+    destination: seed.name,
+    destinationIata: getDestinationIata({ name: seed.name, slug: seed.slug }),
+    adults: 1,
+    cabinClass: "economy",
+    placement: "destination_sidebar",
+    pageType: "destination",
   });
 }
 

@@ -2,10 +2,12 @@ import Link from "next/link";
 import { ArrowRight, BedDouble, Bus, CalendarDays, CircleDollarSign, Plane, Utensils } from "lucide-react";
 
 import { EmailCaptureForm } from "@/components/analytics/email-capture-form";
+import { FlightAffiliateLink } from "@/components/affiliate/FlightAffiliateLink";
 import { EstimateDisclaimer } from "@/components/site/estimate-disclaimer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatMoney } from "@/lib/format-money";
+import { getDestinationIata } from "@/lib/affiliates/iata";
 import { getCityCountryLabel } from "@/lib/data/unified-destinations";
 import type { StrongSeoPage } from "@/lib/programmatic/strong-seo-pages";
 import { createBreadcrumbSchema, createFAQSchema, createGuideArticleSchema, serializeJsonLd } from "@/lib/seo/schema";
@@ -156,10 +158,19 @@ export function StrongSeoTravelPage({ page }: { page: StrongSeoPage }) {
             <h2 className="text-xl font-semibold">Plan this trip</h2>
             <div className="mt-5 grid gap-3">
               <Button asChild className="rounded-full bg-[#0B1D34] text-white hover:bg-[#0B1D34]">
-                <Link href="/travel-budget-calculator">
-                  Check flights and hotels for this trip
+                <FlightAffiliateLink
+                  origin={page.origin.city}
+                  originIata={page.origin.code}
+                  destination={destinationLabel}
+                  destinationIata={getDestinationIata(page.destination)}
+                  adults={page.travelers}
+                  cabinClass="economy"
+                  placement="article_inline"
+                  pageType="strong_seo"
+                >
+                  Find flights for this trip
                   <ArrowRight className="ml-2 size-4" />
-                </Link>
+                </FlightAffiliateLink>
               </Button>
               <div className="rounded-2xl bg-slate-50 p-4">
                 <p className="text-sm font-semibold text-slate-950">Send me this trip budget</p>

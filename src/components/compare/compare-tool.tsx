@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { ArrowRight, ArrowUpDown, Copy, Plane, Search, WalletCards } from "lucide-react";
 
 import { TrackedLink } from "@/components/analytics/tracked-link";
+import { FlightAffiliateLink } from "@/components/affiliate/FlightAffiliateLink";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -25,6 +26,7 @@ import {
   serializeCompareParams,
 } from "@/lib/compare/url-params";
 import { getCityCountryLabel, unifiedDestinations } from "@/lib/data/unified-destinations";
+import { getDestinationIata } from "@/lib/affiliates/iata";
 import { formatMoney } from "@/lib/format-money";
 import { comparisonPages, getComparisonPath } from "@/lib/programmatic/comparison-pages";
 
@@ -457,7 +459,16 @@ function AffiliateCtas({ comparison }: { comparison: TripComparison }) {
             <div key={destination.slug} className="rounded-2xl border border-slate-200 p-4">
               <h3 className="font-semibold text-slate-950">{label}</h3>
               <div className="mt-4 grid gap-3">
-                {flight ? <AffiliateButton destination={destination} link={flight} label={`Check flights to ${label}`} icon="flight" /> : null}
+                {flight ? (
+                  <AffiliateButton
+                    destination={destination}
+                    link={flight}
+                    label={`Check flights to ${label}`}
+                    icon="flight"
+                    originIata={getOriginCode(comparison.params.origin)}
+                    adults={comparison.params.travelers}
+                  />
+                ) : null}
                 {hotels ? <AffiliateButton destination={destination} link={hotels} label={`Compare hotels in ${label}`} icon="hotel" /> : null}
                 <Button asChild variant="outline" className="justify-start rounded-full bg-white">
                   <TrackedLink
@@ -479,18 +490,41 @@ function AffiliateCtas({ comparison }: { comparison: TripComparison }) {
 }
 
 function AffiliateButton({
+  adults,
   destination,
   icon,
   label,
   link,
+  originIata,
 }: {
+  adults?: number;
   destination: TripComparison["destinationA"]["destination"];
   icon: "flight" | "hotel";
   label: string;
   link: TripComparison["destinationA"]["destination"]["affiliateLinks"][number];
+  originIata?: string;
 }) {
   const isExternal = /^https?:\/\//i.test(link.href);
   const href = link.href || `/destinations/${destination.slug}`;
+
+  if (icon === "flight") {
+    return (
+      <Button asChild variant="outline" className="justify-start rounded-full bg-white">
+        <FlightAffiliateLink
+          originIata={originIata}
+          destination={getCityCountryLabel(destination)}
+          destinationIata={getDestinationIata(destination)}
+          adults={adults}
+          cabinClass="economy"
+          placement="comparison"
+          pageType="compare"
+        >
+          <Plane className="size-4" />
+          {label}
+        </FlightAffiliateLink>
+      </Button>
+    );
+  }
 
   return (
     <Button asChild variant="outline" className="justify-start rounded-full bg-white">
@@ -512,7 +546,7 @@ function AffiliateButton({
           destinationSlug: destination.slug,
         }}
       >
-        {icon === "flight" ? <Plane className="size-4" /> : <WalletCards className="size-4" />}
+        <WalletCards className="size-4" />
         {label}
       </TrackedLink>
     </Button>

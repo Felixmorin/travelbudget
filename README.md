@@ -137,7 +137,7 @@ Recommendation logic lives in `src/lib/budget/recommend-destinations.ts`. Result
 
 ## Affiliate Links
 
-Flight links point to Skyscanner search by default and can be redirected to another flight affiliate provider. Hotel links point to Booking.com destination search pages. eSIM links point to Airalo search by default. Activity links point to GetYourGuide search by default. Insurance links remain internal unless `NEXT_PUBLIC_INSURANCE_AFFILIATE_BASE_URL` is configured.
+Flight links use Aviasales/Travelpayouts search links when `NEXT_PUBLIC_TRAVELPAYOUTS_MARKER` is configured. Without a marker, flight CTAs fall back to the existing Aviasales short affiliate URL. Hotel links point to Booking.com destination search pages. eSIM links point to Airalo search by default. Activity links point to GetYourGuide search by default. Insurance links remain internal unless `NEXT_PUBLIC_INSURANCE_AFFILIATE_BASE_URL` is configured.
 
 Analytics environment variables:
 
@@ -150,11 +150,9 @@ Analytics environment variables:
 
 Optional public environment variables:
 
-- `NEXT_PUBLIC_FLIGHTS_AFFILIATE_BASE_URL` - overrides the flight provider or affiliate deep-link base URL
-- `NEXT_PUBLIC_FLIGHTS_AFFILIATE_QUERY_PARAM` - overrides the flight search query parameter, defaults to `query`
-- `NEXT_PUBLIC_FLIGHTS_AFFILIATE_PROVIDER` - labels the flight analytics provider, defaults to `Skyscanner`
-- `NEXT_PUBLIC_FLIGHTS_AFFILIATE_PARTNER` - labels the flight commercial partner, defaults to the provider value
-- `NEXT_PUBLIC_FLIGHTS_AFFILIATE_ID_PARAM` and `NEXT_PUBLIC_FLIGHTS_AFFILIATE_ID` - optional flight partner ID query parameter and value
+- `NEXT_PUBLIC_AVIASALES_FALLBACK_URL` - fallback flight affiliate URL, defaults to `https://aviasales.tpx.lu/59DXH0n1`
+- `NEXT_PUBLIC_TRAVELPAYOUTS_MARKER` - public Travelpayouts marker inserted into Aviasales search URLs as `marker`
+- `TRAVELPAYOUTS_API_TOKEN` and `TRAVELPAYOUTS_MARKER` - reserved server-only values for a future Partner Links API integration; never expose API tokens with `NEXT_PUBLIC_*`
 - `NEXT_PUBLIC_BOOKING_AFFILIATE_AID` - adds the Booking.com `aid` parameter
 - `NEXT_PUBLIC_ESIM_AFFILIATE_BASE_URL` - overrides the eSIM provider or affiliate deep-link base URL
 - `NEXT_PUBLIC_ESIM_AFFILIATE_QUERY_PARAM` - overrides the eSIM search query parameter, defaults to `search`

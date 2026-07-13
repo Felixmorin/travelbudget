@@ -34,6 +34,7 @@ Legacy aliases `budget_calculator_started`, `budget_calculator_updated`, `budget
 | `email_capture` | A user submits an email capture form. | `page`, `label`, `ctaLocation` | `budget`, `currency`, `emailDomain`, `source` | Which budget handoff surfaces collect leads. |
 | `affiliate_module_viewed` | An affiliate card becomes visible at least once. | `page`, `destinationSlug`, `destinationName`, `affiliateType`, `href`, `ctaLocation` | `affiliatePartner`, `affiliateProvider`, `source`, `label` | Which destinations, providers, and affiliate categories get impressions? |
 | `affiliate_link_clicked` | A user clicks an affiliate/planning link. | `page`, `destinationSlug`, `destinationName`, `affiliateType`, `href`, `ctaLocation` | `affiliatePartner`, `affiliateProvider`, `source`, `label`, `linkType`, `title` | Which providers, destinations, and categories drive revenue intent? |
+| `affiliate_click` | A user clicks a contextual Aviasales flight CTA. | `affiliate`, `product`, `origin`, `destination`, `placement`, `page_path`, `href` | `departure_date`, `return_date`, `page_type`, `affiliatePartner`, `affiliateProvider`, `label` | Which flight routes and placements drive Aviasales intent? |
 
 ## Supporting Content
 

@@ -1,9 +1,11 @@
 const defaultAllowedAffiliateDomains = [
   "airalo.com",
+  "aviasales.com",
   "booking.com",
   "getyourguide.com",
   "skyscanner.ca",
   "skyscanner.com",
+  "tpx.lu",
 ];
 
 export function isAllowedAffiliateUrl(href: string) {

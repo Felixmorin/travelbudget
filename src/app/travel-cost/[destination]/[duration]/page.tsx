@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { EmailCaptureForm } from "@/components/analytics/email-capture-form";
+import { FlightAffiliateLink } from "@/components/affiliate/FlightAffiliateLink";
 import { EstimateDisclaimer } from "@/components/site/estimate-disclaimer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,7 @@ import {
   getTravelBudgetPath,
   getTravelCostDurationPath,
 } from "@/lib/programmatic/seo-pages";
+import { getDestinationIata } from "@/lib/affiliates/iata";
 import { getCityCountryLabel } from "@/lib/data/unified-destinations";
 import { createMetadata } from "@/lib/seo/metadata";
 import { createBreadcrumbSchema, createGuideArticleSchema, serializeJsonLd } from "@/lib/seo/schema";
@@ -167,7 +169,18 @@ export default async function DurationCostPage({ params }: DurationCostPageProps
           <h2 className="text-xl font-semibold">Related planning pages</h2>
           <div className="mt-5 grid gap-3">
             <Button asChild className="rounded-full bg-[#0B1D34] text-white hover:bg-[#0B1D34]">
-              <Link href="/travel-budget-calculator">Check flights and hotels for this trip</Link>
+              <FlightAffiliateLink
+                origin="Montreal"
+                originIata="YUL"
+                destination={destinationLabel}
+                destinationIata={getDestinationIata(page.destination)}
+                adults={page.travelers}
+                cabinClass="economy"
+                placement="trip_summary"
+                pageType="travel_cost"
+              >
+                Find flights for this trip
+              </FlightAffiliateLink>
             </Button>
             <div className="rounded-2xl bg-slate-50 p-4">
               <p className="text-sm font-semibold text-slate-950">Send me this trip budget</p>
