@@ -1,7 +1,7 @@
 import type { Destination, TravelStyle } from "@/lib/data/destinations";
+import { supportedCurrencies, type SupportedCurrency } from "@/lib/currency/exchange-rates";
 
-export const supportedCurrencies = ["CAD", "USD", "EUR", "GBP"] as const;
-export type SupportedCurrency = (typeof supportedCurrencies)[number];
+export { supportedCurrencies, type SupportedCurrency };
 
 export const compareStyleOptions = ["budget", "mid-range", "comfort", "luxury"] as const;
 export type CompareTravelStyle = (typeof compareStyleOptions)[number];

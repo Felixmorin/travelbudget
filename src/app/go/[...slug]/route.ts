@@ -23,7 +23,7 @@ export async function GET(request: Request, { params }: GoRouteProps) {
       affiliateType,
       destinationSlug,
       host: getHost(href),
-    });
+    }, "affiliate_blocked");
 
     return Response.json({ ok: false, error: "Unsupported affiliate destination." }, { status: 400 });
   }
@@ -46,7 +46,7 @@ export async function GET(request: Request, { params }: GoRouteProps) {
       destinationSlug,
       error: getErrorMessage(error),
       host: getHost(href),
-    });
+    }, "affiliate_persist_error");
   }
 
   redirect(href);

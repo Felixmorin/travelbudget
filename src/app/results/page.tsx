@@ -22,6 +22,7 @@ import { AnalyticsView } from "@/components/analytics/analytics-view";
 import { EmailCaptureForm } from "@/components/analytics/email-capture-form";
 import { TrackedFilterForm } from "@/components/analytics/tracked-form";
 import { TrackedLink } from "@/components/analytics/tracked-link";
+import { EstimateTransparency } from "@/components/site/estimate-transparency";
 import { Button } from "@/components/ui/button";
 import { buildAffiliateLink, type BuiltAffiliateLink } from "@/lib/affiliate/build-affiliate-link";
 import {
@@ -82,6 +83,7 @@ export type ResultDestination = {
   bestFor: string;
   bestSeason: string;
   summary: string;
+  lastUpdated: string;
   affiliateLinks: ResultAffiliateLink[];
 };
 
@@ -192,6 +194,18 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
           />
 
           <TrustNote />
+          <EstimateTransparency
+            currency={parsedParams.currency}
+            lastUpdated={getLatestDestinationUpdate(destinations)}
+            sources={[
+              "GoByBudget static destination and departure-city pricing dataset",
+              "Modeled flight baselines and destination daily cost categories",
+            ]}
+            assumptions={[
+              `${parsedParams.travelers} traveler${parsedParams.travelers === 1 ? "" : "s"}, ${parsedParams.days} days, ${styleLabel} style, from ${originLabel}`,
+              "Includes flights, stay, food, local transport, activities, and buffer where data is available",
+            ]}
+          />
 
           <ResultsControls parsedParams={parsedParams} resultCount={recommendations.length} />
 
@@ -872,7 +886,7 @@ function toResultDestination(
     transportCost: formatMoney(costBreakdown.transport, currency),
     activitiesCost: formatMoney(costBreakdown.activities, currency),
     bufferCost: formatMoney(costBreakdown.misc, currency),
-    href: `/travel-budget/${destination.slug}`,
+    href: `/destinations/${destination.slug}`,
     image: destination.image,
     alt: `${title} destination cost preview`,
     flightTime: flightTimeBySlug[destination.slug] ?? formatFlightHours(getEstimatedFlightHours(destination.slug), days),
@@ -882,6 +896,7 @@ function toResultDestination(
     bestFor: destination.travelStyles.slice(0, 3).join(", "),
     bestSeason: destination.bestMonths.slice(0, 4).join(", "),
     summary: recommendation.reasons[0] ?? destination.shortDescription,
+    lastUpdated: destination.lastUpdated,
     affiliateLinks: destination.affiliateLinks.map((link) => toResultAffiliateLink(destination, link)),
   };
 }
@@ -961,4 +976,14 @@ function formatFlightHours(hours: number, days: number) {
   }
 
   return days > 12 ? `${Math.max(hours, 7)}h` : `${hours}h`;
+}
+
+function getLatestDestinationUpdate(destinations: ResultDestination[]) {
+  const latest = destinations
+    .map((destination) => destination.lastUpdated)
+    .filter(Boolean)
+    .sort()
+    .at(-1);
+
+  return latest ?? "2026-06-24";
 }

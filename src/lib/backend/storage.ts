@@ -88,14 +88,14 @@ export async function insertBackendRecord<TRecord extends BackendRecord>(table: 
     });
 
     if (!response.ok) {
-      throw new BackendStorageError(`Supabase rejected ${table} insert.`, 502);
+      throw new BackendStorageError(`Supabase rejected ${table} insert with status ${response.status}.`, 502);
     }
   } catch (error) {
     if (error instanceof BackendStorageError) {
       throw error;
     }
 
-    throw new BackendStorageError("Supabase storage is unavailable.", 502);
+    throw new BackendStorageError(`Supabase storage is unavailable for ${table} insert.`, 502);
   } finally {
     clearTimeout(timeout);
   }
@@ -133,7 +133,7 @@ export async function selectBackendRecords<TRecord extends BackendRecord>(
     });
 
     if (!response.ok) {
-      throw new BackendStorageError(`Supabase rejected ${table} select.`, 502);
+      throw new BackendStorageError(`Supabase rejected ${table} select with status ${response.status}.`, 502);
     }
 
     return (await response.json()) as TRecord[];
@@ -142,13 +142,17 @@ export async function selectBackendRecords<TRecord extends BackendRecord>(
       throw error;
     }
 
-    throw new BackendStorageError("Supabase storage is unavailable.", 502);
+    throw new BackendStorageError(`Supabase storage is unavailable for ${table} select.`, 502);
   } finally {
     clearTimeout(timeout);
   }
 }
 
 function getSupabaseConfig(): SupabaseConfig | null {
+  if (process.env.SUPABASE_STORAGE_MODE === "memory") {
+    return null;
+  }
+
   const url = process.env.SUPABASE_URL?.trim();
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() ?? process.env.SUPABASE_ANON_KEY?.trim();
 

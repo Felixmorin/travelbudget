@@ -1,4 +1,12 @@
 type LogLevel = "info" | "warn" | "error";
+export type LogEventType =
+  | "analytics_error"
+  | "affiliate_blocked"
+  | "affiliate_persist_error"
+  | "client_error"
+  | "email_lead_error"
+  | "supabase_error"
+  | "system";
 
 export type ServerLogContext = Record<string, string | number | boolean | null | undefined>;
 
@@ -9,9 +17,15 @@ export type MonitoringWebhookDelivery = {
   error: string | null;
 };
 
-export async function logServerEvent(level: LogLevel, message: string, context: ServerLogContext = {}) {
+export async function logServerEvent(
+  level: LogLevel,
+  message: string,
+  context: ServerLogContext = {},
+  eventType: LogEventType = "system"
+) {
   const payload = {
     level,
+    eventType,
     message,
     context: redactContext(context),
     timestamp: new Date().toISOString(),
@@ -72,6 +86,7 @@ export function getMonitoringStatus() {
 
 export async function sendMonitoringWebhook(payload: {
   level: LogLevel;
+  eventType?: LogEventType;
   message: string;
   context: ServerLogContext;
   timestamp: string;

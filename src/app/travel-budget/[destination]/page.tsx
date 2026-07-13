@@ -7,6 +7,7 @@ import { EmailCaptureForm } from "@/components/analytics/email-capture-form";
 import { AffiliateCTA } from "@/components/affiliate/AffiliateCTA";
 import { AffiliateSection } from "@/components/affiliate/AffiliateSection";
 import { EstimateDisclaimer } from "@/components/site/estimate-disclaimer";
+import { EstimateTransparency } from "@/components/site/estimate-transparency";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -115,6 +116,19 @@ export default async function TravelBudgetPage({ params }: TravelBudgetPageProps
       <section className="mx-auto grid max-w-5xl gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[1fr_320px] lg:px-8">
         <div className="grid gap-6">
           <EstimateDisclaimer />
+          <EstimateTransparency
+            currency="CAD"
+            lastUpdated={page.destination.lastUpdated}
+            sources={page.destination.sourceNotes}
+            assumptions={[
+              `Montreal baseline, ${page.durationDays} days, ${page.travelers} traveler, ${page.travelStyle} style`,
+              "Includes flights, accommodation, meals, local transport, activities, and buffer",
+            ]}
+            limits={[
+              "Static CAD planning estimate only; not a live quote",
+              "No guarantee of exact price, availability, baggage fees, hotel terms, exchange rates, or partner inventory",
+            ]}
+          />
           <div className="grid gap-4 sm:grid-cols-2">
             <CostCard icon={Plane} title="Flights" amount={estimate.costBreakdown.flights} />
             <CostCard icon={BedDouble} title="Accommodation" amount={estimate.costBreakdown.accommodation} />

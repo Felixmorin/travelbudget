@@ -28,6 +28,7 @@ import { DayByDayItinerary } from "@/components/destinations/day-by-day-itinerar
 import { AffiliateCard } from "@/components/site/affiliate-card";
 import { BudgetBreakdown } from "@/components/site/budget-breakdown";
 import { CTASection } from "@/components/site/cta-section";
+import { EstimateTransparency } from "@/components/site/estimate-transparency";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -244,6 +245,20 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
             </Card>
 
             <BudgetBreakdown destination={destination} />
+
+            <EstimateTransparency
+              currency={destination.currency}
+              lastUpdated={destination.lastUpdated}
+              sources={destination.sourceNotes}
+              assumptions={[
+                "Default estimate uses Montreal (YUL), 10 days, one mid-range traveler, and CAD planning costs",
+                "Flight, stay, food, local transport, activities, and buffer estimates are modeled separately",
+              ]}
+              limits={[
+                "Static estimate only; not a live fare, hotel quote, or booking guarantee",
+                "Actual cost can change with dates, routing, availability, baggage, cancellation terms, exchange rates, and traveler choices",
+              ]}
+            />
 
             <ActivityChoiceSection
               destination={destination}

@@ -4,9 +4,11 @@ import {
   type Destination,
   type TravelStyle as DestinationTravelStyle,
 } from "@/lib/data/destinations";
+import { convertFromBaseCurrency, formatCurrency, type SupportedCurrency } from "@/lib/currency/exchange-rates";
+
+export type { SupportedCurrency };
 
 export type BudgetFitStatus = "best-fit" | "stretch" | "over-budget";
-export type SupportedCurrency = "CAD" | "USD" | "EUR" | "GBP";
 export type TravelStyle = "budget" | "balanced" | "comfort";
 
 export type CostBreakdown = {
@@ -43,13 +45,6 @@ const relatedStyles: Record<TravelStyle, string[]> = {
   budget: ["backpacking", "food", "adventure", "relaxed"],
   balanced: ["culture", "food", "cities", "coast", "relaxed", "adventure"],
   comfort: ["culture", "cities", "coast", "relaxed"],
-};
-
-const currencyRatesFromCad: Record<SupportedCurrency, number> = {
-  CAD: 1,
-  USD: 0.73,
-  EUR: 0.67,
-  GBP: 0.58,
 };
 
 export function recommendDestinations({
@@ -110,7 +105,6 @@ function buildCostBreakdown(
   currency: SupportedCurrency,
   origin: string
 ): CostBreakdown {
-  const currencyRate = currencyRatesFromCad[currency];
   const destinationStyle = toDestinationTravelStyle(style);
   const destinationBreakdown = getDestinationCostBreakdown(destination, {
     days,
@@ -120,12 +114,12 @@ function buildCostBreakdown(
   });
 
   return {
-    flights: roundCurrency(destinationBreakdown.flights * currencyRate),
-    hotel: roundCurrency(destinationBreakdown.accommodation * currencyRate),
-    food: roundCurrency(destinationBreakdown.food * currencyRate),
-    transport: roundCurrency(destinationBreakdown.localTransport * currencyRate),
-    activities: roundCurrency(destinationBreakdown.activities * currencyRate),
-    misc: roundCurrency(destinationBreakdown.misc * currencyRate),
+    flights: convertFromBaseCurrency(destinationBreakdown.flights, currency),
+    hotel: convertFromBaseCurrency(destinationBreakdown.accommodation, currency),
+    food: convertFromBaseCurrency(destinationBreakdown.food, currency),
+    transport: convertFromBaseCurrency(destinationBreakdown.localTransport, currency),
+    activities: convertFromBaseCurrency(destinationBreakdown.activities, currency),
+    misc: convertFromBaseCurrency(destinationBreakdown.misc, currency),
   };
 }
 
@@ -258,10 +252,6 @@ function hasMonthMatch(destination: Destination, month: string) {
   return destination.bestMonths.some((bestMonth) => bestMonth.toLowerCase() === month.toLowerCase());
 }
 
-function roundCurrency(amount: number) {
-  return Math.round(amount);
-}
-
 function clampInteger(value: number, min: number, max: number) {
   if (!Number.isFinite(value)) {
     return min;
@@ -275,11 +265,7 @@ function clampScore(score: number) {
 }
 
 function formatCompactMoney(amount: number, currency: SupportedCurrency) {
-  return new Intl.NumberFormat("en-CA", {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 0,
-  }).format(amount);
+  return formatCurrency(amount, currency);
 }
 
 function toTitleCase(value: string) {

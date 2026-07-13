@@ -36,7 +36,7 @@ export async function POST(request: Request) {
 
     await logServerEvent("warn", "Email lead request failed.", {
       error: getErrorMessage(error),
-    });
+    }, "email_lead_error");
 
     return Response.json({ ok: false, error: "Unable to save lead." }, { status: 400 });
   }

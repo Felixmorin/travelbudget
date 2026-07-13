@@ -39,7 +39,7 @@ export async function POST(request: Request) {
 
     await logServerEvent("warn", "Analytics event request failed.", {
       error: getErrorMessage(error),
-    });
+    }, "analytics_error");
 
     return Response.json({ ok: false, error: "Unable to track analytics event." }, { status: 400 });
   }

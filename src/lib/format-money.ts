@@ -1,9 +1,5 @@
-export function formatMoney(amount: number, currency = "CAD") {
-  const locale = currency === "USD" ? "en-US" : "en-CA";
+import { formatCurrency } from "@/lib/currency/exchange-rates";
 
-  return new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 0,
-  }).format(Math.round(amount));
+export function formatMoney(amount: number, currency = "CAD") {
+  return formatCurrency(amount, currency);
 }

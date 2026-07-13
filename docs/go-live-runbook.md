@@ -32,12 +32,14 @@ Apply migrations in lexical order:
 1. `docs/supabase/migrations/001_initial_analytics.sql`
 2. `docs/supabase/migrations/002_enable_rls.sql`
 3. `docs/supabase/migrations/003_email_leads.sql`
+4. `docs/supabase/migrations/004_user_trip_model.sql`
 
 Post-migration checks:
 
-- Confirm RLS is enabled for `affiliate_clicks`, `analytics_events`, and `email_leads`.
+- Confirm RLS is enabled for `affiliate_clicks`, `analytics_events`, `email_leads`, `user_profiles`, `searches`, `search_criteria`, `saved_trips`, and `saved_destinations`.
 - Confirm service role can insert into all three tables.
-- Confirm anon role cannot select or insert into those tables.
+- Confirm anon role cannot select or insert into server-only analytics tables.
+- Confirm authenticated users can save and retrieve only their own `saved_trips`, `searches`, `search_criteria`, and `saved_destinations`.
 
 ## Pre-Deploy Validation
 
@@ -70,8 +72,17 @@ Minimum launch alerts:
 - `/api/health` non-200.
 - Error rate above 1% over 5 minutes.
 - Supabase insert failures from analytics, affiliate clicks, or email leads.
+- Structured log `eventType=analytics_error`, `email_lead_error`, `affiliate_persist_error`, or `affiliate_blocked`.
 - Deployment build failure.
 - Security audit failure in CI.
+
+Diagnosis guide:
+
+- Analytics failures: check `/api/health`, then search server logs for `eventType=analytics_error` and `message="Analytics event request failed."`.
+- Lead failures: search `eventType=email_lead_error`, verify Supabase `email_leads` RLS/service-role access, then retry `POST /api/leads/email` from a staging client.
+- Affiliate persistence failures: search `eventType=affiliate_persist_error`, verify `affiliate_clicks` insert permissions, then test a whitelisted `/go/...` URL.
+- Blocked affiliate URLs: search `eventType=affiliate_blocked`, inspect the logged `host`, and update `AFFILIATE_ALLOWED_DOMAINS` only after partner/legal approval.
+- Supabase outage or config issue: `/api/health` includes `backend.mode`, `backend.missing`, and `backend.error`.
 
 Webhook verification:
 

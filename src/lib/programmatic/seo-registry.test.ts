@@ -67,11 +67,21 @@ describe("programmatic SEO registry", () => {
 
   it("includes indexable programmatic pages in the sitemap and excludes noindex pages", () => {
     const sitemapUrls = sitemap().map((entry) => entry.url);
+    const noindexPages = getAllSeoRegistryPages().filter((page) => page.evaluation.status === "noindex");
 
     expect(sitemapUrls).toContain("https://gobybudget.com/budget/3000");
     expect(sitemapUrls).toContain(`https://gobybudget.com${getTripLengthPath(10)}`);
     expect(getIndexableSeoPages().every((page) => sitemapUrls.includes(`https://gobybudget.com${page.path}`))).toBe(
       true
     );
+    expect(noindexPages.every((page) => !sitemapUrls.includes(`https://gobybudget.com${page.path}`))).toBe(true);
+  });
+
+  it("only indexes programmatic pages with distinct intent and useful estimate data", () => {
+    const indexablePages = getIndexableSeoPages();
+
+    expect(indexablePages.every((page) => page.evaluation.status === "index")).toBe(true);
+    expect(indexablePages.every((page) => page.evaluation.reasons.length === 0)).toBe(true);
+    expect(indexablePages.every((page) => page.evaluation.score >= 5)).toBe(true);
   });
 });

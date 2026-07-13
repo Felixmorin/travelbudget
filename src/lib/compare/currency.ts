@@ -1,15 +1,9 @@
 import { formatMoney } from "@/lib/format-money";
 import type { SupportedCurrency } from "@/lib/compare/types";
-
-const cadRates: Record<SupportedCurrency, number> = {
-  CAD: 1,
-  USD: 0.73,
-  EUR: 0.67,
-  GBP: 0.58,
-};
+import { convertFromBaseCurrency, convertToBaseCurrency } from "@/lib/currency/exchange-rates";
 
 export function convertFromCad(amount: number, currency: SupportedCurrency) {
-  return Math.round(amount * cadRates[currency]);
+  return convertFromBaseCurrency(amount, currency);
 }
 
 export function formatCompareMoney(amount: number | null, currency: SupportedCurrency) {
@@ -21,5 +15,5 @@ export function formatCompareMoney(amount: number | null, currency: SupportedCur
 }
 
 export function convertBudgetToCad(amount: number, currency: SupportedCurrency) {
-  return Math.round(amount / cadRates[currency]);
+  return convertToBaseCurrency(amount, currency);
 }
