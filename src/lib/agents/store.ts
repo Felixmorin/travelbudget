@@ -45,6 +45,7 @@ export async function createAgentMission({
   input = {},
   costLimitCents,
   stepLimit,
+  status = "draft",
 }: {
   agentId: AgentMission["agentId"];
   objective: string;
@@ -52,6 +53,7 @@ export async function createAgentMission({
   input?: AgentJsonObject;
   costLimitCents?: number;
   stepLimit?: number;
+  status?: AgentMission["status"];
 }) {
   assertAgentsEnabled();
 
@@ -62,7 +64,7 @@ export async function createAgentMission({
     id: crypto.randomUUID(),
     agentId,
     objective: objective.trim().slice(0, 1_000),
-    status: "draft",
+    status,
     requestedBy,
     input,
     costLimitCents: limits.costLimitCents,
@@ -365,6 +367,31 @@ export async function listAgentExecutions(agentId: AgentMission["agentId"], limi
     .slice(0, limit);
 }
 
+export async function listAgentMissions(limit = 100) {
+  if (isBackendStorageConfigured()) {
+    const records = await selectBackendRecords("agent_missions", {
+      limit: String(Math.max(1, Math.min(500, limit))),
+    });
+
+    return records.map((record) => ({
+      id: String(record.id ?? ""),
+      agentId: normalizeAgentId(record.agent_id),
+      objective: String(record.objective ?? ""),
+      status: normalizeMissionStatus(record.status),
+      requestedBy: typeof record.requested_by === "string" ? record.requested_by : undefined,
+      input: parseJsonObject(record.input) ?? {},
+      costLimitCents: normalizeNumber(record.cost_limit_cents),
+      stepLimit: normalizeNumber(record.step_limit),
+      createdAt: String(record.created_at ?? ""),
+      updatedAt: String(record.updated_at ?? ""),
+    }));
+  }
+
+  return getDevelopmentStore()
+    .missions.sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+    .slice(0, limit);
+}
+
 export function clearDevelopmentAgentRecords() {
   const store = getDevelopmentStore();
 
@@ -441,4 +468,19 @@ function normalizeExecutionStatus(value: unknown): AgentExecution["status"] {
 
 function normalizeTriggerType(value: unknown): AgentExecution["triggerType"] {
   return value === "scheduled" || value === "test" ? value : "manual";
+}
+
+function normalizeAgentId(value: unknown): AgentMission["agentId"] {
+  return value === "captain" ? "captain" : "product-analyst";
+}
+
+function normalizeMissionStatus(value: unknown): AgentMission["status"] {
+  return value === "pending_approval" ||
+    value === "approved" ||
+    value === "running" ||
+    value === "completed" ||
+    value === "failed" ||
+    value === "cancelled"
+    ? value
+    : "draft";
 }

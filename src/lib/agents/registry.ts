@@ -8,6 +8,24 @@ export class AgentRegistryError extends Error {
 }
 
 export const agentRegistry = {
+  captain: {
+    id: "captain",
+    name: "Captain Agent",
+    description: "Reads Product Analyst reports and proposes approved missions for known agents without touching business data.",
+    version: "0.1.0",
+    status: "available",
+    permissions: ["agents:read", "missions:write", "approvals:write", "reports:write"],
+    defaultCostLimitCents: 100,
+    defaultStepLimit: 8,
+    requiresApprovalFor: [
+      "agent:mission-create",
+      "database:write",
+      "lead:raw-read",
+      "external:send",
+      "report:publish",
+      "production:run",
+    ],
+  },
   "product-analyst": {
     id: "product-analyst",
     name: "Product Analyst Agent",
@@ -23,7 +41,14 @@ export const agentRegistry = {
     ],
     defaultCostLimitCents: 100,
     defaultStepLimit: 8,
-    requiresApprovalFor: ["database:write", "lead:raw-read", "external:send", "report:publish", "production:run"],
+    requiresApprovalFor: [
+      "agent:mission-create",
+      "database:write",
+      "lead:raw-read",
+      "external:send",
+      "report:publish",
+      "production:run",
+    ],
   },
 } as const satisfies Record<AgentId, AgentDefinition>;
 
