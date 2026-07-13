@@ -10,6 +10,7 @@ import {
   getComparisonItems,
   getComparisonPage,
   getComparisonPath,
+  getComparisonSeoTitle,
   getComparisonStaticParams,
   getComparisonSummary,
 } from "@/lib/programmatic/comparison-pages";
@@ -48,7 +49,7 @@ export async function generateMetadata({ params }: ComparePageProps): Promise<Me
   }
 
   return createMetadata({
-    title: page.title,
+    title: getComparisonSeoTitle(page),
     description: page.description,
     path: getComparisonPath(page),
   });
@@ -64,6 +65,7 @@ export default async function ComparisonPage({ params }: ComparePageProps) {
 
   const items = getComparisonItems(page);
   const path = getComparisonPath(page);
+  const seoTitle = getComparisonSeoTitle(page);
   const summary = getComparisonSummary(page, items);
   const faqs = createComparisonFaqs(page);
   const jsonLd = [
@@ -101,7 +103,7 @@ export default async function ComparisonPage({ params }: ComparePageProps) {
             {page.searchIntent}
           </Badge>
           <h1 className="mt-5 max-w-4xl text-4xl font-semibold tracking-tight sm:text-6xl">
-            {page.title}
+            {seoTitle}
           </h1>
           <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-600">{page.description}</p>
           <div className="mt-8 grid gap-3 sm:grid-cols-3">

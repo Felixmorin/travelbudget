@@ -4,9 +4,9 @@ import { createCollectionPageSchema, createItemListSchema, serializeJsonLd } fro
 import { createMetadata } from "@/lib/seo/metadata";
 
 export const metadata = createMetadata({
-  title: "Travel Guides Hub",
+  title: "Travel Budget Guides by Destination, Cost and Origin",
   description:
-    "Discover popular GoByBudget.com guides by destination, travel style, duration, budget level, and page views.",
+    "Read travel budget guides by destination, departure city, trip duration, travel style, and budget level before choosing where to go.",
   path: "/guides",
 });
 

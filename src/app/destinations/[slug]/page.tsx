@@ -165,7 +165,7 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
           <div className="max-w-3xl text-white">
             <Badge className="mb-4 bg-white text-[#0B1D34]">{destination.countryCode} budget guide</Badge>
             <h1 className="text-5xl font-semibold tracking-tight sm:text-6xl">
-              {destinationLabel} travel budget
+              {destinationLabel} Travel Budget
             </h1>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-white/85">{destination.shortDescription}</p>
             <div className="mt-8 flex flex-wrap gap-3">
@@ -761,7 +761,7 @@ export function CityDestinationPage({ destination }: { destination: CityDestinat
               {destination.continent} budget guide
             </Badge>
             <h1 className="text-5xl font-semibold tracking-tight sm:text-6xl">
-              {destination.city}, {destination.country} travel budget
+              {destination.city}, {destination.country} Travel Budget
             </h1>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-white/85">
               {destination.description}

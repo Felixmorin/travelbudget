@@ -42,8 +42,8 @@ export async function generateMetadata({ params }: TravelBudgetPageProps): Promi
   const destinationLabel = getCityCountryLabel(page.destination);
 
   return createMetadata({
-    title: `Travel Budget for ${destinationLabel}`,
-    description: `See a realistic ${page.durationDays}-day ${destinationLabel} travel budget from Canada, including flights, accommodation, meals, local transport, activities, and planning limits.`,
+    title: `${destinationLabel} Travel Budget: Daily & Total Trip Cost`,
+    description: `See a realistic ${page.durationDays}-day ${destinationLabel} travel budget from Canada, including daily costs, flights, accommodation, meals, local transport, activities, and planning limits.`,
     path: getTravelBudgetPath(page.destination.slug),
     image: page.destination.image,
     imageAlt: `${destinationLabel} travel budget`,
@@ -64,7 +64,7 @@ export default async function TravelBudgetPage({ params }: TravelBudgetPageProps
   const path = getTravelBudgetPath(page.destination.slug);
   const jsonLd = [
     createGuideArticleSchema({
-      title: `Travel Budget for ${destinationLabel}`,
+      title: `${destinationLabel} Travel Budget: Daily & Total Trip Cost`,
       description: `A practical ${page.durationDays}-day budget estimate for ${destinationLabel}, including major trip cost categories.`,
       path,
       image: page.destination.image,
@@ -89,7 +89,7 @@ export default async function TravelBudgetPage({ params }: TravelBudgetPageProps
         <div className="mx-auto max-w-5xl px-4 py-14 sm:px-6 lg:px-8">
           <Badge className="rounded-full bg-[#14B8A6]/10 px-4 py-1 text-[#0B1D34]">Destination budget guide</Badge>
           <h1 className="mt-5 text-4xl font-semibold tracking-tight sm:text-6xl">
-            Travel budget for {destinationLabel}
+            {destinationLabel} Travel Budget
           </h1>
           <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-600">
             A practical {page.durationDays}-day planning estimate for {destinationLabel}, using Montreal

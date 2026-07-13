@@ -6,6 +6,7 @@ import {
   getDestinationBudgetStrongSeoStaticParams,
   getStrongSeoPageByDestinationBudgetSlug,
 } from "@/lib/programmatic/strong-seo-pages";
+import { getCityCountryLabel } from "@/lib/data/unified-destinations";
 import { createMetadata } from "@/lib/seo/metadata";
 
 type DestinationTravelBudgetPageProps = {
@@ -29,8 +30,10 @@ export async function generateMetadata({ params }: DestinationTravelBudgetPagePr
     });
   }
 
+  const destinationLabel = getCityCountryLabel(page.destination);
+
   return createMetadata({
-    title: page.title,
+    title: `${destinationLabel} Travel Budget: Daily & Total Trip Cost`,
     description: page.metaDescription,
     path: page.path,
     image: page.destination.image,

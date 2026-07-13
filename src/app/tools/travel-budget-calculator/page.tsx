@@ -30,9 +30,9 @@ const faqItems = [
 ];
 
 export const metadata = createMetadata({
-  title: "Trip Budget Test | Find Destinations for Your Budget",
+  title: "Trip Budget Calculator: Flights, Hotels, Food & More",
   description:
-    "Answer a few questions and discover travel destinations that may fit your budget, departure city, trip length, timing, and travel style.",
+    "Calculate your total trip cost with estimates for flights, hotels, food, local transport, activities, buffers, trip length, and travel style.",
   path,
   robots: {
     index: true,
@@ -66,7 +66,7 @@ export default function TravelBudgetCalculatorPage() {
                 Free travel budget test
               </p>
               <h1 className="mt-3 text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
-                Take the Trip Budget Test
+                Calculate the Total Cost of Your Trip
               </h1>
               <p className="mt-5 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
                 Find out where you can travel based on your real budget, trip length, departure city, and travel

@@ -139,7 +139,7 @@ export function GuideHubExplorer({
               Hub
             </Badge>
             <h1 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
-              Travel guides ranked by real interest
+              Travel Budget Guides by Destination and Cost
             </h1>
             <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
               Make your budget go further with guides sorted by visits, destination, duration, and travel style.

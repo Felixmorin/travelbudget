@@ -7,9 +7,9 @@ import {
 import { createMetadata } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = createMetadata({
-  title: "Destinations",
+  title: "Destinations by Budget: Find Affordable Places to Travel",
   description:
-    "Explore travel destinations by budget, departure city, trip duration, season, and travel style with estimated trip costs.",
+    "Browse destinations by budget, departure city, trip duration, season, and travel style with estimated flights, daily costs, and total trip costs.",
   path: "/destinations",
 });
 

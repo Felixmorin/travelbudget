@@ -195,6 +195,28 @@ export function getComparisonPath(pageOrSlug: ComparisonPageConfig | string) {
   return `/compare/${slug}`;
 }
 
+export function getComparisonSeoTitle(page: ComparisonPageConfig) {
+  if (page.kind === "collection") {
+    return page.title.replace("Best ", "Affordable ");
+  }
+
+  const [destinationA, destinationB] = page.destinationSlugs
+    .map((slug) => getUnifiedDestination(slug)?.name)
+    .filter((name): name is string => Boolean(name));
+
+  const baseTitle = `${destinationA} vs ${destinationB}`;
+
+  if (page.slug.includes("from-")) {
+    return `${baseTitle}: Travel Cost Comparison from ${page.originCity}`;
+  }
+
+  if (page.durationDays !== 10) {
+    return `${baseTitle}: ${page.durationDays}-Day Travel Cost Comparison`;
+  }
+
+  return `${baseTitle}: Travel Cost Comparison`;
+}
+
 export function getComparisonStaticParams() {
   return comparisonPages.map((page) => ({ comparison: page.slug }));
 }

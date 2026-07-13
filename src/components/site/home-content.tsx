@@ -167,7 +167,7 @@ export function HomeContent() {
               Budget-first trip planning
             </div>
             <h1 className="max-w-4xl text-4xl font-extrabold leading-tight tracking-tight sm:text-6xl lg:text-7xl">
-              Find destinations you can actually afford
+              Find Where You Can Travel With Your Budget
             </h1>
             <p className="mt-6 max-w-2xl text-base leading-8 text-white/85 sm:text-lg">
               Enter your budget, departure city, trip length, and travel style. GoByBudget compares{" "}

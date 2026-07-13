@@ -90,7 +90,7 @@ export function ProgrammaticBudgetPage({
             </Badge>
             <div>
               <h1 className="max-w-4xl text-4xl font-bold leading-tight tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
-                Best destinations from {page.origin.city}{" "}
+                Affordable trips from {page.origin.city}{" "}
                 <span className="bg-gradient-to-r from-[#0B1D34] to-[#14B8A6] bg-clip-text text-transparent">
                   under {budgetLabel}
                 </span>

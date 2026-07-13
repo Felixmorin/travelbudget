@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: BudgetPageProps): Promise<Met
   const pageDescription = createPageDescription(page.origin.city, page.budget);
 
   return createMetadata({
-    title: `Best Trips from ${page.origin.city} Under $${page.budget.toLocaleString("en-CA")}`,
+    title: `Affordable Trips From ${page.origin.city} Under $${page.budget.toLocaleString("en-CA")}`,
     description: pageDescription,
     path: getProgrammaticBudgetPath(page),
     imageAlt: `Best trips from ${page.origin.city} under $${page.budget.toLocaleString("en-CA")}`,
@@ -80,7 +80,7 @@ export default async function FromOriginUnderBudgetPage({ params }: BudgetPagePr
   });
   const jsonLd = [
     createCollectionPageSchema({
-      name: `Best Trips from ${page.origin.city} Under $${page.budget.toLocaleString("en-CA")}`,
+      name: `Affordable Trips From ${page.origin.city} Under $${page.budget.toLocaleString("en-CA")}`,
       description: pageDescription,
       path,
     }),
@@ -112,7 +112,7 @@ export default async function FromOriginUnderBudgetPage({ params }: BudgetPagePr
 }
 
 function createPageDescription(originCity: string, budget: number) {
-  return `Discover the best travel destinations from ${originCity} under $${budget.toLocaleString(
+  return `Find affordable trips from ${originCity} under $${budget.toLocaleString(
     "en-CA"
   )} CAD, with estimated flight costs, daily expenses, trip length ideas, and realistic budget breakdowns.`;
 }

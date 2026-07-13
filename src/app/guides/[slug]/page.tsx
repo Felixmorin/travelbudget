@@ -48,7 +48,7 @@ export async function generateMetadata({ params }: GuidePageProps): Promise<Meta
   }
 
   return createMetadata({
-    title: guide.title,
+    title: createGuideSeoTitle(guide),
     description: guide.summary,
     path: `/guides/${guide.slug}`,
     image: guide.image,
@@ -66,6 +66,7 @@ export default async function LongTailGuidePage({ params }: GuidePageProps) {
 
   const destination = guide.destinationSlug ? getUnifiedDestination(guide.destinationSlug) : null;
   const path = `/guides/${guide.slug}`;
+  const seoTitle = createGuideSeoTitle(guide);
   const costSnapshot = destination
     ? getGuideCostSnapshot({
         destination,
@@ -138,7 +139,7 @@ export default async function LongTailGuidePage({ params }: GuidePageProps) {
         <div className="mx-auto flex min-h-[460px] max-w-5xl items-end px-4 py-12 sm:px-6 lg:px-8">
           <div className="max-w-3xl text-white">
             <Badge className="mb-4 bg-white text-[#0B1D34]">{guide.category}</Badge>
-            <h1 className="text-4xl font-semibold leading-tight sm:text-5xl">{guide.title}</h1>
+            <h1 className="text-4xl font-semibold leading-tight sm:text-5xl">{seoTitle}</h1>
             <p className="mt-5 text-lg leading-8 text-white/85">{guide.summary}</p>
           </div>
         </div>
@@ -446,4 +447,16 @@ function formatTravelStyle(style: string | undefined) {
   }
 
   return style ? style.charAt(0).toUpperCase() + style.slice(1) : "Mid-range";
+}
+
+function createGuideSeoTitle(guide: NonNullable<ReturnType<typeof getLongTailGuide>>) {
+  if (guide.slug === "cheap-places-to-travel-from-montreal") {
+    return "Affordable Trips From Montreal for Every Budget";
+  }
+
+  if (guide.budgetTarget && guide.originCity && !guide.destinationSlug) {
+    return `Affordable Trips From ${guide.originCity} Under ${formatMoney(guide.budgetTarget, "CAD")}`;
+  }
+
+  return guide.title;
 }

@@ -283,7 +283,7 @@ function DestinationsHero({
           Budget-first destination discovery
         </Badge>
         <h1 className="mx-auto max-w-4xl text-4xl font-semibold tracking-tight text-[#191c1e] sm:text-5xl lg:text-6xl">
-          Discover destinations that fit your budget
+          Discover Destinations That Fit Your Budget
         </h1>
         <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-[#434655] sm:text-lg">
           Explore cities around the world and estimate how much your trip could cost before you book.
