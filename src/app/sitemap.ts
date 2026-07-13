@@ -25,6 +25,11 @@ const staticRoutes: MetadataRoute.Sitemap = [
     priority: 0.9,
   },
   {
+    url: createCanonicalUrl("/travel-budget"),
+    changeFrequency: "monthly",
+    priority: 0.92,
+  },
+  {
     url: createCanonicalUrl("/destinations"),
     changeFrequency: "weekly",
     priority: 0.9,
