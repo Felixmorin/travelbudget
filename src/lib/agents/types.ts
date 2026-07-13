@@ -1,4 +1,4 @@
-export type AgentId = "product-analyst";
+export type AgentId = "product-analyst" | "captain";
 
 export type AgentStatus = "available" | "disabled";
 export type AgentMissionStatus = "draft" | "pending_approval" | "approved" | "running" | "completed" | "failed" | "cancelled";
@@ -13,6 +13,9 @@ export type AgentPermission =
   | "leads:read:aggregate"
   | "destinations:read"
   | "reports:write"
+  | "agents:read"
+  | "missions:write"
+  | "approvals:write"
   | "notifications:send";
 
 export type SensitiveAgentAction =
@@ -20,6 +23,7 @@ export type SensitiveAgentAction =
   | "lead:raw-read"
   | "external:send"
   | "report:publish"
+  | "agent:mission-create"
   | "production:run";
 
 export type AgentJsonPrimitive = string | number | boolean | null;

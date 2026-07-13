@@ -21,7 +21,7 @@ describe("agent foundations", () => {
   it("registers the product analyst with least-privilege aggregate permissions", () => {
     const agent = getAgentDefinition("product-analyst");
 
-    expect(listAgents()).toHaveLength(1);
+    expect(listAgents()).toHaveLength(2);
     expect(agent.permissions).toContain("analytics:read:aggregate");
     expect(agent.permissions).toContain("leads:read:aggregate");
     expect(agent.permissions).not.toContain("notifications:send");
