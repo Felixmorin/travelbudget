@@ -19,6 +19,8 @@ export function GET() {
         mode: backend.mode,
         requiresServiceRoleKey: backend.requiresServiceRoleKey,
         urlHost: backend.urlHost,
+        missing: backend.missing,
+        error: backend.error,
       },
     },
     {

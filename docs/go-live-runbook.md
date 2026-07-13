@@ -4,7 +4,7 @@ This runbook is the minimum operational checklist before launching GoByBudget.co
 
 ## Required Runtime
 
-- Node.js 22.13 or newer.
+- Node.js 22.13.0 or newer. Use `.nvmrc`; `.npmrc` enforces `engine-strict=true`.
 - Production build command: `npm ci && npm run build`.
 - Production start command for Node hosting: `npm run start`.
 
@@ -16,6 +16,8 @@ This runbook is the minimum operational checklist before launching GoByBudget.co
 - `AFFILIATE_ALLOWED_DOMAINS`
 - At least one analytics destination or a documented decision to rely only on server-side event storage.
 - Product/legal sign-off that the cookie consent banner copy and default opt-in flow match each target market.
+- Optional browser analytics and marketing IDs, including GA4, Clarity, Plausible, PostHog, Travelpayouts Drive,
+  and Google Ads, must remain unset unless they are approved to load after explicit analytics consent.
 - Alerting must be configured by one of these options:
   - `MONITORING_WEBHOOK_URL` and `MONITORING_WEBHOOK_SECRET` for webhook alerting.
   - `INCIDENT_ALERTING_PROVIDER` and `INCIDENT_ALERTING_ESCALATION_TARGET` when alerting is handled outside this app.

@@ -15,6 +15,15 @@ type SupabaseConfig = {
   key: string;
 };
 
+type BackendStorageStatus = {
+  configured: boolean;
+  mode: "Supabase" | "Development memory" | "Misconfigured";
+  requiresServiceRoleKey: boolean;
+  urlHost: string | null;
+  missing: string[];
+  error: string | null;
+};
+
 const providerTimeoutMs = 5000;
 
 export class BackendStorageError extends Error {
@@ -31,7 +40,7 @@ export function isBackendStorageConfigured() {
   return Boolean(getSupabaseConfig());
 }
 
-export function getBackendStorageStatus() {
+export function getBackendStorageStatus(): BackendStorageStatus {
   try {
     const config = getSupabaseConfig();
 
@@ -40,6 +49,8 @@ export function getBackendStorageStatus() {
       mode: config ? "Supabase" : "Development memory",
       requiresServiceRoleKey: process.env.NODE_ENV === "production" && !process.env.SUPABASE_SERVICE_ROLE_KEY?.trim(),
       urlHost: config ? new URL(config.url).hostname : null,
+      missing: getMissingSupabaseVariables(),
+      error: null,
     };
   } catch (error) {
     return {
@@ -47,6 +58,7 @@ export function getBackendStorageStatus() {
       mode: "Misconfigured",
       requiresServiceRoleKey: true,
       urlHost: null,
+      missing: getMissingSupabaseVariables(),
       error: error instanceof Error ? error.message : "Supabase storage is misconfigured.",
     };
   }
@@ -164,4 +176,15 @@ function getSupabaseConfig(): SupabaseConfig | null {
   } catch {
     throw new BackendStorageError("Supabase URL is misconfigured.", 500);
   }
+}
+
+function getMissingSupabaseVariables() {
+  if (process.env.NODE_ENV !== "production") {
+    return [];
+  }
+
+  return [
+    process.env.SUPABASE_URL?.trim() ? null : "SUPABASE_URL",
+    process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() ? null : "SUPABASE_SERVICE_ROLE_KEY",
+  ].filter((name): name is string => Boolean(name));
 }

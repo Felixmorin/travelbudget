@@ -5,10 +5,14 @@ import { useSyncExternalStore } from "react";
 
 import { getCookieConsent, subscribeToCookieConsent } from "@/lib/analytics/consent";
 
+const googleAnalyticsId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+const clarityProjectId = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID;
 const plausibleDomain = process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN;
 const plausibleScriptSrc = process.env.NEXT_PUBLIC_PLAUSIBLE_SCRIPT_SRC ?? "https://plausible.io/js/script.js";
 const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
 const posthogHost = process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com";
+const travelpayoutsDriveScriptSrc = process.env.NEXT_PUBLIC_TRAVELPAYOUTS_DRIVE_SCRIPT_SRC;
+const googleAdsClientId = process.env.NEXT_PUBLIC_GOOGLE_ADS_CLIENT_ID;
 
 export function AnalyticsScripts() {
   const consent = useSyncExternalStore(subscribeToCookieConsent, getCookieConsent, () => null);
@@ -19,6 +23,33 @@ export function AnalyticsScripts() {
 
   return (
     <>
+      {googleAnalyticsId ? (
+        <>
+          <Script
+            src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(googleAnalyticsId)}`}
+            strategy="afterInteractive"
+          />
+          <Script id="google-analytics" strategy="afterInteractive">
+            {`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', ${JSON.stringify(googleAnalyticsId)});
+            `}
+          </Script>
+        </>
+      ) : null}
+      {clarityProjectId ? (
+        <Script id="microsoft-clarity" strategy="afterInteractive">
+          {`
+            (function(c,l,a,r,i,t,y){
+                c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+            })(window, document, "clarity", "script", ${JSON.stringify(clarityProjectId)});
+          `}
+        </Script>
+      ) : null}
       {plausibleDomain ? (
         <Script
           defer
@@ -39,6 +70,33 @@ export function AnalyticsScripts() {
             });
           `}
         </Script>
+      ) : null}
+      {travelpayoutsDriveScriptSrc ? (
+        <Script id="travelpayouts-drive" strategy="afterInteractive">
+          {`
+            (function () {
+              var script = document.createElement("script");
+              script.async = true;
+              script.src = ${JSON.stringify(travelpayoutsDriveScriptSrc)};
+              script.setAttribute("nowprocket", "");
+              script.setAttribute("data-noptimize", "1");
+              script.setAttribute("data-cfasync", "false");
+              script.setAttribute("data-wpfc-render", "false");
+              script.setAttribute("seraph-accel-crit", "1");
+              script.setAttribute("data-no-defer", "1");
+              document.head.appendChild(script);
+            })();
+          `}
+        </Script>
+      ) : null}
+      {googleAdsClientId ? (
+        <Script
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(
+            googleAdsClientId
+          )}`}
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
       ) : null}
     </>
   );

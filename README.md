@@ -28,6 +28,9 @@ The app currently uses curated country and city destination datasets with origin
 
 ## Getting Started
 
+Use Node.js 22.13.0 or newer before installing dependencies. The repo includes `.nvmrc`, `engines.node`, and
+`.npmrc` engine-strict enforcement so `npm ci` fails fast on unsupported Node versions.
+
 Install dependencies:
 
 ```bash
@@ -147,6 +150,10 @@ Analytics environment variables:
 - `NEXT_PUBLIC_PLAUSIBLE_SCRIPT_SRC` - optional Plausible script override, defaults to `https://plausible.io/js/script.js`
 - `NEXT_PUBLIC_POSTHOG_KEY` - enables PostHog
 - `NEXT_PUBLIC_POSTHOG_HOST` - optional PostHog host, defaults to `https://us.i.posthog.com`
+- `NEXT_PUBLIC_TRAVELPAYOUTS_DRIVE_SCRIPT_SRC` - enables the Travelpayouts Drive script after analytics consent
+- `NEXT_PUBLIC_GOOGLE_ADS_CLIENT_ID` - enables Google Ads after analytics consent
+
+Analytics and marketing scripts are loaded only after the visitor accepts analytics cookies.
 
 Optional public environment variables:
 
