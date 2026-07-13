@@ -1,4 +1,4 @@
-import { ArrowRight, BadgeCheck, Hotel, Plane, Shield, Smartphone, Ticket } from "lucide-react";
+import { ArrowRight, BadgeCheck, Bus, Car, Hotel, Plane, Shield, Smartphone, Ticket } from "lucide-react";
 
 import { AffiliateModuleView } from "@/components/analytics/affiliate-module-view";
 import { TrackedLink } from "@/components/analytics/tracked-link";
@@ -14,6 +14,9 @@ const icons = {
   eSIM: Smartphone,
   Activities: Ticket,
   Insurance: Shield,
+  "Car rental": Car,
+  "Trains and buses": Bus,
+  "Airport transfer": Bus,
 };
 
 export function AffiliateCard({

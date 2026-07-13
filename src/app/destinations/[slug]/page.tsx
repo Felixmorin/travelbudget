@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import Script from "next/script";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
@@ -24,6 +23,7 @@ import {
 
 import { AnalyticsView } from "@/components/analytics/analytics-view";
 import { TrackedLink } from "@/components/analytics/tracked-link";
+import { AffiliateCTA } from "@/components/affiliate/AffiliateCTA";
 import { DayByDayItinerary } from "@/components/destinations/day-by-day-itinerary";
 import { AffiliateCard } from "@/components/site/affiliate-card";
 import { BudgetBreakdown } from "@/components/site/budget-breakdown";
@@ -32,6 +32,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { buildAffiliateLink } from "@/lib/affiliate/build-affiliate-link";
+import { buildAffiliateContextFromDestination } from "@/lib/affiliates/destinations";
 import {
   type Destination,
   formatMoney,
@@ -104,6 +105,10 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
   }
 
   const destinationLabel = getCityCountryLabel(destination);
+  const affiliateContext = buildAffiliateContextFromDestination(destination, {
+    pageType: "destination",
+    placement: "destination_sidebar_activity_boost",
+  });
   const budgetInsight = getBudgetInsight(destination);
   const defaultOriginPricing = getOriginPricing(destination, "YUL");
   const dailyMidRangeTotal = getDailyCostTotal(destination, "midRange");
@@ -301,7 +306,9 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
               destination={destination}
             />
 
-            {destination.slug === "japan" ? <JapanToursWidget destination={destination} /> : null}
+            {destination.slug === "japan" ? (
+              <JapanToursWidget destination={destination} affiliateContext={affiliateContext} />
+            ) : null}
 
             <Card className="border-slate-200 bg-white">
               <CardHeader>
@@ -440,25 +447,7 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
                       </p>
                     </div>
                   </div>
-                  <Button asChild className="h-11 rounded-xl bg-orange-500 text-white hover:bg-orange-600">
-                    <TrackedLink
-                      href={activityLink.href}
-                      eventName="cta_clicked"
-                      eventProperties={{
-                        page: `/destinations/${destination.slug}`,
-                        destinationName: destination.name,
-                        destinationSlug: destination.slug,
-                        label: `Browse ${destination.name} activities`,
-                        href: activityLink.href,
-                        ctaLocation: "destination_sidebar_activity_boost",
-                      }}
-                      target="_blank"
-                      rel="sponsored noopener noreferrer"
-                    >
-                      Browse activities
-                      <ArrowRight className="ml-2 size-4" />
-                    </TrackedLink>
-                  </Button>
+                  <AffiliateCTA category="activities" context={affiliateContext} variant="button" label="Browse activities" />
                 </CardContent>
               </Card>
             ) : null}
@@ -671,9 +660,13 @@ function getDestinationActivityGuide(destination: Destination): ActivityGuide {
   };
 }
 
-function JapanToursWidget({ destination }: { destination: Destination }) {
-  const getYourGuideJapanUrl = "https://www.getyourguide.com/japan-l169034/?partner_id=4ZWE6DU";
-
+function JapanToursWidget({
+  destination,
+  affiliateContext,
+}: {
+  destination: Destination;
+  affiliateContext: ReturnType<typeof buildAffiliateContextFromDestination>;
+}) {
   return (
     <Card className="border-slate-200 bg-white shadow-lg shadow-slate-200/60">
       <CardHeader>
@@ -695,42 +688,21 @@ function JapanToursWidget({ destination }: { destination: Destination }) {
             temples, Osaka food stops, and one or two guided day trips.
           </p>
           <p>
-            Use the live widget below to check current options, then verify final availability, cancellation terms,
-            and total price before booking.
+            Use the partner link to check current options, then verify final availability, cancellation terms, and
+            total price before booking.
           </p>
         </div>
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 p-4">
-          <div
-            data-gyg-href="https://widget.getyourguide.com/default/city.frame"
-            data-gyg-location-id="169034"
-            data-gyg-locale-code="en-US"
-            data-gyg-widget="city"
-            data-gyg-partner-id="4ZWE6DU"
-          />
-          <noscript>
-            <p className="text-sm leading-6 text-slate-600">
-              JavaScript is required to display the live GetYourGuide city widget. You can still browse Japan tours
-              directly on GetYourGuide.
-            </p>
-          </noscript>
-        </div>
-        <Button asChild variant="outline" className="w-fit rounded-xl bg-white">
-          <a href={getYourGuideJapanUrl} target="_blank" rel="sponsored noopener noreferrer">
-            Browse Japan tours
-            <ArrowRight className="ml-2 size-4" />
-          </a>
-        </Button>
+        <AffiliateCTA
+          category="activities"
+          context={{ ...affiliateContext, placement: "japan_activity_section" }}
+          variant="button"
+          label="Browse Japan tours"
+        />
         <p className="text-xs leading-5 text-slate-500">
           GoByBudget.com may earn a commission from qualifying bookings. Activity prices are live partner prices and
           are separate from the static {destination.name} budget estimates above.
         </p>
       </CardContent>
-      <Script
-        id="getyourguide-japan-city-widget"
-        src="https://widget.getyourguide.com/dist/pa.umd.production.min.js"
-        data-gyg-partner-id="4ZWE6DU"
-        strategy="lazyOnload"
-      />
     </Card>
   );
 }

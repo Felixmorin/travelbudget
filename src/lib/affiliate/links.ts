@@ -51,6 +51,30 @@ const placeholders: Record<AffiliateLink["type"], Omit<AffiliatePlaceholder, "ty
     href: "/results",
     isAvailable: true,
   },
+  "Car rental": {
+    title: "Compare rental cars",
+    description: "Compare car rental only when it fits the itinerary.",
+    actionLabel: "Compare",
+    priceHint: "Partner prices",
+    href: "/travel-budget-calculator",
+    isAvailable: true,
+  },
+  "Trains and buses": {
+    title: "Compare trains and buses",
+    description: "Compare intercity ground transport options.",
+    actionLabel: "Compare",
+    priceHint: "Partner prices",
+    href: "/travel-budget-calculator",
+    isAvailable: true,
+  },
+  "Airport transfer": {
+    title: "Check airport transfers",
+    description: "Plan airport-to-hotel transport before arrival.",
+    actionLabel: "Check",
+    priceHint: "Partner prices",
+    href: "/travel-budget-calculator",
+    isAvailable: true,
+  },
 };
 
 export function getAffiliatePlaceholder(link: AffiliateLink): AffiliatePlaceholder {

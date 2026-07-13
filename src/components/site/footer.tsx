@@ -57,6 +57,9 @@ export function Footer() {
             />
           </Link>
           <p className="mt-3 max-w-sm text-sm leading-6 text-[#434655]">{t.footer.description}</p>
+          <p className="mt-3 max-w-sm text-xs leading-5 text-[#64748b]">
+            GoByBudget may earn a commission when you book through partner links, at no additional cost to you.
+          </p>
         </div>
         {footerSections.map((section) => (
           <div key={section.titleKey}>

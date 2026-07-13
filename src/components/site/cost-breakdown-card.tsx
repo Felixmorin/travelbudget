@@ -1,6 +1,8 @@
 import type { ComponentType } from "react";
 
+import { AffiliateCTA } from "@/components/affiliate/AffiliateCTA";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { AffiliateCategory, AffiliateContext } from "@/lib/affiliates/types";
 import { formatMoney } from "@/lib/format-money";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +18,8 @@ export type CostBreakdownItem = {
   description?: string;
   color?: string;
   colorClassName?: string;
+  affiliateCategory?: AffiliateCategory;
+  affiliateContext?: AffiliateContext;
 };
 
 type CostBreakdownCardProps = {
@@ -193,6 +197,19 @@ export function CostBreakdownList({
                 <div
                   className={cn("h-2 rounded-full bg-[#0B1D34]", item.colorClassName)}
                   style={{ backgroundColor: item.color, width: `${width}%` }}
+                />
+              </div>
+            ) : null}
+            {item.affiliateCategory && item.affiliateContext ? (
+              <div className="min-h-8">
+                <AffiliateCTA
+                  category={item.affiliateCategory}
+                  context={{
+                    ...item.affiliateContext,
+                    category: item.affiliateCategory,
+                    placement: item.affiliateContext.placement ?? "cost_breakdown",
+                  }}
+                  variant="compact"
                 />
               </div>
             ) : null}

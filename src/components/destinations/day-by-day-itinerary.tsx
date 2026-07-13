@@ -162,10 +162,7 @@ export function DayByDayItinerary({
                             <Button asChild size="sm" className="rounded-lg bg-orange-500 text-white hover:bg-orange-600">
                               <TrackedLink
                                 href={buildSpecificActivityHref({
-                                  activityTitle: activity.title,
-                                  destinationLabel,
                                   fallbackHref: activityHref,
-                                  slug: destination.slug,
                                 })}
                                 eventName="affiliate_link_clicked"
                                 eventProperties={{
@@ -174,17 +171,14 @@ export function DayByDayItinerary({
                                   destinationName: destinationLabel,
                                   destinationSlug: destination.slug,
                                   href: buildSpecificActivityHref({
-                                    activityTitle: activity.title,
-                                    destinationLabel,
                                     fallbackHref: activityHref,
-                                    slug: destination.slug,
                                   }),
                                   label: activity.title,
                                   linkType: "activity",
                                   page: `/destinations/${destination.slug}`,
                                   title: activity.title,
                                 }}
-                                rel="sponsored noopener noreferrer"
+                                rel="sponsored nofollow noopener noreferrer"
                                 target="_blank"
                               >
                                 Reserve
@@ -342,53 +336,8 @@ function activity(title: string, description: string, duration: string): DayActi
   return { title, description, duration };
 }
 
-function buildSpecificActivityHref({
-  activityTitle,
-  destinationLabel,
-  fallbackHref,
-  slug,
-}: {
-  activityTitle: string;
-  destinationLabel: string;
-  fallbackHref: string;
-  slug: string;
-}) {
-  const preciseTarget = new URL("https://www.getyourguide.com/s/");
-
-  preciseTarget.searchParams.set("q", `${activityTitle} ${destinationLabel}`);
-  preciseTarget.searchParams.set("utm_source", "gobybudget.com");
-  preciseTarget.searchParams.set("utm_medium", "affiliate");
-  preciseTarget.searchParams.set("partner_id", "4ZWE6DU");
-
-  const encodedUrl = encodeBase64Url(preciseTarget.toString());
-
-  if (!encodedUrl) {
-    return fallbackHref;
-  }
-
-  const params = new URLSearchParams({
-    url: encodedUrl,
-    source: "day_by_day_itinerary",
-    partner: "GetYourGuide",
-    provider: "GetYourGuide",
-  });
-
-  return `/go/${slug}/activities?${params.toString()}`;
-}
-
-function encodeBase64Url(value: string) {
-  try {
-    const bytes = new TextEncoder().encode(value);
-    let binary = "";
-
-    bytes.forEach((byte) => {
-      binary += String.fromCharCode(byte);
-    });
-
-    return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
-  } catch {
-    return "";
-  }
+function buildSpecificActivityHref({ fallbackHref }: { fallbackHref: string }) {
+  return fallbackHref;
 }
 
 function day(title: string, description: string, pace: string): Omit<ItineraryDay, "day"> {

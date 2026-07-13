@@ -17,6 +17,9 @@ const fallbackHrefByType: Record<AffiliateLink["type"], string> = {
   eSIM: "/travel-budget-calculator",
   Activities: "/results",
   Insurance: "/travel-budget-calculator",
+  "Car rental": "/travel-budget-calculator",
+  "Trains and buses": "/travel-budget-calculator",
+  "Airport transfer": "/travel-budget-calculator",
 };
 
 export function buildAffiliateLink({

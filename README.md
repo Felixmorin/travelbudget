@@ -137,7 +137,7 @@ Recommendation logic lives in `src/lib/budget/recommend-destinations.ts`. Result
 
 ## Affiliate Links
 
-Flight links use Aviasales/Travelpayouts search links when `NEXT_PUBLIC_TRAVELPAYOUTS_MARKER` is configured. Without a marker, flight CTAs fall back to the existing Aviasales short affiliate URL. Hotel links point to Booking.com destination search pages. eSIM links point to Airalo search by default. Activity links point to GetYourGuide search by default. Insurance links remain internal unless `NEXT_PUBLIC_INSURANCE_AFFILIATE_BASE_URL` is configured.
+Affiliate links are selected through the centralized `src/lib/affiliates` rules engine. Flight links use Aviasales/Travelpayouts search links when `NEXT_PUBLIC_TRAVELPAYOUTS_MARKER` is configured; otherwise they fall back to the configured Aviasales entry URL. Other partners use their configured generic affiliate entry URL unless an officially supported deep-link format is added.
 
 Analytics environment variables:
 
@@ -150,22 +150,17 @@ Analytics environment variables:
 
 Optional public environment variables:
 
+- `NEXT_PUBLIC_AVIASALES_AFFILIATE_URL` - Aviasales fallback entry URL
+- `NEXT_PUBLIC_BOOKING_AFFILIATE_URL` - Booking.com affiliate entry URL
+- `NEXT_PUBLIC_GETYOURGUIDE_AFFILIATE_URL` - GetYourGuide affiliate entry URL
+- `NEXT_PUBLIC_AIRALO_AFFILIATE_URL` - Airalo affiliate entry URL
+- `NEXT_PUBLIC_DISCOVER_CARS_AFFILIATE_URL` - Discover Cars affiliate entry URL
+- `NEXT_PUBLIC_OMIO_AFFILIATE_URL` - Omio affiliate entry URL
+- `NEXT_PUBLIC_TRAVEL_INSURANCE_AFFILIATE_URL` - travel insurance affiliate entry URL
+- `NEXT_PUBLIC_AIRPORT_TRANSFER_AFFILIATE_URL` - airport transfer affiliate entry URL
 - `NEXT_PUBLIC_AVIASALES_FALLBACK_URL` - fallback flight affiliate URL, defaults to `https://aviasales.tpx.lu/59DXH0n1`
 - `NEXT_PUBLIC_TRAVELPAYOUTS_MARKER` - public Travelpayouts marker inserted into Aviasales search URLs as `marker`
 - `TRAVELPAYOUTS_API_TOKEN` and `TRAVELPAYOUTS_MARKER` - reserved server-only values for a future Partner Links API integration; never expose API tokens with `NEXT_PUBLIC_*`
-- `NEXT_PUBLIC_BOOKING_AFFILIATE_AID` - adds the Booking.com `aid` parameter
-- `NEXT_PUBLIC_ESIM_AFFILIATE_BASE_URL` - overrides the eSIM provider or affiliate deep-link base URL
-- `NEXT_PUBLIC_ESIM_AFFILIATE_QUERY_PARAM` - overrides the eSIM search query parameter, defaults to `search`
-- `NEXT_PUBLIC_ESIM_AFFILIATE_PROVIDER` and `NEXT_PUBLIC_ESIM_AFFILIATE_PARTNER` - labels eSIM provider and commercial partner
-- `NEXT_PUBLIC_ESIM_AFFILIATE_ID_PARAM` and `NEXT_PUBLIC_ESIM_AFFILIATE_ID` - optional eSIM partner ID query parameter and value
-- `NEXT_PUBLIC_ACTIVITIES_AFFILIATE_BASE_URL` - overrides the activities provider or affiliate deep-link base URL
-- `NEXT_PUBLIC_ACTIVITIES_AFFILIATE_QUERY_PARAM` - overrides the activities search query parameter, defaults to `q`
-- `NEXT_PUBLIC_ACTIVITIES_AFFILIATE_PROVIDER` and `NEXT_PUBLIC_ACTIVITIES_AFFILIATE_PARTNER` - labels activity provider and commercial partner
-- `NEXT_PUBLIC_ACTIVITIES_AFFILIATE_ID_PARAM` and `NEXT_PUBLIC_ACTIVITIES_AFFILIATE_ID` - optional activity partner ID query parameter and value
-- `NEXT_PUBLIC_INSURANCE_AFFILIATE_BASE_URL` - enables external insurance partner links
-- `NEXT_PUBLIC_INSURANCE_AFFILIATE_QUERY_PARAM` - destination query parameter for insurance links, defaults to `destination`
-- `NEXT_PUBLIC_INSURANCE_AFFILIATE_PROVIDER` and `NEXT_PUBLIC_INSURANCE_AFFILIATE_PARTNER` - labels insurance provider and commercial partner
-- `NEXT_PUBLIC_INSURANCE_AFFILIATE_ID_PARAM` and `NEXT_PUBLIC_INSURANCE_AFFILIATE_ID` - optional insurance partner ID query parameter and value
 
 ## Current Limitations
 

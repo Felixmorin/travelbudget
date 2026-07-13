@@ -4,7 +4,8 @@ import { notFound } from "next/navigation";
 import { ArrowRight, BedDouble, Bus, CalendarDays, CircleDollarSign, Plane, Utensils } from "lucide-react";
 
 import { EmailCaptureForm } from "@/components/analytics/email-capture-form";
-import { FlightAffiliateLink } from "@/components/affiliate/FlightAffiliateLink";
+import { AffiliateCTA } from "@/components/affiliate/AffiliateCTA";
+import { AffiliateSection } from "@/components/affiliate/AffiliateSection";
 import { EstimateDisclaimer } from "@/components/site/estimate-disclaimer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,7 +16,7 @@ import {
   getTravelBudgetPath,
   getTravelCostDurationPath,
 } from "@/lib/programmatic/seo-pages";
-import { getDestinationIata } from "@/lib/affiliates/iata";
+import { buildAffiliateContextFromDestination } from "@/lib/affiliates/destinations";
 import { getCityCountryLabel } from "@/lib/data/unified-destinations";
 import { createMetadata } from "@/lib/seo/metadata";
 import { createBreadcrumbSchema, createGuideArticleSchema, serializeJsonLd } from "@/lib/seo/schema";
@@ -64,6 +65,13 @@ export default async function TravelBudgetPage({ params }: TravelBudgetPageProps
   const destinationLabel = getCityCountryLabel(page.destination);
   const estimate = getBudgetSeoEstimate(page);
   const path = getTravelBudgetPath(page.destination.slug);
+  const affiliateContext = buildAffiliateContextFromDestination(page.destination, {
+    durationDays: page.durationDays,
+    travelers: page.travelers,
+    tripStyle: page.travelStyle,
+    pageType: "travel_budget",
+    placement: "travel_budget_sidebar",
+  });
   const jsonLd = [
     createGuideArticleSchema({
       title: `${destinationLabel} Travel Budget: Daily & Total Trip Cost`,
@@ -170,19 +178,14 @@ export default async function TravelBudgetPage({ params }: TravelBudgetPageProps
           <h2 className="text-xl font-semibold">Plan the next step</h2>
           <div className="mt-5 grid gap-3">
             <Button asChild className="rounded-full bg-[#0B1D34] text-white hover:bg-[#0B1D34]">
-              <FlightAffiliateLink
-                origin="Montreal"
-                originIata="YUL"
-                destination={destinationLabel}
-                destinationIata={getDestinationIata(page.destination)}
-                adults={page.travelers}
-                cabinClass="economy"
-                placement="trip_summary"
-                pageType="travel_budget"
-              >
-                Find flights for this trip
-              </FlightAffiliateLink>
+              <AffiliateCTA category="flights" context={{ ...affiliateContext, placement: "trip_summary" }} variant="text" label="Find flights for this trip" />
             </Button>
+            <AffiliateSection
+              context={affiliateContext}
+              categories={["hotels", "activities", "esim"]}
+              limit={3}
+              title="Price the trip pieces"
+            />
             <div className="rounded-2xl bg-slate-50 p-4">
               <p className="text-sm font-semibold text-slate-950">Send me this trip budget</p>
               <div className="mt-3">

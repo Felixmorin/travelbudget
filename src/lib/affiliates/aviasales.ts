@@ -27,7 +27,9 @@ export type NormalizedAviasalesSearchParams = {
 };
 
 export const AVIASALES_FALLBACK_URL =
-  process.env.NEXT_PUBLIC_AVIASALES_FALLBACK_URL ?? "https://aviasales.tpx.lu/59DXH0n1";
+  process.env.NEXT_PUBLIC_AVIASALES_AFFILIATE_URL ??
+  process.env.NEXT_PUBLIC_AVIASALES_FALLBACK_URL ??
+  "https://aviasales.tpx.lu/59DXH0n1";
 
 const AVIASALES_SEARCH_URL = "https://search.aviasales.com/flights/";
 const IATA_PATTERN = /^[A-Z]{3}$/;

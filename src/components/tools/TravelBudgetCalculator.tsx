@@ -3,6 +3,7 @@
 import { type FormEvent, useMemo, useRef, useState } from "react";
 import { ArrowRight, Check, Mail, MapPin, Plane, Sparkles } from "lucide-react";
 
+import { AffiliateCTA } from "@/components/affiliate/AffiliateCTA";
 import { EstimateDisclaimer } from "@/components/site/estimate-disclaimer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { trackEvent } from "@/lib/analytics/track";
+import type { AffiliateContext } from "@/lib/affiliates/types";
 import { formatMoney } from "@/lib/format-money";
 import { getDepartureCityForInput, getPopularDepartureCities, normalizeDepartureCityCode } from "@/lib/data/departure-cities";
 
@@ -463,7 +465,12 @@ export function TravelBudgetCalculator() {
 
           <div className="grid gap-5 lg:grid-cols-2">
             {matches.map((match) => (
-              <DestinationMatchCard key={match.destination} match={match} onEmailClick={focusEmailCapture} />
+              <DestinationMatchCard
+                key={match.destination}
+                match={match}
+                originCity={summary.origin}
+                onEmailClick={focusEmailCapture}
+              />
             ))}
           </div>
 
@@ -724,7 +731,15 @@ function OptionGrid({
   );
 }
 
-function DestinationMatchCard({ match, onEmailClick }: { match: TripMatch; onEmailClick: () => void }) {
+function DestinationMatchCard({
+  match,
+  originCity,
+  onEmailClick,
+}: {
+  match: TripMatch;
+  originCity: string;
+  onEmailClick: () => void;
+}) {
   const breakdownItems = [
     ["Flight", match.breakdown.flight],
     ["Stay", match.breakdown.stay],
@@ -733,6 +748,7 @@ function DestinationMatchCard({ match, onEmailClick }: { match: TripMatch; onEma
     ["Activities", match.breakdown.activities],
     ["Buffer", match.breakdown.buffer],
   ] as const;
+  const affiliateContext = getMatchAffiliateContext(match, originCity);
 
   return (
     <Card className="border-slate-200 bg-white shadow-sm">
@@ -788,9 +804,32 @@ function DestinationMatchCard({ match, onEmailClick }: { match: TripMatch; onEma
             Send me this trip budget
           </Button>
         </div>
+        <div className="grid min-h-8 gap-2 sm:grid-cols-2">
+          <AffiliateCTA category="flights" context={{ ...affiliateContext, placement: "calculator_result_flights" }} variant="compact" />
+          <AffiliateCTA category="hotels" context={{ ...affiliateContext, placement: "calculator_result_hotels" }} variant="compact" />
+        </div>
       </CardContent>
     </Card>
   );
+}
+
+function getMatchAffiliateContext(match: TripMatch, originCity: string): AffiliateContext {
+  const [destinationCity, destinationCountry] = match.destination.split(",").map((part) => part.trim());
+
+  return {
+    originCity,
+    originCountry: originCity === "New York" || originCity === "Boston" || originCity === "Chicago" ? "United States" : "Canada",
+    destinationSlug: destinationCity.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+    destinationCity,
+    destinationCountry,
+    durationDays: 10,
+    travelers: 1,
+    pageType: "calculator",
+    placement: "calculator_result",
+    hasActivities: true,
+    hasOvernightStay: true,
+    internationalTrip: true,
+  };
 }
 
 function getTripMatches(answers: TripAnswers): TripMatch[] {

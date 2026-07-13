@@ -3,11 +3,12 @@ import {
   getDepartureCityByAirportCode,
   normalizeDepartureCityCode,
 } from "@/lib/data/departure-cities";
-import { buildAviasalesAffiliateUrl } from "@/lib/affiliates/aviasales";
+import { getAffiliateRecommendations } from "@/lib/affiliates/getAffiliateRecommendation";
 import { getDestinationIata } from "@/lib/affiliates/iata";
+import type { AffiliateCategory, AffiliateRecommendation } from "@/lib/affiliates/types";
 
 export type AffiliateLink = {
-  type: "Flights" | "Hotels" | "eSIM" | "Activities" | "Insurance";
+  type: "Flights" | "Hotels" | "eSIM" | "Activities" | "Insurance" | "Car rental" | "Trains and buses" | "Airport transfer";
   title: string;
   description: string;
   priceHint: string;
@@ -922,209 +923,78 @@ function splitDailyTotal(total: number): TravelStyleCosts {
 }
 
 function buildAffiliateLinks(seed: DestinationSeed): AffiliateLink[] {
-  const primaryStyle = getPrimaryTravelStyle(seed);
-  const tripContext = getTripContext(seed);
-
-  return [
-    {
-      type: "Flights",
-      title: getContextualAffiliateTitle("Flights", seed, primaryStyle),
-      description: `Compare provider fares to ${seed.name} against the CAD ${seed.flightAverage.YUL} YUL planning baseline before locking the trip.`,
-      priceHint: `Avg. from YUL CAD ${seed.flightAverage.YUL}`,
-      href: buildFlightHref(seed),
-      provider: "Aviasales",
-      partner: "Travelpayouts",
-      placement: "destination_sidebar",
-      isExternal: true,
-    },
-    {
-      type: "Hotels",
-      title: getContextualAffiliateTitle("Hotels", seed, primaryStyle),
-      description: `Compare Booking.com stays for a ${tripContext} ${seed.name} trip with lodging near CAD ${
-        splitDailyTotal(seed.dailyTotals.midRange).accommodation
-      } per night.`,
-      priceHint: `Mid-range daily stay CAD ${splitDailyTotal(seed.dailyTotals.midRange).accommodation}`,
-      href: buildBookingHref(seed),
-      provider: "Booking.com",
-      partner: "Booking.com",
-      placement: "destination_sidebar",
-      isExternal: true,
-    },
-    {
-      type: "eSIM",
-      title: getContextualAffiliateTitle("eSIM", seed, primaryStyle),
-      description: `Get mobile data for maps, transfers, and bookings during a ${tripContext} ${seed.name} itinerary.`,
-      priceHint: "Airalo eSIM plans",
-      href: buildEsimHref(seed),
-      provider: process.env.NEXT_PUBLIC_ESIM_AFFILIATE_PROVIDER ?? "Airalo",
-      partner: process.env.NEXT_PUBLIC_ESIM_AFFILIATE_PARTNER ?? process.env.NEXT_PUBLIC_ESIM_AFFILIATE_PROVIDER ?? "Airalo",
-      placement: "destination_sidebar",
-      isExternal: true,
-    },
-    {
-      type: "Activities",
-      title: getContextualAffiliateTitle("Activities", seed, primaryStyle),
-      description: `Find ${primaryStyle.toLowerCase()} activities for ${seed.name} while keeping the daily activity budget in view.`,
-      priceHint: `Mid-range activities CAD ${splitDailyTotal(seed.dailyTotals.midRange).activities}/day`,
-      href: buildActivitiesHref(seed),
-      provider: process.env.NEXT_PUBLIC_ACTIVITIES_AFFILIATE_PROVIDER ?? "GetYourGuide",
-      partner:
-        process.env.NEXT_PUBLIC_ACTIVITIES_AFFILIATE_PARTNER ??
-        process.env.NEXT_PUBLIC_ACTIVITIES_AFFILIATE_PROVIDER ??
-        "GetYourGuide",
-      placement: "destination_sidebar",
-      isExternal: true,
-    },
-    {
-      type: "Insurance",
-      title: getContextualAffiliateTitle("Insurance", seed, primaryStyle),
-      description: `Check coverage for a ${tripContext} ${seed.name} trip, especially if flights and prepaid stays are a large share of the budget.`,
-      priceHint: "Verify before booking",
-      href: buildInsuranceHref(seed),
-      provider: process.env.NEXT_PUBLIC_INSURANCE_AFFILIATE_PROVIDER ?? "Travel insurance",
-      partner: process.env.NEXT_PUBLIC_INSURANCE_AFFILIATE_PARTNER ?? process.env.NEXT_PUBLIC_INSURANCE_AFFILIATE_PROVIDER,
-      placement: "destination_sidebar",
-      isExternal: Boolean(process.env.NEXT_PUBLIC_INSURANCE_AFFILIATE_BASE_URL),
-    },
-  ];
-}
-
-function getPrimaryTravelStyle(seed: DestinationSeed) {
-  return seed.travelStyles[0] ?? "Flexible";
-}
-
-function getTripContext(seed: DestinationSeed) {
-  if (seed.dailyTotals.budget <= 95) {
-    return "budget-friendly";
-  }
-
-  if (seed.dailyTotals.midRange >= 220 || seed.flightAverage.YUL >= 1200) {
-    return "higher-budget";
-  }
-
-  return "balanced";
-}
-
-function getContextualAffiliateTitle(type: AffiliateLink["type"], seed: DestinationSeed, primaryStyle: string) {
-  const context = getTripContext(seed);
-
-  if (type === "Flights") {
-    return context === "higher-budget" ? `Watch fares to ${seed.name}` : `Compare flights to ${seed.name}`;
-  }
-
-  if (type === "Hotels") {
-    return context === "budget-friendly" ? `Find value stays in ${seed.name}` : `Find ${primaryStyle.toLowerCase()} stays in ${seed.name}`;
-  }
-
-  if (type === "eSIM") {
-    return `Get trip data for ${seed.name}`;
-  }
-
-  if (type === "Activities") {
-    return `Book ${primaryStyle.toLowerCase()} activities`;
-  }
-
-  return `Check coverage for ${seed.name}`;
-}
-
-function buildFlightHref(seed: DestinationSeed) {
-  return buildAviasalesAffiliateUrl({
+  const context = {
     origin: "Montreal",
     originIata: "YUL",
-    destination: seed.name,
+    originCity: "Montreal",
+    originCountry: "Canada",
+    destinationSlug: seed.slug,
+    destinationCity: seed.name,
+    destinationCountry: seed.name,
+    destinationCountryCode: seed.countryCode,
     destinationIata: getDestinationIata({ name: seed.name, slug: seed.slug }),
-    adults: 1,
-    cabinClass: "economy",
+    durationDays: estimateDays,
+    travelers: defaultTravelers,
+    tripStyle: seed.travelStyles[0],
+    hasActivities: true,
+    hasOvernightStay: true,
+    internationalTrip: seed.countryCode !== "CA",
     placement: "destination_sidebar",
     pageType: "destination",
-  });
+  };
+
+  return getAffiliateRecommendations(context, { limit: 6 }).map((recommendation) =>
+    toLegacyAffiliateLink(recommendation, seed)
+  );
 }
 
-function buildBookingHref(seed: DestinationSeed) {
-  const url = new URL("https://www.booking.com/searchresults.html");
-  const aid = process.env.NEXT_PUBLIC_BOOKING_AFFILIATE_AID;
-
-  url.searchParams.set("ss", seed.name);
-  url.searchParams.set("label", `gobybudget-${seed.slug}`);
-  url.searchParams.set("utm_source", "gobybudget.com");
-  url.searchParams.set("utm_medium", "affiliate");
-
-  if (aid) {
-    url.searchParams.set("aid", aid);
-  }
-
-  return url.toString();
+function toLegacyAffiliateLink(recommendation: AffiliateRecommendation, seed: DestinationSeed): AffiliateLink {
+  return {
+    type: legacyTypeByCategory[recommendation.category],
+    title: recommendation.label,
+    description: recommendation.description ?? `Check current ${legacyTypeByCategory[recommendation.category].toLowerCase()} options for ${seed.name}.`,
+    priceHint: getAffiliatePriceHint(recommendation.category, seed),
+    href: recommendation.url,
+    provider: providerLabelByCategory[recommendation.category],
+    partner: providerLabelByCategory[recommendation.category],
+    placement: "destination_sidebar",
+    isExternal: true,
+    rel: "sponsored nofollow noopener noreferrer",
+    target: "_blank",
+  };
 }
 
-function buildEsimHref(seed: DestinationSeed) {
-  return buildProviderSearchHref({
-    baseUrl: process.env.NEXT_PUBLIC_ESIM_AFFILIATE_BASE_URL ?? "https://www.airalo.com/search",
-    queryParam: process.env.NEXT_PUBLIC_ESIM_AFFILIATE_QUERY_PARAM ?? "search",
-    searchTerm: seed.name,
-    fallbackPath: "/search",
-    partnerParam: process.env.NEXT_PUBLIC_ESIM_AFFILIATE_ID_PARAM,
-    partnerValue: process.env.NEXT_PUBLIC_ESIM_AFFILIATE_ID,
-  });
-}
+const legacyTypeByCategory: Record<AffiliateCategory, AffiliateLink["type"]> = {
+  flights: "Flights",
+  hotels: "Hotels",
+  activities: "Activities",
+  esim: "eSIM",
+  car_rental: "Car rental",
+  trains_buses: "Trains and buses",
+  travel_insurance: "Insurance",
+  airport_transfer: "Airport transfer",
+};
 
-function buildActivitiesHref(seed: DestinationSeed) {
-  return buildProviderSearchHref({
-    baseUrl: process.env.NEXT_PUBLIC_ACTIVITIES_AFFILIATE_BASE_URL ?? "https://www.getyourguide.com/s/",
-    queryParam: process.env.NEXT_PUBLIC_ACTIVITIES_AFFILIATE_QUERY_PARAM ?? "q",
-    searchTerm: seed.name,
-    fallbackPath: "/s/",
-    partnerParam: process.env.NEXT_PUBLIC_ACTIVITIES_AFFILIATE_ID_PARAM || "partner_id",
-    partnerValue: process.env.NEXT_PUBLIC_ACTIVITIES_AFFILIATE_ID || "4ZWE6DU",
-  });
-}
+const providerLabelByCategory: Record<AffiliateCategory, string> = {
+  flights: "Aviasales",
+  hotels: "Booking.com",
+  activities: "GetYourGuide",
+  esim: "Airalo",
+  car_rental: "Discover Cars",
+  trains_buses: "Omio",
+  travel_insurance: "Travel insurance",
+  airport_transfer: "Kiwitaxi",
+};
 
-function buildInsuranceHref(seed: DestinationSeed) {
-  const baseUrl = process.env.NEXT_PUBLIC_INSURANCE_AFFILIATE_BASE_URL;
-
-  if (!baseUrl) {
-    return "/travel-budget-calculator";
-  }
-
-  return buildProviderSearchHref({
-    baseUrl,
-    queryParam: process.env.NEXT_PUBLIC_INSURANCE_AFFILIATE_QUERY_PARAM ?? "destination",
-    searchTerm: seed.name,
-    fallbackPath: "/",
-    partnerParam: process.env.NEXT_PUBLIC_INSURANCE_AFFILIATE_ID_PARAM,
-    partnerValue: process.env.NEXT_PUBLIC_INSURANCE_AFFILIATE_ID,
-  });
-}
-
-function buildProviderSearchHref({
-  baseUrl,
-  queryParam,
-  searchTerm,
-  fallbackPath,
-  partnerParam,
-  partnerValue,
-}: {
-  baseUrl: string;
-  queryParam: string;
-  searchTerm: string;
-  fallbackPath: string;
-  partnerParam?: string;
-  partnerValue?: string;
-}) {
-  const url = new URL(baseUrl);
-
-  if (url.pathname === "/") {
-    url.pathname = fallbackPath;
-  }
-
-  url.searchParams.set(queryParam, searchTerm);
-  url.searchParams.set("utm_source", "gobybudget.com");
-  url.searchParams.set("utm_medium", "affiliate");
-
-  if (partnerParam && partnerValue) {
-    url.searchParams.set(partnerParam, partnerValue);
-  }
-
-  return url.toString();
+function getAffiliatePriceHint(category: AffiliateCategory, seed: DestinationSeed) {
+  if (category === "flights") return `Avg. from YUL CAD ${seed.flightAverage.YUL}`;
+  if (category === "hotels") return `Mid-range daily stay CAD ${splitDailyTotal(seed.dailyTotals.midRange).accommodation}`;
+  if (category === "activities") return `Mid-range activities CAD ${splitDailyTotal(seed.dailyTotals.midRange).activities}/day`;
+  if (category === "esim") return "Partner eSIM plans";
+  if (category === "travel_insurance") return "Verify coverage before booking";
+  if (category === "airport_transfer") return "Airport arrival option";
+  if (category === "trains_buses") return "Intercity transport option";
+  return "Rental car option";
 }
 
 function buildFaqs(seed: DestinationSeed): Destination["faqs"] {

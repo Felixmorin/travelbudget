@@ -33,6 +33,13 @@ export type CommonAnalyticsProperties = {
   placement?: string;
   page_type?: string;
   page_path?: string;
+  provider?: string;
+  category?: string;
+  destination_city?: string;
+  destination_country?: string;
+  origin_city?: string;
+  origin_iata?: string;
+  destination_iata?: string;
 };
 
 type CalculatorEventProperties = CommonAnalyticsProperties & {
