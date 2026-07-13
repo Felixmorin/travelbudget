@@ -64,7 +64,7 @@ type QuestionStep = {
 };
 
 const currency = "CAD";
-const pagePath = "/tools/travel-budget-calculator";
+const pagePath = "/travel-budget-calculator";
 
 const departureCities = [
   "Montreal",

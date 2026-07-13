@@ -7,8 +7,8 @@ import {
   getProgrammaticBudgetPage,
   getProgrammaticBudgetPath,
   getProgrammaticBudgetRedirectPath,
-  programmaticBudgetPages,
 } from "@/lib/programmatic/budget-pages";
+import { getAllSeoRegistryPages, getOriginBudgetStaticParams } from "@/lib/programmatic/seo-registry";
 import { getCityCountryLabel } from "@/lib/data/unified-destinations";
 import { createMetadata } from "@/lib/seo/metadata";
 import {
@@ -27,11 +27,10 @@ type BudgetPageProps = {
   }>;
 };
 
+export const dynamicParams = false;
+
 export function generateStaticParams() {
-  return programmaticBudgetPages.map((page) => ({
-    origin: page.origin.slug,
-    budget: `under-${page.budget}`,
-  }));
+  return getOriginBudgetStaticParams();
 }
 
 export async function generateMetadata({ params }: BudgetPageProps): Promise<Metadata> {
@@ -48,12 +47,14 @@ export async function generateMetadata({ params }: BudgetPageProps): Promise<Met
   }
 
   const pageDescription = createPageDescription(page.origin.city, page.budget);
+  const registryPage = getAllSeoRegistryPages().find((item) => item.path === getProgrammaticBudgetPath(page));
 
   return createMetadata({
-    title: `Affordable Trips From ${page.origin.city} Under $${page.budget.toLocaleString("en-CA")}`,
+    title: registryPage?.title ?? `Trips From ${page.origin.city} Under $${page.budget.toLocaleString("en-CA")} CAD`,
     description: pageDescription,
     path: getProgrammaticBudgetPath(page),
     imageAlt: `Best trips from ${page.origin.city} under $${page.budget.toLocaleString("en-CA")}`,
+    noIndex: registryPage?.evaluation.status !== "index",
   });
 }
 

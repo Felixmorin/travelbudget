@@ -6,6 +6,7 @@ import {
   type TravelStyle,
 } from "@/lib/data/destinations";
 import { getUnifiedDestination, unifiedDestinations } from "@/lib/data/unified-destinations";
+import { pilotDestinationSlugs, pilotDurationDays } from "@/lib/programmatic/seo-registry";
 
 export type DestinationBudgetSeoPage = {
   destination: Destination;
@@ -16,11 +17,15 @@ export type DestinationBudgetSeoPage = {
 };
 
 export const destinationBudgetSeoSlugs = Array.from(
-  new Set(unifiedDestinations.map((destination) => destination.slug))
+  new Set(
+    unifiedDestinations
+      .filter((destination) => pilotDestinationSlugs.includes(destination.slug as (typeof pilotDestinationSlugs)[number]))
+      .map((destination) => destination.slug)
+  )
 );
 
 export const durationSeoPages = destinationBudgetSeoSlugs.flatMap((destinationSlug) =>
-  [7, 10, 14].map((durationDays) => ({ destinationSlug, durationDays }))
+  pilotDurationDays.map((durationDays) => ({ destinationSlug, durationDays }))
 );
 
 export function getDestinationBudgetSeoPage(destinationSlug: string): DestinationBudgetSeoPage | null {

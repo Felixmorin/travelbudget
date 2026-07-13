@@ -287,12 +287,12 @@ export default async function LongTailGuidePage({ params }: GuidePageProps) {
             </p>
             <Button asChild className="mt-5 rounded-lg bg-[#0B1D34] text-white hover:bg-[#0B1D34]">
               <TrackedLink
-                href="/tools/travel-budget-calculator"
+                href="/travel-budget-calculator"
                 eventName="cta_clicked"
                 eventProperties={{
                   page: `/guides/${guide.slug}`,
                   label: "Open calculator",
-                  href: "/tools/travel-budget-calculator",
+                  href: "/travel-budget-calculator",
                   ctaLocation: "guide_body",
                 }}
               >

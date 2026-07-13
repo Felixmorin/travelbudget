@@ -10,13 +10,16 @@ import {
 } from "@/lib/programmatic/budget-pages";
 
 describe("programmatic budget origins", () => {
-  it("includes the new active Canadian origins", () => {
+  it("keeps Canadian origins available but limits generated pages to the pilot cities", () => {
     expect(activeProgrammaticOrigins.map((origin) => origin.slug)).toEqual(
       expect.arrayContaining(["quebec", "ottawa", "calgary"])
     );
-    expect(programmaticBudgetPages.some((page) => page.origin.slug === "quebec")).toBe(true);
-    expect(programmaticBudgetPages.some((page) => page.origin.slug === "ottawa")).toBe(true);
-    expect(programmaticBudgetPages.some((page) => page.origin.slug === "calgary")).toBe(true);
+    expect(programmaticBudgetPages.some((page) => page.origin.slug === "montreal")).toBe(true);
+    expect(programmaticBudgetPages.some((page) => page.origin.slug === "toronto")).toBe(true);
+    expect(programmaticBudgetPages.some((page) => page.origin.slug === "vancouver")).toBe(true);
+    expect(programmaticBudgetPages.some((page) => page.origin.slug === "quebec")).toBe(false);
+    expect(programmaticBudgetPages.some((page) => page.origin.slug === "ottawa")).toBe(false);
+    expect(programmaticBudgetPages.some((page) => page.origin.slug === "calgary")).toBe(false);
   });
 
   it("keeps the next origin wave planned without generating pages yet", () => {
@@ -36,11 +39,11 @@ describe("programmatic budget origins", () => {
     });
   });
 
-  it("uses new origin flight pricing for matching destinations", () => {
-    const page = getProgrammaticBudgetPage("quebec", "under-2500");
+  it("uses pilot origin flight pricing for matching destinations", () => {
+    const page = getProgrammaticBudgetPage("toronto", "trips-under-3000");
 
     expect(page).not.toBeNull();
-    expect(page?.origin.city).toBe("Québec");
+    expect(page?.origin.city).toBe("Toronto");
 
     const matches = page ? getMatchingBudgetDestinations(page) : [];
 

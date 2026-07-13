@@ -88,12 +88,12 @@ export function Header() {
           <LanguageSwitcher />
           <Button asChild className="h-9 rounded-full bg-[#0B1D34] px-4 text-white hover:bg-[#14B8A6]">
             <TrackedLink
-              href="/tools/travel-budget-calculator"
+              href="/travel-budget-calculator"
               eventName="cta_clicked"
               eventProperties={{
                 page: pathname,
                 label: t.nav.calculateBudget,
-                href: "/tools/travel-budget-calculator",
+                href: "/travel-budget-calculator",
                 ctaLocation: "site_header",
               }}
             >

@@ -17,6 +17,7 @@ import {
 import { getTravelBudgetPath, getTravelCostDurationPath } from "@/lib/programmatic/seo-pages";
 import { getStrongSeoDestinationBudgetPath } from "@/lib/programmatic/strong-seo-pages";
 import { createMetadata } from "@/lib/seo/metadata";
+import { getAllSeoRegistryPages } from "@/lib/programmatic/seo-registry";
 import {
   createBreadcrumbSchema,
   createCollectionPageSchema,
@@ -30,6 +31,8 @@ import { formatMoney } from "@/lib/format-money";
 type ComparePageProps = {
   params: Promise<{ comparison: string }>;
 };
+
+export const dynamicParams = false;
 
 export function generateStaticParams() {
   return getComparisonStaticParams();
@@ -48,10 +51,13 @@ export async function generateMetadata({ params }: ComparePageProps): Promise<Me
     });
   }
 
+  const registryPage = getAllSeoRegistryPages().find((item) => item.path === getComparisonPath(page));
+
   return createMetadata({
-    title: getComparisonSeoTitle(page),
+    title: registryPage?.title ?? getComparisonSeoTitle(page),
     description: page.description,
     path: getComparisonPath(page),
+    noIndex: registryPage?.evaluation.status !== "index",
   });
 }
 
@@ -179,7 +185,7 @@ export default async function ComparisonPage({ params }: ComparePageProps) {
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           <InternalLink href="/compare" label="Compare" title="All destination comparisons" />
           <InternalLink href="/destinations" label="Destinations" title="Browse city and country guides" />
-          <InternalLink href="/tools/travel-budget-calculator" label="Tool" title="Build a custom trip budget" />
+          <InternalLink href="/travel-budget-calculator" label="Tool" title="Build a custom trip budget" />
         </div>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_320px]">
@@ -195,10 +201,10 @@ export default async function ComparisonPage({ params }: ComparePageProps) {
             <h2 className="text-xl font-semibold">Plan from this comparison</h2>
             <div className="mt-5 grid gap-3">
               <Button asChild className="rounded-full bg-[#0B1D34] text-white hover:bg-[#0B1D34]">
-                <Link href="/tools/travel-budget-calculator">Check flights and hotels for this trip</Link>
+                <Link href="/travel-budget-calculator">Check flights and hotels for this trip</Link>
               </Button>
               <Button asChild variant="outline" className="rounded-full bg-white">
-                <Link href="/tools/travel-budget-calculator">Send me this trip budget</Link>
+                <Link href="/travel-budget-calculator">Send me this trip budget</Link>
               </Button>
             </div>
           </aside>

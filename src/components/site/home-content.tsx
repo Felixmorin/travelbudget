@@ -400,7 +400,7 @@ export function HomeContent() {
             </p>
             <div className="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
               <Link
-                href="/tools/travel-budget-calculator"
+                href="/travel-budget-calculator"
                 className="inline-flex min-h-12 items-center justify-center rounded-lg bg-white px-6 font-bold text-[#0B1D34] transition hover:bg-white/90"
               >
                 Estimate a trip budget

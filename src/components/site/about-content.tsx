@@ -211,7 +211,7 @@ export function AboutContent() {
             <p className="mt-6 max-w-2xl text-lg leading-8 text-[#434655]">{text.intro}</p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
-                href="/tools/travel-budget-calculator"
+                href="/travel-budget-calculator"
                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#0B1D34] px-7 font-semibold text-white shadow-lg shadow-[#0B1D34]/15 transition hover:bg-[#0B1D34]"
               >
                 {text.primaryCta}
@@ -351,7 +351,7 @@ export function AboutContent() {
             <p className="mt-5 text-lg leading-8 text-white/90">{text.finalCopy}</p>
             <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
               <Link
-                href="/tools/travel-budget-calculator"
+                href="/travel-budget-calculator"
                 className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-8 font-semibold text-[#0B1D34] shadow-xl transition hover:bg-white/90"
               >
                 {text.finalPrimary}

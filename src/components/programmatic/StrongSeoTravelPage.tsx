@@ -156,7 +156,7 @@ export function StrongSeoTravelPage({ page }: { page: StrongSeoPage }) {
             <h2 className="text-xl font-semibold">Plan this trip</h2>
             <div className="mt-5 grid gap-3">
               <Button asChild className="rounded-full bg-[#0B1D34] text-white hover:bg-[#0B1D34]">
-                <Link href="/tools/travel-budget-calculator">
+                <Link href="/travel-budget-calculator">
                   Check flights and hotels for this trip
                   <ArrowRight className="ml-2 size-4" />
                 </Link>
@@ -191,7 +191,7 @@ export function StrongSeoTravelPage({ page }: { page: StrongSeoPage }) {
           <section className="rounded-[24px] border border-slate-200 bg-white p-6">
             <h2 className="text-xl font-semibold">Internal links</h2>
             <div className="mt-4 grid gap-3 text-sm font-semibold text-[#0B1D34]">
-              <Link href="/tools/travel-budget-calculator" className="hover:underline">
+              <Link href="/travel-budget-calculator" className="hover:underline">
                 Travel budget calculator
               </Link>
               <Link href="/destinations" className="hover:underline">
@@ -302,5 +302,5 @@ function getBreadcrumbParentPath(kind: StrongSeoPage["kind"]) {
     return "/destinations";
   }
 
-  return kind === "itinerary" ? "/guides" : "/tools/travel-budget-calculator";
+  return kind === "itinerary" ? "/guides" : "/travel-budget-calculator";
 }

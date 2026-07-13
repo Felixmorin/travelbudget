@@ -114,24 +114,21 @@ export const activeProgrammaticOrigins = programmaticOrigins.filter(
   (origin) => origin.status === "active"
 );
 
+export const pilotBudgetAmounts = [1000, 2000, 3000, 5000] as const;
+export const pilotOriginSlugs = ["montreal", "toronto", "vancouver"] as const;
+
 const budgetTiers = [
   {
-    budget: 1500,
+    budget: 1000,
     travelStyle: "budget",
-    tripLengthDays: 7,
-    suggestedTripLength: "5-7 days",
+    tripLengthDays: 5,
+    suggestedTripLength: "3-5 days",
   },
   {
     budget: 2000,
     travelStyle: "budget",
-    tripLengthDays: 8,
-    suggestedTripLength: "7-8 days",
-  },
-  {
-    budget: 2500,
-    travelStyle: "midRange",
-    tripLengthDays: 10,
-    suggestedTripLength: "7-10 days",
+    tripLengthDays: 7,
+    suggestedTripLength: "5-7 days",
   },
   {
     budget: 3000,
@@ -140,20 +137,16 @@ const budgetTiers = [
     suggestedTripLength: "10 days",
   },
   {
-    budget: 3500,
+    budget: 5000,
     travelStyle: "midRange",
-    tripLengthDays: 10,
-    suggestedTripLength: "10 days",
-  },
-  {
-    budget: 4000,
-    travelStyle: "midRange",
-    tripLengthDays: 12,
-    suggestedTripLength: "10-12 days",
+    tripLengthDays: 14,
+    suggestedTripLength: "10-14 days",
   },
 ] satisfies Omit<ProgrammaticBudgetPageConfig, "origin" | "currency" | "travelers">[];
 
-export const programmaticBudgetPages = activeProgrammaticOrigins.flatMap((origin) =>
+export const programmaticBudgetPages = activeProgrammaticOrigins
+  .filter((origin) => pilotOriginSlugs.includes(origin.slug as (typeof pilotOriginSlugs)[number]))
+  .flatMap((origin) =>
   budgetTiers.map((tier) => ({
     origin,
     budget: tier.budget,
@@ -170,7 +163,7 @@ export function getProgrammaticOrigin(originSlug: string) {
 }
 
 export function parseBudgetSlug(budgetSlug: string) {
-  const match = /^under-(\d+)$/.exec(budgetSlug.toLowerCase());
+  const match = /^(?:under|trips-under)-(\d+)$/.exec(budgetSlug.toLowerCase());
 
   if (!match) {
     return null;
@@ -200,16 +193,16 @@ export function getProgrammaticBudgetRedirectPath(originSlug: string) {
   const origin = getProgrammaticOrigin(originSlug);
 
   if (!origin) {
-    return "/tools/travel-budget-calculator";
+    return "/travel-budget-calculator";
   }
 
   const fallbackPage = programmaticBudgetPages.find((page) => page.origin.slug === origin.slug);
 
-  return fallbackPage ? getProgrammaticBudgetPath(fallbackPage) : "/tools/travel-budget-calculator";
+  return fallbackPage ? getProgrammaticBudgetPath(fallbackPage) : "/travel-budget-calculator";
 }
 
 export function getProgrammaticBudgetPath(page: ProgrammaticBudgetPageConfig) {
-  return `/from/${page.origin.slug}/under-${page.budget}`;
+  return `/from/${page.origin.slug}/trips-under-${page.budget}`;
 }
 
 export function getMatchingBudgetDestinations(page: ProgrammaticBudgetPageConfig): BudgetDestination[] {

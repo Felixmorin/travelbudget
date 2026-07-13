@@ -12,16 +12,17 @@ describe("comparison SEO pages", () => {
   it("defines the priority comparison slugs", () => {
     expect(comparisonPages.map((page) => page.slug)).toEqual(
       expect.arrayContaining([
-        "portugal-vs-spain-travel-budget",
-        "japan-vs-south-korea-travel-cost",
-        "mexico-vs-colombia-from-montreal",
-        "best-warm-destinations-from-toronto-under-2500",
+        "portugal-vs-spain",
+        "japan-vs-south-korea",
+        "mexico-vs-colombia",
+        "france-vs-italy",
+        "thailand-vs-vietnam",
       ])
     );
   });
 
   it("builds comparison items with estimates", () => {
-    const page = getComparisonPage("portugal-vs-spain-travel-budget");
+    const page = getComparisonPage("portugal-vs-spain");
 
     expect(page).toBeDefined();
 
@@ -29,9 +30,7 @@ describe("comparison SEO pages", () => {
 
     expect(items).toHaveLength(2);
     expect(items[0].totalEstimate).toBeGreaterThan(0);
-    expect(getComparisonPath("portugal-vs-spain-travel-budget")).toBe(
-      "/compare/portugal-vs-spain-travel-budget"
-    );
+    expect(getComparisonPath("portugal-vs-spain")).toBe("/compare/portugal-vs-spain");
   });
 
   it("expands destination budget and duration SEO coverage", () => {

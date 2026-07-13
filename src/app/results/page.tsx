@@ -718,8 +718,8 @@ function buildBookingLinks(destination: ResultDestination | undefined) {
   const fallbackLinks = [
     { label: "Compare flights", type: "Flights" as const, href: "https://www.skyscanner.ca/transport/flights/", hint: "Live fare search" },
     { label: "Compare hotels", type: "Hotels" as const, href: "/destinations", hint: "Stay options" },
-    { label: "Get an eSIM", type: "eSIM" as const, href: "/tools/travel-budget-calculator", hint: "Mobile data" },
-    { label: "Compare travel insurance", type: "Insurance" as const, href: "/tools/travel-budget-calculator", hint: "Coverage check" },
+    { label: "Get an eSIM", type: "eSIM" as const, href: "/travel-budget-calculator", hint: "Mobile data" },
+    { label: "Compare travel insurance", type: "Insurance" as const, href: "/travel-budget-calculator", hint: "Coverage check" },
     { label: "Find activities", type: "Activities" as const, href: "/destinations", hint: "Tours and experiences" },
   ];
 
@@ -743,7 +743,7 @@ function SeoLinks({ budget, destinations, origin }: { budget: string; destinatio
   const primaryDestination = destinations[0];
   const secondaryDestination = destinations[1];
   const links = [
-    { label: "Travel budget calculator", href: "/tools/travel-budget-calculator" },
+    { label: "Travel budget calculator", href: "/travel-budget-calculator" },
     { label: "Destinations hub", href: "/destinations" },
     { label: `${primaryDestination?.title.split(",")[0] ?? "Portugal"} travel budget`, href: `/travel-budget/${primaryDestination?.slug ?? "portugal"}` },
     { label: `${secondaryDestination?.title.split(",")[0] ?? "Mexico"} travel cost guide`, href: `/travel-cost/${secondaryDestination?.slug ?? "mexico"}/10-days` },

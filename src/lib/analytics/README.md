@@ -4,7 +4,7 @@ Use `trackEvent` from `@/lib/analytics/track` for product events:
 
 ```ts
 trackEvent("calculator_submitted", {
-  page: "/tools/travel-budget-calculator",
+  page: "/travel-budget-calculator",
   originCode: "YUL",
   destinationName: "Paris",
   budget: 2500,

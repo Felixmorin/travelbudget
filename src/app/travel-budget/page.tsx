@@ -125,7 +125,7 @@ const internalLinkGroups = [
     links: [
       {
         label: "Travel budget calculator",
-        href: "/tools/travel-budget-calculator",
+        href: "/travel-budget-calculator",
         description: "Build a custom estimate with your origin, trip length, budget, and travel style.",
       },
       {
@@ -309,7 +309,7 @@ export default function TravelBudgetHubPage() {
             </div>
             <p className="text-sm leading-6 text-slate-600">
               Use the product directly on this hub, or open the dedicated{" "}
-              <Link href="/tools/travel-budget-calculator" className="font-semibold text-[#0B1D34] hover:underline">
+              <Link href="/travel-budget-calculator" className="font-semibold text-[#0B1D34] hover:underline">
                 travel budget calculator
               </Link>{" "}
               page if you want the full tool-focused experience.

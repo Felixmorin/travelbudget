@@ -309,7 +309,7 @@ export function ProgrammaticBudgetPage({
               </p>
             </Link>
           ))}
-          <Link href="/tools/travel-budget-calculator" className="rounded-xl bg-slate-100 p-4 transition-colors hover:bg-[#14B8A6]/10">
+          <Link href="/travel-budget-calculator" className="rounded-xl bg-slate-100 p-4 transition-colors hover:bg-[#14B8A6]/10">
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Tool</p>
             <p className="mt-1 font-bold text-slate-950">Custom budget</p>
           </Link>
@@ -379,7 +379,7 @@ export function ProgrammaticBudgetPage({
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
               <Button asChild size="lg" className="rounded-full bg-[#0B1D34] px-8 text-white hover:bg-[#0B1D34]">
                 <TrackedLink
-                  href="/tools/travel-budget-calculator"
+                  href="/travel-budget-calculator"
                   eventName="cta_clicked"
                   eventProperties={{
                     page: getProgrammaticBudgetPath(page),
@@ -393,7 +393,7 @@ export function ProgrammaticBudgetPage({
                     travelers: 1,
                     travelStyle: page.travelStyle,
                     label: "Start planning now",
-                    href: "/tools/travel-budget-calculator",
+                    href: "/travel-budget-calculator",
                     ctaLocation: "programmatic_bottom_cta",
                   }}
                 >

@@ -14,7 +14,7 @@ export const tools = [
     title: "Budget Calculator",
     description: "Estimate flights, stays, food, transport, and activities in seconds.",
     icon: WalletCards,
-    href: "/tools/travel-budget-calculator",
+    href: "/travel-budget-calculator",
     status: "available",
   },
   {

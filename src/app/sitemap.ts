@@ -3,9 +3,8 @@ import type { MetadataRoute } from "next";
 import { destinations } from "@/lib/data/destinations";
 import { cityDestinations } from "@/lib/data/destination-hub";
 import { longTailGuides } from "@/lib/data/guides";
-import { comparisonPages, getComparisonPath } from "@/lib/programmatic/comparison-pages";
-import { getProgrammaticBudgetPath, programmaticBudgetPages } from "@/lib/programmatic/budget-pages";
 import { strongSeoPages } from "@/lib/programmatic/strong-seo-pages";
+import { getIndexableSeoPages } from "@/lib/programmatic/seo-registry";
 import { createCanonicalUrl } from "@/lib/seo/metadata";
 
 const staticRoutes: MetadataRoute.Sitemap = [
@@ -20,7 +19,7 @@ const staticRoutes: MetadataRoute.Sitemap = [
     priority: 0.7,
   },
   {
-    url: createCanonicalUrl("/tools/travel-budget-calculator"),
+    url: createCanonicalUrl("/travel-budget-calculator"),
     changeFrequency: "monthly",
     priority: 0.9,
   },
@@ -92,11 +91,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "monthly" as const,
     priority: 0.82,
   }));
-  const comparisonRoutes = comparisonPages.map((page) => ({
-    url: createCanonicalUrl(getComparisonPath(page)),
-    changeFrequency: "monthly" as const,
-    priority: 0.78,
-  }));
   const guideRoutes = longTailGuides.map((guide) => ({
     url: createCanonicalUrl(`/guides/${guide.slug}`),
     changeFrequency: "monthly" as const,
@@ -107,20 +101,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "monthly" as const,
     priority: 0.82,
   }));
-  const programmaticBudgetRoutes = programmaticBudgetPages.map((page) => ({
-    url: createCanonicalUrl(getProgrammaticBudgetPath(page)),
-    changeFrequency: "monthly" as const,
-    priority: 0.76,
+  const programmaticSeoRoutes = getIndexableSeoPages().map((page) => ({
+    url: createCanonicalUrl(page.path),
+    lastModified: page.lastModified,
+    changeFrequency: page.changeFrequency,
+    priority: page.priority,
   }));
 
   return uniqueSitemapUrls([
     ...staticRoutes,
     ...destinationRoutes,
     ...cityDestinationRoutes,
-    ...comparisonRoutes,
     ...guideRoutes,
     ...strongSeoRoutes,
-    ...programmaticBudgetRoutes,
+    ...programmaticSeoRoutes,
   ]);
 }
 

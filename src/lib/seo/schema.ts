@@ -94,8 +94,8 @@ export function createFAQSchema(faqs: FAQItem[]): SchemaObject {
 export function createTravelToolSchema(): SchemaObject {
   return withContext({
     "@type": "WebApplication",
-    name: "Trip Budget Calculator",
-    url: createCanonicalUrl("/tools/travel-budget-calculator"),
+    name: "Travel Budget Calculator",
+    url: createCanonicalUrl("/travel-budget-calculator"),
     applicationCategory: "TravelApplication",
     operatingSystem: "Any",
     description:

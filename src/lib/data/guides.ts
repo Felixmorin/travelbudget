@@ -62,9 +62,9 @@ const defaultImageAlt = "Open travel notebook with map, pen, and trip planning n
 export const longTailGuides: LongTailGuide[] = [
   guide({
     slug: "travel-budget-calculator",
-    title: "Travel budget calculator: how to estimate a trip before booking",
+    title: "How to estimate a trip budget before booking",
     category: "Budget planning",
-    intent: "Use a travel budget calculator to compare flights, stays, food, transport, activities, insurance, and a cash buffer before choosing a destination.",
+    intent: "Learn which costs to compare before using the travel budget calculator for flights, stays, food, transport, activities, insurance, and a cash buffer.",
     summary: "A practical guide to using GoByBudget.com as a trip cost calculator, with the inputs that matter most.",
     quickAnswer:
       "A serious travel budget calculator should start with origin, destination, trip length, travel style, and traveler count, then separate fixed costs from daily costs before adding a buffer.",
@@ -85,9 +85,9 @@ export const longTailGuides: LongTailGuide[] = [
     ],
     internalLinks: [
       {
-        label: "Open the calculator",
-        href: "/tools/travel-budget-calculator",
-        description: "Build a custom estimate from your own origin, destination, duration, and style.",
+        label: "Use the travel budget calculator",
+        href: "/travel-budget-calculator",
+        description: "Start the transactional calculator for your own origin, destination, duration, and style.",
       },
       {
         label: "Browse destinations",
@@ -184,7 +184,7 @@ export const longTailGuides: LongTailGuide[] = [
       },
       {
         label: "Travel budget calculator",
-        href: "/tools/travel-budget-calculator",
+        href: "/travel-budget-calculator",
         description: "Test your own origin, duration, and travel style.",
       },
       {
@@ -239,7 +239,7 @@ export const longTailGuides: LongTailGuide[] = [
       },
       {
         label: "Travel budget calculator",
-        href: "/tools/travel-budget-calculator",
+        href: "/travel-budget-calculator",
         description: "Change origin, duration, and travel style for a custom estimate.",
       },
     ],
@@ -418,7 +418,7 @@ export const longTailGuides: LongTailGuide[] = [
       },
       {
         label: "Travel budget calculator",
-        href: "/tools/travel-budget-calculator",
+        href: "/travel-budget-calculator",
         description: "Test Spain and Portugal with your own dates, origin, duration, and style.",
       },
     ],
@@ -667,7 +667,7 @@ function guide(input: GuideInput): LongTailGuide {
       [
         {
           label: "Travel budget calculator",
-          href: "/tools/travel-budget-calculator",
+          href: "/travel-budget-calculator",
           description: "Build a custom estimate with your own destination, origin, style, and trip length.",
         },
         {

@@ -301,7 +301,7 @@ export default function MethodologyPage() {
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild className="h-12 rounded-full bg-[#0B1D34] px-6 text-white hover:bg-[#0B1D34]">
-                <Link href="/tools/travel-budget-calculator">
+                <Link href="/travel-budget-calculator">
                   Try the budget planner
                   <ArrowRight className="size-4" />
                 </Link>

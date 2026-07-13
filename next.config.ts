@@ -30,6 +30,15 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/tools/travel-budget-calculator",
+        destination: "/travel-budget-calculator",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

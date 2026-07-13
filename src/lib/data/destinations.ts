@@ -1064,7 +1064,7 @@ function buildInsuranceHref(seed: DestinationSeed) {
   const baseUrl = process.env.NEXT_PUBLIC_INSURANCE_AFFILIATE_BASE_URL;
 
   if (!baseUrl) {
-    return "/tools/travel-budget-calculator";
+    return "/travel-budget-calculator";
   }
 
   return buildProviderSearchHref({

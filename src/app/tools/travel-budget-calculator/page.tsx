@@ -4,7 +4,7 @@ import { CTASection } from "@/components/site/cta-section";
 import { createMetadata } from "@/lib/seo/metadata";
 import { createFAQSchema, createTravelToolSchema, serializeJsonLd } from "@/lib/seo/schema";
 
-const path = "/tools/travel-budget-calculator";
+const path = "/travel-budget-calculator";
 
 const faqItems = [
   {
@@ -30,7 +30,7 @@ const faqItems = [
 ];
 
 export const metadata = createMetadata({
-  title: "Trip Budget Calculator: Flights, Hotels, Food & More",
+  title: "Travel Budget Calculator: Flights, Hotels, Food & More",
   description:
     "Calculate your total trip cost with estimates for flights, hotels, food, local transport, activities, buffers, trip length, and travel style.",
   path,
@@ -60,46 +60,19 @@ export default function TravelBudgetCalculatorPage() {
       />
       <main className="bg-slate-50">
         <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
-          <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
-            <div>
-              <p className="inline-flex rounded-full border border-[#14B8A6]/20 bg-white px-3 py-1 text-sm font-semibold text-[#0B1D34] shadow-sm">
-                Free travel budget test
-              </p>
-              <h1 className="mt-3 text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
-                Calculate the Total Cost of Your Trip
-              </h1>
-              <p className="mt-5 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
-                Find out where you can travel based on your real budget, trip length, departure city, and travel
-                style.
-              </p>
-              <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
-                <a
-                  href="#trip-budget-test"
-                  className="inline-flex h-11 items-center justify-center rounded-xl bg-[#0B1D34] px-5 text-sm font-semibold text-white transition hover:bg-[#0B1D34]/90"
-                >
-                  Start the test
-                </a>
-                <p className="text-sm leading-6 text-slate-500">
-                  Estimates include flights, stays, food, local transport, activities, and a safety buffer.
-                </p>
-              </div>
-            </div>
-            <div className="rounded-2xl border border-[#14B8A6]/20 bg-white p-5 shadow-sm">
-              <p className="text-sm font-semibold text-teal-700">Example result</p>
-              <div className="mt-4 rounded-xl bg-slate-950 p-5 text-white">
-                <p className="text-2xl font-semibold tracking-tight">Montreal to Lisbon</p>
-                <p className="mt-2 text-sm text-slate-300">10 days - Comfort - $2,500 CAD</p>
-                <div className="mt-5 h-2 overflow-hidden rounded-full bg-white/10">
-                  <div className="h-full w-[93%] rounded-full bg-[#14B8A6]" />
-                </div>
-                <p className="mt-3 text-sm font-semibold text-[#38BDF8]">Budget fit: 93%</p>
-              </div>
-              <p className="mt-4 text-sm leading-6 text-slate-500">
-                The test ranks destinations by budget fit, trip length, travel style, timing, and important constraints.
-              </p>
-            </div>
+          <div className="max-w-3xl">
+            <p className="inline-flex rounded-full border border-[#14B8A6]/20 bg-white px-3 py-1 text-sm font-semibold text-[#0B1D34] shadow-sm">
+              Free trip cost calculator
+            </p>
+            <h1 className="mt-3 text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
+              Travel Budget Calculator
+            </h1>
+            <p className="mt-5 text-base leading-7 text-slate-600 sm:text-lg">
+              Calculate total trip cost with flights, stays, food, local transport, activities, and a safety buffer.
+              Use it as a trip budget calculator, vacation budget calculator, or travel cost calculator before you book.
+            </p>
           </div>
-          <div className="mt-10">
+          <div className="mt-8">
             <TravelBudgetCalculator />
           </div>
         </section>
@@ -112,9 +85,9 @@ export default function TravelBudgetCalculatorPage() {
                 How the travel budget test works
               </h2>
               <p className="mt-4 text-sm leading-6 text-slate-500">
-                The Travel Budget Test estimates what destinations may fit your budget by combining your departure
-                city, total budget, trip length, travel style, and timing. Each estimate includes major trip costs such
-                as flights, accommodation, food, local transportation, activities, and a small buffer.
+                The travel budget calculator estimates what destinations may fit your budget by combining your
+                departure city, total budget, trip length, travel style, and timing. Each estimate includes major trip
+                costs such as flights, accommodation, food, local transportation, activities, and a small buffer.
               </p>
             </div>
             <div className="grid gap-6">
@@ -148,7 +121,7 @@ export default function TravelBudgetCalculatorPage() {
             <div className="text-center">
               <p className="text-sm font-semibold uppercase tracking-wide text-[#0B1D34]">FAQ</p>
               <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">
-                Trip Budget Test FAQ
+                Travel Budget Calculator FAQ
               </h2>
             </div>
             <div className="mt-8 divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white">

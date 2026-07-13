@@ -32,7 +32,7 @@ const placeholders: Record<AffiliateLink["type"], Omit<AffiliatePlaceholder, "ty
     description: "Estimate insurance needs for the trip.",
     actionLabel: "Plan",
     priceHint: "Estimate",
-    href: "/tools/travel-budget-calculator",
+    href: "/travel-budget-calculator",
     isAvailable: true,
   },
   eSIM: {
@@ -40,7 +40,7 @@ const placeholders: Record<AffiliateLink["type"], Omit<AffiliatePlaceholder, "ty
     description: "Estimate mobile data needs for maps and bookings.",
     actionLabel: "Plan",
     priceHint: "Estimate",
-    href: "/tools/travel-budget-calculator",
+    href: "/travel-budget-calculator",
     isAvailable: true,
   },
   Activities: {

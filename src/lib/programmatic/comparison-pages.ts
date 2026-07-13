@@ -50,6 +50,71 @@ export type DestinationComparisonItem = {
 export const comparisonPages: ComparisonPageConfig[] = [
   {
     kind: "destination-pair",
+    slug: "portugal-vs-spain",
+    title: "Portugal vs Spain Travel Budget",
+    description:
+      "Compare Portugal and Spain travel budgets with estimated flights from Montreal, daily costs, trip length assumptions, seasons, and value tradeoffs.",
+    searchIntent: "Portugal vs Spain travel budget",
+    originCode: "YUL",
+    originCity: "Montreal",
+    durationDays: 10,
+    travelStyle: "midRange",
+    destinationSlugs: ["portugal", "spain"],
+  },
+  {
+    kind: "destination-pair",
+    slug: "japan-vs-south-korea",
+    title: "Japan vs South Korea Travel Cost",
+    description:
+      "Compare Japan and South Korea travel costs for a 10-day CAD trip from Montreal, including flights, daily budgets, best months, and practical cost tradeoffs.",
+    searchIntent: "Japan vs South Korea travel cost",
+    originCode: "YUL",
+    originCity: "Montreal",
+    durationDays: 10,
+    travelStyle: "midRange",
+    destinationSlugs: ["japan", "south-korea"],
+  },
+  {
+    kind: "destination-pair",
+    slug: "mexico-vs-colombia",
+    title: "Mexico vs Colombia Travel Budget",
+    description:
+      "Compare Mexico and Colombia trip costs from Montreal with estimated flights, daily costs, warm-weather timing, and best-fit travel styles.",
+    searchIntent: "Mexico vs Colombia travel budget",
+    originCode: "YUL",
+    originCity: "Montreal",
+    durationDays: 10,
+    travelStyle: "midRange",
+    destinationSlugs: ["mexico", "colombia"],
+  },
+  {
+    kind: "destination-pair",
+    slug: "france-vs-italy",
+    title: "France vs Italy Travel Budget",
+    description:
+      "Compare France and Italy travel budgets in CAD for a 10-day trip from Montreal, including flights, daily cost pressure, best months, and value differences.",
+    searchIntent: "France vs Italy travel budget",
+    originCode: "YUL",
+    originCity: "Montreal",
+    durationDays: 10,
+    travelStyle: "midRange",
+    destinationSlugs: ["france", "italy"],
+  },
+  {
+    kind: "destination-pair",
+    slug: "thailand-vs-vietnam",
+    title: "Thailand vs Vietnam Travel Budget",
+    description:
+      "Compare Thailand and Vietnam travel budgets for a 14-day CAD trip from Montreal, with flight estimates, lower-cost daily spending, trip assumptions, and traveler-fit notes.",
+    searchIntent: "Thailand vs Vietnam travel budget",
+    originCode: "YUL",
+    originCity: "Montreal",
+    durationDays: 14,
+    travelStyle: "midRange",
+    destinationSlugs: ["thailand", "vietnam"],
+  },
+  {
+    kind: "destination-pair",
     slug: "paris-vs-lisbon",
     title: "Paris vs Lisbon Travel Cost",
     description:
@@ -186,6 +251,14 @@ export const comparisonPages: ComparisonPageConfig[] = [
   },
 ];
 
+const pilotComparisonSlugs = [
+  "portugal-vs-spain",
+  "japan-vs-south-korea",
+  "mexico-vs-colombia",
+  "france-vs-italy",
+  "thailand-vs-vietnam",
+];
+
 export function getComparisonPage(slug: string) {
   return comparisonPages.find((page) => page.slug === slug);
 }
@@ -218,7 +291,9 @@ export function getComparisonSeoTitle(page: ComparisonPageConfig) {
 }
 
 export function getComparisonStaticParams() {
-  return comparisonPages.map((page) => ({ comparison: page.slug }));
+  return comparisonPages
+    .filter((page) => pilotComparisonSlugs.includes(page.slug))
+    .map((page) => ({ comparison: page.slug }));
 }
 
 export function getComparisonItems(page: ComparisonPageConfig): DestinationComparisonItem[] {

@@ -623,7 +623,7 @@ export function PopularComparisons() {
 function PlanFromComparisonLinks({ params }: { params: CompareParams }) {
   const links = [
     { href: createResultsHrefFromCompare(params), label: "Find destinations under your budget" },
-    { href: "/tools/travel-budget-calculator", label: "Use the travel budget calculator" },
+    { href: "/travel-budget-calculator", label: "Use the travel budget calculator" },
     { href: "/destinations", label: "Browse destination budget guides" },
     { href: "/travel-extras", label: "Plan travel extras and buffers" },
   ];

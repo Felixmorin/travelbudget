@@ -168,7 +168,7 @@ export default async function TravelBudgetPage({ params }: TravelBudgetPageProps
           <h2 className="text-xl font-semibold">Plan the next step</h2>
           <div className="mt-5 grid gap-3">
             <Button asChild className="rounded-full bg-[#0B1D34] text-white hover:bg-[#0B1D34]">
-              <Link href="/tools/travel-budget-calculator">Check flights and hotels for this trip</Link>
+              <Link href="/travel-budget-calculator">Check flights and hotels for this trip</Link>
             </Button>
             <div className="rounded-2xl bg-slate-50 p-4">
               <p className="text-sm font-semibold text-slate-950">Send me this trip budget</p>
