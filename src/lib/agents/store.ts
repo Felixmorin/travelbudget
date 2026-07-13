@@ -57,6 +57,10 @@ export async function createAgentMission({
 }) {
   assertAgentsEnabled();
 
+  if (await isAgentRuntimeStopped()) {
+    throw new AgentRuntimeStoppedError("Agent runtime is globally stopped.");
+  }
+
   const agent = getAgentDefinition(agentId);
   const limits = resolveAgentLimits(agent, { costLimitCents, stepLimit });
   const now = new Date().toISOString();
@@ -335,6 +339,7 @@ export function listDevelopmentAgentRecords() {
     toolCalls: [...store.toolCalls],
     approvals: [...store.approvals],
     logs: [...store.logs],
+    runtimeControls: [...store.runtimeControls],
   };
 }
 
@@ -392,6 +397,145 @@ export async function listAgentMissions(limit = 100) {
     .slice(0, limit);
 }
 
+export async function listAgentApprovals(limit = 100) {
+  if (isBackendStorageConfigured()) {
+    const records = await selectBackendRecords("agent_approvals", {
+      limit: String(Math.max(1, Math.min(500, limit))),
+    });
+
+    return records.map((record) => ({
+      id: String(record.id ?? ""),
+      missionId: typeof record.mission_id === "string" ? record.mission_id : undefined,
+      executionId: typeof record.execution_id === "string" ? record.execution_id : undefined,
+      toolCallId: typeof record.tool_call_id === "string" ? record.tool_call_id : undefined,
+      actionType: normalizeSensitiveAction(record.action_type),
+      status: normalizeApprovalStatus(record.status),
+      requestedBy: typeof record.requested_by === "string" ? record.requested_by : undefined,
+      reviewedBy: typeof record.reviewed_by === "string" ? record.reviewed_by : undefined,
+      reason: typeof record.reason === "string" ? record.reason : undefined,
+      requestedPayload: parseJsonObject(record.requested_payload) ?? {},
+      createdAt: String(record.created_at ?? ""),
+      reviewedAt: typeof record.reviewed_at === "string" ? record.reviewed_at : undefined,
+      expiresAt: typeof record.expires_at === "string" ? record.expires_at : undefined,
+    }));
+  }
+
+  return getDevelopmentStore()
+    .approvals.sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+    .slice(0, limit);
+}
+
+export async function listAgentToolCalls(limit = 100) {
+  if (isBackendStorageConfigured()) {
+    const records = await selectBackendRecords("agent_tool_calls", {
+      limit: String(Math.max(1, Math.min(500, limit))),
+    });
+
+    return records.map((record) => ({
+      id: String(record.id ?? ""),
+      executionId: String(record.execution_id ?? ""),
+      toolName: String(record.tool_name ?? ""),
+      permission: normalizePermission(record.permission),
+      status: normalizeToolCallStatus(record.status),
+      input: parseJsonObject(record.input) ?? {},
+      output: parseJsonObject(record.output),
+      requiresApproval: record.requires_approval === true,
+      approvalId: typeof record.approval_id === "string" ? record.approval_id : undefined,
+      startedAt: String(record.started_at ?? ""),
+      completedAt: typeof record.completed_at === "string" ? record.completed_at : undefined,
+      estimatedCostCents: normalizeNumber(record.estimated_cost_cents),
+      error: typeof record.error === "string" ? record.error : undefined,
+    }));
+  }
+
+  return getDevelopmentStore()
+    .toolCalls.sort((a, b) => b.startedAt.localeCompare(a.startedAt))
+    .slice(0, limit);
+}
+
+export async function listAllAgentExecutions(limit = 100) {
+  if (isBackendStorageConfigured()) {
+    const records = await selectBackendRecords("agent_executions", {
+      limit: String(Math.max(1, Math.min(500, limit))),
+    });
+
+    return records.map((record) => ({
+      id: String(record.id ?? ""),
+      missionId: String(record.mission_id ?? ""),
+      agentId: normalizeAgentId(record.agent_id),
+      status: normalizeExecutionStatus(record.status),
+      triggerType: normalizeTriggerType(record.trigger_type),
+      model: typeof record.model === "string" ? record.model : undefined,
+      stepCount: normalizeNumber(record.step_count),
+      estimatedCostCents: normalizeNumber(record.estimated_cost_cents),
+      output: parseJsonObject(record.output),
+      error: typeof record.error === "string" ? record.error : undefined,
+      startedAt: String(record.started_at ?? ""),
+      completedAt: typeof record.completed_at === "string" ? record.completed_at : undefined,
+    }));
+  }
+
+  return getDevelopmentStore()
+    .executions.sort((a, b) => b.startedAt.localeCompare(a.startedAt))
+    .slice(0, limit);
+}
+
+export async function stopAgentRuntime({ requestedBy, reason }: { requestedBy?: string; reason?: string } = {}) {
+  const control = {
+    id: crypto.randomUUID(),
+    controlKey: "global_agents_enabled",
+    isEnabled: false,
+    reason: reason?.trim().slice(0, 500),
+    requestedBy,
+    createdAt: new Date().toISOString(),
+  };
+
+  if (isBackendStorageConfigured()) {
+    await insertBackendRecord("agent_runtime_controls", {
+      id: control.id,
+      control_key: control.controlKey,
+      is_enabled: control.isEnabled,
+      reason: control.reason,
+      requested_by: control.requestedBy,
+      created_at: control.createdAt,
+    });
+  } else {
+    getDevelopmentStore().runtimeControls.push(control);
+  }
+
+  return control;
+}
+
+export async function getAgentRuntimeControl() {
+  if (isBackendStorageConfigured()) {
+    const records = await selectBackendRecords("agent_runtime_controls", {
+      control_key: "eq.global_agents_enabled",
+      limit: "1",
+    });
+    const record = records[0];
+
+    return {
+      stopped: record ? record.is_enabled === false : false,
+      reason: typeof record?.reason === "string" ? record.reason : undefined,
+      requestedBy: typeof record?.requested_by === "string" ? record.requested_by : undefined,
+      createdAt: typeof record?.created_at === "string" ? record.created_at : undefined,
+    };
+  }
+
+  const latest = [...getDevelopmentStore().runtimeControls].sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
+
+  return {
+    stopped: latest ? !latest.isEnabled : false,
+    reason: latest?.reason,
+    requestedBy: latest?.requestedBy,
+    createdAt: latest?.createdAt,
+  };
+}
+
+export async function isAgentRuntimeStopped() {
+  return (await getAgentRuntimeControl()).stopped;
+}
+
 export function clearDevelopmentAgentRecords() {
   const store = getDevelopmentStore();
 
@@ -401,6 +545,7 @@ export function clearDevelopmentAgentRecords() {
   store.toolCalls.length = 0;
   store.approvals.length = 0;
   store.logs.length = 0;
+  store.runtimeControls.length = 0;
 }
 
 function getDevelopmentStore(): {
@@ -410,6 +555,7 @@ function getDevelopmentStore(): {
   toolCalls: AgentToolCall[];
   approvals: AgentApproval[];
   logs: AgentLogEntry[];
+  runtimeControls: AgentRuntimeControlRecord[];
 } {
   const globalStore = globalThis as typeof globalThis & {
     __travelBudgetAgentStore?: {
@@ -419,6 +565,7 @@ function getDevelopmentStore(): {
       toolCalls: AgentToolCall[];
       approvals: AgentApproval[];
       logs: AgentLogEntry[];
+      runtimeControls: AgentRuntimeControlRecord[];
     };
   };
 
@@ -429,6 +576,7 @@ function getDevelopmentStore(): {
     toolCalls: [],
     approvals: [],
     logs: [],
+    runtimeControls: [],
   };
 
   return globalStore.__travelBudgetAgentStore;
@@ -483,4 +631,56 @@ function normalizeMissionStatus(value: unknown): AgentMission["status"] {
     value === "cancelled"
     ? value
     : "draft";
+}
+
+function normalizeApprovalStatus(value: unknown): AgentApproval["status"] {
+  return value === "approved" || value === "rejected" || value === "expired" ? value : "pending";
+}
+
+function normalizeToolCallStatus(value: unknown): AgentToolCall["status"] {
+  return value === "pending_approval" ||
+    value === "completed" ||
+    value === "failed" ||
+    value === "blocked"
+    ? value
+    : "running";
+}
+
+function normalizeSensitiveAction(value: unknown): AgentApproval["actionType"] {
+  return value === "lead:raw-read" ||
+    value === "external:send" ||
+    value === "report:publish" ||
+    value === "agent:mission-create" ||
+    value === "production:run"
+    ? value
+    : "database:write";
+}
+
+function normalizePermission(value: unknown): AgentToolCall["permission"] {
+  return value === "affiliate:read:aggregate" ||
+    value === "leads:read:aggregate" ||
+    value === "destinations:read" ||
+    value === "reports:write" ||
+    value === "agents:read" ||
+    value === "missions:write" ||
+    value === "approvals:write" ||
+    value === "notifications:send"
+    ? value
+    : "analytics:read:aggregate";
+}
+
+type AgentRuntimeControlRecord = {
+  id: string;
+  controlKey: string;
+  isEnabled: boolean;
+  reason?: string;
+  requestedBy?: string;
+  createdAt: string;
+};
+
+export class AgentRuntimeStoppedError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "AgentRuntimeStoppedError";
+  }
 }

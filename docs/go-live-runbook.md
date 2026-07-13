@@ -31,11 +31,13 @@ Apply migrations in lexical order:
 2. `docs/supabase/migrations/002_enable_rls.sql`
 3. `docs/supabase/migrations/003_email_leads.sql`
 4. `docs/supabase/migrations/004_agent_foundations.sql`
+5. `docs/supabase/migrations/005_agent_runtime_controls.sql`
 
 Post-migration checks:
 
 - Confirm RLS is enabled for `affiliate_clicks`, `analytics_events`, and `email_leads`.
 - Confirm RLS is enabled for `agent_definitions`, `agent_missions`, `agent_executions`, `agent_tool_calls`, `agent_approvals`, and `agent_logs`.
+- Confirm RLS is enabled for `agent_runtime_controls`.
 - Confirm service role can insert into all listed application tables.
 - Confirm anon role cannot select or insert into those tables.
 - Keep `AI_AGENTS_ENABLED=false` until agent admin authorization, approval review, and operational ownership are ready.

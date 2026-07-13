@@ -7,7 +7,8 @@ export type BackendTable =
   | "agent_executions"
   | "agent_tool_calls"
   | "agent_approvals"
-  | "agent_logs";
+  | "agent_logs"
+  | "agent_runtime_controls";
 
 export type BackendRecord = Record<
   string,

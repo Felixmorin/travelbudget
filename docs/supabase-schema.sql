@@ -124,6 +124,15 @@ create table if not exists agent_logs (
   created_at timestamptz not null default now()
 );
 
+create table if not exists agent_runtime_controls (
+  id uuid primary key,
+  control_key text not null,
+  is_enabled boolean not null,
+  reason text,
+  requested_by text,
+  created_at timestamptz not null default now()
+);
+
 create index if not exists affiliate_clicks_created_at_idx on affiliate_clicks (created_at desc);
 create index if not exists affiliate_clicks_destination_idx on affiliate_clicks (destination_slug);
 create index if not exists analytics_events_created_at_idx on analytics_events (created_at desc);
@@ -141,6 +150,7 @@ create index if not exists agent_approvals_status_idx on agent_approvals (status
 create index if not exists agent_approvals_created_at_idx on agent_approvals (created_at desc);
 create index if not exists agent_logs_execution_idx on agent_logs (execution_id);
 create index if not exists agent_logs_created_at_idx on agent_logs (created_at desc);
+create index if not exists agent_runtime_controls_key_created_at_idx on agent_runtime_controls (control_key, created_at desc);
 
 alter table affiliate_clicks enable row level security;
 alter table analytics_events enable row level security;
@@ -151,6 +161,7 @@ alter table agent_executions enable row level security;
 alter table agent_tool_calls enable row level security;
 alter table agent_approvals enable row level security;
 alter table agent_logs enable row level security;
+alter table agent_runtime_controls enable row level security;
 
 drop policy if exists "server role manages affiliate clicks" on affiliate_clicks;
 drop policy if exists "server role manages analytics events" on analytics_events;
@@ -161,6 +172,7 @@ drop policy if exists "server role manages agent executions" on agent_executions
 drop policy if exists "server role manages agent tool calls" on agent_tool_calls;
 drop policy if exists "server role manages agent approvals" on agent_approvals;
 drop policy if exists "server role manages agent logs" on agent_logs;
+drop policy if exists "server role manages agent runtime controls" on agent_runtime_controls;
 
 create policy "server role manages affiliate clicks"
   on affiliate_clicks
@@ -212,6 +224,12 @@ create policy "server role manages agent approvals"
 
 create policy "server role manages agent logs"
   on agent_logs
+  for all
+  using (auth.role() = 'service_role')
+  with check (auth.role() = 'service_role');
+
+create policy "server role manages agent runtime controls"
+  on agent_runtime_controls
   for all
   using (auth.role() = 'service_role')
   with check (auth.role() = 'service_role');
