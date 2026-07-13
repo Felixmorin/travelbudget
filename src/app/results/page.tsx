@@ -34,6 +34,7 @@ import {
   formatMoney,
   getOriginPricing,
 } from "@/lib/data/destinations";
+import { activeDepartureCities } from "@/lib/data/departure-cities";
 import { getCityCountryLabel, getDestinationCountryName, unifiedDestinations as destinationData } from "@/lib/data/unified-destinations";
 import {
   createResultsHref,
@@ -422,12 +423,11 @@ function ResultsControls({
         </Field>
         <Field label="From">
           <select name="origin" defaultValue={parsedParams.origin} className="field-input">
-            <option value="YUL">Montreal</option>
-            <option value="YYZ">Toronto</option>
-            <option value="YVR">Vancouver</option>
-            <option value="YQB">Quebec</option>
-            <option value="YOW">Ottawa</option>
-            <option value="YYC">Calgary</option>
+            {activeDepartureCities.map((city) => (
+              <option key={city.slug} value={city.airportCodes[0]}>
+                {city.name}
+              </option>
+            ))}
           </select>
         </Field>
         <Field label="Style">

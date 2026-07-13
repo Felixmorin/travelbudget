@@ -97,4 +97,14 @@ describe("recommendDestinations", () => {
   it("returns no recommendations when no destination data is provided", () => {
     expect(recommendDestinations({ ...baseInput, destinations: [] })).toEqual([]);
   });
+
+  it("converts recommendation totals to GBP", () => {
+    const cadResults = recommendDestinations({ ...baseInput, currency: "CAD" });
+    const gbpResults = recommendDestinations({ ...baseInput, currency: "GBP" });
+    const cadPortugal = cadResults.find((result) => result.destination.slug === "portugal");
+    const gbpPortugal = gbpResults.find((result) => result.destination.slug === "portugal");
+
+    expect(gbpPortugal?.costBreakdown.flights).toBe(Math.round((cadPortugal?.costBreakdown.flights ?? 0) * 0.58));
+    expect(gbpPortugal?.estimatedTotal).toBeLessThan(cadPortugal?.estimatedTotal ?? 0);
+  });
 });

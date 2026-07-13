@@ -6,7 +6,7 @@ import {
 } from "@/lib/data/destinations";
 
 export type BudgetFitStatus = "best-fit" | "stretch" | "over-budget";
-export type SupportedCurrency = "CAD" | "USD" | "EUR";
+export type SupportedCurrency = "CAD" | "USD" | "EUR" | "GBP";
 export type TravelStyle = "budget" | "balanced" | "comfort";
 
 export type CostBreakdown = {
@@ -49,6 +49,7 @@ const currencyRatesFromCad: Record<SupportedCurrency, number> = {
   CAD: 1,
   USD: 0.73,
   EUR: 0.67,
+  GBP: 0.58,
 };
 
 export function recommendDestinations({

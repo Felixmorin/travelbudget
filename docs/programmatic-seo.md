@@ -6,7 +6,9 @@ GoByBudget uses a small, rules-based pilot before scaling programmatic pages. Th
 
 - 10 priority destinations: controlled in `src/lib/programmatic/seo-registry.ts`.
 - 4 budget levels: `1000`, `2000`, `3000`, `5000` CAD.
-- 3 Canadian origins: Montreal, Toronto, Vancouver.
+- Centralized departure-city registry in `src/lib/data/departure-cities.ts`.
+- Indexable origin-budget pilot: Montreal, Toronto, Vancouver, Calgary, New York.
+- Departure-city page pilot: Montreal, Toronto, Vancouver, Calgary, New York, London, Paris. Cities without usable flight estimates remain `noindex`.
 - 5 destination comparisons.
 - 3 trip lengths: 7, 10, 14 days.
 
@@ -21,10 +23,12 @@ Indexable routes are generated from `getIndexableSeoPages()`. The sitemap uses t
 
 ## Add a Departure City
 
-1. Add origin pricing to destination data or confirm fallback quality.
-2. Add the origin to `programmaticOrigins`.
-3. Add its slug to `pilotOriginSlugs` only when at least several budget pages have useful destination matches.
-4. Avoid enabling a city if it only changes the city name while reusing the same thin result set.
+1. Add the city once in `src/lib/data/departure-cities.ts` with name, slug, country, region, currency, time zone, all primary airport codes, coordinates, languages, status, indexability, SEO priority, last update date, and `flightPricingStatus`.
+2. If the city has reliable flight pricing, add origin pricing support in `src/lib/data/destinations.ts` by mapping its primary airport code in `buildFlightAverages()`. Do not reuse another city as a silent fallback.
+3. Add the slug to `pilotOriginSlugs` only when budget pages have several useful matches with real or explicitly modeled origin pricing.
+4. Add the slug to `pilotDepartureCitySlugs` only when the `/from/{city}` page has distinct content and enough recommendations. The page may exist as `noindex` before it is SEO-ready.
+5. Run `npm run test -- departure` plus the full quality checks before publishing.
+6. Avoid enabling a city if it only changes the city name while reusing the same thin result set.
 
 ## Add a Budget Amount
 

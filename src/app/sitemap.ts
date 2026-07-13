@@ -4,6 +4,7 @@ import { destinations } from "@/lib/data/destinations";
 import { cityDestinations } from "@/lib/data/destination-hub";
 import { longTailGuides } from "@/lib/data/guides";
 import { strongSeoPages } from "@/lib/programmatic/strong-seo-pages";
+import { getIndexableDepartureCityPages } from "@/lib/programmatic/departure-pages";
 import { getIndexableSeoPages } from "@/lib/programmatic/seo-registry";
 import { createCanonicalUrl } from "@/lib/seo/metadata";
 
@@ -107,6 +108,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: page.changeFrequency,
     priority: page.priority,
   }));
+  const departureCityRoutes = getIndexableDepartureCityPages().map((page) => ({
+    url: createCanonicalUrl(page.path),
+    lastModified: page.origin.lastUpdated,
+    changeFrequency: "monthly" as const,
+    priority: page.origin.seoPriority,
+  }));
 
   return uniqueSitemapUrls([
     ...staticRoutes,
@@ -115,6 +122,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...guideRoutes,
     ...strongSeoRoutes,
     ...programmaticSeoRoutes,
+    ...departureCityRoutes,
   ]);
 }
 

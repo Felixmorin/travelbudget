@@ -70,7 +70,7 @@ export const defaultSearchParams: ParsedSearchParams = {
   visaFriendly: "all",
 };
 
-const currencyOptions = ["CAD", "USD", "EUR"] as const;
+const currencyOptions = ["CAD", "USD", "EUR", "GBP"] as const;
 
 const styleAliases: Record<string, TravelStyle> = {
   budget: "budget",

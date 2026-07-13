@@ -23,6 +23,7 @@ import { SearchCard } from "@/components/site/search-card";
 import { cityDestinations } from "@/lib/data/destination-hub";
 import { destinations as countryDestinations } from "@/lib/data/destinations";
 import { longTailGuides } from "@/lib/data/guides";
+import { getPopularDepartureCities } from "@/lib/data/departure-cities";
 
 const matches = [
   {
@@ -98,6 +99,8 @@ const destinationCards = [
     tags: ["Best for: Romance", "Art"],
   },
 ];
+
+const popularDepartureCities = getPopularDepartureCities(7);
 
 const popularTrips = [
   ["Long Haul", "Montreal to Tokyo", "Under $4,000", "/destinations/tokyo"],
@@ -325,6 +328,34 @@ export function HomeContent() {
               <p className="font-bold text-[#0B1D34]">{budget}</p>
             </Link>
           ))}
+        </div>
+      </section>
+
+      <section className="border-y border-[#d9dde4] bg-white px-4 py-14 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+            <div>
+              <h2 className="text-3xl font-semibold tracking-tight text-slate-950">Popular departure cities</h2>
+              <p className="mt-3 text-[#434655]">Start with your real airport set before comparing destinations.</p>
+            </div>
+            <Link href="/travel-budget-calculator" className="inline-flex items-center gap-2 font-bold text-[#0B1D34] transition hover:gap-3">
+              Open calculator
+              <ArrowRight className="size-5" />
+            </Link>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {popularDepartureCities.map((city) => (
+              <Link
+                key={city.slug}
+                href={`/from/${city.slug}`}
+                className="rounded-xl border border-[#c3c6d7]/45 bg-[#f7f9fb] p-5 transition hover:border-[#14B8A6]/40 hover:bg-[#14B8A6]/5"
+              >
+                <p className="text-xs font-bold uppercase tracking-wide text-slate-500">{city.country}</p>
+                <h3 className="mt-1 text-xl font-semibold text-slate-950">{city.name}</h3>
+                <p className="mt-2 text-sm text-[#434655]">{city.airportCodes.join(", ")}</p>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 

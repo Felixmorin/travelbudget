@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { trackEvent } from "@/lib/analytics/track";
 import { formatMoney } from "@/lib/format-money";
+import { getDepartureCityForInput, getPopularDepartureCities, normalizeDepartureCityCode } from "@/lib/data/departure-cities";
 
 type BudgetRange = "under-1000" | "1000-1500" | "1500-2500" | "2500-4000" | "4000-plus";
 type TripLength = "weekend" | "5-7-days" | "8-10-days" | "2-weeks" | "flexible";
@@ -66,18 +67,7 @@ type QuestionStep = {
 const currency = "CAD";
 const pagePath = "/travel-budget-calculator";
 
-const departureCities = [
-  "Montreal",
-  "Toronto",
-  "Vancouver",
-  "Quebec City",
-  "Ottawa",
-  "Calgary",
-  "New York",
-  "Boston",
-  "Chicago",
-  "Other",
-];
+const departureCities = [...getPopularDepartureCities(23).map((city) => city.name), "Other"];
 
 const budgetRanges: { label: string; value: BudgetRange; amount: number }[] = [
   { label: "Under $1,000", value: "under-1000", amount: 900 },
@@ -268,7 +258,7 @@ const destinationEstimates: DestinationEstimate[] = [
 ];
 
 export function TravelBudgetCalculator() {
-  const [answers, setAnswers] = useState<TripAnswers>(defaultAnswers);
+  const [answers, setAnswers] = useState<TripAnswers>(getInitialAnswers);
   const [currentStep, setCurrentStep] = useState(0);
   const [showResults, setShowResults] = useState(false);
   const [email, setEmail] = useState("");
@@ -284,6 +274,13 @@ export function TravelBudgetCalculator() {
 
   function updateAnswer(nextAnswers: Partial<TripAnswers>) {
     setAnswers((current) => ({ ...current, ...nextAnswers }));
+
+    if (nextAnswers.departureCity && nextAnswers.departureCity !== "Other") {
+      const cityCode = normalizeDepartureCityCode(nextAnswers.departureCity);
+      const nextUrl = new URL(window.location.href);
+      nextUrl.searchParams.set("origin", cityCode);
+      window.history.replaceState(null, "", nextUrl);
+    }
   }
 
   function toggleArrayAnswer(key: "tripTypes" | "constraints", value: string) {
@@ -519,6 +516,18 @@ export function TravelBudgetCalculator() {
       ) : null}
     </div>
   );
+}
+
+function getInitialAnswers(): TripAnswers {
+  if (typeof window === "undefined") {
+    return defaultAnswers;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const origin = params.get("origin") ?? params.get("from");
+  const city = getDepartureCityForInput(origin);
+
+  return city ? { ...defaultAnswers, departureCity: city.name } : defaultAnswers;
 }
 
 function QuestionContent({

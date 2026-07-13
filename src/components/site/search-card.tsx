@@ -11,8 +11,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { trackEvent } from "@/lib/analytics/track";
+import { activeDepartureCities, getDepartureCityForInput, normalizeDepartureCityCode } from "@/lib/data/departure-cities";
 
-const currencies = ["CAD", "USD", "EUR"] as const;
+const currencies = ["CAD", "USD", "EUR", "GBP"] as const;
 const months = [
   "january",
   "february",
@@ -83,8 +84,8 @@ export function SearchCard() {
       page: "/",
       budget: Math.round(parsedBudget),
       currency,
-      originCode: normalizeOriginCode(trimmedOrigin),
-      originCity: normalizeTextValue(trimmedOrigin),
+      originCode: normalizeDepartureCityCode(trimmedOrigin),
+      originCity: getDepartureCityForInput(trimmedOrigin)?.name ?? normalizeTextValue(trimmedOrigin),
       tripLength: Number(days),
       days: Number(days),
       month,
@@ -95,7 +96,7 @@ export function SearchCard() {
     const params = new URLSearchParams({
       budget: String(Math.round(parsedBudget)),
       currency,
-      origin: trimmedOrigin.replace(/\s+/g, " ").slice(0, 80),
+      origin: normalizeDepartureCityCode(trimmedOrigin),
       days,
       month,
       travelers,
@@ -142,12 +143,14 @@ export function SearchCard() {
                   <SelectItem value="CAD">CAD</SelectItem>
                   <SelectItem value="USD">USD</SelectItem>
                   <SelectItem value="EUR">EUR</SelectItem>
+                  <SelectItem value="GBP">GBP</SelectItem>
                 </SelectContent>
               </Select>
             </Field>
             <Field label={t.search.departureCity} icon={<MapPin className="size-4" />}>
               <Input
                 value={origin}
+                list="departure-city-options"
                 onFocus={trackSearchStarted}
                 onChange={(event) => {
                   trackSearchStarted();
@@ -155,6 +158,13 @@ export function SearchCard() {
                 }}
                 className="h-11 bg-white"
               />
+              <datalist id="departure-city-options">
+                {activeDepartureCities.map((city) => (
+                  <option key={city.slug} value={city.airportCodes[0]}>
+                    {city.name} - {city.airportCodes.join(", ")} - {city.region ?? city.country}
+                  </option>
+                ))}
+              </datalist>
             </Field>
             <Field label={t.search.duration} icon={<Calendar className="size-4" />}>
               <Select
@@ -244,24 +254,6 @@ export function SearchCard() {
 
 function getOption<const T extends readonly string[]>(options: T, value: string | null | undefined, fallback: T[number]) {
   return value && options.some((option) => option === value) ? (value as T[number]) : fallback;
-}
-
-function normalizeOriginCode(value: string) {
-  const normalized = normalizeTextValue(value).toUpperCase();
-
-  if (["MONTREAL", "MONTREAL, QC", "YUL"].includes(normalized)) {
-    return "YUL";
-  }
-
-  if (["TORONTO", "TORONTO, ON", "YYZ"].includes(normalized)) {
-    return "YYZ";
-  }
-
-  if (["VANCOUVER", "VANCOUVER, BC", "YVR"].includes(normalized)) {
-    return "YVR";
-  }
-
-  return normalized.slice(0, 12);
 }
 
 function normalizeTextValue(value: string) {

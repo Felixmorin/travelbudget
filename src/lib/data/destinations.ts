@@ -1,3 +1,9 @@
+import {
+  departureCities,
+  getDepartureCityByAirportCode,
+  normalizeDepartureCityCode,
+} from "@/lib/data/departure-cities";
+
 export type AffiliateLink = {
   type: "Flights" | "Hotels" | "eSIM" | "Activities" | "Insurance";
   title: string;
@@ -12,7 +18,7 @@ export type AffiliateLink = {
   target?: string;
 };
 
-export type OriginCode = "YUL" | "YYZ" | "YVR" | "YQB" | "YOW" | "YYC" | "NYC" | "BOS" | "CHI" | (string & {});
+export type OriginCode = string & {};
 
 export type FlightEstimate = {
   low: number;
@@ -117,6 +123,8 @@ const origins = {
   BOS: { originCity: "Boston", originCountry: "United States" },
   CHI: { originCity: "Chicago", originCountry: "United States" },
 } as const;
+
+const pricedDepartureCities = departureCities.filter((city) => city.flightPricingStatus === "available");
 
 const destinationSeeds: DestinationSeed[] = [
   {
@@ -853,7 +861,7 @@ function buildOriginPricing(seed: DestinationSeed): OriginPricing {
     Object.entries(buildFlightAverages(seed)).map(([originCode, average]) => [
       originCode,
       {
-        ...origins[originCode as keyof typeof origins],
+        ...getOriginLabel(originCode),
         currency: "CAD" as const,
         flightEstimate: {
           low: roundToNearest(average * 0.82, 10),
@@ -868,16 +876,22 @@ function buildOriginPricing(seed: DestinationSeed): OriginPricing {
   ) as OriginPricing;
 }
 
-function buildFlightAverages(seed: DestinationSeed): Record<keyof typeof origins, number> {
-  return {
+function buildFlightAverages(seed: DestinationSeed): Record<string, number> {
+  const seedAverages: Record<string, number> = {
     ...seed.flightAverage,
     YQB: roundToNearest(seed.flightAverage.YUL * 1.08 + 40, 10),
     YOW: roundToNearest((seed.flightAverage.YUL + seed.flightAverage.YYZ) / 2 + 30, 10),
     YYC: roundToNearest(seed.flightAverage.YVR * 0.7 + seed.flightAverage.YYZ * 0.3 + 70, 10),
-    NYC: roundToNearest(seed.flightAverage.YYZ * 0.92, 10),
+    JFK: roundToNearest(seed.flightAverage.YYZ * 0.92, 10),
     BOS: roundToNearest(((seed.flightAverage.YUL + seed.flightAverage.YYZ) / 2) * 0.95, 10),
-    CHI: roundToNearest(seed.flightAverage.YYZ * 0.97, 10),
+    ORD: roundToNearest(seed.flightAverage.YYZ * 0.97, 10),
   };
+
+  return Object.fromEntries(
+    pricedDepartureCities
+      .map((city) => [city.airportCodes[0], seedAverages[city.airportCodes[0]]] as const)
+      .filter((entry): entry is readonly [string, number] => Number.isFinite(entry[1]))
+  );
 }
 
 function buildDailyCosts(seed: DestinationSeed): DailyCosts {
@@ -1124,13 +1138,19 @@ function buildFaqs(seed: DestinationSeed): Destination["faqs"] {
 
 function buildSourceNotes(seed: DestinationSeed): string[] {
   return [
-    "Uses directional planning estimates for departures from Montreal (YUL), Toronto (YYZ), and Vancouver (YVR).",
+    "Uses directional planning estimates only for departure cities with available origin pricing; unavailable origins do not receive synthetic fares.",
     `Daily costs are modeled in CAD for budget, mid-range, and luxury travel styles in ${seed.name}.`,
     "These estimates are not live prices or guarantees; actual fares, hotel rates, exchange rates, and availability can vary.",
   ];
 }
 
 export function normalizeOriginCode(originCode: string | null | undefined): OriginCode {
+  const registryCode = normalizeDepartureCityCode(originCode);
+
+  if (registryCode !== "__unreachable__") {
+    return registryCode as OriginCode;
+  }
+
   const normalized = originCode?.trim().toUpperCase();
 
   if (!normalized) {
@@ -1180,6 +1200,25 @@ export function getOriginPricing(destination: Pick<Partial<Destination>, "origin
   const resolvedOriginCode = normalizeOriginCode(originCode);
   const fallbackCode = getFirstOriginCode(destination.originPricing);
   const legacyFlightEstimate = normalizeMoney(destination.flightCost);
+  const directPricing = destination.originPricing?.[resolvedOriginCode];
+
+  if (directPricing) {
+    return directPricing;
+  }
+
+  if (resolvedOriginCode !== defaultOriginCode) {
+    return {
+      ...getOriginLabel(resolvedOriginCode),
+      currency: "CAD" as const,
+      flightEstimate: {
+        low: 0,
+        average: 0,
+        high: 0,
+      },
+      seasonalNotes:
+        "Flight pricing is unavailable for this departure city in the current planning dataset, so GoByBudget does not show a synthetic fare.",
+    };
+  }
 
   return (
     destination.originPricing?.[resolvedOriginCode] ??
@@ -1314,6 +1353,16 @@ export function getDestinationCostBreakdown(
 
 function normalizeMoney(value: number | null | undefined) {
   return typeof value === "number" && Number.isFinite(value) ? Math.max(0, value) : 0;
+}
+
+function getOriginLabel(originCode: string) {
+  const city = getDepartureCityByAirportCode(originCode);
+  const legacyOrigin = origins[originCode as keyof typeof origins];
+
+  return {
+    originCity: city?.name ?? legacyOrigin?.originCity ?? originCode,
+    originCountry: city?.country ?? legacyOrigin?.originCountry ?? "Unknown",
+  };
 }
 
 function normalizePositiveInteger(value: number | null | undefined, fallback: number) {
