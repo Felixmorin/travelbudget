@@ -30,12 +30,17 @@ Apply migrations in lexical order:
 1. `docs/supabase/migrations/001_initial_analytics.sql`
 2. `docs/supabase/migrations/002_enable_rls.sql`
 3. `docs/supabase/migrations/003_email_leads.sql`
+4. `docs/supabase/migrations/004_agent_foundations.sql`
 
 Post-migration checks:
 
 - Confirm RLS is enabled for `affiliate_clicks`, `analytics_events`, and `email_leads`.
-- Confirm service role can insert into all three tables.
+- Confirm RLS is enabled for `agent_definitions`, `agent_missions`, `agent_executions`, `agent_tool_calls`, `agent_approvals`, and `agent_logs`.
+- Confirm service role can insert into all listed application tables.
 - Confirm anon role cannot select or insert into those tables.
+- Keep `AI_AGENTS_ENABLED=false` until agent admin authorization, approval review, and operational ownership are ready.
+- Configure `AI_AGENT_ADMIN_TOKEN` before enabling any manual agent endpoint.
+- The Product Analyst agent is manual and read-only; it must not be used for publishing or business-data mutation.
 
 ## Pre-Deploy Validation
 

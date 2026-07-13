@@ -1,4 +1,13 @@
-export type BackendTable = "affiliate_clicks" | "analytics_events" | "email_leads";
+export type BackendTable =
+  | "affiliate_clicks"
+  | "analytics_events"
+  | "email_leads"
+  | "agent_definitions"
+  | "agent_missions"
+  | "agent_executions"
+  | "agent_tool_calls"
+  | "agent_approvals"
+  | "agent_logs";
 
 export type BackendRecord = Record<
   string,
@@ -7,7 +16,8 @@ export type BackendRecord = Record<
   | boolean
   | null
   | undefined
-  | Record<string, string | number | boolean | null | undefined>
+  | Record<string, unknown>
+  | unknown[]
 >;
 
 type SupabaseConfig = {
