@@ -131,9 +131,14 @@ export default async function ComparisonPage({ params }: ComparePageProps) {
                 <div>
                   <div className="flex flex-wrap items-center gap-3">
                     <h2 className="text-2xl font-semibold">{item.destination.name}</h2>
-                    <Badge className="bg-slate-100 text-slate-700">{item.destination.score}/100 value score</Badge>
+                    <Badge className="bg-slate-100 text-slate-700">{item.destination.score}/100 destination score</Badge>
                   </div>
                   <p className="mt-3 text-sm leading-7 text-slate-600">{item.destination.shortDescription}</p>
+                  <p className="mt-3 text-xs leading-5 text-slate-500">
+                    Destination score summarizes the current GoByBudget destination model using value, seasonality,
+                    trip style fit, and available planning data. Use the cost estimate and category breakdown as the
+                    primary budget decision.
+                  </p>
                   <dl className="mt-5 grid gap-3 sm:grid-cols-3">
                     <Metric label="Total estimate" value={formatMoney(item.totalEstimate, "CAD")} />
                     <Metric label="Flights" value={formatMoney(item.flightEstimate, "CAD")} />

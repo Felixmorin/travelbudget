@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import {
   Bed,
   Clock3,
@@ -36,6 +36,7 @@ type ResultsAnalyticsContext = {
 };
 
 type CompareSelectionContextValue = {
+  isHydrated: boolean;
   selectedSlugs: string[];
   toggleDestination: (destination: ResultDestination, analyticsContext: ResultsAnalyticsContext) => void;
 };
@@ -49,7 +50,14 @@ export function ResultsComparisonSection({
   analyticsContext: ResultsAnalyticsContext;
   destinations: ResultDestination[];
 }) {
+  const [isHydrated, setIsHydrated] = useState(false);
   const [selectedSlugs, setSelectedSlugs] = useState<string[]>([]);
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => setIsHydrated(true), 0);
+
+    return () => window.clearTimeout(timeout);
+  }, []);
 
   const selectedDestinations = useMemo(
     () => selectedSlugs.map((slug) => destinations.find((destination) => destination.slug === slug)).filter(Boolean) as ResultDestination[],
@@ -98,7 +106,7 @@ export function ResultsComparisonSection({
   }
 
   return (
-    <CompareSelectionContext.Provider value={{ selectedSlugs, toggleDestination }}>
+    <CompareSelectionContext.Provider value={{ isHydrated, selectedSlugs, toggleDestination }}>
       <section className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
         {destinations.map((destination) => (
           <DestinationCard
@@ -263,6 +271,7 @@ function DestinationCard({
             variant={isSelected ? "default" : "outline"}
             size="icon"
             type="button"
+            disabled={!compareSelection.isHydrated}
             className={`h-11 w-12 rounded-xl ${
               isSelected
                 ? "bg-[#0B1D34] text-white hover:bg-[#0B1D34]"

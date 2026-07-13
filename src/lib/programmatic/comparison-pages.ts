@@ -1,12 +1,12 @@
 import {
   formatMoney,
   getDailyCostTotal,
-  getDestination,
   getDestinationTripEstimate,
   getFlightEstimate,
   type Destination,
   type TravelStyle,
 } from "@/lib/data/destinations";
+import { getUnifiedDestination } from "@/lib/data/unified-destinations";
 import {
   getMatchingBudgetDestinations,
   getProgrammaticBudgetPage,
@@ -48,6 +48,58 @@ export type DestinationComparisonItem = {
 };
 
 export const comparisonPages: ComparisonPageConfig[] = [
+  {
+    kind: "destination-pair",
+    slug: "paris-vs-lisbon",
+    title: "Paris vs Lisbon Travel Cost",
+    description:
+      "Compare Paris and Lisbon travel costs, including flights from Montreal, daily costs, trip length, and value tradeoffs.",
+    searchIntent: "Paris vs Lisbon travel cost",
+    originCode: "YUL",
+    originCity: "Montreal",
+    durationDays: 10,
+    travelStyle: "midRange",
+    destinationSlugs: ["paris", "lisbon"],
+  },
+  {
+    kind: "destination-pair",
+    slug: "paris-vs-lisbon-from-montreal",
+    title: "Paris vs Lisbon from Montreal",
+    description:
+      "Compare a Paris trip and Lisbon trip from Montreal with estimated flights, hotels, food, local transport, activities, and buffer.",
+    searchIntent: "Paris vs Lisbon from Montreal",
+    originCode: "YUL",
+    originCity: "Montreal",
+    durationDays: 10,
+    travelStyle: "midRange",
+    destinationSlugs: ["paris", "lisbon"],
+  },
+  {
+    kind: "destination-pair",
+    slug: "tokyo-vs-seoul-from-vancouver",
+    title: "Tokyo vs Seoul from Vancouver",
+    description:
+      "Compare Tokyo and Seoul travel costs from Vancouver with flight estimates, daily budgets, seasons, and best-fit traveler notes.",
+    searchIntent: "Tokyo vs Seoul from Vancouver",
+    originCode: "YVR",
+    originCity: "Vancouver",
+    durationDays: 10,
+    travelStyle: "midRange",
+    destinationSlugs: ["tokyo", "seoul"],
+  },
+  {
+    kind: "destination-pair",
+    slug: "paris-vs-lisbon-for-7-days",
+    title: "Paris vs Lisbon for 7 Days",
+    description:
+      "Compare a 7-day Paris trip against a 7-day Lisbon trip, including flights, accommodation, food, transport, and activities.",
+    searchIntent: "Paris vs Lisbon for 7 days",
+    originCode: "YUL",
+    originCity: "Montreal",
+    durationDays: 7,
+    travelStyle: "midRange",
+    destinationSlugs: ["paris", "lisbon"],
+  },
   {
     kind: "destination-pair",
     slug: "portugal-vs-spain-travel-budget",
@@ -169,7 +221,7 @@ export function getComparisonItems(page: ComparisonPageConfig): DestinationCompa
   }
 
   return page.destinationSlugs
-    .map((slug) => getDestination(slug))
+    .map((slug) => getUnifiedDestination(slug))
     .filter((destination): destination is Destination => Boolean(destination))
     .map((destination) => {
       const totalEstimate = getDestinationTripEstimate(destination, {
