@@ -696,7 +696,7 @@ const destinationSeeds: DestinationSeed[] = [
     slug: "chile",
     name: "Chile",
     countryCode: "CL",
-    image: "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?auto=format&fit=crop&w=1600&q=80",
+    image: "https://images.unsplash.com/photo-1565945985125-a59c660a9932?auto=format&fit=crop&w=1600&q=85",
     flightAverage: { YUL: 980, YYZ: 940, YVR: 1080 },
     dailyTotals: { budget: 95, midRange: 160, luxury: 430 },
     score: 82,

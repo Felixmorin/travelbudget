@@ -9,6 +9,8 @@ import { Footer } from "@/components/site/footer";
 import { Header } from "@/components/site/header";
 import { createMetadata } from "@/lib/seo/metadata";
 
+const isProduction = process.env.NODE_ENV === "production";
+
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
@@ -65,22 +67,28 @@ export default function RootLayout({
       className={`${inter.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
-        {/* eslint-disable-next-line @next/next/next-script-for-ga -- Google requested this exact tag directly after <head>. */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-LL509H3H2L" />
-        <script dangerouslySetInnerHTML={{ __html: googleAnalyticsScript }} />
-        <script type="text/javascript" dangerouslySetInnerHTML={{ __html: microsoftClarityScript }} />
-        <script
-          {...travelpayoutDriveAttributes}
-          dangerouslySetInnerHTML={{ __html: travelpayoutDriveScript }}
-        />
+        {isProduction ? (
+          <>
+            {/* eslint-disable-next-line @next/next/next-script-for-ga -- Google requested this exact tag directly after <head>. */}
+            <script async src="https://www.googletagmanager.com/gtag/js?id=G-LL509H3H2L" />
+            <script dangerouslySetInnerHTML={{ __html: googleAnalyticsScript }} />
+            <script type="text/javascript" dangerouslySetInnerHTML={{ __html: microsoftClarityScript }} />
+            <script
+              {...travelpayoutDriveAttributes}
+              dangerouslySetInnerHTML={{ __html: travelpayoutDriveScript }}
+            />
+          </>
+        ) : null}
       </head>
       <body className="flex min-h-full flex-col">
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6743160991638916"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
+        {isProduction ? (
+          <Script
+            async
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6743160991638916"
+            crossOrigin="anonymous"
+            strategy="afterInteractive"
+          />
+        ) : null}
         <AnalyticsScripts />
         <LanguageProvider>
           <Header />

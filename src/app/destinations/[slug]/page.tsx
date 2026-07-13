@@ -3,17 +3,35 @@ import Link from "next/link";
 import Script from "next/script";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ArrowRight, CalendarDays, Home, Route, Search, Sparkles, Ticket, WalletCards } from "lucide-react";
+import {
+  ArrowRight,
+  Binoculars,
+  CalendarDays,
+  Camera,
+  Compass,
+  Home,
+  Landmark,
+  Mountain,
+  Route,
+  Search,
+  Sparkles,
+  Ticket,
+  Utensils,
+  WalletCards,
+  Waves,
+  Wine,
+} from "lucide-react";
 
 import { AnalyticsView } from "@/components/analytics/analytics-view";
 import { TrackedLink } from "@/components/analytics/tracked-link";
+import { DayByDayItinerary } from "@/components/destinations/day-by-day-itinerary";
 import { AffiliateCard } from "@/components/site/affiliate-card";
 import { BudgetBreakdown } from "@/components/site/budget-breakdown";
 import { CTASection } from "@/components/site/cta-section";
-import { EstimateDisclaimer } from "@/components/site/estimate-disclaimer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { buildAffiliateLink } from "@/lib/affiliate/build-affiliate-link";
 import {
   type Destination,
   formatMoney,
@@ -88,11 +106,17 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
   const budgetInsight = getBudgetInsight(destination);
   const defaultOriginPricing = getOriginPricing(destination, "YUL");
   const dailyMidRangeTotal = getDailyCostTotal(destination, "midRange");
+  const activityLink = destination.affiliateLinks.find((link) => link.type === "Activities");
+  const builtActivityLink = activityLink
+    ? buildAffiliateLink({ destination, link: activityLink })
+    : undefined;
+  const activityGuide = getDestinationActivityGuide(destination);
   const typicalEstimate = getDestinationTripEstimate(destination, {
     days: 10,
     originCode: "YUL",
     travelStyle: "midRange",
   });
+  const planTripPath = getDestinationPlanPath(destination, typicalEstimate);
   const hasSeoBudgetPage = destinationBudgetSeoSlugs.includes(destination.slug);
   const destinationBudgetPath = getDestinationBudgetPlanningPath(destination.slug);
   const jsonLd = [
@@ -145,14 +169,14 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg" className="rounded-xl bg-orange-500 text-white hover:bg-orange-600">
                 <TrackedLink
-                  href="/results"
+                  href={planTripPath}
                   eventName="cta_clicked"
                   eventProperties={{
                     page: `/destinations/${destination.slug}`,
                     destinationName: destinationLabel,
                     destinationSlug: destination.slug,
                     label: `Plan a trip to ${destinationLabel}`,
-                    href: "/results",
+                    href: planTripPath,
                     ctaLocation: "destination_hero",
                   }}
                 >
@@ -162,14 +186,14 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
               </Button>
               <Button asChild size="lg" variant="outline" className="rounded-xl bg-white/95 text-slate-950">
                 <TrackedLink
-                  href="/results"
+                  href={planTripPath}
                   eventName="cta_clicked"
                   eventProperties={{
                     page: `/destinations/${destination.slug}`,
                     destinationName: destinationLabel,
                     destinationSlug: destination.slug,
                     label: "Compare with other destinations",
-                    href: "/results",
+                    href: planTripPath,
                     ctaLocation: "destination_hero",
                   }}
                 >
@@ -202,7 +226,6 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
                 <div>
                   <Badge className={budgetInsight.badgeClassName}>{budgetInsight.label}</Badge>
                   <p className="mt-4 text-sm leading-6 text-slate-600">{budgetInsight.copy}</p>
-                  <EstimateDisclaimer className="mt-4" />
                 </div>
                 <div className="rounded-2xl bg-slate-950 p-5 text-white">
                   <p className="text-xs uppercase tracking-wide text-white/60">Typical planning estimate</p>
@@ -214,6 +237,13 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
             </Card>
 
             <BudgetBreakdown destination={destination} />
+
+            <ActivityChoiceSection
+              destination={destination}
+              destinationLabel={destinationLabel}
+              activityGuide={activityGuide}
+              activityHref={activityLink?.href}
+            />
 
             <Card className="border-slate-200 bg-white shadow-lg shadow-slate-200/60">
               <CardHeader>
@@ -264,26 +294,10 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
               </CardContent>
             </Card>
 
-            <Card className="border-slate-200 bg-white shadow-lg shadow-slate-200/60">
-              <CardHeader>
-                <CardTitle className="text-xl text-slate-950">
-                  {destination.name} itinerary preview
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="grid gap-4">
-                {destination.itineraryPreview.map((item, index) => (
-                  <div key={item} className="flex gap-4">
-                    <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#0B1D34] text-sm font-semibold text-white">
-                      {index + 1}
-                    </span>
-                    <p className="pt-1 text-sm leading-6 text-slate-600">{item}</p>
-                  </div>
-                ))}
-                <p className="text-xs leading-5 text-slate-500">
-                  Use this as a budget planning preview, not a full day-by-day itinerary.
-                </p>
-              </CardContent>
-            </Card>
+            <DayByDayItinerary
+              activityHref={builtActivityLink?.href}
+              destination={destination}
+            />
 
             {destination.slug === "japan" ? <JapanToursWidget destination={destination} /> : null}
 
@@ -366,14 +380,14 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
               </Button>
               <Button asChild variant="outline" className="rounded-xl bg-white">
                 <TrackedLink
-                  href="/results"
+                  href={planTripPath}
                   eventName="cta_clicked"
                   eventProperties={{
                     page: `/destinations/${destination.slug}`,
                     destinationName: destination.name,
                     destinationSlug: destination.slug,
                     label: "Compare all destinations",
-                    href: "/results",
+                    href: planTripPath,
                     ctaLocation: "destination_bottom_nav",
                   }}
                 >
@@ -410,6 +424,42 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
                 Planning links for flights, hotels, eSIM, activities, and insurance. Verify current prices before booking.
               </p>
             </div>
+            {activityLink ? (
+              <Card className="border-orange-200 bg-orange-50 shadow-sm">
+                <CardContent className="grid gap-4 pt-5">
+                  <div className="flex items-start gap-3">
+                    <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-orange-500 text-white">
+                      <Ticket className="size-5" />
+                    </span>
+                    <div>
+                      <p className="font-semibold text-slate-950">Build the activity shortlist first</p>
+                      <p className="mt-1 text-sm leading-6 text-slate-600">
+                        {destination.name} has several trip styles. Pick the experiences that matter before you lock hotels or internal routes.
+                      </p>
+                    </div>
+                  </div>
+                  <Button asChild className="h-11 rounded-xl bg-orange-500 text-white hover:bg-orange-600">
+                    <TrackedLink
+                      href={activityLink.href}
+                      eventName="cta_clicked"
+                      eventProperties={{
+                        page: `/destinations/${destination.slug}`,
+                        destinationName: destination.name,
+                        destinationSlug: destination.slug,
+                        label: `Browse ${destination.name} activities`,
+                        href: activityLink.href,
+                        ctaLocation: "destination_sidebar_activity_boost",
+                      }}
+                      target="_blank"
+                      rel="sponsored noopener noreferrer"
+                    >
+                      Browse activities
+                      <ArrowRight className="ml-2 size-4" />
+                    </TrackedLink>
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : null}
             {destination.affiliateLinks.map((link) => (
               <AffiliateCard key={link.type} destination={destination} link={link} />
             ))}
@@ -419,6 +469,204 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
       <CTASection />
     </>
   );
+}
+
+type ActivitySuggestion = {
+  title: string;
+  description: string;
+  icon: React.ComponentType<{ className?: string }>;
+  idealFor: string;
+  budgetLevel: "Low" | "Medium" | "High";
+  timing: string;
+};
+
+type ActivityGuide = {
+  intro: string;
+  suggestions: ActivitySuggestion[];
+};
+
+const defaultActivityGuide: ActivityGuide = {
+  intro: "Use these activity ideas to decide what kind of trip is worth pricing before you book flights and stays.",
+  suggestions: [
+    {
+      title: "City highlights and food walks",
+      description: "A practical first-day option for getting oriented, sampling local food, and learning which neighborhoods are worth revisiting.",
+      icon: Utensils,
+      idealFor: "First-time visitors",
+      budgetLevel: "Medium",
+      timing: "First 48 hours",
+    },
+    {
+      title: "Museum, history, and culture passes",
+      description: "Best when the destination has major museums, historic centers, guided sites, or skip-the-line tickets that save time.",
+      icon: Landmark,
+      idealFor: "Culture trips",
+      budgetLevel: "Low",
+      timing: "Rainy or arrival days",
+    },
+    {
+      title: "Nature day trips",
+      description: "Good for adding scenery without changing hotels, especially when guided transport avoids expensive car rentals.",
+      icon: Mountain,
+      idealFor: "Short stays",
+      budgetLevel: "High",
+      timing: "Middle of trip",
+    },
+    {
+      title: "Viewpoints and photo routes",
+      description: "Low-commitment activities that can fill half days while keeping the activity budget under control.",
+      icon: Camera,
+      idealFor: "Budget control",
+      budgetLevel: "Low",
+      timing: "Flexible",
+    },
+  ],
+};
+
+const destinationActivityGuides: Record<string, ActivityGuide> = {
+  chile: {
+    intro: "Chile converts best as a choice-driven trip: travelers need to decide whether the budget goes toward desert, wine, coast, Patagonia, or city experiences.",
+    suggestions: [
+      {
+        title: "Santiago city, markets, and viewpoints",
+        description: "Start with neighborhoods, food markets, Cerro San Cristobal, museums, and a guided city walk before committing to longer transfers.",
+        icon: Landmark,
+        idealFor: "First day planning",
+        budgetLevel: "Low",
+        timing: "1 day",
+      },
+      {
+        title: "Valparaiso and Viña del Mar coast",
+        description: "A strong day-trip choice for street art, hillside elevators, Pacific views, seafood, and colorful port-city photography.",
+        icon: Waves,
+        idealFor: "Culture + coast",
+        budgetLevel: "Medium",
+        timing: "Full day",
+      },
+      {
+        title: "Casablanca or Maipo Valley wine tour",
+        description: "A conversion-friendly add-on for couples and food travelers who want a polished day without building a full road-trip itinerary.",
+        icon: Wine,
+        idealFor: "Couples",
+        budgetLevel: "Medium",
+        timing: "Half or full day",
+      },
+      {
+        title: "Atacama desert landscapes",
+        description: "Salt flats, geysers, lagoons, moonlike valleys, and stargazing are usually worth a separate flight and a larger activity budget.",
+        icon: Compass,
+        idealFor: "Adventure",
+        budgetLevel: "High",
+        timing: "3-4 days",
+      },
+      {
+        title: "Patagonia and Torres del Paine",
+        description: "The biggest-ticket Chile experience: build the budget around flights, park logistics, guided hikes, and weather buffers.",
+        icon: Mountain,
+        idealFor: "Bucket-list nature",
+        budgetLevel: "High",
+        timing: "4-7 days",
+      },
+      {
+        title: "Astronomy and night-sky tours",
+        description: "Northern Chile is one of the best places to make a single evening feel memorable without adding another destination.",
+        icon: Binoculars,
+        idealFor: "Unique experience",
+        budgetLevel: "Medium",
+        timing: "Evening",
+      },
+    ],
+  },
+};
+
+function ActivityChoiceSection({
+  destination,
+  destinationLabel,
+  activityGuide,
+  activityHref,
+}: {
+  destination: Destination;
+  destinationLabel: string;
+  activityGuide: ActivityGuide;
+  activityHref?: string;
+}) {
+  return (
+    <Card className="border-slate-200 bg-white shadow-lg shadow-slate-200/60">
+      <CardHeader>
+        <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">Activities that shape the trip</p>
+            <CardTitle className="mt-2 text-2xl text-slate-950">
+              Choose what to do in {destinationLabel}
+            </CardTitle>
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">{activityGuide.intro}</p>
+          </div>
+          {activityHref ? (
+            <Button asChild className="h-11 rounded-xl bg-orange-500 text-white hover:bg-orange-600">
+              <TrackedLink
+                href={activityHref}
+                eventName="cta_clicked"
+                eventProperties={{
+                  page: `/destinations/${destination.slug}`,
+                  destinationName: destination.name,
+                  destinationSlug: destination.slug,
+                  label: `Browse ${destination.name} activities`,
+                  href: activityHref,
+                  ctaLocation: "destination_activity_section",
+                }}
+                target="_blank"
+                rel="sponsored noopener noreferrer"
+              >
+                Browse live activities
+                <ArrowRight className="ml-2 size-4" />
+              </TrackedLink>
+            </Button>
+          ) : null}
+        </div>
+      </CardHeader>
+      <CardContent className="grid gap-5">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {activityGuide.suggestions.map((activity) => (
+            <article key={activity.title} className="rounded-xl border border-slate-200 bg-slate-50 p-5">
+              <div className="flex items-start gap-3">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-white text-[#0B1D34] ring-1 ring-slate-200">
+                  <activity.icon className="size-5" />
+                </span>
+                <div>
+                  <h3 className="font-semibold text-slate-950">{activity.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">{activity.description}</p>
+                </div>
+              </div>
+              <div className="mt-5 grid grid-cols-3 gap-2 text-xs">
+                <ActivityMeta label="Best for" value={activity.idealFor} />
+                <ActivityMeta label="Budget" value={activity.budgetLevel} />
+                <ActivityMeta label="Timing" value={activity.timing} />
+              </div>
+            </article>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ActivityMeta({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg bg-white p-3 ring-1 ring-slate-200">
+      <p className="font-semibold uppercase tracking-wide text-slate-400">{label}</p>
+      <p className="mt-1 font-semibold text-slate-900">{value}</p>
+    </div>
+  );
+}
+
+function getDestinationActivityGuide(destination: Destination): ActivityGuide {
+  return destinationActivityGuides[destination.slug] ?? {
+    ...defaultActivityGuide,
+    suggestions: defaultActivityGuide.suggestions.map((activity) => ({
+      ...activity,
+      title: activity.title.replace("City", `${destination.name} city`),
+    })),
+  };
 }
 
 function JapanToursWidget({ destination }: { destination: Destination }) {
@@ -692,7 +940,7 @@ export function CityDestinationPage({ destination }: { destination: CityDestinat
             </CardHeader>
             <CardContent className="grid gap-4">
               <div className="rounded-2xl bg-slate-950 p-5 text-white">
-                <p className="text-xs uppercase tracking-wide text-white/60">Planning estimate</p>
+                <p className="text-xs uppercase tracking-wide text-white/60">Estimated total</p>
                 <p className="mt-2 text-3xl font-semibold">
                   {formatDestinationMoney(destination.estimatedTotalCost, destination.currency)}
                 </p>
@@ -816,6 +1064,20 @@ function getStrongSeoLinks(destinationSlug: string) {
 
 function getDestinationBudgetPlanningPath(destinationSlug: string) {
   return getStrongSeoDestinationBudgetPath(destinationSlug) ?? getTravelBudgetPath(destinationSlug);
+}
+
+function getDestinationPlanPath(destination: Destination, budget: number) {
+  const params = new URLSearchParams({
+    budget: String(Math.round(budget)),
+    currency: destination.currency,
+    origin: "YUL",
+    days: "10",
+    month: (destination.bestMonths[0] ?? "october").toLowerCase(),
+    travelers: "1",
+    style: "balanced",
+  });
+
+  return `/results?${params.toString()}`;
 }
 
 function getParentCountryDestination(destination: CityDestination) {

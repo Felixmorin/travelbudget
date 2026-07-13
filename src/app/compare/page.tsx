@@ -121,7 +121,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
           </div>
 
           <section className="mt-12">
-            <p className="text-sm font-semibold uppercase tracking-wide text-[#0B1D34]">SEO comparison guides</p>
+            <p className="text-sm font-semibold uppercase tracking-wide text-[#0B1D34]">Comparison guides</p>
             <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">
               Popular travel budget comparisons
             </h2>
