@@ -1,4 +1,4 @@
-import { getErrorMessage } from "@/lib/monitoring/server-logger";
+import { getErrorMessage, logServerEvent, type LogEventType } from "@/lib/monitoring/server-logger";
 
 type RateLimitOptions = {
   limit: number;
@@ -8,6 +8,17 @@ type RateLimitOptions = {
 type RateLimitBucket = {
   count: number;
   resetAt: number;
+};
+
+type GuardedJsonPostOptions = {
+  request: Request;
+  scope: string;
+  maxBodyBytes: number;
+  rateLimit: RateLimitOptions;
+  failureLogMessage: string;
+  failureEventType: LogEventType;
+  failureResponseError: string;
+  handler: (body: unknown) => Promise<Response> | Response;
 };
 
 const rateLimitBuckets = new Map<string, RateLimitBucket>();
@@ -77,6 +88,35 @@ export function getRequestGuardResponse(error: unknown) {
   }
 
   return null;
+}
+
+export async function handleGuardedJsonPost({
+  request,
+  scope,
+  maxBodyBytes,
+  rateLimit,
+  failureLogMessage,
+  failureEventType,
+  failureResponseError,
+  handler,
+}: GuardedJsonPostOptions) {
+  try {
+    enforceRateLimit(request, scope, rateLimit);
+
+    return await handler(await readJsonBody(request, maxBodyBytes));
+  } catch (error) {
+    const guardResponse = getRequestGuardResponse(error);
+
+    if (guardResponse) {
+      return guardResponse;
+    }
+
+    await logServerEvent("warn", failureLogMessage, {
+      error: getErrorMessage(error),
+    }, failureEventType);
+
+    return Response.json({ ok: false, error: failureResponseError }, { status: 400 });
+  }
 }
 
 export function resetRequestGuardState() {

@@ -8,6 +8,7 @@ import { TrackedLink } from "@/components/analytics/tracked-link";
 import { EstimateDisclaimer } from "@/components/site/estimate-disclaimer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { formatList } from "@/lib/format-list";
 import { formatMoney } from "@/lib/format-money";
 import {
   getDepartureCityPage,
@@ -304,18 +305,6 @@ function createFaqs(page: DepartureCityPage): FAQItem[] {
       }.`,
     },
   ];
-}
-
-function formatList(items: string[]) {
-  if (items.length <= 1) {
-    return items[0] ?? "The listed destinations";
-  }
-
-  if (items.length === 2) {
-    return items.join(" and ");
-  }
-
-  return `${items.slice(0, -1).join(", ")}, and ${items.at(-1)}`;
 }
 
 function HeroPill({ icon: Icon, label }: { icon: React.ComponentType<{ className?: string }>; label: string }) {

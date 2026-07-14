@@ -11,6 +11,7 @@ import {
 } from "@/lib/programmatic/budget-pages";
 import { getAllSeoRegistryPages, getOriginBudgetStaticParams } from "@/lib/programmatic/seo-registry";
 import { getCityCountryLabel } from "@/lib/data/unified-destinations";
+import { formatList } from "@/lib/format-list";
 import { formatMoney } from "@/lib/format-money";
 import { createMetadata } from "@/lib/seo/metadata";
 import {
@@ -200,16 +201,4 @@ function findStylePick(matches: BudgetDestination[], styles: string[]) {
   }
 
   return null;
-}
-
-function formatList(items: string[]) {
-  if (items.length <= 1) {
-    return items[0] ?? "The listed destinations";
-  }
-
-  if (items.length === 2) {
-    return items.join(" and ");
-  }
-
-  return `${items.slice(0, -1).join(", ")}, and ${items.at(-1)}`;
 }

@@ -1,45 +1,38 @@
 import { saveEmailLead } from "@/lib/leads/email-leads";
-import { getErrorMessage, logServerEvent } from "@/lib/monitoring/server-logger";
-import { enforceRateLimit, getRequestGuardResponse, readJsonBody } from "@/lib/security/request-guards";
+import { handleGuardedJsonPost } from "@/lib/security/request-guards";
 
 const maxLeadBodyBytes = 4_096;
 const maxLeadRequestsPerHour = 10;
 const maxTextLength = 200;
 
 export async function POST(request: Request) {
-  try {
-    enforceRateLimit(request, "email-leads", {
+  return handleGuardedJsonPost({
+    request,
+    scope: "email-leads",
+    maxBodyBytes: maxLeadBodyBytes,
+    rateLimit: {
       limit: maxLeadRequestsPerHour,
       windowMs: 60 * 60_000,
-    });
+    },
+    failureLogMessage: "Email lead request failed.",
+    failureEventType: "email_lead_error",
+    failureResponseError: "Unable to save lead.",
+    handler: async (body) => {
+      const lead = normalizeLeadPayload(body);
 
-    const body = await readJsonBody(request, maxLeadBodyBytes);
-    const lead = normalizeLeadPayload(body);
+      if (!lead) {
+        return Response.json({ ok: false, error: "Invalid lead payload." }, { status: 400 });
+      }
 
-    if (!lead) {
-      return Response.json({ ok: false, error: "Invalid lead payload." }, { status: 400 });
-    }
+      await saveEmailLead({
+        ...lead,
+        referrer: request.headers.get("referer") ?? undefined,
+        userAgent: request.headers.get("user-agent") ?? undefined,
+      });
 
-    await saveEmailLead({
-      ...lead,
-      referrer: request.headers.get("referer") ?? undefined,
-      userAgent: request.headers.get("user-agent") ?? undefined,
-    });
-
-    return Response.json({ ok: true });
-  } catch (error) {
-    const guardResponse = getRequestGuardResponse(error);
-
-    if (guardResponse) {
-      return guardResponse;
-    }
-
-    await logServerEvent("warn", "Email lead request failed.", {
-      error: getErrorMessage(error),
-    }, "email_lead_error");
-
-    return Response.json({ ok: false, error: "Unable to save lead." }, { status: 400 });
-  }
+      return Response.json({ ok: true });
+    },
+  });
 }
 
 function normalizeLeadPayload(body: unknown) {

@@ -1,7 +1,6 @@
 import { analyticsEventNames, type AnalyticsEventName, type AnalyticsPayload } from "@/lib/analytics/events";
 import { saveAnalyticsEvent } from "@/lib/analytics/server-events";
-import { getErrorMessage, logServerEvent } from "@/lib/monitoring/server-logger";
-import { enforceRateLimit, getRequestGuardResponse, readJsonBody } from "@/lib/security/request-guards";
+import { handleGuardedJsonPost } from "@/lib/security/request-guards";
 
 const maxAnalyticsBodyBytes = 8_192;
 const maxAnalyticsEventsPerMinute = 60;
@@ -9,40 +8,34 @@ const maxPropertyCount = 32;
 const maxStringPropertyLength = 300;
 
 export async function POST(request: Request) {
-  try {
-    enforceRateLimit(request, "analytics-events", {
+  return handleGuardedJsonPost({
+    request,
+    scope: "analytics-events",
+    maxBodyBytes: maxAnalyticsBodyBytes,
+    rateLimit: {
       limit: maxAnalyticsEventsPerMinute,
       windowMs: 60_000,
-    });
+    },
+    failureLogMessage: "Analytics event request failed.",
+    failureEventType: "analytics_error",
+    failureResponseError: "Unable to track analytics event.",
+    handler: async (body) => {
+      const eventName = getEventName(body);
 
-    const body = await readJsonBody(request, maxAnalyticsBodyBytes);
-    const eventName = getEventName(body);
+      if (!eventName) {
+        return Response.json({ ok: false, error: "Invalid analytics event." }, { status: 400 });
+      }
 
-    if (!eventName) {
-      return Response.json({ ok: false, error: "Invalid analytics event." }, { status: 400 });
-    }
+      await saveAnalyticsEvent({
+        eventName,
+        properties: normalizeProperties(getBodyProperty(body, "properties")),
+        referrer: request.headers.get("referer") ?? undefined,
+        userAgent: request.headers.get("user-agent") ?? undefined,
+      });
 
-    await saveAnalyticsEvent({
-      eventName,
-      properties: normalizeProperties(body.properties),
-      referrer: request.headers.get("referer") ?? undefined,
-      userAgent: request.headers.get("user-agent") ?? undefined,
-    });
-
-    return Response.json({ ok: true });
-  } catch (error) {
-    const guardResponse = getRequestGuardResponse(error);
-
-    if (guardResponse) {
-      return guardResponse;
-    }
-
-    await logServerEvent("warn", "Analytics event request failed.", {
-      error: getErrorMessage(error),
-    }, "analytics_error");
-
-    return Response.json({ ok: false, error: "Unable to track analytics event." }, { status: 400 });
-  }
+      return Response.json({ ok: true });
+    },
+  });
 }
 
 function getEventName(body: unknown): AnalyticsEventName | null {
@@ -55,6 +48,10 @@ function getEventName(body: unknown): AnalyticsEventName | null {
   return typeof eventName === "string" && analyticsEventNames.includes(eventName as AnalyticsEventName)
     ? (eventName as AnalyticsEventName)
     : null;
+}
+
+function getBodyProperty(body: unknown, propertyName: string) {
+  return body && typeof body === "object" ? (body as Record<string, unknown>)[propertyName] : undefined;
 }
 
 function normalizeProperties(value: unknown): AnalyticsPayload {
