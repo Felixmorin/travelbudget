@@ -248,20 +248,74 @@ export default async function DepartureCityRoute({ params }: DeparturePageProps)
 }
 
 function createFaqs(page: DepartureCityPage): FAQItem[] {
+  const destinationNames = page.recommendations
+    .slice(0, 4)
+    .map((item) => getCityCountryLabel(item.destination));
+  const cheapest = page.recommendations[0] ?? null;
+  const shortTrip = page.recommendations.find((item) => item.suggestedTripLength === "5-7 days") ?? cheapest;
+  const longerTrip =
+    [...page.recommendations].reverse().find((item) => item.suggestedTripLength === "10-14 days") ??
+    page.recommendations.at(-1) ??
+    cheapest;
+  const stylePick =
+    page.recommendations.find((item) => item.destination.travelStyles.length > 0) ?? cheapest;
+
+  if (!cheapest) {
+    return [
+      {
+        question: `Which destinations are available from ${page.origin.name}?`,
+        answer: `There are not enough destination matches from ${page.origin.name} yet to show a reliable destination FAQ.`,
+      },
+    ];
+  }
+
+  const selectedShortTrip = shortTrip ?? cheapest;
+  const selectedLongerTrip = longerTrip ?? cheapest;
+  const selectedStylePick = stylePick ?? cheapest;
+  const selectedStyle = selectedStylePick.destination.travelStyles[0]?.toLowerCase() ?? "balanced";
+
   return [
     {
-      question: `Which airports does GoByBudget use for ${page.origin.name}?`,
-      answer: `This page uses ${page.origin.airportCodes.join(", ")} as the supported airport code set for ${page.origin.name}.`,
+      question: `What are the best destinations from ${page.origin.name}?`,
+      answer: `${formatList(destinationNames)} are among the strongest destination matches from ${page.origin.name} based on total trip cost and destination fit.`,
     },
     {
-      question: `Are prices from ${page.origin.name} live fares?`,
-      answer: "No. GoByBudget shows planning estimates where data is available, not live booking prices or guarantees.",
+      question: `What is the cheapest destination from ${page.origin.name}?`,
+      answer: `${getCityCountryLabel(cheapest.destination)} has the lowest listed total estimate from ${
+        page.origin.name
+      } at about ${formatMoney(cheapest.totalEstimate, page.currency)} for a ${page.tripLengthDays}-day trip.`,
     },
     {
-      question: `Why is this page noindex when flight data is unavailable?`,
-      answer: "GoByBudget keeps weak origin pages out of search indexes until there are enough distinct recommendations and usable flight estimates.",
+      question: `Which destination from ${page.origin.name} works for a shorter trip?`,
+      answer: `${getCityCountryLabel(selectedShortTrip.destination)} is a practical shorter-trip option from ${
+        page.origin.name
+      }, with a suggested range of ${selectedShortTrip.suggestedTripLength}.`,
+    },
+    {
+      question: `Which destination from ${page.origin.name} is better for a longer trip?`,
+      answer: `${getCityCountryLabel(selectedLongerTrip.destination)} is a stronger longer-trip candidate from ${
+        page.origin.name
+      }, especially if you want more time to spread out the flight cost and daily itinerary.`,
+    },
+    {
+      question: `Which destination from ${page.origin.name} fits a ${selectedStyle} trip?`,
+      answer: `${getCityCountryLabel(selectedStylePick.destination)} fits ${selectedStyle} travel well, with a listed estimate of ${formatMoney(selectedStylePick.totalEstimate, page.currency)} from ${
+        page.origin.name
+      }.`,
     },
   ];
+}
+
+function formatList(items: string[]) {
+  if (items.length <= 1) {
+    return items[0] ?? "The listed destinations";
+  }
+
+  if (items.length === 2) {
+    return items.join(" and ");
+  }
+
+  return `${items.slice(0, -1).join(", ")}, and ${items.at(-1)}`;
 }
 
 function HeroPill({ icon: Icon, label }: { icon: React.ComponentType<{ className?: string }>; label: string }) {

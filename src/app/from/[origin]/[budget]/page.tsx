@@ -3,6 +3,7 @@ import { permanentRedirect } from "next/navigation";
 
 import { ProgrammaticBudgetPage } from "@/components/programmatic/ProgrammaticBudgetPage";
 import {
+  type BudgetDestination,
   getMatchingBudgetDestinations,
   getProgrammaticBudgetPage,
   getProgrammaticBudgetPath,
@@ -10,6 +11,7 @@ import {
 } from "@/lib/programmatic/budget-pages";
 import { getAllSeoRegistryPages, getOriginBudgetStaticParams } from "@/lib/programmatic/seo-registry";
 import { getCityCountryLabel } from "@/lib/data/unified-destinations";
+import { formatMoney } from "@/lib/format-money";
 import { createMetadata } from "@/lib/seo/metadata";
 import {
   createBreadcrumbSchema,
@@ -73,11 +75,8 @@ export default async function FromOriginUnderBudgetPage({ params }: BudgetPagePr
     originCity: page.origin.city,
     budget: page.budget,
     currency: page.currency,
-    travelStyle: page.travelStyle,
-    tripLengthDays: page.tripLengthDays,
     suggestedTripLength: page.suggestedTripLength,
-    destinationNames: matches.map((item) => getCityCountryLabel(item.destination)),
-    cheapestDestinationName: matches[0] ? getCityCountryLabel(matches[0].destination) : null,
+    matches,
   });
   const jsonLd = [
     createCollectionPageSchema({
@@ -122,64 +121,95 @@ function createBudgetFaqs({
   originCity,
   budget,
   currency,
-  travelStyle,
-  tripLengthDays,
   suggestedTripLength,
-  destinationNames,
-  cheapestDestinationName,
+  matches,
 }: {
   originCity: string;
   budget: number;
   currency: string;
-  travelStyle: string;
-  tripLengthDays: number;
   suggestedTripLength: string;
-  destinationNames: string[];
-  cheapestDestinationName: string | null;
+  matches: BudgetDestination[];
 }): FAQItem[] {
-  const budgetLabel = `$${budget.toLocaleString("en-CA")}`;
-  const destinationList =
-    destinationNames.length > 0
-      ? destinationNames.join(", ")
-      : "destinations that fit the available pricing data";
+  const budgetLabel = formatMoney(budget, currency);
+  const destinationNames = matches.slice(0, 5).map((item) => getCityCountryLabel(item.destination));
+  const cheapest = matches[0] ?? null;
+  const bestValue =
+    matches.length > 0
+      ? [...matches].sort(
+          (a, b) => b.destination.score / b.totalEstimate - a.destination.score / a.totalEstimate
+        )[0]
+      : null;
+  const stylePick = findStylePick(matches, ["Beach", "Culture", "Food", "Adventure"]);
+  const stretchPick = matches.find((item) => item.budgetRemaining <= budget * 0.15) ?? matches.at(-1) ?? null;
+
+  if (!cheapest) {
+    return [
+      {
+        question: `Which destinations fit under ${budgetLabel} from ${originCity}?`,
+        answer: `No listed destinations currently fit under ${budgetLabel} ${currency} from ${originCity}. A shorter trip or a higher budget would open more destination options.`,
+      },
+    ];
+  }
+
+  const selectedBestValue = bestValue ?? cheapest;
+  const selectedStretchPick = stretchPick ?? cheapest;
 
   return [
     {
-      question: `What are the best destinations from ${originCity} under ${budgetLabel} ${currency}?`,
-      answer: `Based on the current GoByBudget.com estimates, the matching destinations are ${destinationList}.`,
+      question: `Which destinations fit under ${budgetLabel} from ${originCity}?`,
+      answer: `${formatList(destinationNames)} fit under ${budgetLabel} ${currency} from ${originCity} for the listed ${suggestedTripLength} trip range.`,
     },
     {
-      question: "Does this budget include flights?",
-      answer:
-        "Yes. The estimates include round-trip flights, accommodation, food, local transport, activities, and miscellaneous daily costs.",
+      question: `What is the cheapest destination under ${budgetLabel} from ${originCity}?`,
+      answer: `${getCityCountryLabel(cheapest.destination)} is the lowest listed match at about ${formatMoney(
+        cheapest.totalEstimate,
+        currency
+      )}, leaving roughly ${formatMoney(cheapest.budgetRemaining, currency)} inside the ${budgetLabel} budget.`,
     },
     {
-      question: "How many days can I travel with this budget?",
-      answer: `This page uses a ${tripLengthDays}-day ${formatTravelStyleLabel(
-        travelStyle
-      ).toLowerCase()} estimate and highlights ${suggestedTripLength} as the practical planning range for this budget.`,
+      question: `Which destination is the best value under ${budgetLabel}?`,
+      answer: `${getCityCountryLabel(selectedBestValue.destination)} is the strongest value pick because it balances a competitive total estimate with a high destination score.`,
     },
     {
-      question: `Are prices shown in ${currency}?`,
-      answer: `Yes. Prices on this page are shown as estimated ${currency} planning amounts, not live booking prices.`,
+      question: `Which destination is a stretch pick under ${budgetLabel}?`,
+      answer: `${getCityCountryLabel(selectedStretchPick.destination)} is closer to the top of the budget at about ${formatMoney(
+        selectedStretchPick.totalEstimate,
+        currency
+      )}, so it can work if dates and accommodation stay favorable.`,
     },
     {
-      question: "How are destinations selected?",
-      answer: `Destinations are selected when their estimated total for flights and ${originCity}-based daily trip costs fits under ${budgetLabel} ${currency}. Results are sorted by estimated total and destination score.`,
-    },
-    {
-      question: `What is the cheapest destination from ${originCity}?`,
-      answer: cheapestDestinationName
-        ? `${cheapestDestinationName} currently has the lowest total estimate among the matching destinations on this page.`
-        : "There is no cheapest match yet because no destination currently fits this budget with the available data.",
+      question: stylePick
+        ? `Which ${stylePick.style.toLowerCase()} destination fits under ${budgetLabel} from ${originCity}?`
+        : `What kind of destination fits under ${budgetLabel} from ${originCity}?`,
+      answer: stylePick
+        ? `${getCityCountryLabel(stylePick.item.destination)} is the best listed ${stylePick.style.toLowerCase()} match under ${budgetLabel} from ${originCity}.`
+        : `${getCityCountryLabel(cheapest.destination)} is the clearest fit under ${budgetLabel}, with the lowest total among the listed destinations.`,
     },
   ];
 }
 
-function formatTravelStyleLabel(style: string) {
-  if (style === "midRange") {
-    return "Mid-range";
+function findStylePick(matches: BudgetDestination[], styles: string[]) {
+  for (const style of styles) {
+    const item = matches.find((match) =>
+      match.destination.travelStyles.some((travelStyle) => travelStyle.toLowerCase() === style.toLowerCase())
+    );
+
+    if (item) {
+      return { item, style };
+    }
   }
 
-  return style.charAt(0).toUpperCase() + style.slice(1);
+  return null;
+}
+
+function formatList(items: string[]) {
+  if (items.length <= 1) {
+    return items[0] ?? "The listed destinations";
+  }
+
+  if (items.length === 2) {
+    return items.join(" and ");
+  }
+
+  return `${items.slice(0, -1).join(", ")}, and ${items.at(-1)}`;
 }
