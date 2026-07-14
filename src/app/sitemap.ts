@@ -6,6 +6,7 @@ import { longTailGuides } from "@/lib/data/guides";
 import { strongSeoPages } from "@/lib/programmatic/strong-seo-pages";
 import { getIndexableDepartureCityPages } from "@/lib/programmatic/departure-pages";
 import { getIndexableSeoPages } from "@/lib/programmatic/seo-registry";
+import { getIndexableDurationSeoPages, getTravelCostDurationPath } from "@/lib/programmatic/seo-pages";
 import { createCanonicalUrl } from "@/lib/seo/metadata";
 
 const staticRoutes: MetadataRoute.Sitemap = [
@@ -108,6 +109,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: page.changeFrequency,
     priority: page.priority,
   }));
+  const durationSeoRoutes = getIndexableDurationSeoPages().map((page) => ({
+    url: createCanonicalUrl(getTravelCostDurationPath(page.destinationSlug, page.durationDays)),
+    changeFrequency: "monthly" as const,
+    priority: 0.76,
+  }));
   const departureCityRoutes = getIndexableDepartureCityPages().map((page) => ({
     url: createCanonicalUrl(page.path),
     lastModified: page.origin.lastUpdated,
@@ -122,6 +128,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...guideRoutes,
     ...strongSeoRoutes,
     ...programmaticSeoRoutes,
+    ...durationSeoRoutes,
     ...departureCityRoutes,
   ]);
 }

@@ -5,8 +5,9 @@ import {
   getComparisonItems,
   getComparisonPage,
   getComparisonPath,
+  getComparisonStaticParams,
 } from "@/lib/programmatic/comparison-pages";
-import { destinationBudgetSeoSlugs, durationSeoPages } from "@/lib/programmatic/seo-pages";
+import { destinationBudgetSeoSlugs, durationSeoPages, getDurationSeoStaticParams } from "@/lib/programmatic/seo-pages";
 
 describe("comparison SEO pages", () => {
   it("defines the priority comparison slugs", () => {
@@ -37,5 +38,17 @@ describe("comparison SEO pages", () => {
     expect(destinationBudgetSeoSlugs).toContain("south-korea");
     expect(durationSeoPages).toContainEqual({ destinationSlug: "south-korea", durationDays: 10 });
     expect(durationSeoPages.length).toBe(destinationBudgetSeoSlugs.length * 3);
+  });
+
+  it("exposes requested long-tail SEO pages", () => {
+    expect(getDurationSeoStaticParams()).toEqual(
+      expect.arrayContaining([
+        { destination: "tokyo", duration: "10-days" },
+        { destination: "lisbon", duration: "7-days" },
+      ])
+    );
+    expect(getComparisonStaticParams()).toContainEqual({
+      comparison: "best-europe-trips-from-toronto-under-3000",
+    });
   });
 });

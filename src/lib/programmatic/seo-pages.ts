@@ -28,6 +28,13 @@ export const durationSeoPages = destinationBudgetSeoSlugs.flatMap((destinationSl
   pilotDurationDays.map((durationDays) => ({ destinationSlug, durationDays }))
 );
 
+export const indexableDurationSeoPages = [
+  { destinationSlug: "tokyo", durationDays: 10 },
+  { destinationSlug: "lisbon", durationDays: 7 },
+] as const;
+
+const allDurationSeoPages = uniqueDurationSeoPages([...durationSeoPages, ...indexableDurationSeoPages]);
+
 export function getDestinationBudgetSeoPage(destinationSlug: string): DestinationBudgetSeoPage | null {
   if (!destinationBudgetSeoSlugs.includes(destinationSlug)) {
     return null;
@@ -55,7 +62,7 @@ export function getDurationSeoPage(destinationSlug: string, durationSlug: string
     return null;
   }
 
-  const page = durationSeoPages.find(
+  const page = allDurationSeoPages.find(
     (item) => item.destinationSlug === destinationSlug && item.durationDays === durationDays
   );
   const destination = page ? getUnifiedDestination(destinationSlug) : null;
@@ -107,10 +114,20 @@ export function getDestinationBudgetSeoStaticParams() {
 }
 
 export function getDurationSeoStaticParams() {
-  return durationSeoPages.map((page) => ({
+  return allDurationSeoPages.map((page) => ({
     destination: page.destinationSlug,
     duration: `${page.durationDays}-days`,
   }));
+}
+
+export function getIndexableDurationSeoPages() {
+  return indexableDurationSeoPages;
+}
+
+export function isIndexableDurationSeoPage(destinationSlug: string, durationDays: number) {
+  return indexableDurationSeoPages.some(
+    (page) => page.destinationSlug === destinationSlug && page.durationDays === durationDays
+  );
 }
 
 export function parseDurationSlug(durationSlug: string) {
@@ -122,4 +139,19 @@ export function parseDurationSlug(durationSlug: string) {
 
   const days = Number.parseInt(match[1], 10);
   return Number.isFinite(days) && days > 0 && days <= 60 ? days : null;
+}
+
+function uniqueDurationSeoPages<T extends { destinationSlug: string; durationDays: number }>(pages: T[]) {
+  const seen = new Set<string>();
+
+  return pages.filter((page) => {
+    const key = `${page.destinationSlug}-${page.durationDays}`;
+
+    if (seen.has(key)) {
+      return false;
+    }
+
+    seen.add(key);
+    return true;
+  });
 }

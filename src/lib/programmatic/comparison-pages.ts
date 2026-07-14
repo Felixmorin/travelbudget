@@ -257,6 +257,7 @@ const pilotComparisonSlugs = [
   "mexico-vs-colombia",
   "france-vs-italy",
   "thailand-vs-vietnam",
+  "best-europe-trips-from-toronto-under-3000",
 ];
 
 export function getComparisonPage(slug: string) {
@@ -350,13 +351,27 @@ export function getComparisonSummary(page: ComparisonPageConfig, items: Destinat
     return `${cheapest.destination.name} has the lowest matching estimate at ${formatMoney(
       cheapest.totalEstimate,
       "CAD"
-    )}, while ${strongestScore.destination.name} has the strongest destination score in this warm-weather set.`;
+    )}, while ${strongestScore.destination.name} has the strongest destination score in this ${formatCollectionLabel(
+      page.destinationFilter
+    )} set.`;
   }
 
   return `${cheapest.destination.name} is lower on the ${page.durationDays}-day estimate at ${formatMoney(
     cheapest.totalEstimate,
     "CAD"
   )}. ${strongestScore.destination.name} has the stronger destination score at ${strongestScore.destination.score}/100.`;
+}
+
+function formatCollectionLabel(filter: CollectionComparisonPage["destinationFilter"]) {
+  if (filter === "europe") {
+    return "Europe";
+  }
+
+  if (filter === "asia") {
+    return "Asia";
+  }
+
+  return "warm-weather";
 }
 
 function matchesCollectionFilter(item: BudgetDestination, filter: CollectionComparisonPage["destinationFilter"]) {

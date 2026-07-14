@@ -43,6 +43,7 @@ export type StrongSeoPage = StrongSeoPageConfig & {
   destination: Destination;
   origin: ProgrammaticOrigin;
   estimate: StrongSeoEstimate;
+  styleEstimates: Record<TravelStyle, number>;
   relatedPages: StrongSeoPageConfig[];
 };
 
@@ -1033,7 +1034,35 @@ function hydrateStrongSeoPage(config: StrongSeoPageConfig): StrongSeoPage | null
     destination,
     origin,
     estimate: getStrongSeoEstimate(config, destination, origin),
+    styleEstimates: getStrongSeoStyleEstimates(config, destination, origin),
     relatedPages: getRelatedStrongSeoPages(config),
+  };
+}
+
+function getStrongSeoStyleEstimates(
+  config: StrongSeoPageConfig,
+  destination: Destination,
+  origin: ProgrammaticOrigin
+): Record<TravelStyle, number> {
+  return {
+    budget: getDestinationTripEstimate(destination, {
+      days: config.durationDays,
+      originCode: normalizeOriginCode(origin.code),
+      travelStyle: "budget",
+      travelers: config.travelers,
+    }),
+    midRange: getDestinationTripEstimate(destination, {
+      days: config.durationDays,
+      originCode: normalizeOriginCode(origin.code),
+      travelStyle: "midRange",
+      travelers: config.travelers,
+    }),
+    luxury: getDestinationTripEstimate(destination, {
+      days: config.durationDays,
+      originCode: normalizeOriginCode(origin.code),
+      travelStyle: "luxury",
+      travelers: config.travelers,
+    }),
   };
 }
 

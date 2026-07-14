@@ -76,6 +76,7 @@ export const pilotComparisonSlugs = [
   "mexico-vs-colombia",
   "france-vs-italy",
   "thailand-vs-vietnam",
+  "best-europe-trips-from-toronto-under-3000",
 ] as const;
 
 export function getPilotDestinations() {

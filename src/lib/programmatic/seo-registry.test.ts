@@ -21,7 +21,7 @@ describe("programmatic SEO registry", () => {
     expect(pilotDestinationSlugs).toHaveLength(10);
     expect(pilotBudgetAmounts).toEqual([1000, 2000, 3000, 5000]);
     expect(pilotOriginSlugs).toEqual(["montreal", "toronto", "vancouver"]);
-    expect(pilotComparisonSlugs).toHaveLength(5);
+    expect(pilotComparisonSlugs).toHaveLength(6);
     expect(pilotDurationDays).toEqual([7, 10, 14]);
     expect(pages.length).toBeLessThanOrEqual(40);
   });
@@ -61,7 +61,7 @@ describe("programmatic SEO registry", () => {
   it("keeps all pilot comparisons eligible for indexing", () => {
     const pages = getAllSeoRegistryPages().filter((page) => page.type === "comparison");
 
-    expect(pages).toHaveLength(5);
+    expect(pages).toHaveLength(6);
     expect(pages.every((page) => page.evaluation.status === "index")).toBe(true);
   });
 

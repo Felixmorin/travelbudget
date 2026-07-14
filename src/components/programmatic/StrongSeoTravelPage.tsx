@@ -1,5 +1,16 @@
 import Link from "next/link";
-import { ArrowRight, BedDouble, Bus, CalendarDays, CircleDollarSign, Plane, Utensils } from "lucide-react";
+import {
+  ArrowRight,
+  BedDouble,
+  Bus,
+  CalendarDays,
+  CircleDollarSign,
+  Compass,
+  MapPinned,
+  Plane,
+  TrendingDown,
+  Utensils,
+} from "lucide-react";
 
 import { EmailCaptureForm } from "@/components/analytics/email-capture-form";
 import { FlightAffiliateLink } from "@/components/affiliate/FlightAffiliateLink";
@@ -15,6 +26,7 @@ import { createBreadcrumbSchema, createFAQSchema, createGuideArticleSchema, seri
 export function StrongSeoTravelPage({ page }: { page: StrongSeoPage }) {
   const destinationLabel = getCityCountryLabel(page.destination);
   const totalLabel = formatMoney(page.estimate.total, "CAD");
+  const expandedFaq = getExpandedFaq(page, destinationLabel);
   const jsonLd = [
     createGuideArticleSchema({
       title: page.title,
@@ -24,7 +36,7 @@ export function StrongSeoTravelPage({ page }: { page: StrongSeoPage }) {
       datePublished: "2026-07-09",
       dateModified: "2026-07-09",
     }),
-    createFAQSchema(page.faq),
+    createFAQSchema(expandedFaq),
     createBreadcrumbSchema([
       { name: "Home", url: "/" },
       { name: getBreadcrumbParent(page.kind), url: getBreadcrumbParentPath(page.kind) },
@@ -83,6 +95,8 @@ export function StrongSeoTravelPage({ page }: { page: StrongSeoPage }) {
         <div className="grid gap-6">
           <EstimateDisclaimer />
 
+          <QuickAnswer page={page} destinationLabel={destinationLabel} totalLabel={totalLabel} />
+
           <section className="rounded-[24px] border border-slate-200 bg-white p-6">
             <h2 className="text-2xl font-semibold">Estimated budget breakdown</h2>
             <p className="mt-3 text-sm leading-6 text-slate-600">
@@ -97,7 +111,10 @@ export function StrongSeoTravelPage({ page }: { page: StrongSeoPage }) {
               <CostMetric icon={CalendarDays} label="Activities" value={page.estimate.breakdown.activities} />
               <CostMetric icon={CircleDollarSign} label="Buffer" value={page.estimate.breakdown.buffer} />
             </dl>
+            <BudgetInterpretation page={page} />
           </section>
+
+          <BudgetStyleComparison page={page} />
 
           <ContentSection title="Who this trip is best for">
             <ul className="grid gap-2">
@@ -117,6 +134,10 @@ export function StrongSeoTravelPage({ page }: { page: StrongSeoPage }) {
             </p>
           </ContentSection>
 
+          <OriginDepartureNotes page={page} destinationLabel={destinationLabel} />
+
+          <DestinationGuideLink page={page} destinationLabel={destinationLabel} />
+
           <ContentSection title="How to lower the cost">
             <ul className="grid gap-3">
               {page.lowerCostTips.map((tip) => (
@@ -127,6 +148,8 @@ export function StrongSeoTravelPage({ page }: { page: StrongSeoPage }) {
               ))}
             </ul>
           </ContentSection>
+
+          <MiniItinerary page={page} destinationLabel={destinationLabel} />
 
           <ContentSection title="What this estimate includes">
             <ul className="grid gap-3">
@@ -143,7 +166,7 @@ export function StrongSeoTravelPage({ page }: { page: StrongSeoPage }) {
           <section className="rounded-[24px] border border-slate-200 bg-white p-6">
             <h2 className="text-2xl font-semibold">FAQ</h2>
             <div className="mt-5 grid gap-4">
-              {page.faq.map((faq) => (
+              {expandedFaq.map((faq) => (
                 <div key={faq.question} className="rounded-2xl bg-slate-50 p-4">
                   <h3 className="font-semibold text-slate-950">{faq.question}</h3>
                   <p className="mt-2 text-sm leading-6 text-slate-600">{faq.answer}</p>
@@ -242,6 +265,220 @@ export function StrongSeoTravelPage({ page }: { page: StrongSeoPage }) {
   );
 }
 
+function QuickAnswer({
+  page,
+  destinationLabel,
+  totalLabel,
+}: {
+  page: StrongSeoPage;
+  destinationLabel: string;
+  totalLabel: string;
+}) {
+  const largestCost = getLargestCostCategory(page);
+  const largestShare = getCostShare(largestCost.value, page.estimate.total);
+  const styleLabel = getTravelStyleLabel(page.travelStyle).toLowerCase();
+
+  return (
+    <section className="rounded-[24px] border border-[#14B8A6]/30 bg-[#14B8A6]/10 p-6">
+      <p className="text-sm font-semibold uppercase tracking-wide text-[#0B1D34]">Quick answer</p>
+      <p className="mt-3 text-base leading-7 text-slate-700">
+        A {page.durationDays}-day {page.origin.city} to {destinationLabel} trip is estimated at{" "}
+        <span className="font-semibold text-slate-950">{totalLabel} CAD</span> for one {styleLabel} traveler.
+        The biggest cost is {largestCost.label.toLowerCase()} at {formatMoney(largestCost.value, "CAD")}, about{" "}
+        {largestShare}% of the total, so this trip works best when that category is checked before the rest of
+        the itinerary is locked.
+      </p>
+    </section>
+  );
+}
+
+function DestinationGuideLink({
+  page,
+  destinationLabel,
+}: {
+  page: StrongSeoPage;
+  destinationLabel: string;
+}) {
+  const destinationGuidePath = `/destinations/${page.destination.slug}`;
+
+  return (
+    <section className="rounded-[24px] border border-slate-200 bg-white p-6">
+      <div className="grid gap-5 sm:grid-cols-[1fr_auto] sm:items-center">
+        <div className="flex gap-3">
+          <Compass className="mt-1 size-5 shrink-0 text-[#0B1D34]" />
+          <div>
+            <h2 className="text-2xl font-semibold text-slate-950">{destinationLabel} destination guide</h2>
+            <p className="mt-3 text-sm leading-7 text-slate-600">
+              Use the destination guide for the broader planning context: best months, trip style, daily costs,
+              itinerary ideas, booking options, and related budget pages before you commit to this route.
+            </p>
+          </div>
+        </div>
+        <Link
+          href={destinationGuidePath}
+          className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold text-[#0B1D34] transition hover:border-[#14B8A6]/50 hover:bg-[#14B8A6]/10"
+        >
+          Open guide
+          <ArrowRight className="size-4" />
+        </Link>
+      </div>
+    </section>
+  );
+}
+
+function BudgetInterpretation({ page }: { page: StrongSeoPage }) {
+  const flightShare = getCostShare(page.estimate.breakdown.flight, page.estimate.total);
+  const hotelShare = getCostShare(page.estimate.breakdown.hotel, page.estimate.total);
+  const afterFlights = Math.max(0, page.estimate.total - page.estimate.breakdown.flight);
+  const dailyAfterFlights = Math.round(afterFlights / page.durationDays);
+  const largestCost = getLargestCostCategory(page);
+
+  return (
+    <div className="mt-6 rounded-2xl bg-slate-50 p-5 text-sm leading-6 text-slate-600">
+      <p>
+        {largestCost.label} is the main budget swing on this page. Flights represent about {flightShare}% of the
+        estimate, while accommodation represents about {hotelShare}%. After flights, the plan leaves roughly{" "}
+        <span className="font-semibold text-slate-950">{formatMoney(dailyAfterFlights, "CAD")} per day</span> for
+        stays, meals, local transport, activities, and buffer.
+      </p>
+    </div>
+  );
+}
+
+function BudgetStyleComparison({ page }: { page: StrongSeoPage }) {
+  const rows = [
+    {
+      style: "Budget",
+      estimate: page.styleEstimates.budget,
+      detail: "Simpler stays, more casual meals, fewer paid tours, and tighter date flexibility.",
+      value: "budget",
+    },
+    {
+      style: "Mid-range",
+      estimate: page.styleEstimates.midRange,
+      detail: "The current baseline for balanced comfort, practical hotel choices, and selective activities.",
+      value: "midRange",
+    },
+    {
+      style: "Comfort",
+      estimate: page.styleEstimates.luxury,
+      detail: "Better hotel location, more restaurants, more paid experiences, and a larger margin for convenience.",
+      value: "luxury",
+    },
+  ];
+
+  return (
+    <section className="overflow-hidden rounded-[24px] border border-slate-200 bg-white">
+      <div className="border-b border-slate-200 p-6">
+        <div className="flex items-start gap-3">
+          <TrendingDown className="mt-1 size-5 text-[#0B1D34]" />
+          <div>
+            <h2 className="text-2xl font-semibold">Can this trip be done cheaper?</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              Use the style comparison as a planning range before checking live flights and lodging.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-slate-200 text-sm">
+          <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <tr>
+              <th scope="col" className="px-6 py-3">
+                Style
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Estimate
+              </th>
+              <th scope="col" className="px-6 py-3">
+                What changes
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 bg-white">
+            {rows.map((row) => (
+              <tr key={row.style}>
+                <td className="whitespace-nowrap px-6 py-4 font-semibold text-slate-950">
+                  {row.style}
+                  {row.value === page.travelStyle ? (
+                    <span className="ml-2 rounded-full bg-[#14B8A6]/10 px-2 py-1 text-xs text-[#0B1D34]">
+                      Current
+                    </span>
+                  ) : null}
+                </td>
+                <td className="whitespace-nowrap px-6 py-4 font-semibold text-[#0B1D34]">
+                  {formatMoney(row.estimate, "CAD")}
+                </td>
+                <td className="min-w-[260px] px-6 py-4 leading-6 text-slate-600">{row.detail}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+
+function OriginDepartureNotes({
+  page,
+  destinationLabel,
+}: {
+  page: StrongSeoPage;
+  destinationLabel: string;
+}) {
+  return (
+    <ContentSection title={`${page.origin.city} departure notes`}>
+      <div className="flex gap-3">
+        <Plane className="mt-1 size-5 shrink-0 text-[#0B1D34]" />
+        <div>
+          <p>
+            Build the search around total trip time, baggage rules, and connection quality, not only the lowest fare
+            from {page.origin.code}. A cheaper route to {destinationLabel} can become more expensive if it adds an
+            overnight connection, extra bags, paid seat selection, or a difficult airport transfer.
+          </p>
+          <p className="mt-3">
+            If the estimate is close to your limit, compare a few weekday departures and return dates before changing
+            the destination. For long-haul or one-stop routes, flight timing can move the total more than small daily
+            savings once you arrive.
+          </p>
+        </div>
+      </div>
+    </ContentSection>
+  );
+}
+
+function MiniItinerary({
+  page,
+  destinationLabel,
+}: {
+  page: StrongSeoPage;
+  destinationLabel: string;
+}) {
+  const itineraryItems = getMiniItineraryItems(page, destinationLabel);
+
+  return (
+    <ContentSection title={`${page.durationDays}-day budget itinerary shape`}>
+      <div className="grid gap-3">
+        {itineraryItems.map((item) => (
+          <div key={item.label} className="rounded-2xl bg-slate-50 p-4">
+            <div className="flex items-start gap-3">
+              <MapPinned className="mt-1 size-5 shrink-0 text-[#0B1D34]" />
+              <div>
+                <h3 className="font-semibold text-slate-950">{item.label}</h3>
+                <p className="mt-1">{item.body}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <p className="mt-4">
+        This is not a fixed itinerary. It shows how to protect the budget by grouping neighborhoods, day trips, and
+        paid activities instead of stacking expensive experiences every day.
+      </p>
+    </ContentSection>
+  );
+}
+
 function CostMetric({
   icon: Icon,
   label,
@@ -258,6 +495,124 @@ function CostMetric({
       <dd className="mt-1 text-xl font-semibold text-slate-950">{formatMoney(value, "CAD")}</dd>
     </div>
   );
+}
+
+function getLargestCostCategory(page: StrongSeoPage) {
+  const categories = [
+    { label: "Flight", value: page.estimate.breakdown.flight },
+    { label: "Hotel", value: page.estimate.breakdown.hotel },
+    { label: "Food", value: page.estimate.breakdown.food },
+    { label: "Activities", value: page.estimate.breakdown.activities },
+    { label: "Local transport", value: page.estimate.breakdown.localTransport },
+  ];
+
+  return categories.toSorted((a, b) => b.value - a.value)[0];
+}
+
+function getCostShare(value: number, total: number) {
+  if (total <= 0) {
+    return 0;
+  }
+
+  return Math.round((value / total) * 100);
+}
+
+function getMiniItineraryItems(page: StrongSeoPage, destinationLabel: string) {
+  const preview = page.destination.itineraryPreview;
+  const coreOne = preview[0] ?? `${destinationLabel} neighborhoods, food stops, and orientation walks`;
+  const coreTwo = preview[1] ?? `A focused day trip or secondary area near ${destinationLabel}`;
+  const coreThree = preview[2] ?? "A slower final day with flexible meals, shopping, and airport timing";
+
+  if (page.durationDays <= 7) {
+    return [
+      {
+        label: "Day 1",
+        body: `Arrive from ${page.origin.city}, keep the first transfer simple, and choose a low-pressure meal near the stay.`,
+      },
+      {
+        label: "Days 2-3",
+        body: coreOne,
+      },
+      {
+        label: "Days 4-5",
+        body: coreTwo,
+      },
+      {
+        label: `Days 6-${page.durationDays}`,
+        body: coreThree,
+      },
+    ];
+  }
+
+  return [
+    {
+      label: "Day 1",
+      body: `Arrive from ${page.origin.city}, settle in, and keep the first evening flexible after the flight.`,
+    },
+    {
+      label: "Days 2-4",
+      body: coreOne,
+    },
+    {
+      label: "Days 5-7",
+      body: coreTwo,
+    },
+    {
+      label: `Days 8-${page.durationDays}`,
+      body: coreThree,
+    },
+  ];
+}
+
+function getExpandedFaq(page: StrongSeoPage, destinationLabel: string) {
+  const afterFlights = Math.max(0, page.estimate.total - page.estimate.breakdown.flight);
+  const dailyAfterFlights = Math.round(afterFlights / page.durationDays);
+  const cheapestStyle = page.styleEstimates.budget;
+  const isOriginDestination = page.kind === "origin-destination";
+  const additionalFaq = [
+    {
+      question: `How much should I budget per day in ${destinationLabel} after flights?`,
+      answer: `After the flight estimate, this page leaves about ${formatMoney(dailyAfterFlights, "CAD")} per day for accommodation, food, local transport, activities, and buffer. That daily amount assumes ${getTravelStyleLabel(page.travelStyle).toLowerCase()} choices and should be checked against live hotel rates before booking.`,
+    },
+    {
+      question: `Can I lower this ${destinationLabel} trip estimate?`,
+      answer: `Usually, yes. The budget-style version is estimated around ${formatMoney(cheapestStyle, "CAD")} for the same duration and origin. The easiest levers are simpler accommodation, fewer paid tours, flexible dates, and keeping the itinerary focused.`,
+    },
+    {
+      question: `What costs are not guaranteed in this estimate?`,
+      answer:
+        "The estimate is not a live booking quote. It can change with airfare, lodging availability, baggage, exchange rates, major events, airport transfers, card fees, travel insurance, and traveler-specific choices.",
+    },
+  ];
+
+  if (!isOriginDestination) {
+    return [...page.faq, ...additionalFaq];
+  }
+
+  return [
+    ...page.faq,
+    {
+      question: `Is ${page.durationDays} days enough for ${destinationLabel} from ${page.origin.city}?`,
+      answer: `${page.durationDays} days can work if the route is focused and the first day accounts for arrival timing. If flights from ${page.origin.code} are expensive, adding days may improve value per day but will still raise the total budget.`,
+    },
+    {
+      question: `Should I compare other departure options near ${page.origin.city}?`,
+      answer: `It can be worth checking if another airport meaningfully improves price or schedule, but include transfer time, parking, baggage, and overnight costs before treating the alternate airport as cheaper.`,
+    },
+    ...additionalFaq,
+  ];
+}
+
+function getTravelStyleLabel(style: StrongSeoPage["travelStyle"]) {
+  if (style === "budget") {
+    return "Budget";
+  }
+
+  if (style === "luxury") {
+    return "Comfort";
+  }
+
+  return "Mid-range";
 }
 
 function ContentSection({ title, children }: { title: string; children: React.ReactNode }) {

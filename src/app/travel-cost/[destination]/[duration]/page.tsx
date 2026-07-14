@@ -14,6 +14,7 @@ import {
   getDurationSeoStaticParams,
   getTravelBudgetPath,
   getTravelCostDurationPath,
+  isIndexableDurationSeoPage,
 } from "@/lib/programmatic/seo-pages";
 import { buildAffiliateContextFromDestination } from "@/lib/affiliates/destinations";
 import { getCityCountryLabel } from "@/lib/data/unified-destinations";
@@ -49,7 +50,7 @@ export async function generateMetadata({ params }: DurationCostPageProps): Promi
     path: getTravelCostDurationPath(page.destination.slug, page.durationDays),
     image: page.destination.image,
     imageAlt: `${destinationLabel} ${page.durationDays}-day travel cost`,
-    noIndex: true,
+    noIndex: !isIndexableDurationSeoPage(page.destination.slug, page.durationDays),
   });
 }
 
