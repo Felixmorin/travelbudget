@@ -26,6 +26,8 @@ describe("destinations data", () => {
       const url = new URL(link.href);
 
       expect(url.hostname).toContain("getyourguide.com");
+      expect(url.pathname).toBe("/s/");
+      expect(url.searchParams.get("q")).toBeTruthy();
       expect(url.searchParams.get("partner_id")).toBe("test-central");
     }
   });

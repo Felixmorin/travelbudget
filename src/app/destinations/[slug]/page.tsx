@@ -32,7 +32,6 @@ import { EstimateTransparency } from "@/components/site/estimate-transparency";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { buildAffiliateLink } from "@/lib/affiliate/build-affiliate-link";
 import { buildAffiliateContextFromDestination } from "@/lib/affiliates/destinations";
 import {
   type Destination,
@@ -114,9 +113,6 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
   const defaultOriginPricing = getOriginPricing(destination, "YUL");
   const dailyMidRangeTotal = getDailyCostTotal(destination, "midRange");
   const activityLink = destination.affiliateLinks.find((link) => link.type === "Activities");
-  const builtActivityLink = activityLink
-    ? buildAffiliateLink({ destination, link: activityLink })
-    : undefined;
   const activityGuide = getDestinationActivityGuide(destination);
   const typicalEstimate = getDestinationTripEstimate(destination, {
     days: 10,
@@ -317,7 +313,7 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
             </Card>
 
             <DayByDayItinerary
-              activityHref={builtActivityLink?.href}
+              activityHref={activityLink?.href}
               destination={destination}
             />
 

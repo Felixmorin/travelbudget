@@ -1,8 +1,5 @@
-⨯ Another next dev server is already running.
-
-- Local:        http://localhost:3002
-- PID:          14752
-- Dir:          C:\Users\Felix\Documents\travelbudget
+[seo] Duplicate indexable title detected for /destinations/mexico-city: "Mexico City, Mexico Travel Budget: Daily & Total Trip Cost"
+\Felix\Documents\travelbudget
 - Log:          .next\dev\logs\next-development.log
 
 Run taskkill /PID 14752 /F to stop it.

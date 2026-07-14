@@ -7,6 +7,7 @@ import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { buildGetYourGuideSearchUrl } from "@/lib/affiliates/buildAffiliateUrl";
 
 export type DayByDayItineraryDestination = {
   slug: string;
@@ -162,6 +163,8 @@ export function DayByDayItinerary({
                             <Button asChild size="sm" className="rounded-lg bg-orange-500 text-white hover:bg-orange-600">
                               <TrackedLink
                                 href={buildSpecificActivityHref({
+                                  activityTitle: activity.title,
+                                  destinationLabel,
                                   fallbackHref: activityHref,
                                 })}
                                 eventName="affiliate_link_clicked"
@@ -171,6 +174,8 @@ export function DayByDayItinerary({
                                   destinationName: destinationLabel,
                                   destinationSlug: destination.slug,
                                   href: buildSpecificActivityHref({
+                                    activityTitle: activity.title,
+                                    destinationLabel,
                                     fallbackHref: activityHref,
                                   }),
                                   label: activity.title,
@@ -336,8 +341,19 @@ function activity(title: string, description: string, duration: string): DayActi
   return { title, description, duration };
 }
 
-function buildSpecificActivityHref({ fallbackHref }: { fallbackHref: string }) {
-  return fallbackHref;
+function buildSpecificActivityHref({
+  activityTitle,
+  destinationLabel,
+  fallbackHref,
+}: {
+  activityTitle: string;
+  destinationLabel: string;
+  fallbackHref: string;
+}) {
+  return buildGetYourGuideSearchUrl({
+    baseUrl: fallbackHref,
+    query: `${destinationLabel} ${activityTitle}`,
+  });
 }
 
 function day(title: string, description: string, pace: string): Omit<ItineraryDay, "day"> {

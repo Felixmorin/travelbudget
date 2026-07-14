@@ -34,8 +34,12 @@ export function buildBookingUrl(context: AffiliateContext) {
 }
 
 export function buildGetYourGuideUrl(context: AffiliateContext) {
-  void context;
-  return getConfiguredGenericUrl("getyourguide");
+  const baseUrl = getConfiguredGenericUrl("getyourguide");
+  const query = [context.destinationCity, context.destinationCountry]
+    .filter(Boolean)
+    .join(" ");
+
+  return buildGetYourGuideSearchUrl({ baseUrl, query });
 }
 
 export function buildAiraloUrl(context: AffiliateContext) {
@@ -86,5 +90,40 @@ function getConfiguredGenericUrl(provider: Exclude<AffiliateProvider, "aviasales
     return new URL(baseUrl).toString();
   } catch {
     return "";
+  }
+}
+
+export function buildGetYourGuideSearchUrl({
+  baseUrl,
+  query,
+}: {
+  baseUrl: string;
+  query?: string;
+}) {
+  const searchQuery = query?.trim();
+
+  if (!baseUrl || !searchQuery) {
+    return baseUrl;
+  }
+
+  try {
+    const sourceUrl = new URL(baseUrl);
+
+    if (!sourceUrl.hostname.toLowerCase().endsWith("getyourguide.com")) {
+      return baseUrl;
+    }
+
+    const searchUrl = new URL("/s/", sourceUrl.origin);
+    searchUrl.searchParams.set("q", searchQuery);
+
+    for (const [key, value] of sourceUrl.searchParams.entries()) {
+      if (key !== "q") {
+        searchUrl.searchParams.set(key, value);
+      }
+    }
+
+    return searchUrl.toString();
+  } catch {
+    return baseUrl;
   }
 }

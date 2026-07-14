@@ -183,7 +183,34 @@ describe("affiliate recommendations", () => {
     const { getAffiliateForCategory } = await import("@/lib/affiliates/getAffiliateRecommendation");
 
     expect(getAffiliateForCategory("hotels", lisbonContext)?.url).toBe(configuredEnv.NEXT_PUBLIC_BOOKING_AFFILIATE_URL);
-    expect(getAffiliateForCategory("activities", lisbonContext)?.url).toBe(configuredEnv.NEXT_PUBLIC_GETYOURGUIDE_AFFILIATE_URL);
+  });
+
+  it("generates GetYourGuide destination searches while preserving affiliate parameters", async () => {
+    const { getAffiliateForCategory } = await import("@/lib/affiliates/getAffiliateRecommendation");
+
+    const url = new URL(getAffiliateForCategory("activities", lisbonContext)?.url ?? "");
+
+    expect(url.hostname).toContain("getyourguide.com");
+    expect(url.pathname).toBe("/s/");
+    expect(url.searchParams.get("q")).toBe("Lisbon Portugal");
+    expect(url.searchParams.get("partner_id")).toBe("gyg-test");
+  });
+
+  it("builds GetYourGuide activity searches from a specific activity affiliate URL", async () => {
+    const { buildGetYourGuideSearchUrl } = await import("@/lib/affiliates/buildAffiliateUrl");
+
+    const url = new URL(
+      buildGetYourGuideSearchUrl({
+        baseUrl: "https://www.getyourguide.com/seoul-l197/seoul-dmz-tour-with-north-korea-experience-hall-365-days-t142011/?partner_id=4ZWE6DU&utm_medium=online_publisher",
+        query: "Seoul DMZ tour",
+      })
+    );
+
+    expect(url.hostname).toBe("www.getyourguide.com");
+    expect(url.pathname).toBe("/s/");
+    expect(url.searchParams.get("q")).toBe("Seoul DMZ tour");
+    expect(url.searchParams.get("partner_id")).toBe("4ZWE6DU");
+    expect(url.searchParams.get("utm_medium")).toBe("online_publisher");
   });
 
   it("does not read server-only secrets for client-side affiliate URLs", async () => {
