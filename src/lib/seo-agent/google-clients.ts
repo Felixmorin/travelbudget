@@ -46,7 +46,7 @@ export async function fetchSearchConsoleRows(dateRange: DateRange): Promise<Sear
   );
 
   if (!response.ok) {
-    throw new Error(`Search Console API request failed with status ${response.status}.`);
+    throw new Error(`Search Console API request failed with status ${response.status}: ${await getGoogleErrorMessage(response)}`);
   }
 
   const body = (await response.json()) as { rows?: SearchConsoleApiRow[] };
@@ -84,7 +84,7 @@ export async function fetchAnalyticsLandingPageRows(dateRange: DateRange): Promi
   });
 
   if (!response.ok) {
-    throw new Error(`GA4 Data API request failed with status ${response.status}.`);
+    throw new Error(`GA4 Data API request failed with status ${response.status}: ${await getGoogleErrorMessage(response)}`);
   }
 
   const body = (await response.json()) as AnalyticsRunReportResponse;
@@ -108,4 +108,13 @@ function normalizeAnalyticsPath(value: string | undefined) {
 function parseMetric(value: string | undefined) {
   const metric = Number(value);
   return Number.isFinite(metric) ? metric : 0;
+}
+
+async function getGoogleErrorMessage(response: Response) {
+  try {
+    const body = (await response.json()) as { error?: { message?: unknown } };
+    return typeof body.error?.message === "string" ? body.error.message : response.statusText;
+  } catch {
+    return response.statusText;
+  }
 }

@@ -34,6 +34,14 @@ describe("createSeoAgentReport", () => {
           ctr: 0.045,
           position: 6,
         },
+        {
+          page: "https://gobybudget.com/results",
+          query: "best trips from halifax under 1200",
+          clicks: 1,
+          impressions: 180,
+          ctr: 0.005,
+          position: 18,
+        },
       ],
       previousSearchRows: [
         {
@@ -60,5 +68,7 @@ describe("createSeoAgentReport", () => {
       expect.arrayContaining(["ctr", "ranking", "decline", "engagement"])
     );
     expect(report.opportunities[0]?.impactScore).toBeGreaterThanOrEqual(report.opportunities.at(-1)?.impactScore ?? 0);
+    expect(report.internalLinkSuggestions.length).toBeGreaterThan(0);
+    expect(report.programmaticPageIdeas.length).toBeGreaterThan(0);
   });
 });

@@ -31,6 +31,28 @@ export type SeoOpportunity = {
   recommendation: string;
 };
 
+export type InternalLinkSuggestion = {
+  id: string;
+  priority: "high" | "medium" | "low";
+  sourcePage: string;
+  targetPage: string;
+  anchorText: string;
+  reason: string;
+  impactScore: number;
+};
+
+export type ProgrammaticPageIdea = {
+  id: string;
+  priority: "high" | "medium" | "low";
+  suggestedPath: string;
+  title: string;
+  targetQuery: string;
+  pageType: "origin-budget" | "destination-budget" | "duration" | "comparison" | "guide";
+  evidence: string;
+  recommendation: string;
+  impactScore: number;
+};
+
 export type SeoAgentReport = {
   generatedAt: string;
   dateRange: DateRange;
@@ -40,6 +62,10 @@ export type SeoAgentReport = {
     highPriority: number;
     searchRowsAnalyzed: number;
     analyticsRowsAnalyzed: number;
+    internalLinkSuggestions: number;
+    programmaticPageIdeas: number;
   };
   opportunities: SeoOpportunity[];
+  internalLinkSuggestions: InternalLinkSuggestion[];
+  programmaticPageIdeas: ProgrammaticPageIdea[];
 };

@@ -37,7 +37,7 @@ export function EstimateTransparency({
   compact = false,
 }: EstimateTransparencyProps) {
   return (
-    <section className={`rounded-2xl border border-amber-200 bg-amber-50/80 ${compact ? "p-4" : "p-5"}`}>
+    <section className={compact ? "py-2" : "py-3"}>
       <div className="flex items-start gap-3">
         <AlertTriangle className="mt-0.5 size-5 shrink-0 text-amber-700" />
         <div className="min-w-0">

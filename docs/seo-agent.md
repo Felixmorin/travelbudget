@@ -2,6 +2,24 @@
 
 The private SEO agent reads Google Search Console and GA4, then returns prioritized content and SEO recommendations.
 
+Admin interface:
+
+```txt
+/admin/seo-agent
+```
+
+Workers endpoint:
+
+```txt
+POST /api/admin/seo-workers
+```
+
+Scheduled workers endpoint:
+
+```txt
+GET /api/cron/seo-workers
+```
+
 Endpoint:
 
 ```bash
@@ -26,6 +44,7 @@ GOOGLE_SERVICE_ACCOUNT_EMAIL=
 GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY=
 GOOGLE_SEARCH_CONSOLE_SITE_URL=https://gobybudget.com/
 GA4_PROPERTY_ID=
+CRON_SECRET=
 ```
 
 Keep `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY` server-only. It can be pasted with escaped newlines:
@@ -48,3 +67,18 @@ The agent currently flags:
 - ranking opportunities in positions 8-20
 - organic click declines versus the previous period
 - landing pages with low GA4 engagement
+- internal links to add from strong hubs/pages to target pages
+- programmatic SEO page ideas from GSC queries and near-indexable registry pages
+
+## AI workers
+
+The worker layer turns the report into proposed work items:
+
+- SEO / GA4 worker
+- Internal linking worker
+- Programmatic SEO worker
+- Conversion worker
+
+Workers propose tasks. They do not directly edit content, code, links, or production pages without human review.
+
+`vercel.json` schedules `/api/cron/seo-workers` every Monday at 13:00 UTC. Set `CRON_SECRET` in production so Vercel Cron can authorize the request.

@@ -1,6 +1,7 @@
-import { getDefaultSeoDateRanges } from "@/lib/seo-agent/date-ranges";
 import { getErrorMessage, logServerEvent } from "@/lib/monitoring/server-logger";
+import { getDefaultSeoDateRanges } from "@/lib/seo-agent/date-ranges";
 import { parseSeoDateRange, runSeoAgent } from "@/lib/seo-agent/run-agent";
+import { createWorkerRunReport } from "@/lib/seo-agent/workers";
 import { enforceRateLimit, getRequestGuardResponse, readJsonBody } from "@/lib/security/request-guards";
 
 export const dynamic = "force-dynamic";
@@ -16,17 +17,17 @@ export async function POST(request: Request) {
       return unauthorizedResponse;
     }
 
-    enforceRateLimit(request, "seo-agent", {
+    enforceRateLimit(request, "seo-workers", {
       limit: 6,
       windowMs: 60_000,
     });
 
-    const report = await runSeoAgent(await getRequestedRanges(request));
+    const seoReport = await runSeoAgent(await getRequestedRanges(request));
 
     return Response.json(
       {
         ok: true,
-        report,
+        workerRun: createWorkerRunReport(seoReport, "manual"),
       },
       {
         headers: {
@@ -41,7 +42,7 @@ export async function POST(request: Request) {
       return guardResponse;
     }
 
-    await logServerEvent("warn", "SEO agent request failed.", {
+    await logServerEvent("warn", "SEO workers request failed.", {
       error: getErrorMessage(error),
     }, "system");
 
