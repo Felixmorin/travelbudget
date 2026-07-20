@@ -38,7 +38,18 @@ describe("affiliate domain whitelist", () => {
     });
 
     expect(builtLink.href).toContain("/go/general/flights?");
-    expect(decodeTrackedHref(builtLink.href)).toBe("https://www.skyscanner.ca/transport/flights/");
+    expect(decodeTrackedHref(builtLink.href ?? "")).toBe("https://www.skyscanner.ca/transport/flights/");
+  });
+
+  it("does not create fallback links for explicit affiliate placeholders", () => {
+    const builtLink = buildAffiliateLink({
+      link: {
+        ...baseLink,
+        href: "[[COLLE_ICI_TON_LIEN_AVIASALES]]",
+      },
+    });
+
+    expect(builtLink.href).toBeNull();
   });
 
   it("supports additional configured partner domains", () => {

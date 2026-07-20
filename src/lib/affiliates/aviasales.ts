@@ -1,4 +1,5 @@
 import { getIataForLocation } from "@/lib/affiliates/iata";
+import { getConfiguredAffiliateUrl, isAffiliatePlaceholderValue } from "@/lib/affiliate/configured-url";
 
 export type AviasalesCabinClass = "economy" | "premium_economy" | "business" | "first";
 
@@ -27,9 +28,10 @@ export type NormalizedAviasalesSearchParams = {
 };
 
 export const AVIASALES_FALLBACK_URL =
-  process.env.NEXT_PUBLIC_AVIASALES_AFFILIATE_URL ??
-  process.env.NEXT_PUBLIC_AVIASALES_FALLBACK_URL ??
-  "https://aviasales.tpx.lu/59DXH0n1";
+  getConfiguredAffiliateUrl(
+    process.env.NEXT_PUBLIC_AVIASALES_AFFILIATE_URL,
+    getConfiguredAffiliateUrl(process.env.NEXT_PUBLIC_AVIASALES_FALLBACK_URL, "https://aviasales.tpx.lu/59DXH0n1")
+  ) ?? "";
 
 const AVIASALES_SEARCH_URL = "https://search.aviasales.com/flights/";
 const IATA_PATTERN = /^[A-Z]{3}$/;
@@ -152,11 +154,9 @@ export function normalizeIata(value: string | null | undefined) {
 }
 
 function getTravelpayoutsMarker() {
-  return (
-    process.env.NEXT_PUBLIC_TRAVELPAYOUTS_MARKER?.trim() ||
-    process.env.NEXT_PUBLIC_AVIASALES_MARKER?.trim() ||
-    undefined
-  );
+  const marker = process.env.NEXT_PUBLIC_TRAVELPAYOUTS_MARKER?.trim() || process.env.NEXT_PUBLIC_AVIASALES_MARKER?.trim();
+
+  return marker && !isAffiliatePlaceholderValue(marker) ? marker : undefined;
 }
 
 function normalizeAdults(value: number | null | undefined) {

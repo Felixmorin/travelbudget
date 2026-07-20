@@ -130,6 +130,20 @@ describe("affiliate recommendations", () => {
     expect(getAffiliateForCategory("hotels", lisbonContext)).toBeNull();
   });
 
+  it("hides placeholder partner links while preserving configured partners", async () => {
+    vi.resetModules();
+    vi.unstubAllEnvs();
+    vi.stubEnv("NEXT_PUBLIC_BOOKING_AFFILIATE_URL", "[[COLLE_ICI_TON_LIEN_BOOKING_COM]]");
+    vi.stubEnv("NEXT_PUBLIC_GETYOURGUIDE_AFFILIATE_URL", configuredEnv.NEXT_PUBLIC_GETYOURGUIDE_AFFILIATE_URL);
+    const { getAffiliateForCategory, getAffiliateRecommendations } = await import("@/lib/affiliates/getAffiliateRecommendation");
+
+    expect(getAffiliateForCategory("hotels", lisbonContext)).toBeNull();
+    expect(getAffiliateForCategory("activities", lisbonContext)?.url).toContain("partner_id=gyg-test");
+    expect(getAffiliateRecommendations(lisbonContext, { categories: ["hotels", "activities"] }).map((item) => item.category)).toEqual([
+      "activities",
+    ]);
+  });
+
   it("deduplicates categories and sorts priorities", async () => {
     const { getAffiliateRecommendations } = await import("@/lib/affiliates/getAffiliateRecommendation");
 

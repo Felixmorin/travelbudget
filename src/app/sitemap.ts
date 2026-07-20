@@ -3,6 +3,11 @@ import type { MetadataRoute } from "next";
 import { destinations } from "@/lib/data/destinations";
 import { cityDestinations } from "@/lib/data/destination-hub";
 import { longTailGuides } from "@/lib/data/guides";
+import {
+  destinationBudgetTiers,
+  destinationsByBudgetPath,
+  getDestinationBudgetPath,
+} from "@/lib/programmatic/destinations-by-budget";
 import { strongSeoPages } from "@/lib/programmatic/strong-seo-pages";
 import { getIndexableDepartureCityPages } from "@/lib/programmatic/departure-pages";
 import { getIndexableSeoPages } from "@/lib/programmatic/seo-registry";
@@ -26,6 +31,11 @@ const staticRoutes: MetadataRoute.Sitemap = [
     priority: 0.9,
   },
   {
+    url: createCanonicalUrl("/where-can-i-travel-with-2000"),
+    changeFrequency: "monthly",
+    priority: 0.86,
+  },
+  {
     url: createCanonicalUrl("/travel-budget"),
     changeFrequency: "monthly",
     priority: 0.92,
@@ -34,6 +44,11 @@ const staticRoutes: MetadataRoute.Sitemap = [
     url: createCanonicalUrl("/destinations"),
     changeFrequency: "weekly",
     priority: 0.9,
+  },
+  {
+    url: createCanonicalUrl(destinationsByBudgetPath),
+    changeFrequency: "weekly",
+    priority: 0.94,
   },
   {
     url: createCanonicalUrl("/about"),
@@ -120,9 +135,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "monthly" as const,
     priority: page.origin.seoPriority,
   }));
+  const destinationsByBudgetRoutes = destinationBudgetTiers.map((tier) => ({
+    url: createCanonicalUrl(getDestinationBudgetPath(tier)),
+    changeFrequency: "monthly" as const,
+    priority: 0.88,
+  }));
 
   return uniqueSitemapUrls([
     ...staticRoutes,
+    ...destinationsByBudgetRoutes,
     ...destinationRoutes,
     ...cityDestinationRoutes,
     ...guideRoutes,

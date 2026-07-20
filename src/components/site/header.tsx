@@ -12,6 +12,7 @@ import {
   MapPinned,
   Menu,
   PlaneTakeoff,
+  WalletCards,
   X,
   type LucideIcon,
 } from "lucide-react";
@@ -32,6 +33,7 @@ const navItems: {
   description: string;
 }[] = [
   { labelKey: "planTrip", href: "/", activePaths: ["/"], icon: Compass, description: "Start with your budget and compare trip ideas." },
+  { labelKey: "destinationsByBudget", href: "/destinations-by-budget", activePaths: ["/destinations-by-budget"], icon: WalletCards, description: "Find affordable destinations by budget, origin, duration, and style." },
   { labelKey: "destinations", href: "/destinations", activePaths: ["/destinations"], icon: MapPinned, description: "Browse destination costs and travel styles." },
   { labelKey: "tools", href: "/tools", activePaths: ["/tools"], icon: Calculator, description: "Use calculators and planning helpers." },
   { labelKey: "travelExtras", href: "/travel-extras", activePaths: ["/travel-extras"], icon: Luggage, description: "Plan buffers, eSIMs, insurance, and add-ons." },

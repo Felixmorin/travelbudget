@@ -1,8 +1,9 @@
 import type { AffiliateLink, Destination } from "@/lib/data/destinations";
 import { isAllowedAffiliateUrl } from "@/lib/affiliate/allowed-domains";
+import { isAffiliatePlaceholderValue } from "@/lib/affiliate/configured-url";
 
 export type BuiltAffiliateLink = {
-  href: string;
+  href: string | null;
   isExternal: boolean;
   rel?: string;
   target?: string;
@@ -30,6 +31,16 @@ export function buildAffiliateLink({
   link: AffiliateLink;
 }): BuiltAffiliateLink {
   const href = getSafeHref(link.href, destination?.slug, link.type);
+  if (!href) {
+    return {
+      href: null,
+      isExternal: false,
+      provider: link.provider,
+      partner: link.partner ?? link.provider,
+      placement: link.placement,
+    };
+  }
+
   const isExternal = link.isExternal ?? isExternalHref(href);
   const trackedHref = isExternal ? buildInternalTrackingHref({ destination, href, isExternal, link }) : href;
 
@@ -46,6 +57,10 @@ export function buildAffiliateLink({
 
 function getSafeHref(href: string | null | undefined, destinationSlug: string | undefined, type: AffiliateLink["type"]) {
   const trimmedHref = href?.trim();
+
+  if (isAffiliatePlaceholderValue(trimmedHref)) {
+    return null;
+  }
 
   if (trimmedHref?.startsWith("/")) {
     return trimmedHref;

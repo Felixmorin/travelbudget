@@ -5,6 +5,7 @@ import { TrackedLink } from "@/components/analytics/tracked-link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { buildAffiliateLink } from "@/lib/affiliate/build-affiliate-link";
+import { isAffiliatePlaceholderValue } from "@/lib/affiliate/configured-url";
 import { getAffiliatePlaceholder } from "@/lib/affiliate/links";
 import type { AffiliateLink } from "@/lib/data/destinations";
 
@@ -30,8 +31,16 @@ export function AffiliateCard({
   };
 }) {
   const Icon = icons[link.type] ?? BadgeCheck;
+  if (!link.href?.trim() || isAffiliatePlaceholderValue(link.href)) {
+    return null;
+  }
+
   const placeholder = getAffiliatePlaceholder(link);
   const builtLink = buildAffiliateLink({ destination, link: { ...link, href: placeholder.href ?? link.href } });
+  if (!builtLink.href) {
+    return null;
+  }
+
   const ctaLocation = link.placement ?? "destination_affiliate_card";
   const page = destination?.slug ? `/destinations/${destination.slug}` : "affiliate_card";
   const affiliatePartner = builtLink.partner;
@@ -66,24 +75,18 @@ export function AffiliateCard({
         </div>
         <div className="flex items-center justify-between">
           <span className="text-sm font-semibold text-slate-500">{placeholder.priceHint}</span>
-          {builtLink.href ? (
-            <Button asChild size="sm" variant="outline" className="rounded-full">
-              <TrackedLink
-                href={builtLink.href}
-                eventName="affiliate_link_clicked"
-                eventProperties={analyticsProperties}
-                rel={builtLink.rel}
-                target={builtLink.target}
-              >
-                {placeholder.actionLabel}
-                <ArrowRight className="ml-1 size-3" />
-              </TrackedLink>
-            </Button>
-          ) : (
-            <Button size="sm" variant="outline" className="rounded-full" disabled>
+          <Button asChild size="sm" variant="outline" className="rounded-full">
+            <TrackedLink
+              href={builtLink.href}
+              eventName="affiliate_link_clicked"
+              eventProperties={analyticsProperties}
+              rel={builtLink.rel}
+              target={builtLink.target}
+            >
               {placeholder.actionLabel}
-            </Button>
-          )}
+              <ArrowRight className="ml-1 size-3" />
+            </TrackedLink>
+          </Button>
         </div>
       </CardContent>
     </Card>

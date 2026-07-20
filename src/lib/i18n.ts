@@ -11,6 +11,7 @@ export const translations = {
   en: {
     nav: {
       planTrip: "Plan trip",
+      destinationsByBudget: "Destinations by budget",
       destinations: "Destinations",
       tools: "Tools",
       travelExtras: "Travel extras",
@@ -161,6 +162,7 @@ export const translations = {
   fr: {
     nav: {
       planTrip: "Planifier",
+      destinationsByBudget: "Destinations par budget",
       destinations: "Destinations",
       tools: "Outils",
       travelExtras: "Extras voyage",

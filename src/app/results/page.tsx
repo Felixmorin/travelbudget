@@ -87,7 +87,8 @@ export type ResultDestination = {
   affiliateLinks: ResultAffiliateLink[];
 };
 
-export type ResultAffiliateLink = BuiltAffiliateLink & {
+export type ResultAffiliateLink = Omit<BuiltAffiliateLink, "href"> & {
+  href: string;
   actionLabel: string;
   title: string;
   type: AffiliateLink["type"];
@@ -897,16 +898,25 @@ function toResultDestination(
     bestSeason: destination.bestMonths.slice(0, 4).join(", "),
     summary: recommendation.reasons[0] ?? destination.shortDescription,
     lastUpdated: destination.lastUpdated,
-    affiliateLinks: destination.affiliateLinks.map((link) => toResultAffiliateLink(destination, link)),
+    affiliateLinks: destination.affiliateLinks
+      .map((link) => toResultAffiliateLink(destination, link))
+      .filter((link): link is ResultAffiliateLink => Boolean(link)),
   };
 }
 
 function toResultAffiliateLink(
   destination: DestinationRecommendation["destination"],
   link: AffiliateLink
-): ResultAffiliateLink {
+): ResultAffiliateLink | null {
+  const builtLink = buildAffiliateLink({ destination, link });
+
+  if (!builtLink.href) {
+    return null;
+  }
+
   return {
-    ...buildAffiliateLink({ destination, link }),
+    ...builtLink,
+    href: builtLink.href,
     actionLabel: getAffiliateActionLabel(link.type),
     title: link.title,
     type: link.type,
