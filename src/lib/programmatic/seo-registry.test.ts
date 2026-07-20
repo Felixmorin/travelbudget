@@ -30,6 +30,7 @@ describe("programmatic SEO registry", () => {
     const pages = getAllSeoRegistryPages();
     const indexablePages = getIndexableSeoPages();
     const budget3000 = pages.find((page) => page.path === getBudgetAmountPath(3000));
+    const montrealUnder1000 = pages.find((page) => page.path === "/from/montreal/trips-under-1000");
     const weakCollection = evaluateCollectionIndexability({
       itemCount: 1,
       hasCostBreakdown: false,
@@ -40,6 +41,7 @@ describe("programmatic SEO registry", () => {
 
     expect(indexablePages.length).toBeGreaterThan(0);
     expect(budget3000?.evaluation.status).toBe("index");
+    expect(montrealUnder1000?.evaluation.status).toBe("index");
     expect(weakCollection.status).toBe("noindex");
     expect(weakCollection.reasons.length).toBeGreaterThan(0);
   });

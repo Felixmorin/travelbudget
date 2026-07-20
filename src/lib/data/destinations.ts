@@ -213,7 +213,7 @@ const destinationSeeds: DestinationSeed[] = [
     name: "Guatemala",
     countryCode: "GT",
     image: "https://images.unsplash.com/photo-1697382803428-71666ed66c94?auto=format&fit=crop&w=1600&q=80",
-    flightAverage: { YUL: 720, YYZ: 700, YVR: 820 },
+    flightAverage: { YUL: 700, YYZ: 700, YVR: 820 },
     dailyTotals: { budget: 58, midRange: 96, luxury: 260 },
     score: 84,
     bestMonths: ["January", "February", "March", "November"],

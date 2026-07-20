@@ -60,6 +60,17 @@ const sortLabels: Record<SortOption, string> = {
   popular: "Most popular",
 };
 
+const priorityTravelBudgetLinks = [
+  { label: "Portugal travel budget", href: "/destinations/portugal/travel-budget" },
+  { label: "Japan travel budget", href: "/destinations/japan/travel-budget" },
+  { label: "France travel budget", href: "/destinations/france/travel-budget" },
+  { label: "Spain travel budget", href: "/destinations/spain/travel-budget" },
+  { label: "South Korea travel budget", href: "/destinations/south-korea/travel-budget" },
+  { label: "Mexico travel budget", href: "/destinations/mexico/travel-budget" },
+  { label: "Colombia travel budget", href: "/destinations/colombia/travel-budget" },
+  { label: "Italy travel budget", href: "/destinations/italy/travel-budget" },
+];
+
 export function DestinationsExplorer({ searchParams }: { searchParams: DestinationSearchParams }) {
   const [filters, setFilters] = useState<Filters>(() => getFiltersFromSearchParams(searchParams));
   const [sort, setSort] = useState<SortOption>(() => getSortFromSearchParams(searchParams));
@@ -903,6 +914,21 @@ function DestinationsSeoSection() {
                 {search.label}
               </Link>
             ))}
+          </div>
+          <div className="mt-8 border-t border-slate-200 pt-6">
+            <h3 className="text-base font-semibold text-[#191c1e]">Priority destination budgets</h3>
+            <div className="mt-4 grid gap-2 sm:grid-cols-2">
+              {priorityTravelBudgetLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="inline-flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-[#434655] transition hover:border-[#0B1D34] hover:text-[#0B1D34]"
+                >
+                  {link.label}
+                  <ArrowRight className="size-4 shrink-0" />
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </div>

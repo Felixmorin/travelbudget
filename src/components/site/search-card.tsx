@@ -2,7 +2,7 @@
 
 import { FormEvent, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Calendar, MapPin, Users, Wallet } from "lucide-react";
+import { ArrowRight, Calendar, MapPin, PlaneTakeoff, Users, Wallet } from "lucide-react";
 
 import { useTranslation } from "@/components/i18n/language-provider";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,7 @@ const months = [
 const travelerOptions = ["1", "2", "4"] as const;
 const dayOptions = ["7", "10", "14"] as const;
 const styles = ["budget", "balanced", "comfort"] as const;
+const departureCityOptions = [...activeDepartureCities].sort((a, b) => a.popularityRank - b.popularityRank);
 
 type Currency = (typeof currencies)[number];
 type Month = (typeof months)[number];
@@ -42,7 +43,7 @@ export function SearchCard() {
   const { t } = useTranslation();
   const [budget, setBudget] = useState("2400");
   const [currency, setCurrency] = useState<Currency>("CAD");
-  const [origin, setOrigin] = useState("Montreal");
+  const [origin, setOrigin] = useState("");
   const [days, setDays] = useState<DayOption>("10");
   const [month, setMonth] = useState<Month>("october");
   const [travelers, setTravelers] = useState<TravelerOption>("2");
@@ -108,9 +109,19 @@ export function SearchCard() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mx-auto w-full max-w-5xl rounded-[2rem] border border-slate-200 bg-white p-3 shadow-[0_22px_70px_-35px_rgba(15,23,42,0.45)]"
+      className="mx-auto w-full rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_22px_70px_-35px_rgba(15,23,42,0.45)] sm:p-6"
     >
-      <div className="grid gap-2 md:grid-cols-[1.05fr_0.95fr_0.85fr_0.8fr_auto] md:items-center">
+      <div className="mb-5 flex items-start justify-between gap-4">
+        <div>
+          <p className="text-sm font-bold text-slate-950">Plan your trip</p>
+          <p className="mt-1 text-sm leading-5 text-slate-500">Get destinations that match your real total budget.</p>
+        </div>
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-500">
+          <PlaneTakeoff className="size-5" />
+        </span>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2">
         <SearchField label={t.search.budget} icon={<Wallet className="size-5" />}>
               <Input
                 value={budget}
@@ -123,26 +134,29 @@ export function SearchCard() {
                 min={100}
                 max={250000}
                 aria-label={t.search.budget}
-                className="h-11 border-0 bg-transparent px-0 text-base font-semibold shadow-none focus-visible:ring-0"
+                className="h-10 border-0 bg-transparent px-0 text-base font-semibold shadow-none focus-visible:ring-0"
               />
         </SearchField>
         <SearchField label={t.search.departureCity} icon={<MapPin className="size-5" />}>
               <Input
                 value={origin}
                 list="departure-city-options"
+                placeholder="City or airport"
                 onFocus={trackSearchStarted}
                 onChange={(event) => {
                   trackSearchStarted();
                   setOrigin(event.target.value);
                 }}
                 aria-label={t.search.departureCity}
-                className="h-11 border-0 bg-transparent px-0 text-base font-semibold shadow-none focus-visible:ring-0"
+                className="h-10 border-0 bg-transparent px-0 text-base font-semibold shadow-none focus-visible:ring-0"
               />
               <datalist id="departure-city-options">
-                {activeDepartureCities.map((city) => (
-                  <option key={city.slug} value={city.airportCodes[0]}>
-                    {city.name} - {city.airportCodes.join(", ")} - {city.region ?? city.country}
-                  </option>
+                {departureCityOptions.map((city) => (
+                  <option
+                    key={city.slug}
+                    value={city.name}
+                    label={`${city.airportCodes.join(", ")} - ${city.region ?? city.country}`}
+                  />
                 ))}
               </datalist>
         </SearchField>
@@ -154,7 +168,7 @@ export function SearchCard() {
                   setDays(getOption(dayOptions, value, "10"));
                 }}
               >
-                <SelectTrigger aria-label={t.search.duration} className="h-11 w-full border-0 bg-transparent px-0 text-base font-semibold shadow-none">
+                <SelectTrigger aria-label={t.search.duration} className="h-10 w-full border-0 bg-transparent px-0 text-base font-semibold shadow-none">
                   <SelectValue placeholder={t.search.duration} />
                 </SelectTrigger>
                 <SelectContent>
@@ -172,7 +186,7 @@ export function SearchCard() {
                   setTravelers(getOption(travelerOptions, value, "2"));
                 }}
               >
-                <SelectTrigger aria-label={t.search.travelers} className="h-11 w-full border-0 bg-transparent px-0 text-base font-semibold shadow-none">
+                <SelectTrigger aria-label={t.search.travelers} className="h-10 w-full border-0 bg-transparent px-0 text-base font-semibold shadow-none">
                   <SelectValue placeholder={t.search.travelers} />
                 </SelectTrigger>
                 <SelectContent>
@@ -183,14 +197,9 @@ export function SearchCard() {
               </Select>
         </SearchField>
 
-        <Button type="submit" className="h-14 rounded-2xl bg-orange-500 px-7 text-base font-bold text-white hover:bg-orange-600 md:h-16 md:rounded-full">
-          <span className="md:hidden">{t.search.submit}</span>
-          <span className="hidden md:inline">Find trips</span>
-          <ArrowRight className="ml-2 size-4" />
-        </Button>
       </div>
 
-      <div className="mt-2 grid gap-2 border-t border-slate-100 pt-2 sm:grid-cols-3">
+      <div className="mt-3 grid gap-3 border-t border-slate-100 pt-3 sm:grid-cols-3">
         <Field label={t.search.currency}>
           <Select
             value={currency}
@@ -199,7 +208,7 @@ export function SearchCard() {
               setCurrency(getOption(currencies, value, "CAD"));
             }}
           >
-            <SelectTrigger className="h-10 w-full border-0 bg-slate-50">
+            <SelectTrigger className="h-11 w-full rounded-xl border-slate-200 bg-white font-semibold">
               <SelectValue placeholder={t.search.currency} />
             </SelectTrigger>
             <SelectContent>
@@ -218,7 +227,7 @@ export function SearchCard() {
                   setMonth(getOption(months, value, "october"));
                 }}
               >
-                <SelectTrigger className="h-10 w-full border-0 bg-slate-50">
+                <SelectTrigger className="h-11 w-full rounded-xl border-slate-200 bg-white font-semibold">
                   <SelectValue placeholder={t.search.travelMonth} />
                 </SelectTrigger>
                 <SelectContent>
@@ -238,7 +247,7 @@ export function SearchCard() {
                   setStyle(getOption(styles, value, "balanced"));
                 }}
               >
-                <SelectTrigger className="h-10 w-full border-0 bg-slate-50">
+                <SelectTrigger className="h-11 w-full rounded-xl border-slate-200 bg-white font-semibold">
                   <SelectValue placeholder={t.search.travelStyle} />
                 </SelectTrigger>
                 <SelectContent>
@@ -249,6 +258,10 @@ export function SearchCard() {
               </Select>
         </Field>
       </div>
+      <Button type="submit" className="mt-5 h-14 w-full rounded-xl bg-orange-500 px-7 text-base font-bold text-white hover:bg-orange-600">
+        <span>{t.search.submit}</span>
+        <ArrowRight className="ml-2 size-4" />
+      </Button>
       {error ? <p className="mt-4 text-center text-sm font-medium text-red-600">{error}</p> : null}
     </form>
   );
@@ -287,10 +300,10 @@ function SearchField({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-16 min-w-0 items-center gap-3 rounded-2xl bg-slate-50 px-4 md:bg-white md:pr-5 md:[&:not(:last-of-type)]:border-r md:[&:not(:last-of-type)]:border-slate-200">
-      <span className="shrink-0 text-slate-400">{icon}</span>
+    <div className="flex min-h-20 min-w-0 items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 transition focus-within:border-[#14B8A6]">
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-white text-slate-400 shadow-sm">{icon}</span>
       <div className="min-w-0 flex-1">
-        <Label className="text-[11px] font-bold uppercase tracking-wide text-slate-400">{label}</Label>
+        <Label className="text-[11px] font-bold uppercase tracking-wide text-slate-500">{label}</Label>
         {children}
       </div>
     </div>

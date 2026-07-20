@@ -48,13 +48,16 @@ export function createMetadata({
   const canonicalUrl = createCanonicalUrl(path);
   const imageUrl = createCanonicalUrl(image);
   const socialTitle = createSocialTitle(resolvedTitle);
-  validateMetadata({
-    title: resolvedTitle,
-    description: resolvedDescription,
-    path,
-    noIndex,
-    robots,
-  });
+
+  if (shouldValidateMetadata({ title, path, noIndex, robots })) {
+    validateMetadata({
+      title: resolvedTitle,
+      description: resolvedDescription,
+      path,
+      noIndex,
+      robots,
+    });
+  }
 
   return {
     metadataBase: new URL(normalizedSiteUrl()),
@@ -164,6 +167,20 @@ function normalizeSeoText(value: string, field: "title" | "description") {
 
 function createSocialTitle(title: string) {
   return title.includes(siteConfig.name) ? title : `${title} | ${siteConfig.name}`;
+}
+
+function shouldValidateMetadata({
+  title,
+  path,
+  noIndex,
+  robots,
+}: {
+  title?: string;
+  path: string;
+  noIndex: boolean;
+  robots?: Metadata["robots"];
+}) {
+  return Boolean(title || path !== "/" || noIndex || robots);
 }
 
 function validateMetadata({
