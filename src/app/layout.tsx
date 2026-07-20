@@ -1,4 +1,5 @@
 import { Geist_Mono, Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { AnalyticsScripts } from "@/components/analytics/analytics-scripts";
 import { ConsentManagedAnalytics } from "@/components/analytics/consent-managed-analytics";
@@ -18,6 +19,15 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const driveScriptAttributes = {
+  nowprocket: "",
+  "data-noptimize": "1",
+  "data-cfasync": "false",
+  "data-wpfc-render": "false",
+  "seraph-accel-crit": "1",
+  "data-no-defer": "1",
+};
+
 export const metadata = createMetadata();
 
 export default function RootLayout({
@@ -30,6 +40,21 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <Script
+        id="drive-loader"
+        strategy="beforeInteractive"
+        {...driveScriptAttributes}
+        dangerouslySetInnerHTML={{
+          __html: `
+            (function () {
+              var script = document.createElement("script");
+              script.async = 1;
+              script.src = "https://emrldco.com/NTQ4MjEz.js?t=548213";
+              document.head.appendChild(script);
+            })();
+          `,
+        }}
+      />
       <body className="flex min-h-full flex-col">
         <AnalyticsScripts />
         <LanguageProvider>
