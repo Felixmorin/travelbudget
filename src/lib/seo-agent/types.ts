@@ -53,6 +53,27 @@ export type ProgrammaticPageIdea = {
   impactScore: number;
 };
 
+export type ContentRefreshSuggestion = {
+  id: string;
+  priority: "high" | "medium" | "low";
+  page: string;
+  title: string;
+  reason: string;
+  recommendation: string;
+  impactScore: number;
+};
+
+export type SerpIntentSuggestion = {
+  id: string;
+  priority: "high" | "medium" | "low";
+  page: string;
+  query: string;
+  intent: "budget" | "origin-budget" | "comparison" | "itinerary" | "guide" | "timing";
+  reason: string;
+  recommendation: string;
+  impactScore: number;
+};
+
 export type SeoAgentReport = {
   generatedAt: string;
   dateRange: DateRange;
@@ -64,8 +85,12 @@ export type SeoAgentReport = {
     analyticsRowsAnalyzed: number;
     internalLinkSuggestions: number;
     programmaticPageIdeas: number;
+    contentRefreshSuggestions: number;
+    serpIntentSuggestions: number;
   };
   opportunities: SeoOpportunity[];
   internalLinkSuggestions: InternalLinkSuggestion[];
   programmaticPageIdeas: ProgrammaticPageIdea[];
+  contentRefreshSuggestions: ContentRefreshSuggestion[];
+  serpIntentSuggestions: SerpIntentSuggestion[];
 };

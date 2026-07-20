@@ -69,6 +69,8 @@ The agent currently flags:
 - landing pages with low GA4 engagement
 - internal links to add from strong hubs/pages to target pages
 - programmatic SEO page ideas from GSC queries and near-indexable registry pages
+- content refresh needs from organic drops, high impressions without clicks, and stale indexed registry pages
+- SERP intent mismatches where a query suggests a budget, origin, comparison, itinerary, timing, or guide intent not served by the current page type
 
 ## AI workers
 
@@ -78,6 +80,8 @@ The worker layer turns the report into proposed work items:
 - Internal linking worker
 - Programmatic SEO worker
 - Conversion worker
+- Content Refresh worker
+- SERP Intent worker
 
 Workers propose tasks. They do not directly edit content, code, links, or production pages without human review.
 

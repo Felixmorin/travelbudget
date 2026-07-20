@@ -1,9 +1,11 @@
 import { strongSeoPages } from "@/lib/programmatic/strong-seo-pages";
 import { getAllSeoRegistryPages } from "@/lib/programmatic/seo-registry";
 import type {
+  ContentRefreshSuggestion,
   InternalLinkSuggestion,
   ProgrammaticPageIdea,
   SearchConsoleRow,
+  SerpIntentSuggestion,
 } from "@/lib/seo-agent/types";
 
 type PageAggregate = {
@@ -115,9 +117,114 @@ export function findProgrammaticPageIdeas(rows: SearchConsoleRow[]): Programmati
   return sortedIdeas.length ? sortedIdeas : getRegistryProgrammaticPageIdeas();
 }
 
+export function findContentRefreshSuggestions(
+  currentRows: SearchConsoleRow[],
+  previousRows: SearchConsoleRow[],
+  generatedAt = new Date()
+): ContentRefreshSuggestion[] {
+  const currentByPage = aggregateByPage(currentRows);
+  const previousByPage = aggregateByPage(previousRows);
+  const suggestions: ContentRefreshSuggestion[] = [];
+  const seen = new Set<string>();
+
+  for (const [page, current] of currentByPage) {
+    const previous = previousByPage.get(page);
+    const topQuery = getTopQuery(currentRows, page);
+    const clickDrop = previous ? previous.clicks - current.clicks : 0;
+    const impressionLoad = current.impressions;
+
+    if (previous && previous.clicks >= 8 && clickDrop >= 5 && clickDrop / previous.clicks >= 0.25) {
+      addContentRefreshSuggestion(suggestions, seen, {
+        id: stableId("refresh-decline", page),
+        priority: clickDrop >= 30 ? "high" : "medium",
+        page,
+        title: "Rafraichir une page en baisse organique",
+        reason: `${previous.clicks} clics avant vs ${current.clicks} maintenant. Requete principale recente: ${topQuery ?? "non disponible"}.`,
+        recommendation:
+          "Mettre a jour les couts, les saisons, les FAQ, le premier ecran et les liens vers calculateur/comparaisons avant de demander une nouvelle indexation.",
+        impactScore: clickDrop * 3 + Math.round(impressionLoad / 50),
+      });
+      continue;
+    }
+
+    if (current.impressions >= 300 && current.clicks <= 2) {
+      addContentRefreshSuggestion(suggestions, seen, {
+        id: stableId("refresh-stalled", page),
+        priority: current.impressions >= 800 ? "high" : "medium",
+        page,
+        title: "Rafraichir une page avec impressions sans clics",
+        reason: `${current.impressions} impressions recentes mais seulement ${current.clicks} clics. Requete principale: ${topQuery ?? "non disponible"}.`,
+        recommendation:
+          "Reviser l'angle de la page, ajouter une reponse directe plus haute, renforcer title/meta et actualiser les donnees de budget visibles.",
+        impactScore: Math.round(current.impressions / 20),
+      });
+    }
+  }
+
+  for (const page of getAllSeoRegistryPages()) {
+    if (page.evaluation.status !== "index" || !isStaleDate(page.lastModified, generatedAt)) {
+      continue;
+    }
+
+    addContentRefreshSuggestion(suggestions, seen, {
+      id: stableId("refresh-stale", page.path),
+      priority: page.priority >= 0.82 ? "medium" : "low",
+      page: toPublicUrl(page.path),
+      title: "Verifier une page SEO dont les donnees vieillissent",
+      reason: `Derniere mise a jour ${page.lastModified}. Les pages budget dependent des couts, saisons et assumptions.`,
+      recommendation:
+        "Verifier les estimations, les notes de source, les FAQ, les liens internes et la date de mise a jour avant le prochain crawl.",
+      impactScore: Math.round(page.priority * 80),
+    });
+  }
+
+  return suggestions.sort((first, second) => second.impactScore - first.impactScore).slice(0, 10);
+}
+
+export function findSerpIntentSuggestions(rows: SearchConsoleRow[]): SerpIntentSuggestion[] {
+  const suggestions: SerpIntentSuggestion[] = [];
+  const seen = new Set<string>();
+
+  for (const row of rows.sort((first, second) => getTargetScore(second) - getTargetScore(first))) {
+    if (!row.query || row.impressions < 40 || row.position < 5 || row.position > 30) {
+      continue;
+    }
+
+    const intent = getSerpIntent(row.query);
+
+    if (!intent || isPageAlignedWithIntent(row.page, intent)) {
+      continue;
+    }
+
+    const id = stableId("intent", row.page, row.query, intent);
+
+    if (seen.has(id)) {
+      continue;
+    }
+
+    seen.add(id);
+    suggestions.push({
+      id,
+      priority: row.impressions >= 250 && row.position <= 15 ? "high" : row.impressions >= 100 ? "medium" : "low",
+      page: row.page,
+      query: row.query,
+      intent,
+      reason: `${row.impressions} impressions sur "${row.query}", position moyenne ${formatNumber(row.position)}. L'intention detectee est ${intent}.`,
+      recommendation: getSerpIntentRecommendation(intent),
+      impactScore: getTargetScore(row),
+    });
+
+    if (suggestions.length >= 10) {
+      break;
+    }
+  }
+
+  return suggestions.sort((first, second) => second.impactScore - first.impactScore);
+}
+
 function getRegistryInternalLinkSuggestions(): InternalLinkSuggestion[] {
   return getAllSeoRegistryPages()
-    .filter((page) => page.evaluation.status === "index")
+    .filter((page) => page.evaluation.status === "noindex" && page.evaluation.reasons.includes("several internal links"))
     .sort((first, second) => second.priority - first.priority)
     .slice(0, 8)
     .map((page) => {
@@ -164,6 +271,120 @@ function findBestSourcePage(target: SearchConsoleRow, sources: PageAggregate[]) 
       score: source.clicks + overlapScore(targetTokens, getTokens(`${source.page} ${Array.from(source.queries).join(" ")}`)) * 15,
     }))
     .sort((first, second) => second.score - first.score)[0]?.source;
+}
+
+function addContentRefreshSuggestion(
+  suggestions: ContentRefreshSuggestion[],
+  seen: Set<string>,
+  suggestion: ContentRefreshSuggestion
+) {
+  if (seen.has(suggestion.id)) {
+    return;
+  }
+
+  seen.add(suggestion.id);
+  suggestions.push(suggestion);
+}
+
+function getTopQuery(rows: SearchConsoleRow[], page: string) {
+  return rows
+    .filter((row) => row.page === page && row.query)
+    .sort((first, second) => second.impressions - first.impressions)[0]?.query;
+}
+
+function isStaleDate(value: string, generatedAt: Date) {
+  const updatedAt = new Date(`${value}T00:00:00.000Z`);
+
+  if (Number.isNaN(updatedAt.getTime())) {
+    return false;
+  }
+
+  const ageInDays = (generatedAt.getTime() - updatedAt.getTime()) / (1000 * 60 * 60 * 24);
+
+  return ageInDays >= 90;
+}
+
+function getSerpIntent(query: string): SerpIntentSuggestion["intent"] | null {
+  const normalizedQuery = query.toLowerCase();
+
+  if (/\b(vs|versus|compare|comparison)\b/.test(normalizedQuery)) {
+    return "comparison";
+  }
+
+  if (/\bfrom\b/.test(normalizedQuery) && /\b(under|budget|cheap|cost|trip|travel)\b/.test(normalizedQuery)) {
+    return "origin-budget";
+  }
+
+  if (/\b(\d+|seven|ten|week)\s*(day|days)\b|\bitinerary\b/.test(normalizedQuery)) {
+    return "itinerary";
+  }
+
+  if (/\b(when|best time|month|season)\b/.test(normalizedQuery)) {
+    return "timing";
+  }
+
+  if (/\b(how much|budget|cost|price|cheap)\b/.test(normalizedQuery)) {
+    return "budget";
+  }
+
+  if (/\b(where|guide|best|things to do)\b/.test(normalizedQuery)) {
+    return "guide";
+  }
+
+  return null;
+}
+
+function isPageAlignedWithIntent(page: string, intent: SerpIntentSuggestion["intent"]) {
+  const path = safePathname(page);
+
+  if (intent === "comparison") {
+    return path.startsWith("/compare/");
+  }
+
+  if (intent === "origin-budget") {
+    return path.startsWith("/from/") || path.startsWith("/budget-travel/");
+  }
+
+  if (intent === "itinerary") {
+    return path.startsWith("/itineraries/") || path.startsWith("/trip-length/");
+  }
+
+  if (intent === "budget") {
+    return path.startsWith("/travel-budget/") || path.startsWith("/budget/") || path.includes("/travel-budget");
+  }
+
+  if (intent === "guide" || intent === "timing") {
+    return path.startsWith("/guides/") || path.startsWith("/destinations/");
+  }
+
+  return false;
+}
+
+function getSerpIntentRecommendation(intent: SerpIntentSuggestion["intent"]) {
+  const recommendations: Record<SerpIntentSuggestion["intent"], string> = {
+    budget:
+      "Ajouter une reponse budget explicite avec total, cout par jour, inclusions, exclusions et liens vers calculateur ou page budget destination.",
+    "origin-budget":
+      "Ajouter ou renforcer une section depart + budget avec ville d'origine, budget cible, destinations comparables et lien vers une page /from pertinente.",
+    comparison:
+      "Ajouter un bloc de comparaison direct ou creer une page /compare si l'utilisateur cherche a choisir entre deux destinations.",
+    itinerary:
+      "Ajouter une structure d'itineraire par jours avec budget total, rythme du voyage et liens vers les pages de duree pertinentes.",
+    guide:
+      "Ajouter une section guide editorialisee qui repond a la decision de voyage avant les details de cout.",
+    timing:
+      "Ajouter une section saisonnalite avec meilleurs mois, periodes a eviter, impact sur vols/hotels et liens vers destinations similaires.",
+  };
+
+  return recommendations[intent];
+}
+
+function safePathname(value: string) {
+  try {
+    return new URL(value).pathname;
+  } catch {
+    return value.startsWith("/") ? value : `/${value}`;
+  }
 }
 
 function createProgrammaticIdea(row: { query: string; impressions: number; clicks: number; position: number }) {

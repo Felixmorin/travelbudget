@@ -1,6 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 
 import { createSeoAgentReport } from "@/lib/seo-agent/analyzer";
+import {
+  findContentRefreshSuggestions,
+  findInternalLinkSuggestions,
+  findSerpIntentSuggestions,
+} from "@/lib/seo-agent/growth-ideas";
 
 describe("createSeoAgentReport", () => {
   it("prioritizes CTR, ranking, decline, and engagement opportunities", () => {
@@ -70,5 +75,63 @@ describe("createSeoAgentReport", () => {
     expect(report.opportunities[0]?.impactScore).toBeGreaterThanOrEqual(report.opportunities.at(-1)?.impactScore ?? 0);
     expect(report.internalLinkSuggestions.length).toBeGreaterThan(0);
     expect(report.programmaticPageIdeas.length).toBeGreaterThan(0);
+    expect(report.contentRefreshSuggestions.length).toBeGreaterThan(0);
+    expect(report.serpIntentSuggestions.length).toBeGreaterThan(0);
+  });
+
+  it("does not invent internal link tasks when the registry already satisfies link coverage", () => {
+    const suggestions = findInternalLinkSuggestions([]);
+
+    expect(suggestions).toEqual([]);
+  });
+
+  it("proposes content refreshes for pages with meaningful organic drops", () => {
+    const suggestions = findContentRefreshSuggestions(
+      [
+        {
+          page: "https://gobybudget.com/travel-budget/mexico",
+          query: "mexico travel budget",
+          clicks: 10,
+          impressions: 700,
+          ctr: 0.014,
+          position: 8,
+        },
+      ],
+      [
+        {
+          page: "https://gobybudget.com/travel-budget/mexico",
+          query: "mexico travel budget",
+          clicks: 40,
+          impressions: 900,
+          ctr: 0.044,
+          position: 4,
+        },
+      ]
+    );
+
+    expect(suggestions[0]).toMatchObject({
+      page: "https://gobybudget.com/travel-budget/mexico",
+      priority: "high",
+      title: "Rafraichir une page en baisse organique",
+    });
+  });
+
+  it("proposes SERP intent fixes when a query points to the wrong page type", () => {
+    const suggestions = findSerpIntentSuggestions([
+      {
+        page: "https://gobybudget.com/results",
+        query: "best trips from halifax under 1200",
+        clicks: 1,
+        impressions: 180,
+        ctr: 0.005,
+        position: 18,
+      },
+    ]);
+
+    expect(suggestions[0]).toMatchObject({
+      page: "https://gobybudget.com/results",
+      query: "best trips from halifax under 1200",
+      intent: "origin-budget",
+    });
   });
 });

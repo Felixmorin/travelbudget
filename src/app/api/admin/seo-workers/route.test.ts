@@ -19,10 +19,14 @@ vi.mock("@/lib/seo-agent/run-agent", async () => {
         analyticsRowsAnalyzed: 0,
         internalLinkSuggestions: 0,
         programmaticPageIdeas: 0,
+        contentRefreshSuggestions: 0,
+        serpIntentSuggestions: 0,
       },
       opportunities: [],
       internalLinkSuggestions: [],
       programmaticPageIdeas: [],
+      contentRefreshSuggestions: [],
+      serpIntentSuggestions: [],
     })),
   };
 });
@@ -59,7 +63,7 @@ describe("seo workers route", () => {
       workerRun: {
         mode: "manual",
         summary: {
-          workers: 4,
+          workers: 6,
         },
       },
     });

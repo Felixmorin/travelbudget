@@ -1,6 +1,12 @@
 import type { SeoAgentReport, SeoOpportunity } from "@/lib/seo-agent/types";
 
-export type AiWorkerId = "seo-ga4" | "internal-linking" | "programmatic-seo" | "conversion";
+export type AiWorkerId =
+  | "seo-ga4"
+  | "internal-linking"
+  | "programmatic-seo"
+  | "conversion"
+  | "content-refresh"
+  | "serp-intent";
 
 export type AiWorkerDefinition = {
   id: AiWorkerId;
@@ -58,6 +64,18 @@ export const aiWorkers: AiWorkerDefinition[] = [
     cadence: "weekly",
     description: "Repere les pages avec trafic mais engagement faible pour proposer des ameliorations CTA et premier ecran.",
   },
+  {
+    id: "content-refresh",
+    name: "Content Refresh worker",
+    cadence: "weekly",
+    description: "Repere les pages SEO a mettre a jour selon baisses organiques, impressions sans clics et donnees vieillissantes.",
+  },
+  {
+    id: "serp-intent",
+    name: "SERP Intent worker",
+    cadence: "weekly",
+    description: "Compare les requetes GSC avec le type de page pour trouver les intentions mal servies.",
+  },
 ];
 
 export function createWorkerRunReport(seoReport: SeoAgentReport, mode: AiWorkerRunReport["mode"]): AiWorkerRunReport {
@@ -81,6 +99,26 @@ export function createWorkerRunReport(seoReport: SeoAgentReport, mode: AiWorkerR
       target: idea.suggestedPath,
       action: idea.recommendation,
       evidence: idea.evidence,
+      status: "proposed" as const,
+    })),
+    ...seoReport.contentRefreshSuggestions.map((suggestion) => ({
+      id: suggestion.id,
+      workerId: "content-refresh" as const,
+      priority: suggestion.priority,
+      title: suggestion.title,
+      target: suggestion.page,
+      action: suggestion.recommendation,
+      evidence: suggestion.reason,
+      status: "proposed" as const,
+    })),
+    ...seoReport.serpIntentSuggestions.map((suggestion) => ({
+      id: suggestion.id,
+      workerId: "serp-intent" as const,
+      priority: suggestion.priority,
+      title: `Aligner l'intention SERP: ${suggestion.intent}`,
+      target: suggestion.page,
+      action: suggestion.recommendation,
+      evidence: suggestion.reason,
       status: "proposed" as const,
     })),
   ].sort((first, second) => getPriorityScore(second.priority) - getPriorityScore(first.priority));

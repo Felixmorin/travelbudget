@@ -5,7 +5,12 @@ import type {
   SeoAgentReport,
   SeoOpportunity,
 } from "@/lib/seo-agent/types";
-import { findInternalLinkSuggestions, findProgrammaticPageIdeas } from "@/lib/seo-agent/growth-ideas";
+import {
+  findContentRefreshSuggestions,
+  findInternalLinkSuggestions,
+  findProgrammaticPageIdeas,
+  findSerpIntentSuggestions,
+} from "@/lib/seo-agent/growth-ideas";
 
 export function createSeoAgentReport(input: {
   dateRange: DateRange;
@@ -24,6 +29,8 @@ export function createSeoAgentReport(input: {
     .slice(0, 25);
   const internalLinkSuggestions = findInternalLinkSuggestions(input.searchRows);
   const programmaticPageIdeas = findProgrammaticPageIdeas(input.searchRows);
+  const contentRefreshSuggestions = findContentRefreshSuggestions(input.searchRows, input.previousSearchRows);
+  const serpIntentSuggestions = findSerpIntentSuggestions(input.searchRows);
 
   return {
     generatedAt: new Date().toISOString(),
@@ -36,10 +43,14 @@ export function createSeoAgentReport(input: {
       analyticsRowsAnalyzed: input.analyticsRows.length,
       internalLinkSuggestions: internalLinkSuggestions.length,
       programmaticPageIdeas: programmaticPageIdeas.length,
+      contentRefreshSuggestions: contentRefreshSuggestions.length,
+      serpIntentSuggestions: serpIntentSuggestions.length,
     },
     opportunities,
     internalLinkSuggestions,
     programmaticPageIdeas,
+    contentRefreshSuggestions,
+    serpIntentSuggestions,
   };
 }
 

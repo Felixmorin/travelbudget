@@ -10,6 +10,7 @@ import {
   Loader2,
   MousePointerClick,
   RefreshCw,
+  SearchCheck,
 } from "lucide-react";
 import { FormEvent, useMemo, useState } from "react";
 
@@ -310,6 +311,8 @@ function getWorkerLabel(workerId: AiWorkerTask["workerId"]) {
     "internal-linking": "Liens internes",
     "programmatic-seo": "Programmatic SEO",
     conversion: "Conversion",
+    "content-refresh": "Content Refresh",
+    "serp-intent": "SERP Intent",
   };
 
   return labels[workerId];
@@ -328,6 +331,14 @@ function getWorkerIcon(workerId: AiWorkerId, loading: boolean) {
 
   if (workerId === "programmatic-seo") {
     return <FileText className={className} />;
+  }
+
+  if (workerId === "content-refresh") {
+    return <RefreshCw className={className} />;
+  }
+
+  if (workerId === "serp-intent") {
+    return <SearchCheck className={className} />;
   }
 
   return <MousePointerClick className={className} />;
