@@ -1,0 +1,453 @@
+{
+  "contents": [
+    {
+      "id": "171dc31b-37e8-4427-ac5f-39ac17171717",
+      "runId": "7c34b833-954d-4bc1-ab63-16d37ca2f8a7",
+      "status": "draft",
+      "request": {
+        "origin": "Montreal",
+        "budget": 1500,
+        "currency": "CAD",
+        "durationDays": 7,
+        "travelers": 1,
+        "travelStyle": "balanced",
+        "language": "fr",
+        "platform": "instagram",
+        "template": "three_destinations",
+        "dryRun": true
+      },
+      "scenes": [],
+      "landingPageUrl": "https://gobybudget.com/results?origin=Montreal&budget=1500&currency=CAD&days=7&travelers=1&style=balanced",
+      "warnings": [
+        "Phase 2 draft only: topic selection, script, voice, assets, rendering, and publishing are not implemented yet."
+      ],
+      "errors": [],
+      "costEstimateUsd": 0,
+      "createdAt": "2026-07-19T02:59:24.346Z",
+      "updatedAt": "2026-07-19T02:59:24.348Z"
+    },
+    {
+      "id": "31b7d0ce-97e5-4c57-92fb-afc42abdcc59",
+      "runId": "3fc84666-0c21-4011-b6b4-3dabe6cf9375",
+      "status": "approved",
+      "request": {
+        "origin": "Montreal",
+        "budget": 1500,
+        "currency": "CAD",
+        "durationDays": 7,
+        "travelers": 1,
+        "travelStyle": "balanced",
+        "language": "fr",
+        "platform": "instagram",
+        "template": "three_destinations",
+        "dryRun": true
+      },
+      "scenes": [
+        {
+          "id": "scene-01",
+          "scriptLine": "Tu as $1,500 et 7 jours?",
+          "visualPrompt": "Mexico vertical travel-budget scene for: Tu as $1,500 et 7 jours?",
+          "startSeconds": 0,
+          "endSeconds": 3.2,
+          "durationSeconds": 3.2,
+          "sourceUrl": "https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?auto=format&fit=crop&w=1600&q=80",
+          "sourceLicense": "GoByBudget dataset image URL. License review required before downloading or publishing third-party media.",
+          "warnings": [
+            "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded."
+          ]
+        },
+        {
+          "id": "scene-02",
+          "scriptLine": "Depuis Montreal, ces 3 destinations passent dans les estimations GoByBudget.",
+          "visualPrompt": "Guatemala vertical travel-budget scene for: Depuis Montreal, ces 3 destinations passent dans les estimations GoByBudget.",
+          "startSeconds": 3.2,
+          "endSeconds": 6.4,
+          "durationSeconds": 3.2,
+          "sourceUrl": "https://images.unsplash.com/photo-1697382803428-71666ed66c94?auto=format&fit=crop&w=1600&q=80",
+          "sourceLicense": "GoByBudget dataset image URL. License review required before downloading or publishing third-party media.",
+          "warnings": [
+            "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded."
+          ]
+        },
+        {
+          "id": "scene-03",
+          "scriptLine": "Mexico: environ $1,470.",
+          "visualPrompt": "Colombia vertical travel-budget scene for: Mexico: environ $1,470.",
+          "startSeconds": 6.4,
+          "endSeconds": 9.6,
+          "durationSeconds": 3.2,
+          "sourceUrl": "https://images.unsplash.com/photo-1544989164-31dc3c645987?auto=format&fit=crop&w=1600&q=80",
+          "sourceLicense": "GoByBudget dataset image URL. License review required before downloading or publishing third-party media.",
+          "warnings": [
+            "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded."
+          ]
+        },
+        {
+          "id": "scene-04",
+          "scriptLine": "Guatemala: environ $1,420.",
+          "visualPrompt": "Mexico vertical travel-budget scene for: Guatemala: environ $1,420.",
+          "startSeconds": 9.6,
+          "endSeconds": 12.8,
+          "durationSeconds": 3.2,
+          "sourceUrl": "https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?auto=format&fit=crop&w=1600&q=80",
+          "sourceLicense": "GoByBudget dataset image URL. License review required before downloading or publishing third-party media.",
+          "warnings": [
+            "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded."
+          ]
+        },
+        {
+          "id": "scene-05",
+          "scriptLine": "Colombia: environ $1,490.",
+          "visualPrompt": "Guatemala vertical travel-budget scene for: Colombia: environ $1,490.",
+          "startSeconds": 12.8,
+          "endSeconds": 16,
+          "durationSeconds": 3.2,
+          "sourceUrl": "https://images.unsplash.com/photo-1697382803428-71666ed66c94?auto=format&fit=crop&w=1600&q=80",
+          "sourceLicense": "GoByBudget dataset image URL. License review required before downloading or publishing third-party media.",
+          "warnings": [
+            "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded."
+          ]
+        },
+        {
+          "id": "scene-06",
+          "scriptLine": "Mexico est l'option la plus basse de ce groupe.",
+          "visualPrompt": "Colombia vertical travel-budget scene for: Mexico est l'option la plus basse de ce groupe.",
+          "startSeconds": 16,
+          "endSeconds": 19.2,
+          "durationSeconds": 3.2,
+          "sourceUrl": "https://images.unsplash.com/photo-1544989164-31dc3c645987?auto=format&fit=crop&w=1600&q=80",
+          "sourceLicense": "GoByBudget dataset image URL. License review required before downloading or publishing third-party media.",
+          "warnings": [
+            "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded."
+          ]
+        },
+        {
+          "id": "scene-07",
+          "scriptLine": "Les prix sont des estimations, pas des garanties.",
+          "visualPrompt": "Mexico vertical travel-budget scene for: Les prix sont des estimations, pas des garanties.",
+          "startSeconds": 19.2,
+          "endSeconds": 22.4,
+          "durationSeconds": 3.2,
+          "sourceUrl": "https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?auto=format&fit=crop&w=1600&q=80",
+          "sourceLicense": "GoByBudget dataset image URL. License review required before downloading or publishing third-party media.",
+          "warnings": [
+            "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded."
+          ]
+        },
+        {
+          "id": "scene-08",
+          "scriptLine": "Teste ton propre budget sur GoByBudget.",
+          "visualPrompt": "Guatemala vertical travel-budget scene for: Teste ton propre budget sur GoByBudget.",
+          "startSeconds": 22.4,
+          "endSeconds": 25.6,
+          "durationSeconds": 3.2,
+          "sourceUrl": "https://images.unsplash.com/photo-1697382803428-71666ed66c94?auto=format&fit=crop&w=1600&q=80",
+          "sourceLicense": "GoByBudget dataset image URL. License review required before downloading or publishing third-party media.",
+          "warnings": [
+            "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded."
+          ]
+        }
+      ],
+      "landingPageUrl": "https://gobybudget.com/results?origin=Montreal&budget=1500&currency=CAD&days=7&travelers=1&style=balanced&utm_source=instagram&utm_medium=organic_social&utm_campaign=three_destinations&utm_content=31b7d0ce-97e5-4c57-92fb-afc42abdcc59",
+      "warnings": [
+        "Phase 3 complete: topic and data are validated.",
+        "Scripts use GoByBudget planning estimates, not live booking prices or guarantees.",
+        "Phase 7 captions, UTM parameters, and analytics placeholders are prepared.",
+        "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded.",
+        "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded.",
+        "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded.",
+        "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded.",
+        "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded.",
+        "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded.",
+        "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded.",
+        "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded.",
+        "Voice generation is a placeholder until a TTS provider is enabled.",
+        "FFmpeg could not decode scene SVG files, so a branded fallback MP4 was rendered instead: ' (5000000) options\r\nInput #7, svg_pipe, from 'C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\scene-08.svg':\r\n  Duration: N/A, bitrate: N/A\r\n  Stream #7:0: Video: svg, none, 25 fps, 25 tbr, 25 tbn\r\n[vist#0:0/svg @ 000001a7f7c3e800] Decoding requested, but no decoder found for: svg\r\n[fc#0 @ 000001a7f7bcdc40] Error binding an input stream to complex filtergraph input scale:default.\r\nError binding filtergraph inputs/outputs: Invalid argument",
+        "Phase 5 assets are ready: scenes, subtitles, cover, voice placeholder, manifest, and optional MP4.",
+        "Phase 5 complete: local MP4 rendered and content is ready for human review. Publishing remains disabled.",
+        "Phase 8 simulation complete for instagram: no official API call was made and status remains approved."
+      ],
+      "errors": [],
+      "costEstimateUsd": 0,
+      "createdAt": "2026-07-19T16:13:58.278Z",
+      "updatedAt": "2026-07-19T16:15:29.361Z",
+      "topic": {
+        "id": "f01d3e19-b927-4ff6-94f8-84558db0088e",
+        "title": "3 destinations ou voyager avec 1500 CAD",
+        "template": "three_destinations",
+        "origin": "Montreal",
+        "destinationSlugs": [
+          "mexico",
+          "guatemala",
+          "colombia"
+        ],
+        "budget": 1500,
+        "currency": "CAD",
+        "durationDays": 7,
+        "language": "fr",
+        "platform": "instagram",
+        "score": 86,
+        "landingPagePath": "/results?origin=Montreal&budget=1500&currency=CAD&days=7&travelers=1&style=balanced",
+        "reasons": [
+          "Top 3 destinations fit the CAD 1500 budget.",
+          "Best estimate in group: Mexico at 1470 CAD.",
+          "Estimated total leaves $30 in your budget.",
+          "Your balanced style lines up with Food and Culture travel."
+        ]
+      },
+      "budgetBreakdown": {
+        "flights": 560,
+        "accommodation": 420,
+        "food": 210,
+        "localTransport": 105,
+        "activities": 140,
+        "miscellaneous": 35,
+        "total": 1470,
+        "currency": "CAD",
+        "estimatedAt": "2026-06-24",
+        "dataSource": "gobybudget-estimate",
+        "sourceNotes": [
+          "Uses directional planning estimates only for departure cities with available origin pricing; unavailable origins do not receive synthetic fares.",
+          "Daily costs are modeled in CAD for budget, mid-range, and luxury travel styles in Mexico.",
+          "These estimates are not live prices or guarantees; actual fares, hotel rates, exchange rates, and availability can vary."
+        ]
+      },
+      "hook": "Tu as $1,500 et 7 jours?",
+      "script": "Tu as $1,500 et 7 jours?\nDepuis Montreal, ces 3 destinations passent dans les estimations GoByBudget.\nMexico: environ $1,470.\nGuatemala: environ $1,420.\nColombia: environ $1,490.\nMexico est l'option la plus basse de ce groupe.\nLes prix sont des estimations, pas des garanties.\nTeste ton propre budget sur GoByBudget.",
+      "scriptValidation": {
+        "numericClaims": [
+          1500,
+          7,
+          3,
+          1470,
+          1420,
+          1490
+        ],
+        "allowedNumericClaims": [
+          {
+            "value": 1500,
+            "label": "request budget"
+          },
+          {
+            "value": 7,
+            "label": "duration days"
+          },
+          {
+            "value": 3,
+            "label": "destination count"
+          },
+          {
+            "value": 214,
+            "label": "daily request budget"
+          },
+          {
+            "value": 1470,
+            "label": "mexico total"
+          },
+          {
+            "value": 560,
+            "label": "mexico flights"
+          },
+          {
+            "value": 420,
+            "label": "mexico accommodation"
+          },
+          {
+            "value": 210,
+            "label": "mexico food"
+          },
+          {
+            "value": 105,
+            "label": "mexico local transport"
+          },
+          {
+            "value": 140,
+            "label": "mexico activities"
+          },
+          {
+            "value": 245,
+            "label": "mexico local transport and activities"
+          },
+          {
+            "value": 130,
+            "label": "mexico daily local cost"
+          },
+          {
+            "value": 1420,
+            "label": "guatemala total"
+          },
+          {
+            "value": 720,
+            "label": "guatemala flights"
+          },
+          {
+            "value": 315,
+            "label": "guatemala accommodation"
+          },
+          {
+            "value": 175,
+            "label": "guatemala food"
+          },
+          {
+            "value": 70,
+            "label": "guatemala local transport"
+          },
+          {
+            "value": 105,
+            "label": "guatemala activities"
+          },
+          {
+            "value": 175,
+            "label": "guatemala local transport and activities"
+          },
+          {
+            "value": 100,
+            "label": "guatemala daily local cost"
+          },
+          {
+            "value": 1490,
+            "label": "colombia total"
+          },
+          {
+            "value": 720,
+            "label": "colombia flights"
+          },
+          {
+            "value": 350,
+            "label": "colombia accommodation"
+          },
+          {
+            "value": 175,
+            "label": "colombia food"
+          },
+          {
+            "value": 70,
+            "label": "colombia local transport"
+          },
+          {
+            "value": 105,
+            "label": "colombia activities"
+          },
+          {
+            "value": 175,
+            "label": "colombia local transport and activities"
+          },
+          {
+            "value": 110,
+            "label": "colombia daily local cost"
+          }
+        ]
+      },
+      "captions": {
+        "internalTitle": "3 destinations ou voyager avec 1500 CAD",
+        "firstLine": "Tu as $1,500 et 7 jours?",
+        "tiktokCaption": "Tu as $1,500 et 7 jours?\n\nMexico, Guatemala, Colombia avec des estimations GoByBudget.\nBudget: 1500 CAD. Duree: 7 jours.\nEstimations seulement, pas des prix garantis.\n\nTeste ton propre budget sur GoByBudget.\n\n#GoByBudget #TravelBudget #BudgetTravel #VoyageBudget #VoyagePasCher #Mexico #Guatemala #Colombia",
+        "instagramCaption": "Tu as $1,500 et 7 jours?\n\nMexico, Guatemala, Colombia avec des estimations GoByBudget.\nBudget: 1500 CAD. Duree: 7 jours.\nEstimations seulement, pas des prix garantis.\n\nTeste ton propre budget sur GoByBudget.\n\n#GoByBudget #TravelBudget #BudgetTravel #VoyageBudget #VoyagePasCher #Mexico #Guatemala #Colombia",
+        "cta": "Teste ton propre budget sur GoByBudget.",
+        "hashtags": [
+          "#GoByBudget",
+          "#TravelBudget",
+          "#BudgetTravel",
+          "#VoyageBudget",
+          "#VoyagePasCher",
+          "#Mexico",
+          "#Guatemala",
+          "#Colombia"
+        ],
+        "coverText": "3 voyages avec 1500 CAD",
+        "landingPageUrl": "https://gobybudget.com/results?origin=Montreal&budget=1500&currency=CAD&days=7&travelers=1&style=balanced&utm_source=instagram&utm_medium=organic_social&utm_campaign=three_destinations&utm_content=31b7d0ce-97e5-4c57-92fb-afc42abdcc59",
+        "utm": {
+          "utm_source": "instagram",
+          "utm_medium": "organic_social",
+          "utm_campaign": "three_destinations",
+          "utm_content": "31b7d0ce-97e5-4c57-92fb-afc42abdcc59"
+        }
+      },
+      "metrics": {
+        "contentId": "31b7d0ce-97e5-4c57-92fb-afc42abdcc59",
+        "platform": "instagram",
+        "collectedAt": "2026-07-19T16:13:58.299Z",
+        "views": 0,
+        "reach": 0,
+        "watchTimeSeconds": 0,
+        "averageWatchSeconds": 0,
+        "retention3sRate": 0,
+        "completionRate": 0,
+        "likes": 0,
+        "comments": 0,
+        "shares": 0,
+        "saves": 0,
+        "profileVisits": 0,
+        "gobybudgetClicks": 0,
+        "gobybudgetSearches": 0,
+        "conversions": 0,
+        "attributedRevenue": 0
+      },
+      "experimentDimensions": {
+        "hook": "Tu as $1,500 et 7 jours?",
+        "destinationSlugs": [
+          "mexico",
+          "guatemala",
+          "colombia"
+        ],
+        "origin": "Montreal",
+        "budget": 1500,
+        "durationDays": 7,
+        "language": "fr",
+        "template": "three_destinations",
+        "videoDurationSeconds": 25.6,
+        "platform": "instagram",
+        "cta": "Teste ton propre budget sur GoByBudget."
+      },
+      "media": {
+        "outputDir": "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59",
+        "sceneImagePaths": [
+          "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\scene-01.svg",
+          "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\scene-02.svg",
+          "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\scene-03.svg",
+          "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\scene-04.svg",
+          "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\scene-05.svg",
+          "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\scene-06.svg",
+          "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\scene-07.svg",
+          "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\scene-08.svg"
+        ],
+        "subtitleSrtPath": "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\subtitles.srt",
+        "subtitleVttPath": "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\subtitles.vtt",
+        "coverPath": "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\cover.svg",
+        "manifestPath": "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\media-manifest.json",
+        "voicePath": "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\voice-placeholder.json",
+        "videoPath": "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\video.mp4",
+        "durationSeconds": 25.6,
+        "width": 1080,
+        "height": 1920,
+        "renderer": "ffmpeg"
+      },
+      "videoPath": "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\video.mp4",
+      "thumbnailPath": "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\cover.svg",
+      "publicationResults": [
+        {
+          "ok": true,
+          "platform": "instagram",
+          "mode": "simulation",
+          "createdAt": "2026-07-19T16:15:29.360Z",
+          "externalId": "sim_instagram_31b7d0ce-97e5-4c57-92fb-afc42abdcc59",
+          "url": "simulation://instagram/31b7d0ce-97e5-4c57-92fb-afc42abdcc59",
+          "warnings": [
+            "Simulation only: no social network API was called.",
+            "Caption landing page: https://gobybudget.com/results?origin=Montreal&budget=1500&currency=CAD&days=7&travelers=1&style=balanced&utm_source=instagram&utm_medium=organic_social&utm_campaign=three_destinations&utm_content=31b7d0ce-97e5-4c57-92fb-afc42abdcc59."
+          ]
+        }
+      ]
+    }
+  ],
+  "reviews": [
+    {
+      "id": "caaccc93-bdeb-4231-a399-575c589d42f3",
+      "contentId": "31b7d0ce-97e5-4c57-92fb-afc42abdcc59",
+      "decision": "approved",
+      "notes": "OK pour test",
+      "createdAt": "2026-07-19T16:14:55.072Z",
+      "updatedAt": "2026-07-19T16:14:55.072Z"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920" viewBox="0 0 1080 1920">
+  <rect width="1080" height="1920" fill="#F7F9FB"/>
+  <rect x="0" y="0" width="1080" height="760" fill="#0B1D34"/>
+  <rect x="72" y="112" width="936" height="1520" rx="42" fill="#FFFFFF"/>
+  <text x="120" y="210" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="700" fill="#14B8A6">GoByBudget</text>
+  <text x="120" y="365" font-family="Arial, Helvetica, sans-serif" font-size="78" font-weight="800" fill="#0B1D34">
+    <tspan x="120" dy="0">Tu as $1,500 et 7 jours?</tspan>
+  </text>
+  <text x="120" y="1110" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="600" fill="#475569">
+    <tspan x="120" dy="0">3 destinations ou voyager avec</tspan>
+    <tspan x="120" dy="52">1500 CAD</tspan>
+  </text>
+  <rect x="120" y="1420" width="840" height="4" fill="#E2E8F0"/>
+  <text x="120" y="1510" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="700" fill="#0B1D34">Scene 1</text>
+</svg>

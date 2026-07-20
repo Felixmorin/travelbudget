@@ -1,0 +1,146 @@
+{
+  "contentId": "31b7d0ce-97e5-4c57-92fb-afc42abdcc59",
+  "runId": "3fc84666-0c21-4011-b6b4-3dabe6cf9375",
+  "media": {
+    "outputDir": "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59",
+    "sceneImagePaths": [
+      "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\scene-01-travel.jpg",
+      "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\scene-02-travel.jpg",
+      "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\scene-03-travel.jpg",
+      "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\scene-04-travel.jpg",
+      "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\scene-05-travel.jpg",
+      "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\scene-06-travel.jpg",
+      "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\scene-07-travel.jpg",
+      "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\scene-08-travel.jpg"
+    ],
+    "subtitleSrtPath": "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\subtitles.srt",
+    "subtitleVttPath": "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\subtitles.vtt",
+    "coverPath": "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\cover.svg",
+    "manifestPath": "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\media-manifest.json",
+    "voicePath": "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\voice-placeholder.json",
+    "videoPath": "C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\video.mp4",
+    "durationSeconds": 21,
+    "width": 1080,
+    "height": 1920,
+    "renderer": "ffmpeg"
+  },
+  "scenes": [
+    {
+      "id": "scene-01",
+      "scriptLine": "Tu as $1,500 et 7 jours?",
+      "visualPrompt": "Mexico vertical travel-budget scene for: Tu as $1,500 et 7 jours?",
+      "startSeconds": 0,
+      "endSeconds": 2.6,
+      "durationSeconds": 2.6,
+      "sourceUrl": "https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?auto=format&fit=crop&w=1600&q=80",
+      "sourceLicense": "GoByBudget dataset image URL. License review required before downloading or publishing third-party media.",
+      "warnings": [
+        "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded."
+      ]
+    },
+    {
+      "id": "scene-02",
+      "scriptLine": "Depuis Montreal, ces 3 destinations passent dans les estimations GoByBudget.",
+      "visualPrompt": "Guatemala vertical travel-budget scene for: Depuis Montreal, ces 3 destinations passent dans les estimations GoByBudget.",
+      "startSeconds": 2.6,
+      "endSeconds": 5.2,
+      "durationSeconds": 2.6,
+      "sourceUrl": "https://images.unsplash.com/photo-1697382803428-71666ed66c94?auto=format&fit=crop&w=1600&q=80",
+      "sourceLicense": "GoByBudget dataset image URL. License review required before downloading or publishing third-party media.",
+      "warnings": [
+        "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded."
+      ]
+    },
+    {
+      "id": "scene-03",
+      "scriptLine": "Mexico: environ $1,470.",
+      "visualPrompt": "Mexico vertical travel-budget scene for: Mexico: environ $1,470.",
+      "startSeconds": 5.2,
+      "endSeconds": 7.8,
+      "durationSeconds": 2.6,
+      "sourceUrl": "https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?auto=format&fit=crop&w=1600&q=80",
+      "sourceLicense": "GoByBudget dataset image URL. License review required before downloading or publishing third-party media.",
+      "warnings": [
+        "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded."
+      ]
+    },
+    {
+      "id": "scene-04",
+      "scriptLine": "Guatemala: environ $1,420.",
+      "visualPrompt": "Guatemala vertical travel-budget scene for: Guatemala: environ $1,420.",
+      "startSeconds": 7.8,
+      "endSeconds": 10.4,
+      "durationSeconds": 2.6,
+      "sourceUrl": "https://images.unsplash.com/photo-1697382803428-71666ed66c94?auto=format&fit=crop&w=1600&q=80",
+      "sourceLicense": "GoByBudget dataset image URL. License review required before downloading or publishing third-party media.",
+      "warnings": [
+        "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded."
+      ]
+    },
+    {
+      "id": "scene-05",
+      "scriptLine": "Colombia: environ $1,490.",
+      "visualPrompt": "Colombia vertical travel-budget scene for: Colombia: environ $1,490.",
+      "startSeconds": 10.4,
+      "endSeconds": 13,
+      "durationSeconds": 2.6,
+      "sourceUrl": "https://images.unsplash.com/photo-1544989164-31dc3c645987?auto=format&fit=crop&w=1600&q=80",
+      "sourceLicense": "GoByBudget dataset image URL. License review required before downloading or publishing third-party media.",
+      "warnings": [
+        "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded."
+      ]
+    },
+    {
+      "id": "scene-06",
+      "scriptLine": "Mexico est l'option la plus basse de ce groupe.",
+      "visualPrompt": "Mexico vertical travel-budget scene for: Mexico est l'option la plus basse de ce groupe.",
+      "startSeconds": 13,
+      "endSeconds": 15.6,
+      "durationSeconds": 2.6,
+      "sourceUrl": "https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?auto=format&fit=crop&w=1600&q=80",
+      "sourceLicense": "GoByBudget dataset image URL. License review required before downloading or publishing third-party media.",
+      "warnings": [
+        "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded."
+      ]
+    },
+    {
+      "id": "scene-07",
+      "scriptLine": "Les prix sont des estimations, pas des garanties.",
+      "visualPrompt": "Mexico vertical travel-budget scene for: Les prix sont des estimations, pas des garanties.",
+      "startSeconds": 15.6,
+      "endSeconds": 18.2,
+      "durationSeconds": 2.6,
+      "sourceUrl": "https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?auto=format&fit=crop&w=1600&q=80",
+      "sourceLicense": "GoByBudget dataset image URL. License review required before downloading or publishing third-party media.",
+      "warnings": [
+        "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded."
+      ]
+    },
+    {
+      "id": "scene-08",
+      "scriptLine": "Teste ton propre budget sur GoByBudget.",
+      "visualPrompt": "Guatemala vertical travel-budget scene for: Teste ton propre budget sur GoByBudget.",
+      "startSeconds": 18.2,
+      "endSeconds": 21,
+      "durationSeconds": 2.8,
+      "sourceUrl": "https://images.unsplash.com/photo-1697382803428-71666ed66c94?auto=format&fit=crop&w=1600&q=80",
+      "sourceLicense": "GoByBudget dataset image URL. License review required before downloading or publishing third-party media.",
+      "warnings": [
+        "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded."
+      ]
+    }
+  ],
+  "warnings": [
+    "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded.",
+    "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded.",
+    "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded.",
+    "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded.",
+    "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded.",
+    "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded.",
+    "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded.",
+    "Phase 5 uses generated SVG placeholders; third-party visual media is not downloaded.",
+    "Voice generation is a placeholder until a TTS provider is enabled.",
+    "FFmpeg could not decode scene SVG files, so a branded fallback MP4 was rendered instead: ' (5000000) options\r\nInput #7, svg_pipe, from 'C:\\Users\\Felix\\Documents\\travelbudget\\.social-content-agent\\content\\31b7d0ce-97e5-4c57-92fb-afc42abdcc59\\scene-08.svg':\r\n  Duration: N/A, bitrate: N/A\r\n  Stream #7:0: Video: svg, none, 25 fps, 25 tbr, 25 tbn\r\n[vist#0:0/svg @ 000001a7f7c3e800] Decoding requested, but no decoder found for: svg\r\n[fc#0 @ 000001a7f7bcdc40] Error binding an input stream to complex filtergraph input scale:default.\r\nError binding filtergraph inputs/outputs: Invalid argument",
+    "Downloaded travel images from scene source URLs for local video rendering. Review image licenses before publication."
+  ]
+}

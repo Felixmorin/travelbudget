@@ -1,0 +1,31 @@
+1
+00:00:00,000 --> 00:00:03,200
+Tu as $1,500 et 7 jours?
+
+2
+00:00:03,200 --> 00:00:06,400
+Depuis Montreal, ces 3 destinations passent dans les estimations GoByBudget.
+
+3
+00:00:06,400 --> 00:00:09,600
+Mexico: environ $1,470.
+
+4
+00:00:09,600 --> 00:00:12,800
+Guatemala: environ $1,420.
+
+5
+00:00:12,800 --> 00:00:16,000
+Colombia: environ $1,490.
+
+6
+00:00:16,000 --> 00:00:19,200
+Mexico est l'option la plus basse de ce groupe.
+
+7
+00:00:19,200 --> 00:00:22,400
+Les prix sont des estimations, pas des garanties.
+
+8
+00:00:22,400 --> 00:00:25,600
+Teste ton propre budget sur GoByBudget.

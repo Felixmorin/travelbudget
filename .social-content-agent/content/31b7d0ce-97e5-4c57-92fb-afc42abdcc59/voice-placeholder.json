@@ -1,0 +1,5 @@
+{
+  "mode": "placeholder",
+  "reason": "TTS provider is not enabled in Phase 5 local dry-run.",
+  "script": "Tu as $1,500 et 7 jours?\nDepuis Montreal, ces 3 destinations passent dans les estimations GoByBudget.\nMexico: environ $1,470.\nGuatemala: environ $1,420.\nColombia: environ $1,490.\nMexico est l'option la plus basse de ce groupe.\nLes prix sont des estimations, pas des garanties.\nTeste ton propre budget sur GoByBudget."
+}
