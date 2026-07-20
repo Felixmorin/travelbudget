@@ -39,7 +39,7 @@ export type GuideHubData = {
 };
 
 const publishedAtBySlug: Record<string, string> = {
-  "travel-budget-calculator": "2026-07-07",
+  "how-to-calculate-trip-cost": "2026-07-07",
   "japan-travel-budget-from-canada": "2026-07-06",
   "japan-10-day-budget-from-canada": "2026-07-05",
   "portugal-trip-cost-from-montreal": "2026-07-04",

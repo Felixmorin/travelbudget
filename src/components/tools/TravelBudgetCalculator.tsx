@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useMemo, useRef, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowRight, Check, Mail, MapPin, Plane, Sparkles } from "lucide-react";
 
 import { AffiliateCTA } from "@/components/affiliate/AffiliateCTA";
@@ -260,7 +260,7 @@ const destinationEstimates: DestinationEstimate[] = [
 ];
 
 export function TravelBudgetCalculator() {
-  const [answers, setAnswers] = useState<TripAnswers>(getInitialAnswers);
+  const [answers, setAnswers] = useState<TripAnswers>(defaultAnswers);
   const [currentStep, setCurrentStep] = useState(0);
   const [showResults, setShowResults] = useState(false);
   const [email, setEmail] = useState("");
@@ -273,6 +273,18 @@ export function TravelBudgetCalculator() {
   const canContinue = isStepComplete(activeStep, answers);
   const matches = useMemo(() => getTripMatches(answers), [answers]);
   const summary = useMemo(() => getAnswerSummary(answers), [answers]);
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      const initialAnswers = getInitialAnswersFromUrl();
+
+      if (initialAnswers) {
+        setAnswers(initialAnswers);
+      }
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, []);
 
   function updateAnswer(nextAnswers: Partial<TripAnswers>) {
     setAnswers((current) => ({ ...current, ...nextAnswers }));
@@ -525,16 +537,12 @@ export function TravelBudgetCalculator() {
   );
 }
 
-function getInitialAnswers(): TripAnswers {
-  if (typeof window === "undefined") {
-    return defaultAnswers;
-  }
-
+function getInitialAnswersFromUrl(): TripAnswers | null {
   const params = new URLSearchParams(window.location.search);
   const origin = params.get("origin") ?? params.get("from");
   const city = getDepartureCityForInput(origin);
 
-  return city ? { ...defaultAnswers, departureCity: city.name } : defaultAnswers;
+  return city ? { ...defaultAnswers, departureCity: city.name } : null;
 }
 
 function QuestionContent({

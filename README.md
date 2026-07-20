@@ -113,7 +113,7 @@ Starts the production server after a build.
 - `/compare` - destination comparison table and comparison guide hub
 - `/compare/[comparison]` - 4 generated comparison SEO pages
 - `/tools` - travel tools directory
-- `/tools/travel-budget-calculator` - budget calculator page
+- `/travel-budget-calculator` - canonical travel budget calculator page
 - `/guides` - guides hub
 - `/guide` - guide landing page
 - `/about` - product/about page

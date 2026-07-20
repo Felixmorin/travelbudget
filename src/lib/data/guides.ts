@@ -61,11 +61,11 @@ const defaultImageAlt = "Open travel notebook with map, pen, and trip planning n
 
 export const longTailGuides: LongTailGuide[] = [
   guide({
-    slug: "travel-budget-calculator",
-    title: "How to estimate a trip budget before booking",
+    slug: "how-to-calculate-trip-cost",
+    title: "How to calculate trip cost before booking",
     category: "Budget planning",
-    intent: "Learn which costs to compare before using the travel budget calculator for flights, stays, food, transport, activities, insurance, and a cash buffer.",
-    summary: "A practical guide to using GoByBudget.com as a trip cost calculator, with the inputs that matter most.",
+    intent: "Learn which costs to compare before using a trip budget calculator for flights, stays, food, transport, activities, insurance, and a cash buffer.",
+    summary: "A practical informational guide to estimating full vacation costs before using the GoByBudget calculator.",
     quickAnswer:
       "A serious travel budget calculator should start with origin, destination, trip length, travel style, and traveler count, then separate fixed costs from daily costs before adding a buffer.",
     costNotes: [

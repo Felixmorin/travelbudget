@@ -37,6 +37,11 @@ const nextConfig: NextConfig = {
         destination: "/travel-budget-calculator",
         permanent: true,
       },
+      {
+        source: "/guides/travel-budget-calculator",
+        destination: "/travel-budget-calculator",
+        permanent: true,
+      },
     ];
   },
   async headers() {
