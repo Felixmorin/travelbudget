@@ -44,6 +44,13 @@ export type CollectionPageSchemaInput = {
   path: string;
 };
 
+export type WebPageSchemaInput = {
+  name: string;
+  description: string;
+  path: string;
+  about?: string[];
+};
+
 export function serializeJsonLd(schema: SchemaObject | SchemaObject[]) {
   return JSON.stringify(schema).replace(/</g, "\\u003c");
 }
@@ -63,6 +70,25 @@ export function createOrganizationSchema(): SchemaObject {
     name: siteConfig.name,
     url: createCanonicalUrl("/"),
     sameAs: [siteConfig.instagramUrl],
+  });
+}
+
+export function createWebPageSchema(page: WebPageSchemaInput): SchemaObject {
+  return withContext({
+    "@type": "WebPage",
+    name: page.name,
+    url: createCanonicalUrl(page.path),
+    description: page.description,
+    isPartOf: {
+      "@type": "WebSite",
+      name: siteConfig.name,
+      url: createCanonicalUrl("/"),
+    },
+    ...(page.about
+      ? {
+          about: page.about,
+        }
+      : {}),
   });
 }
 
