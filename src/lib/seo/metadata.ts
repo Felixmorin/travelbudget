@@ -6,6 +6,7 @@ import { getCityCountryLabel } from "@/lib/data/unified-destinations";
 export const siteConfig = {
   name: "GoByBudget",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://gobybudget.com",
+  instagramUrl: "https://www.instagram.com/gobybudget/",
   title: "Travel Budget Calculator & Destinations by Budget | GoByBudget",
   titleTemplate: "%s | GoByBudget",
   description:

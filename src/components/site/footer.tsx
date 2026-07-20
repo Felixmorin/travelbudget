@@ -4,7 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { useTranslation } from "@/components/i18n/language-provider";
+import { InstagramIcon } from "@/components/site/instagram-icon";
 import { OPEN_COOKIE_CONSENT_EVENT } from "@/lib/analytics/consent";
+import { siteConfig } from "@/lib/seo/metadata";
 
 const footerSections = [
   {
@@ -60,6 +62,15 @@ export function Footer() {
           <p className="mt-3 max-w-sm text-xs leading-5 text-[#64748b]">
             GoByBudget may earn a commission when you book through partner links, at no additional cost to you.
           </p>
+          <a
+            href={siteConfig.instagramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#0B1D34] hover:text-[#14B8A6]"
+          >
+            <InstagramIcon className="size-4" aria-hidden="true" />
+            <span>Instagram</span>
+          </a>
         </div>
         {footerSections.map((section) => (
           <div key={section.titleKey}>

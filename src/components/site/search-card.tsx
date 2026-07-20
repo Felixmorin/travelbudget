@@ -6,7 +6,6 @@ import { ArrowRight, Calendar, MapPin, Users, Wallet } from "lucide-react";
 
 import { useTranslation } from "@/components/i18n/language-provider";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -107,14 +106,12 @@ export function SearchCard() {
   }
 
   return (
-    <Card className="w-full border-white/50 bg-white/95 shadow-2xl shadow-slate-950/20 backdrop-blur">
-      <CardHeader>
-        <CardTitle className="text-lg text-slate-950">{t.search.title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit}>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field label={t.search.budget} icon={<Wallet className="size-4" />}>
+    <form
+      onSubmit={handleSubmit}
+      className="mx-auto w-full max-w-5xl rounded-[2rem] border border-slate-200 bg-white p-3 shadow-[0_22px_70px_-35px_rgba(15,23,42,0.45)]"
+    >
+      <div className="grid gap-2 md:grid-cols-[1.05fr_0.95fr_0.85fr_0.8fr_auto] md:items-center">
+        <SearchField label={t.search.budget} icon={<Wallet className="size-5" />}>
               <Input
                 value={budget}
                 onFocus={trackSearchStarted}
@@ -125,29 +122,11 @@ export function SearchCard() {
                 inputMode="numeric"
                 min={100}
                 max={250000}
-                className="h-11 bg-white"
+                aria-label={t.search.budget}
+                className="h-11 border-0 bg-transparent px-0 text-base font-semibold shadow-none focus-visible:ring-0"
               />
-            </Field>
-            <Field label={t.search.currency}>
-              <Select
-                value={currency}
-                onValueChange={(value) => {
-                  trackSearchStarted();
-                  setCurrency(getOption(currencies, value, "CAD"));
-                }}
-              >
-                <SelectTrigger className="h-11 w-full bg-white">
-                  <SelectValue placeholder={t.search.currency} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="CAD">CAD</SelectItem>
-                  <SelectItem value="USD">USD</SelectItem>
-                  <SelectItem value="EUR">EUR</SelectItem>
-                  <SelectItem value="GBP">GBP</SelectItem>
-                </SelectContent>
-              </Select>
-            </Field>
-            <Field label={t.search.departureCity} icon={<MapPin className="size-4" />}>
+        </SearchField>
+        <SearchField label={t.search.departureCity} icon={<MapPin className="size-5" />}>
               <Input
                 value={origin}
                 list="departure-city-options"
@@ -156,7 +135,8 @@ export function SearchCard() {
                   trackSearchStarted();
                   setOrigin(event.target.value);
                 }}
-                className="h-11 bg-white"
+                aria-label={t.search.departureCity}
+                className="h-11 border-0 bg-transparent px-0 text-base font-semibold shadow-none focus-visible:ring-0"
               />
               <datalist id="departure-city-options">
                 {activeDepartureCities.map((city) => (
@@ -165,8 +145,8 @@ export function SearchCard() {
                   </option>
                 ))}
               </datalist>
-            </Field>
-            <Field label={t.search.duration} icon={<Calendar className="size-4" />}>
+        </SearchField>
+        <SearchField label={t.search.duration} icon={<Calendar className="size-5" />}>
               <Select
                 value={days}
                 onValueChange={(value) => {
@@ -174,7 +154,7 @@ export function SearchCard() {
                   setDays(getOption(dayOptions, value, "10"));
                 }}
               >
-                <SelectTrigger className="h-11 w-full bg-white">
+                <SelectTrigger aria-label={t.search.duration} className="h-11 w-full border-0 bg-transparent px-0 text-base font-semibold shadow-none">
                   <SelectValue placeholder={t.search.duration} />
                 </SelectTrigger>
                 <SelectContent>
@@ -183,8 +163,54 @@ export function SearchCard() {
                   <SelectItem value="14">14 {t.search.days}</SelectItem>
                 </SelectContent>
               </Select>
-            </Field>
-            <Field label={t.search.travelMonth}>
+        </SearchField>
+        <SearchField label={t.search.travelers} icon={<Users className="size-5" />}>
+              <Select
+                value={travelers}
+                onValueChange={(value) => {
+                  trackSearchStarted();
+                  setTravelers(getOption(travelerOptions, value, "2"));
+                }}
+              >
+                <SelectTrigger aria-label={t.search.travelers} className="h-11 w-full border-0 bg-transparent px-0 text-base font-semibold shadow-none">
+                  <SelectValue placeholder={t.search.travelers} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">1 {t.search.traveler}</SelectItem>
+                  <SelectItem value="2">2 {t.search.travelersPlural}</SelectItem>
+                  <SelectItem value="4">4 {t.search.travelersPlural}</SelectItem>
+                </SelectContent>
+              </Select>
+        </SearchField>
+
+        <Button type="submit" className="h-14 rounded-2xl bg-orange-500 px-7 text-base font-bold text-white hover:bg-orange-600 md:h-16 md:rounded-full">
+          <span className="md:hidden">{t.search.submit}</span>
+          <span className="hidden md:inline">Find trips</span>
+          <ArrowRight className="ml-2 size-4" />
+        </Button>
+      </div>
+
+      <div className="mt-2 grid gap-2 border-t border-slate-100 pt-2 sm:grid-cols-3">
+        <Field label={t.search.currency}>
+          <Select
+            value={currency}
+            onValueChange={(value) => {
+              trackSearchStarted();
+              setCurrency(getOption(currencies, value, "CAD"));
+            }}
+          >
+            <SelectTrigger className="h-10 w-full border-0 bg-slate-50">
+              <SelectValue placeholder={t.search.currency} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="CAD">CAD</SelectItem>
+              <SelectItem value="USD">USD</SelectItem>
+              <SelectItem value="EUR">EUR</SelectItem>
+              <SelectItem value="GBP">GBP</SelectItem>
+            </SelectContent>
+          </Select>
+        </Field>
+        <Field label={t.search.travelMonth}>
               <Select
                 value={month}
                 onValueChange={(value) => {
@@ -192,7 +218,7 @@ export function SearchCard() {
                   setMonth(getOption(months, value, "october"));
                 }}
               >
-                <SelectTrigger className="h-11 w-full bg-white">
+                <SelectTrigger className="h-10 w-full border-0 bg-slate-50">
                   <SelectValue placeholder={t.search.travelMonth} />
                 </SelectTrigger>
                 <SelectContent>
@@ -203,26 +229,8 @@ export function SearchCard() {
                   ))}
                 </SelectContent>
               </Select>
-            </Field>
-            <Field label={t.search.travelers} icon={<Users className="size-4" />}>
-              <Select
-                value={travelers}
-                onValueChange={(value) => {
-                  trackSearchStarted();
-                  setTravelers(getOption(travelerOptions, value, "2"));
-                }}
-              >
-                <SelectTrigger className="h-11 w-full bg-white">
-                  <SelectValue placeholder={t.search.travelers} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">1 {t.search.traveler}</SelectItem>
-                  <SelectItem value="2">2 {t.search.travelersPlural}</SelectItem>
-                  <SelectItem value="4">4 {t.search.travelersPlural}</SelectItem>
-                </SelectContent>
-              </Select>
-            </Field>
-            <Field label={t.search.travelStyle}>
+        </Field>
+        <Field label={t.search.travelStyle}>
               <Select
                 value={style}
                 onValueChange={(value) => {
@@ -230,7 +238,7 @@ export function SearchCard() {
                   setStyle(getOption(styles, value, "balanced"));
                 }}
               >
-                <SelectTrigger className="h-11 w-full bg-white">
+                <SelectTrigger className="h-10 w-full border-0 bg-slate-50">
                   <SelectValue placeholder={t.search.travelStyle} />
                 </SelectTrigger>
                 <SelectContent>
@@ -239,16 +247,10 @@ export function SearchCard() {
                   <SelectItem value="comfort">{t.search.comfort}</SelectItem>
                 </SelectContent>
               </Select>
-            </Field>
-          </div>
-          {error ? <p className="mt-4 text-sm font-medium text-red-600">{error}</p> : null}
-          <Button type="submit" className="mt-5 h-12 w-full rounded-xl bg-orange-500 text-base text-white hover:bg-orange-600">
-            {t.search.submit}
-            <ArrowRight className="ml-2 size-4" />
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+        </Field>
+      </div>
+      {error ? <p className="mt-4 text-center text-sm font-medium text-red-600">{error}</p> : null}
+    </form>
   );
 }
 
@@ -262,20 +264,35 @@ function normalizeTextValue(value: string) {
 
 function Field({
   label,
-  icon,
   children,
 }: {
   label: string;
-  icon?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
     <div className="grid gap-2">
-      <Label className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
-        {icon}
-        {label}
-      </Label>
+      <Label className="sr-only">{label}</Label>
       {children}
+    </div>
+  );
+}
+
+function SearchField({
+  label,
+  icon,
+  children,
+}: {
+  label: string;
+  icon: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex min-h-16 min-w-0 items-center gap-3 rounded-2xl bg-slate-50 px-4 md:bg-white md:pr-5 md:[&:not(:last-of-type)]:border-r md:[&:not(:last-of-type)]:border-slate-200">
+      <span className="shrink-0 text-slate-400">{icon}</span>
+      <div className="min-w-0 flex-1">
+        <Label className="text-[11px] font-bold uppercase tracking-wide text-slate-400">{label}</Label>
+        {children}
+      </div>
     </div>
   );
 }

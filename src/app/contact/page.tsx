@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { Mail, MessageSquare, ShieldCheck } from "lucide-react";
 
+import { InstagramIcon } from "@/components/site/instagram-icon";
 import { Button } from "@/components/ui/button";
-import { createMetadata } from "@/lib/seo/metadata";
+import { createMetadata, siteConfig } from "@/lib/seo/metadata";
 
 export const metadata = createMetadata({
   title: "Contact",
@@ -46,20 +47,32 @@ export default function ContactPage() {
             </div>
 
             <div className="rounded-2xl border border-[#c3c6d7]/45 bg-[#f7f9fb] p-6">
-              <ShieldCheck className="size-8 text-[#0B1D34]" />
-              <h2 className="mt-4 text-xl font-semibold">What to include</h2>
+              <InstagramIcon className="size-8 text-[#0B1D34]" />
+              <h2 className="mt-4 text-xl font-semibold">Instagram</h2>
               <p className="mt-2 text-sm leading-6 text-[#434655]">
-                Include the destination, trip length, departure city, travel style, and live price you are comparing
-                against when reporting an estimate issue.
+                Follow GoByBudget for budget travel ideas, destination notes, and product updates.
               </p>
+              <Button asChild variant="outline" className="mt-5 rounded-full border-[#737686] bg-white px-5 text-[#0B1D34]">
+                <a href={siteConfig.instagramUrl} target="_blank" rel="noopener noreferrer">
+                  @gobybudget
+                </a>
+              </Button>
             </div>
           </div>
 
           <div className="mt-8 rounded-2xl border border-[#14B8A6]/20 bg-[#14B8A6]/10 p-6">
             <div className="flex gap-3">
-              <MessageSquare className="mt-1 size-6 shrink-0 text-[#0B1D34]" />
+              <ShieldCheck className="mt-1 size-6 shrink-0 text-[#0B1D34]" />
               <div>
-                <h2 className="text-lg font-semibold text-slate-950">Common reasons to contact us</h2>
+                <h2 className="text-lg font-semibold text-slate-950">What to include</h2>
+                <p className="mt-2 text-sm leading-6 text-[#434655]">
+                  Include the destination, trip length, departure city, travel style, and live price you are comparing
+                  against when reporting an estimate issue.
+                </p>
+                <div className="mt-5 flex items-center gap-3">
+                  <MessageSquare className="size-5 shrink-0 text-[#0B1D34]" />
+                  <h2 className="text-lg font-semibold text-slate-950">Common reasons to contact us</h2>
+                </div>
                 <ul className="mt-4 grid gap-3 text-sm leading-6 text-[#434655] sm:grid-cols-2">
                   {contactReasons.map((reason) => (
                     <li key={reason} className="flex gap-2">

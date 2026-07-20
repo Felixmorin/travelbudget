@@ -62,6 +62,7 @@ export function createOrganizationSchema(): SchemaObject {
     "@type": "Organization",
     name: siteConfig.name,
     url: createCanonicalUrl("/"),
+    sameAs: [siteConfig.instagramUrl],
   });
 }
 

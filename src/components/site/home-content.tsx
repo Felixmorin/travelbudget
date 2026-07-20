@@ -2,12 +2,10 @@ import {
   ArrowRight,
   BarChart3,
   Bed,
-  CalendarCheck,
   CheckCircle2,
   CircleX,
   Diamond,
   Gauge,
-  Info,
   MapPinned,
   Plane,
   Search,
@@ -20,9 +18,6 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { SearchCard } from "@/components/site/search-card";
-import { cityDestinations } from "@/lib/data/destination-hub";
-import { destinations as countryDestinations } from "@/lib/data/destinations";
-import { longTailGuides } from "@/lib/data/guides";
 import { getPopularDepartureCities } from "@/lib/data/departure-cities";
 
 const matches = [
@@ -144,61 +139,35 @@ const faqs = [
 ];
 
 export function HomeContent() {
-  const countryDestinationCount = countryDestinations.length;
-  const cityDestinationCount = cityDestinations.length;
-  const guideCount = longTailGuides.length;
-
   return (
-    <main className="bg-[#f7f9fb] text-[#191c1e]">
-      <section className="relative overflow-hidden bg-[#07182a] text-white">
-        <div className="absolute inset-0">
-          <Image
-            src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=2200&q=85"
-            alt="Travelers overlooking a coastal city at sunset"
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover opacity-45"
-          />
-          <div className="absolute inset-0 bg-[#07182a]/65" />
-        </div>
+    <main className="bg-white text-[#191c1e]">
+      <section className="bg-white px-4 pb-16 pt-20 sm:px-6 lg:px-8 lg:pb-20 lg:pt-28">
+        <div className="mx-auto max-w-7xl text-center">
+          <h1 className="mx-auto max-w-5xl text-5xl font-extrabold leading-tight tracking-normal text-slate-950 sm:text-6xl lg:text-7xl">
+            Find trips that fit your budget
+          </h1>
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-[#434655] sm:text-lg">
+            Search by total trip budget, departure city, duration, and travelers. GoByBudget compares flights, stays,
+            food, transport, and activities in one estimate.
+          </p>
 
-        <div className="relative mx-auto grid max-w-7xl gap-8 px-4 pb-12 pt-14 sm:px-6 lg:grid-cols-12 lg:items-end lg:px-8 lg:pb-16 lg:pt-20">
-          <div className="lg:col-span-7">
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-wide text-white/85 backdrop-blur">
-              <CalendarCheck className="size-4" />
-              Budget-first trip planning
-            </div>
-            <h1 className="max-w-4xl text-4xl font-extrabold leading-tight tracking-tight sm:text-6xl lg:text-7xl">
-              Find Where You Can Travel With Your Budget
-            </h1>
-            <p className="mt-6 max-w-2xl text-base leading-8 text-white/85 sm:text-lg">
-              Enter your budget, departure city, trip length, and travel style. GoByBudget compares{" "}
-              {countryDestinationCount} country budgets, {cityDestinationCount} city destinations, and {guideCount}{" "}
-              planning guides to show realistic total trip costs.
-            </p>
-            <div className="mt-8 grid gap-3 text-sm font-semibold text-white/90 sm:grid-cols-3">
-              <span className="inline-flex items-center gap-2">
-                <Plane className="size-4 text-[#38BDF8]" />
-                Flights included
-              </span>
-              <span className="inline-flex items-center gap-2">
-                <Bed className="size-4 text-[#38BDF8]" />
-                Stays estimated
-              </span>
-              <span className="inline-flex items-center gap-2">
-                <ShieldCheck className="size-4 text-[#38BDF8]" />
-                Transparent method
-              </span>
-            </div>
+          <div className="mt-10">
+            <SearchCard />
           </div>
 
-          <div className="lg:col-span-5">
-            <SearchCard />
-            <p className="mt-4 flex items-center justify-center gap-2 text-center text-xs font-medium text-white/75">
-              <Info className="size-4" />
-              Estimates include flights, accommodation, food, transit, and local activities.
-            </p>
+          <div className="mx-auto mt-8 grid max-w-3xl gap-3 text-sm font-semibold text-[#434655] sm:grid-cols-3">
+            <span className="inline-flex items-center justify-center gap-2">
+              <Plane className="size-4 text-orange-500" />
+              Flights included
+            </span>
+            <span className="inline-flex items-center justify-center gap-2">
+              <Bed className="size-4 text-orange-500" />
+              Full trip totals
+            </span>
+            <span className="inline-flex items-center justify-center gap-2">
+              <ShieldCheck className="size-4 text-orange-500" />
+              Transparent estimates
+            </span>
           </div>
         </div>
       </section>
