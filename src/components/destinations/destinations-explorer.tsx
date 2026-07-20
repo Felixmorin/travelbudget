@@ -29,6 +29,7 @@ import {
   formatDestinationMoney,
 } from "@/lib/data/destination-hub";
 import { trackEvent } from "@/lib/analytics/track";
+import type { FAQItem } from "@/lib/seo/schema";
 import { cn } from "@/lib/utils";
 
 type SortOption = "best-match" | "price-low" | "price-high" | "popular";
@@ -71,7 +72,13 @@ const priorityTravelBudgetLinks = [
   { label: "Italy travel budget", href: "/destinations/italy/travel-budget" },
 ];
 
-export function DestinationsExplorer({ searchParams }: { searchParams: DestinationSearchParams }) {
+export function DestinationsExplorer({
+  searchParams,
+  faqItems,
+}: {
+  searchParams: DestinationSearchParams;
+  faqItems: FAQItem[];
+}) {
   const [filters, setFilters] = useState<Filters>(() => getFiltersFromSearchParams(searchParams));
   const [sort, setSort] = useState<SortOption>(() => getSortFromSearchParams(searchParams));
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -231,8 +238,10 @@ export function DestinationsExplorer({ searchParams }: { searchParams: Destinati
         </div>
       </section>
 
+      <EstimateMethodologyNote />
       <DestinationComparisonStrip destinations={filteredDestinations} />
       <DestinationsSeoSection />
+      <DestinationsFaqSection faqItems={faqItems} />
       <BottomCta />
 
       {mobileFiltersOpen ? (
@@ -291,13 +300,14 @@ function DestinationsHero({
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(#0B1D34_0.7px,transparent_0.7px)] bg-[length:22px_22px] opacity-[0.06]" />
       <div className="mx-auto max-w-7xl px-4 py-14 text-center sm:px-6 lg:px-8 lg:py-20">
         <Badge className="mb-5 h-7 rounded-full bg-[#6cf8bb]/35 px-3 text-[#005236]">
-          Budget-first destination discovery
+          Destination cost explorer
         </Badge>
         <h1 className="mx-auto max-w-4xl text-4xl font-semibold tracking-tight text-[#191c1e] sm:text-5xl lg:text-6xl">
-          Discover Destinations That Fit Your Budget
+          Explore travel destinations by cost, style, and season
         </h1>
         <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-[#434655] sm:text-lg">
-          Explore cities around the world and estimate how much your trip could cost before you book.
+          Filter destinations by departure city, budget, duration, month, and travel style. Compare estimated
+          flights, stays, food, activities, and total trip costs before you choose where to go.
         </p>
 
         <div className="mx-auto mt-10 grid max-w-5xl gap-2 rounded-2xl border border-slate-200 bg-white p-2 text-left shadow-2xl shadow-[#0B1D34]/10 md:grid-cols-[1.1fr_1fr_1fr_1fr_auto]">
@@ -377,7 +387,7 @@ function DestinationsHero({
                 source: "destinations_hero",
               }}
             >
-              Find destinations
+              Compare destinations
               <Search className="size-4" />
             </TrackedLink>
           </Button>
@@ -675,7 +685,7 @@ function DestinationCard({ destination }: { destination: CityDestination }) {
             </h3>
             <p className="mt-1 flex items-center gap-1 text-xs font-medium text-[#64748b]">
               <CalendarDays className="size-3.5" />
-              {destination.bestMonths.slice(0, 2).join(" / ")} · {destination.durationDays} days
+              {destination.bestMonths.slice(0, 2).join(" / ")} - {destination.durationDays} days
             </p>
           </div>
           <div className="text-right">
@@ -698,10 +708,7 @@ function DestinationCard({ destination }: { destination: CityDestination }) {
         </div>
 
         <p className="text-xs leading-5 text-[#64748b]">
-          Estimated costs may vary based on dates and availability.{" "}
-          <Link href="/methodology" className="font-semibold text-[#0B1D34] hover:underline">
-            How we estimate
-          </Link>
+          Planning estimate based on flights, stays, food, local transport, and activities.
         </p>
 
         <div className="mt-auto grid gap-3">
@@ -864,6 +871,26 @@ function ComparisonCard({ destinations }: { destinations: CityDestination[] }) {
   );
 }
 
+function EstimateMethodologyNote() {
+  return (
+    <section className="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h2 className="text-lg font-semibold text-[#191c1e]">How destination estimates are built</h2>
+          <p className="mt-1 max-w-3xl text-sm leading-6 text-[#434655]">
+            Each estimate combines typical flights, stays, food, local transport, and activities for the selected
+            departure city and trip duration. Use it for comparison before checking live prices.
+          </p>
+        </div>
+        <Link href="/methodology" className="inline-flex items-center gap-1 text-sm font-semibold text-[#0B1D34] hover:underline">
+          View methodology
+          <ArrowRight className="size-4" />
+        </Link>
+      </div>
+    </section>
+  );
+}
+
 function DestinationsSeoSection() {
   const popularSearches = [
     { label: "Destinations under $2,000 CAD", href: "/destinations?budget=2000#destination-results" },
@@ -883,7 +910,7 @@ function DestinationsSeoSection() {
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1fr_420px] lg:px-8">
         <div>
           <h2 className="text-3xl font-semibold tracking-tight text-[#191c1e]">
-            Find the best destinations for your travel budget
+            Compare destinations before choosing where to travel
           </h2>
           <div className="mt-6 grid gap-5 text-sm leading-7 text-[#434655]">
             <p>
@@ -897,8 +924,15 @@ function DestinationsSeoSection() {
               over a longer stay.
             </p>
             <p>
-              Use this hub to compare cities before you book, then open a destination or plan a trip with your own
-              budget, dates, and travel style. Estimated costs are based on available travel pricing data and may vary.
+              Use this explorer to compare cities before you book, then open a destination,{" "}
+              <Link href="/travel-budget-calculator" className="font-semibold text-[#0B1D34] hover:underline">
+                calculate your trip cost
+              </Link>
+              , or{" "}
+              <Link href="/destinations-by-budget" className="font-semibold text-[#0B1D34] hover:underline">
+                browse destinations by fixed budget
+              </Link>
+              . Estimated costs are based on available travel pricing data and may vary.
             </p>
           </div>
         </div>
@@ -936,6 +970,27 @@ function DestinationsSeoSection() {
   );
 }
 
+function DestinationsFaqSection({ faqItems }: { faqItems: FAQItem[] }) {
+  return (
+    <section className="bg-white px-4 py-14 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-4xl">
+        <h2 className="text-3xl font-semibold tracking-tight text-[#191c1e]">Destination explorer FAQ</h2>
+        <div className="mt-6 divide-y divide-slate-200 rounded-2xl border border-slate-200 bg-white">
+          {faqItems.map((faq) => (
+            <details key={faq.question} className="group p-5">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left font-semibold text-[#191c1e]">
+                {faq.question}
+                <span className="text-xl leading-none text-[#0B1D34] group-open:rotate-45">+</span>
+              </summary>
+              <p className="mt-3 text-sm leading-6 text-[#434655]">{faq.answer}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function BottomCta() {
   return (
     <section className="bg-[#0B1D34] px-4 py-16 text-white sm:px-6 lg:px-8">
@@ -946,13 +1001,13 @@ function BottomCta() {
         </p>
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
           <Button asChild className="h-12 rounded-xl bg-white px-6 text-[#0B1D34] hover:bg-slate-100">
-            <Link href="/results">
-              Plan a trip
+            <Link href="/travel-budget-calculator">
+              Calculate your trip cost
               <ArrowRight className="size-4" />
             </Link>
           </Button>
           <Button asChild variant="outline" className="h-12 rounded-xl border-white/35 bg-white/10 px-6 text-white hover:bg-white/15">
-            <Link href="/methodology">View methodology</Link>
+            <Link href="/destinations-by-budget">Browse destinations by fixed budget</Link>
           </Button>
         </div>
       </div>
