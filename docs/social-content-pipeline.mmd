@@ -1,0 +1,13 @@
+flowchart TD
+  A["CLI or admin trigger"] --> B["OrchestratorAgent creates run_id and content_id"]
+  B --> C["TopicAgent selects a GoByBudget-backed topic"]
+  C --> D["Data validation checks budget, currency, freshness, totals, and landing page"]
+  D --> E["ScriptAgent generates hook and script without inventing numbers"]
+  E --> F["CaptionAgent creates captions, hashtags, CTA, and UTM URL"]
+  F --> G["VisualAgent maps script lines to scenes and licensed sources"]
+  G --> H["VideoAgent renders voice, subtitles, MP4, and thumbnail"]
+  H --> I["Review queue stores metadata and files"]
+  I --> J{"Human decision"}
+  J --> K["Approved"]
+  J --> L["Rejected or regenerate selected part"]
+  K --> M["Future official API publishing only"]

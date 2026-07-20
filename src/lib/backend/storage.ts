@@ -1,4 +1,15 @@
-export type BackendTable = "affiliate_clicks" | "analytics_events" | "email_leads";
+export type BackendTable =
+  | "affiliate_clicks"
+  | "analytics_events"
+  | "email_leads"
+  | "content_topics"
+  | "content_generations"
+  | "content_assets"
+  | "content_scripts"
+  | "content_publications"
+  | "content_metrics"
+  | "content_experiments"
+  | "content_reviews";
 
 export type BackendRecord = Record<
   string,

@@ -15,6 +15,9 @@
 /test-results
 /playwright-report
 
+# local social content agent output
+/.social-content-agent
+
 # next.js
 /.next/
 /out/

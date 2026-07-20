@@ -5,6 +5,7 @@ export type LogEventType =
   | "affiliate_persist_error"
   | "client_error"
   | "email_lead_error"
+  | "social_content_error"
   | "supabase_error"
   | "system";
 
