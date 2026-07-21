@@ -28,7 +28,7 @@ import {
 import { getCityCountryLabel, unifiedDestinations } from "@/lib/data/unified-destinations";
 import { getDestinationIata } from "@/lib/affiliates/iata";
 import { formatMoney } from "@/lib/format-money";
-import { comparisonPages, getComparisonPath } from "@/lib/programmatic/comparison-pages";
+import { getComparisonPath, getPublishedComparisonPages } from "@/lib/programmatic/comparison-pages";
 
 const destinationOptions = unifiedDestinations
   .filter((destination) => destination.destinationKind === "city")
@@ -636,7 +636,7 @@ export function PopularComparisons() {
     <section className="rounded-[24px] border border-slate-200 bg-white p-6">
       <h2 className="text-2xl font-semibold tracking-tight text-slate-950">Popular destination comparisons</h2>
       <div className="mt-5 grid gap-4 md:grid-cols-2">
-        {comparisonPages.map((page) => (
+        {getPublishedComparisonPages().map((page) => (
           <TrackedLink
             key={page.slug}
             href={getComparisonPath(page)}

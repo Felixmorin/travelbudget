@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import sitemap from "@/app/sitemap";
+import { getComparisonPath, getPublishedComparisonPages } from "@/lib/programmatic/comparison-pages";
 import {
   getAllSeoRegistryPages,
   getBudgetAmountPath,
@@ -62,8 +63,10 @@ describe("programmatic SEO registry", () => {
 
   it("keeps all pilot comparisons eligible for indexing", () => {
     const pages = getAllSeoRegistryPages().filter((page) => page.type === "comparison");
+    const publishedComparisonPaths = getPublishedComparisonPages().map(getComparisonPath);
 
     expect(pages).toHaveLength(6);
+    expect(pages.map((page) => page.path)).toEqual(publishedComparisonPaths);
     expect(pages.every((page) => page.evaluation.status === "index")).toBe(true);
   });
 

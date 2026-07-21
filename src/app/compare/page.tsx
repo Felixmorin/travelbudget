@@ -8,7 +8,7 @@ import { EstimateDisclaimer } from "@/components/site/estimate-disclaimer";
 import { Button } from "@/components/ui/button";
 import { unifiedDestinations } from "@/lib/data/unified-destinations";
 import { parseCompareParams } from "@/lib/compare/url-params";
-import { comparisonPages, getComparisonPath } from "@/lib/programmatic/comparison-pages";
+import { getComparisonPath, getPublishedComparisonPages } from "@/lib/programmatic/comparison-pages";
 import { createMetadata } from "@/lib/seo/metadata";
 import {
   createBreadcrumbSchema,
@@ -34,7 +34,7 @@ const jsonLd = [
   ]),
   createFAQSchema(compareFaqs),
   createItemListSchema(
-    comparisonPages.map((page) => ({
+    getPublishedComparisonPages().map((page) => ({
       name: page.title,
       url: getComparisonPath(page),
       description: page.description,

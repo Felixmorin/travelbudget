@@ -5,6 +5,7 @@ import {
   getComparisonItems,
   getComparisonPage,
   getComparisonPath,
+  getPublishedComparisonPages,
   getComparisonStaticParams,
   getComparisonTableRows,
   getComparisonVerdict,
@@ -81,5 +82,26 @@ describe("comparison SEO pages", () => {
     expect(getComparisonStaticParams()).toContainEqual({
       comparison: "best-europe-trips-from-toronto-under-3000",
     });
+  });
+
+  it("only links published comparison pages from the compare hub", () => {
+    const staticParamSlugs = new Set(getComparisonStaticParams().map((param) => param.comparison));
+    const linkedComparisonSlugs = getPublishedComparisonPages().map((page) => page.slug);
+
+    expect(linkedComparisonSlugs).toHaveLength(staticParamSlugs.size);
+    expect(linkedComparisonSlugs.every((slug) => staticParamSlugs.has(slug))).toBe(true);
+    expect(linkedComparisonSlugs).not.toEqual(
+      expect.arrayContaining([
+        "paris-vs-lisbon",
+        "paris-vs-lisbon-from-montreal",
+        "tokyo-vs-seoul-from-vancouver",
+        "paris-vs-lisbon-for-7-days",
+        "portugal-vs-spain-travel-budget",
+        "japan-vs-south-korea-travel-cost",
+        "mexico-vs-colombia-from-montreal",
+        "best-warm-destinations-from-toronto-under-2500",
+        "best-asia-trips-from-vancouver-under-3500",
+      ])
+    );
   });
 });

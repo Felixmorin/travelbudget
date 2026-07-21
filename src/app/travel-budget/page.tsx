@@ -170,7 +170,7 @@ const internalLinkGroups = [
       },
       {
         label: "Portugal vs Spain travel budget",
-        href: "/compare/portugal-vs-spain-travel-budget",
+        href: "/compare/portugal-vs-spain",
         description: "Compare two popular Europe options by total trip cost.",
       },
       {

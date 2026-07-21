@@ -17,9 +17,10 @@ import {
   type ProgrammaticBudgetPageConfig,
 } from "@/lib/programmatic/budget-pages";
 import {
-  comparisonPages,
   getComparisonItems,
   getComparisonPath,
+  getPublishedComparisonPages,
+  pilotComparisonSlugs,
   type ComparisonPageConfig,
 } from "@/lib/programmatic/comparison-pages";
 
@@ -69,14 +70,7 @@ export const pilotDestinationSlugs = [
 
 export const pilotDurationDays = [7, 10, 14] as const;
 
-export const pilotComparisonSlugs = [
-  "portugal-vs-spain",
-  "japan-vs-south-korea",
-  "mexico-vs-colombia",
-  "france-vs-italy",
-  "thailand-vs-vietnam",
-  "best-europe-trips-from-toronto-under-3000",
-] as const;
+export { pilotComparisonSlugs };
 
 export function getPilotDestinations() {
   return pilotDestinationSlugs
@@ -198,7 +192,7 @@ export function getAllSeoRegistryPages(): SeoRegistryPage[] {
     ...pilotBudgetAmounts.map((amount) => createBudgetAmountRegistryPage(amount)),
     ...programmaticBudgetPages.map(createOriginBudgetRegistryPage),
     ...pilotDurationDays.map((days) => createTripLengthRegistryPage(days)),
-    ...comparisonPages.filter(isPilotComparison).map(createComparisonRegistryPage),
+    ...getPublishedComparisonPages().map(createComparisonRegistryPage),
   ];
 }
 
@@ -462,10 +456,6 @@ function hasUniqueDestinationData(destination: Destination) {
 function hasCostBreakdown(breakdown: Record<string, number>) {
   const required = ["flights", "accommodation", "food", "localTransport", "activities"];
   return required.every((key) => Number.isFinite(breakdown[key]) && breakdown[key] > 0);
-}
-
-function isPilotComparison(page: ComparisonPageConfig) {
-  return pilotComparisonSlugs.includes(page.slug as (typeof pilotComparisonSlugs)[number]);
 }
 
 function uniqueBudgetDestinations(destinations: BudgetDestination[]) {

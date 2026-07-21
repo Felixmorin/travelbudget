@@ -403,7 +403,7 @@ export const longTailGuides: LongTailGuide[] = [
     internalLinks: [
       {
         label: "Portugal vs Spain comparison",
-        href: "/compare/portugal-vs-spain-travel-budget",
+        href: "/compare/portugal-vs-spain",
         description: "Compare destination estimates and value tradeoffs side by side.",
       },
       {

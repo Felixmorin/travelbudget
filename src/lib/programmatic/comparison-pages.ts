@@ -260,14 +260,14 @@ export const comparisonPages: ComparisonPageConfig[] = [
   },
 ];
 
-const pilotComparisonSlugs = [
+export const pilotComparisonSlugs = [
   "portugal-vs-spain",
   "japan-vs-south-korea",
   "mexico-vs-colombia",
   "france-vs-italy",
   "thailand-vs-vietnam",
   "best-europe-trips-from-toronto-under-3000",
-];
+] as const;
 
 export function getComparisonPage(slug: string) {
   return comparisonPages.find((page) => page.slug === slug);
@@ -301,9 +301,16 @@ export function getComparisonSeoTitle(page: ComparisonPageConfig) {
 }
 
 export function getComparisonStaticParams() {
-  return comparisonPages
-    .filter((page) => pilotComparisonSlugs.includes(page.slug))
-    .map((page) => ({ comparison: page.slug }));
+  return getPublishedComparisonPages().map((page) => ({ comparison: page.slug }));
+}
+
+export function getPublishedComparisonPages() {
+  return comparisonPages.filter(isPublishedComparisonPage);
+}
+
+export function isPublishedComparisonPage(pageOrSlug: ComparisonPageConfig | string) {
+  const slug = typeof pageOrSlug === "string" ? pageOrSlug : pageOrSlug.slug;
+  return pilotComparisonSlugs.includes(slug as (typeof pilotComparisonSlugs)[number]);
 }
 
 export function getComparisonItems(page: ComparisonPageConfig): DestinationComparisonItem[] {
