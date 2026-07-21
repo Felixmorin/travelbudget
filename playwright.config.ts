@@ -1,5 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const port = process.env.PORT ?? "3000";
+const baseURL = `http://localhost:${port}`;
+
 export default defineConfig({
   testDir: "./tests/e2e",
   timeout: 30_000,
@@ -9,7 +12,7 @@ export default defineConfig({
   fullyParallel: true,
   reporter: [["list"]],
   use: {
-    baseURL: "http://localhost:3000",
+    baseURL,
     trace: "retain-on-failure",
   },
   projects: [
@@ -19,7 +22,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npm run build && npm run start",
+    command: `npm run build && npm run start -- --port ${port}`,
     env: {
       ...process.env,
       NEXT_PUBLIC_GA_MEASUREMENT_ID: "G-TEST123",
@@ -31,10 +34,11 @@ export default defineConfig({
       SUPABASE_URL: "",
       SUPABASE_SERVICE_ROLE_KEY: "",
       SUPABASE_STORAGE_MODE: "memory",
+      TRIP_BUDGET_EMAIL_DELIVERY_MODE: "skip",
       INCIDENT_ALERTING_PROVIDER: "playwright",
       INCIDENT_ALERTING_ESCALATION_TARGET: "test-on-call",
     },
-    url: "http://localhost:3000",
+    url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },

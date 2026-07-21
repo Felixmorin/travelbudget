@@ -142,6 +142,10 @@ export function clearStoredTripBudgetLeads() {
 }
 
 async function sendTripBudgetEmail(payload: TripBudgetLeadPayload): Promise<DeliveryResult> {
+  if (process.env.TRIP_BUDGET_EMAIL_DELIVERY_MODE === "skip") {
+    return { providerId: null, sentAt: null, status: "skipped" };
+  }
+
   const apiKey = process.env.RESEND_API_KEY?.trim();
   const from = process.env.EMAIL_FROM_ADDRESS?.trim();
 

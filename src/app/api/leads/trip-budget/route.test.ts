@@ -14,6 +14,7 @@ describe("trip budget lead route", () => {
     delete process.env.SUPABASE_ANON_KEY;
     delete process.env.RESEND_API_KEY;
     delete process.env.EMAIL_FROM_ADDRESS;
+    delete process.env.TRIP_BUDGET_EMAIL_DELIVERY_MODE;
     clearStoredTripBudgetLeads();
     clearAnalyticsEvents();
     resetRequestGuardState();
@@ -68,6 +69,24 @@ describe("trip budget lead route", () => {
 
     expect(accepted.status).toBe(200);
     expect(listStoredTripBudgetLeads().at(0)?.marketingConsent).toBe(false);
+  });
+
+  it("can explicitly skip email delivery for smoke tests", async () => {
+    vi.stubEnv("TRIP_BUDGET_EMAIL_DELIVERY_MODE", "skip");
+    const fetch = vi.fn();
+    vi.stubGlobal("fetch", fetch);
+
+    const response = await POST(createRequest());
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ ok: true, emailStatus: "skipped" });
+    expect(fetch).not.toHaveBeenCalled();
+    expect(listStoredTripBudgetLeads()).toMatchObject([
+      {
+        email: "traveler@example.com",
+        emailStatus: "skipped",
+      },
+    ]);
   });
 
   it("deduplicates repeated identical submissions", async () => {
