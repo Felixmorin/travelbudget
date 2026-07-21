@@ -67,7 +67,7 @@ export function EmailCaptureForm({
       <label className="sr-only" htmlFor="budget-email">
         {inputLabel}
       </label>
-      <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
+      <div className="grid gap-2 lg:grid-cols-1 xl:grid-cols-[minmax(0,1fr)_auto]">
         <input
           id="budget-email"
           type="email"
@@ -80,12 +80,12 @@ export function EmailCaptureForm({
             setSubmitted(false);
           }}
           placeholder={placeholder}
-          className="h-12 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-950 outline-none focus:border-[#0B1D34] focus:ring-3 focus:ring-[#0B1D34]/20"
+          className="h-12 min-w-0 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-950 outline-none focus:border-[#0B1D34] focus:ring-3 focus:ring-[#0B1D34]/20"
         />
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="h-12 rounded-xl bg-[#0B1D34] font-bold text-white hover:bg-[#0B1D34]"
+          className="h-12 min-w-0 rounded-xl bg-[#0B1D34] font-bold text-white hover:bg-[#0B1D34]"
         >
           {isSubmitting ? "Saving..." : buttonLabel}
         </Button>

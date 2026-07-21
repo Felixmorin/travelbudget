@@ -1,11 +1,12 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+import { requireSupabaseAuthConfig } from "./config";
 
-export const createClient = (cookieStore: Awaited<ReturnType<typeof cookies>>) =>
-  createServerClient(supabaseUrl!, supabaseKey!, {
+export const createClient = (cookieStore: Awaited<ReturnType<typeof cookies>>) => {
+  const config = requireSupabaseAuthConfig();
+
+  return createServerClient(config.url, config.anonKey, {
     cookies: {
       getAll() {
         return cookieStore.getAll();
@@ -21,3 +22,4 @@ export const createClient = (cookieStore: Awaited<ReturnType<typeof cookies>>) =
       },
     },
   });
+};

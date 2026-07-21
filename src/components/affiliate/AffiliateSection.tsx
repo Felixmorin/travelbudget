@@ -40,12 +40,12 @@ export function AffiliateSection({
   }
 
   return (
-    <section className={cn("grid gap-3", className)}>
+    <section className={cn("grid min-w-0 gap-3", className)}>
       <div>
         <h2 className="text-lg font-semibold text-slate-950">{title}</h2>
         <AffiliateDisclosure className="mt-1" />
       </div>
-      <div className="grid gap-2">
+      <div className="grid min-w-0 gap-2">
         {recommendations.map((recommendation) => (
           <TrackedLink
             key={recommendation.category}
@@ -55,7 +55,7 @@ export function AffiliateSection({
             target={affiliateLinkTarget}
             rel={affiliateLinkRel}
             prefetch={false}
-            className="rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-[#0B1D34] transition hover:border-[#14B8A6]"
+            className="min-w-0 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-semibold leading-5 text-[#0B1D34] transition hover:border-[#14B8A6]"
           >
             {recommendation.label}
           </TrackedLink>

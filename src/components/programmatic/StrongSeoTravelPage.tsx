@@ -177,10 +177,10 @@ export function StrongSeoTravelPage({ page }: { page: StrongSeoPage }) {
         </div>
 
         <aside className="grid h-fit gap-5 lg:sticky lg:top-24">
-          <section className="rounded-[24px] border border-slate-200 bg-white p-6">
+          <section className="min-w-0 rounded-[24px] border border-slate-200 bg-white p-6">
             <h2 className="text-xl font-semibold">Plan this trip</h2>
-            <div className="mt-5 grid gap-3">
-              <Button asChild className="rounded-full bg-[#0B1D34] text-white hover:bg-[#0B1D34]">
+            <div className="mt-5 grid min-w-0 gap-3">
+              <Button asChild className="h-auto min-h-8 w-full min-w-0 whitespace-normal rounded-full bg-[#0B1D34] px-4 py-2 text-center leading-5 text-white hover:bg-[#0B1D34]">
                 <FlightAffiliateLink
                   origin={page.origin.city}
                   originIata={page.origin.code}
@@ -195,7 +195,7 @@ export function StrongSeoTravelPage({ page }: { page: StrongSeoPage }) {
                   <ArrowRight className="ml-2 size-4" />
                 </FlightAffiliateLink>
               </Button>
-              <div className="rounded-2xl bg-slate-50 p-4">
+              <div className="min-w-0 rounded-2xl bg-slate-50 p-4">
                 <p className="text-sm font-semibold text-slate-950">Send me this trip budget</p>
                 <div className="mt-3">
                   <EmailCaptureForm

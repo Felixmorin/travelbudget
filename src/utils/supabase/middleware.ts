@@ -1,15 +1,20 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+import { getSupabaseAuthConfig } from "./config";
 
 export const updateSession = async (request: NextRequest) => {
   let supabaseResponse = NextResponse.next({
     request,
   });
 
-  const supabase = createServerClient(supabaseUrl!, supabaseKey!, {
+  const config = getSupabaseAuthConfig();
+
+  if (!config) {
+    return supabaseResponse;
+  }
+
+  const supabase = createServerClient(config.url, config.anonKey, {
     cookies: {
       getAll() {
         return request.cookies.getAll();

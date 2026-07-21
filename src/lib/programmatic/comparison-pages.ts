@@ -1,4 +1,5 @@
 import {
+  getDestinationCostBreakdown,
   formatMoney,
   getDailyCostTotal,
   getDestinationTripEstimate,
@@ -43,8 +44,16 @@ export type DestinationComparisonItem = {
   totalEstimate: number;
   flightEstimate: number;
   dailyEstimate: number;
+  costBreakdown: ReturnType<typeof getDestinationCostBreakdown>;
   bestFor: string;
   tradeoff: string;
+};
+
+export type ComparisonTableRow = {
+  criterion: string;
+  destinationA: string;
+  destinationB: string;
+  winner: string;
 };
 
 export const comparisonPages: ComparisonPageConfig[] = [
@@ -313,6 +322,7 @@ export function getComparisonItems(page: ComparisonPageConfig): DestinationCompa
         totalEstimate: item.totalEstimate,
         flightEstimate: item.flightEstimate,
         dailyEstimate: item.dailyEstimate,
+        costBreakdown: item.costBreakdown,
         bestFor: getBestFor(item.destination),
         tradeoff: getTradeoff(item.destination, page.originCode),
       }));
@@ -333,10 +343,105 @@ export function getComparisonItems(page: ComparisonPageConfig): DestinationCompa
         totalEstimate,
         flightEstimate: getFlightEstimate(destination, page.originCode).average,
         dailyEstimate: getDailyCostTotal(destination, page.travelStyle),
+        costBreakdown: getDestinationCostBreakdown(destination, {
+          days: page.durationDays,
+          originCode: page.originCode,
+          travelStyle: page.travelStyle,
+        }),
         bestFor: getBestFor(destination),
         tradeoff: getTradeoff(destination, page.originCode),
       };
     });
+}
+
+export function getPrimaryComparisonItems(items: DestinationComparisonItem[]) {
+  return items.slice(0, 2);
+}
+
+export function getComparisonVerdict(page: ComparisonPageConfig, items: DestinationComparisonItem[]) {
+  const override = editorialVerdictOverrides[page.slug];
+
+  if (override) {
+    return override;
+  }
+
+  const [destinationA, destinationB] = getPrimaryComparisonItems(items);
+
+  if (!destinationA || !destinationB) {
+    return "Use the estimate, route options, and live prices together before choosing a destination.";
+  }
+
+  return `Choose ${destinationA.destination.name} if you want ${getVerdictBenefit(
+    destinationA,
+    items
+  )}. Choose ${destinationB.destination.name} if you want ${getVerdictBenefit(destinationB, items)}, but expect ${formatTradeoff(
+    destinationB.tradeoff
+  )}.`;
+}
+
+export function getComparisonTableRows(items: DestinationComparisonItem[]): ComparisonTableRow[] {
+  const [destinationA, destinationB] = getPrimaryComparisonItems(items);
+
+  if (!destinationA || !destinationB) {
+    return [];
+  }
+
+  return [
+    {
+      criterion: "Flights",
+      destinationA: formatEstimate(destinationA.flightEstimate),
+      destinationB: formatEstimate(destinationB.flightEstimate),
+      winner: getLowerCostWinner(destinationA, destinationB, (item) => item.flightEstimate),
+    },
+    {
+      criterion: "Accommodation",
+      destinationA: formatBreakdownEstimate(destinationA.costBreakdown.accommodation),
+      destinationB: formatBreakdownEstimate(destinationB.costBreakdown.accommodation),
+      winner: getLowerCostWinner(destinationA, destinationB, (item) => item.costBreakdown.accommodation),
+    },
+    {
+      criterion: "Food",
+      destinationA: formatBreakdownEstimate(destinationA.costBreakdown.food),
+      destinationB: formatBreakdownEstimate(destinationB.costBreakdown.food),
+      winner: getLowerCostWinner(destinationA, destinationB, (item) => item.costBreakdown.food),
+    },
+    {
+      criterion: "Transport",
+      destinationA: formatBreakdownEstimate(destinationA.costBreakdown.localTransport),
+      destinationB: formatBreakdownEstimate(destinationB.costBreakdown.localTransport),
+      winner: getLowerCostWinner(destinationA, destinationB, (item) => item.costBreakdown.localTransport),
+    },
+    {
+      criterion: "Activities",
+      destinationA: formatBreakdownEstimate(destinationA.costBreakdown.activities),
+      destinationB: formatBreakdownEstimate(destinationB.costBreakdown.activities),
+      winner: getLowerCostWinner(destinationA, destinationB, (item) => item.costBreakdown.activities),
+    },
+    {
+      criterion: "Daily cost",
+      destinationA: `${formatEstimate(destinationA.dailyEstimate)} per day`,
+      destinationB: `${formatEstimate(destinationB.dailyEstimate)} per day`,
+      winner: getLowerCostWinner(destinationA, destinationB, (item) => item.dailyEstimate),
+    },
+    {
+      criterion: "Total cost",
+      destinationA: formatEstimate(destinationA.totalEstimate),
+      destinationB: formatEstimate(destinationB.totalEstimate),
+      winner: getLowerCostWinner(destinationA, destinationB, (item) => item.totalEstimate),
+    },
+    {
+      criterion: "Best for",
+      destinationA: destinationA.bestFor,
+      destinationB: destinationB.bestFor,
+      winner: "Depends on trip style",
+    },
+    {
+      criterion: "Winner / Verdict",
+      destinationA: destinationA.tradeoff,
+      destinationB: destinationB.tradeoff,
+      winner: getLowerCostWinner(destinationA, destinationB, (item) => item.totalEstimate),
+    },
+  ];
 }
 
 export function getComparisonSummary(page: ComparisonPageConfig, items: DestinationComparisonItem[]) {
@@ -372,6 +477,67 @@ function formatCollectionLabel(filter: CollectionComparisonPage["destinationFilt
   }
 
   return "warm-weather";
+}
+
+const editorialVerdictOverrides: Record<string, string> = {
+  "portugal-vs-spain":
+    "Choose Portugal if you want a lower total trip cost and a slower first-time Europe trip. Choose Spain if you want bigger cities, more route options, and stronger nightlife, but expect higher hotel pressure in peak months.",
+  "japan-vs-south-korea":
+    "Choose Japan if you want the broader classic culture-and-food trip with more regional variety. Choose South Korea if you want a tighter city-first itinerary and easier budget control, but expect fewer route options outside the Seoul anchor.",
+  "mexico-vs-colombia":
+    "Choose Mexico if you want easier flight access from Canada, food depth, and flexible beach or city routes. Choose Colombia if you want lower daily costs and a South America feel, but expect flight timing to matter more.",
+  "france-vs-italy":
+    "Choose France if you want Paris, regional rail options, and a polished city-and-culture trip. Choose Italy if you want stronger food-and-history density across one route, but expect popular cities to push hotels higher in peak months.",
+  "thailand-vs-vietnam":
+    "Choose Thailand if you want easier beach logistics, nightlife, and a classic first Southeast Asia route. Choose Vietnam if you want lower daily costs and more budget stretch, but expect the long-haul flight to stay the main cost hurdle.",
+  "best-europe-trips-from-toronto-under-3000":
+    "Choose the lowest-estimate Europe option if budget certainty matters most. Choose the higher-scoring destination if the itinerary fit is stronger, but expect live hotel prices and peak-season flights to decide the final value.",
+};
+
+function getVerdictBenefit(item: DestinationComparisonItem, items: DestinationComparisonItem[]) {
+  const cheapest = [...items].sort((a, b) => a.totalEstimate - b.totalEstimate)[0];
+  const strongestScore = [...items].sort((a, b) => b.destination.score - a.destination.score)[0];
+
+  if (item.destination.slug === cheapest.destination.slug) {
+    return "the lower total trip estimate and easier budget control";
+  }
+
+  if (item.destination.slug === strongestScore.destination.slug) {
+    return `a stronger destination score and ${item.bestFor}`;
+  }
+
+  return item.bestFor;
+}
+
+function formatTradeoff(tradeoff: string) {
+  return tradeoff.replace(/\.$/, "").toLowerCase();
+}
+
+function formatEstimate(value: number) {
+  return value > 0 ? formatMoney(value, "CAD") : "Use live prices before booking";
+}
+
+function formatBreakdownEstimate(value: number) {
+  return value > 0 ? `${formatMoney(value, "CAD")} total` : "Estimate included in daily cost";
+}
+
+function getLowerCostWinner(
+  destinationA: DestinationComparisonItem,
+  destinationB: DestinationComparisonItem,
+  getValue: (item: DestinationComparisonItem) => number
+) {
+  const valueA = getValue(destinationA);
+  const valueB = getValue(destinationB);
+
+  if (valueA <= 0 || valueB <= 0) {
+    return "Use live prices";
+  }
+
+  if (valueA === valueB) {
+    return "Tie";
+  }
+
+  return valueA < valueB ? destinationA.destination.name : destinationB.destination.name;
 }
 
 function matchesCollectionFilter(item: BudgetDestination, filter: CollectionComparisonPage["destinationFilter"]) {

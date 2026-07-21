@@ -113,7 +113,7 @@ export default async function TravelBudgetPage({ params }: TravelBudgetPageProps
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-5xl gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[1fr_320px] lg:px-8">
+      <section className="mx-auto grid max-w-5xl gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:px-8">
         <div className="grid gap-6">
           <EstimateDisclaimer />
           <EstimateTransparency
@@ -188,10 +188,10 @@ export default async function TravelBudgetPage({ params }: TravelBudgetPageProps
             </div>
           </section>
         </div>
-        <aside className="h-fit rounded-[24px] border border-slate-200 bg-white p-6">
+        <aside className="min-w-0 h-fit rounded-[24px] border border-slate-200 bg-white p-6">
           <h2 className="text-xl font-semibold">Plan the next step</h2>
-          <div className="mt-5 grid gap-3">
-            <Button asChild className="rounded-full bg-[#0B1D34] text-white hover:bg-[#0B1D34]">
+          <div className="mt-5 grid min-w-0 gap-3">
+            <Button asChild className="h-auto min-h-8 w-full min-w-0 whitespace-normal rounded-full bg-[#0B1D34] px-4 py-2 text-center leading-5 text-white hover:bg-[#0B1D34]">
               <AffiliateCTA category="flights" context={{ ...affiliateContext, placement: "trip_summary" }} variant="text" label="Find flights for this trip" />
             </Button>
             <AffiliateSection
@@ -200,7 +200,7 @@ export default async function TravelBudgetPage({ params }: TravelBudgetPageProps
               limit={3}
               title="Price the trip pieces"
             />
-            <div className="rounded-2xl bg-slate-50 p-4">
+            <div className="min-w-0 rounded-2xl bg-slate-50 p-4">
               <p className="text-sm font-semibold text-slate-950">Send me this trip budget</p>
               <div className="mt-3">
                 <EmailCaptureForm
@@ -222,15 +222,15 @@ export default async function TravelBudgetPage({ params }: TravelBudgetPageProps
                 />
               </div>
             </div>
-            <Button asChild variant="outline" className="rounded-full bg-white">
+            <Button asChild variant="outline" className="h-auto min-h-8 w-full min-w-0 whitespace-normal rounded-full bg-white px-4 py-2 text-center leading-5">
               <Link href={`/destinations/${page.destination.slug}`}>Open destination guide</Link>
             </Button>
-            <Button asChild variant="outline" className="rounded-full bg-white">
+            <Button asChild variant="outline" className="h-auto min-h-8 w-full min-w-0 whitespace-normal rounded-full bg-white px-4 py-2 text-center leading-5">
               <Link href={getTravelCostDurationPath(page.destination.slug, page.durationDays)}>
                 Cost for {page.durationDays} days
               </Link>
             </Button>
-            <Button asChild variant="outline" className="rounded-full bg-white">
+            <Button asChild variant="outline" className="h-auto min-h-8 w-full min-w-0 whitespace-normal rounded-full bg-white px-4 py-2 text-center leading-5">
               <Link href="/methodology">
                 Budget methodology
                 <ArrowRight className="ml-2 size-4" />
