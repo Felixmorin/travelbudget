@@ -39,6 +39,42 @@ create table if not exists email_leads (
   created_at timestamptz not null default now()
 );
 
+create table if not exists trip_budget_leads (
+  id uuid primary key,
+  email text not null,
+  origin text,
+  destination text,
+  budget_amount numeric,
+  budget_currency text,
+  trip_duration_days integer,
+  travel_style text,
+  traveler_count integer,
+  estimated_total numeric,
+  flight_estimate numeric,
+  hotel_estimate numeric,
+  food_estimate numeric,
+  transport_estimate numeric,
+  activities_estimate numeric,
+  buffer_estimate numeric,
+  result_payload jsonb not null,
+  source_page text,
+  marketing_consent boolean not null default false,
+  budget_email_consent boolean not null,
+  consent_timestamp timestamptz not null,
+  utm_source text,
+  utm_medium text,
+  utm_campaign text,
+  utm_content text,
+  referrer text,
+  created_at timestamptz not null default now(),
+  email_sent_at timestamptz,
+  email_status text not null default 'pending',
+  email_provider_id text,
+  submission_fingerprint text not null,
+  constraint trip_budget_leads_email_status_check
+    check (email_status in ('pending', 'sent', 'failed', 'skipped'))
+);
+
 create table if not exists user_profiles (
   id uuid primary key references auth.users (id) on delete cascade,
   email text,
@@ -113,6 +149,11 @@ create index if not exists analytics_events_created_at_idx on analytics_events (
 create index if not exists analytics_events_name_idx on analytics_events (event_name);
 create index if not exists email_leads_created_at_idx on email_leads (created_at desc);
 create index if not exists email_leads_email_idx on email_leads (email);
+create index if not exists trip_budget_leads_email_idx on trip_budget_leads (email);
+create index if not exists trip_budget_leads_created_at_idx on trip_budget_leads (created_at desc);
+create index if not exists trip_budget_leads_email_status_idx on trip_budget_leads (email_status);
+create index if not exists trip_budget_leads_marketing_consent_idx on trip_budget_leads (marketing_consent);
+create index if not exists trip_budget_leads_submission_fingerprint_idx on trip_budget_leads (submission_fingerprint);
 create index if not exists user_profiles_email_idx on user_profiles (email);
 create index if not exists saved_destinations_user_created_idx on saved_destinations (user_id, created_at desc);
 create index if not exists searches_user_created_idx on searches (user_id, created_at desc);
@@ -123,6 +164,7 @@ create index if not exists saved_trips_user_destination_idx on saved_trips (user
 alter table affiliate_clicks enable row level security;
 alter table analytics_events enable row level security;
 alter table email_leads enable row level security;
+alter table trip_budget_leads enable row level security;
 alter table user_profiles enable row level security;
 alter table saved_destinations enable row level security;
 alter table searches enable row level security;
@@ -132,6 +174,7 @@ alter table saved_trips enable row level security;
 drop policy if exists "server role manages affiliate clicks" on affiliate_clicks;
 drop policy if exists "server role manages analytics events" on analytics_events;
 drop policy if exists "server role manages email leads" on email_leads;
+drop policy if exists "server role manages trip budget leads" on trip_budget_leads;
 drop policy if exists "users manage own profile" on user_profiles;
 drop policy if exists "users manage own saved destinations" on saved_destinations;
 drop policy if exists "users manage own searches" on searches;
@@ -152,6 +195,12 @@ create policy "server role manages analytics events"
 
 create policy "server role manages email leads"
   on email_leads
+  for all
+  using (auth.role() = 'service_role')
+  with check (auth.role() = 'service_role');
+
+create policy "server role manages trip budget leads"
+  on trip_budget_leads
   for all
   using (auth.role() = 'service_role')
   with check (auth.role() = 'service_role');

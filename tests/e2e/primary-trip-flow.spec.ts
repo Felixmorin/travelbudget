@@ -40,9 +40,14 @@ test("realistic primary search flow from homepage to results, detail, compare, e
   await page.goBack();
   await page.waitForURL(/\/results\?/);
 
-  await page.getByLabel(/email address/i).fill("traveler@example.com");
-  await page.getByRole("button", { name: /send me this trip budget/i }).click();
-  await expect(page.getByText(/sent|saved|check your inbox|thank/i)).toBeVisible();
+  await page.getByRole("button", { name: /send me this trip budget/i }).first().click();
+  const dialog = page.getByRole("dialog", { name: /send me this trip budget/i });
+  await expect(dialog).toBeVisible();
+  await dialog.getByLabel(/email address/i).fill("traveler@example.com");
+  await dialog.getByLabel(/receive this trip budget/i).check();
+  await page.waitForTimeout(1300);
+  await dialog.getByRole("button", { name: /send me this trip budget/i }).click();
+  await expect(dialog.getByText(/check your inbox/i)).toBeVisible();
 
   const allowedTarget = Buffer.from("https://www.skyscanner.ca/transport/flights/", "utf8").toString("base64url");
   const allowedResponse = await request.get(`/go/general/flights?url=${allowedTarget}`, { maxRedirects: 0 });
@@ -64,4 +69,8 @@ test("mobile homepage and results have a usable minimal layout", async ({ page }
   await page.goto("/results?budget=2500&currency=CAD&origin=YUL&days=10&travelers=1&style=balanced");
   await expect(page.getByRole("heading", { name: /best destinations for your budget/i })).toBeVisible();
   await expect(page.getByText(/static planning estimate/i).first()).toBeVisible();
+  await page.getByRole("button", { name: /send me this trip budget/i }).first().click();
+  await expect(page.getByRole("dialog", { name: /send me this trip budget/i })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog", { name: /send me this trip budget/i })).toBeHidden();
 });

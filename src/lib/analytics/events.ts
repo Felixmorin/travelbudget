@@ -35,6 +35,10 @@ export type CommonAnalyticsProperties = {
   page_path?: string;
   provider?: string;
   category?: string;
+  budgetRange?: string;
+  deviceType?: string;
+  experimentVariant?: string;
+  emailStatus?: string;
   destination_city?: string;
   destination_country?: string;
   origin_city?: string;
@@ -87,6 +91,12 @@ export type AnalyticsEventProperties = {
   email_capture_submit: CommonAnalyticsProperties & {
     emailDomain?: string;
   };
+  trip_budget_email_cta_viewed: CommonAnalyticsProperties;
+  trip_budget_email_cta_clicked: CommonAnalyticsProperties;
+  trip_budget_email_form_submitted: CommonAnalyticsProperties;
+  trip_budget_email_saved: CommonAnalyticsProperties;
+  trip_budget_email_sent: CommonAnalyticsProperties;
+  trip_budget_email_failed: CommonAnalyticsProperties;
   affiliate_module_viewed: CommonAnalyticsProperties;
   affiliate_link_clicked: CommonAnalyticsProperties & {
     linkType?: string;
@@ -142,6 +152,12 @@ export const analyticsEventNames = [
   "compare_destination",
   "email_capture",
   "email_capture_submit",
+  "trip_budget_email_cta_viewed",
+  "trip_budget_email_cta_clicked",
+  "trip_budget_email_form_submitted",
+  "trip_budget_email_saved",
+  "trip_budget_email_sent",
+  "trip_budget_email_failed",
   "affiliate_module_viewed",
   "affiliate_link_clicked",
   "guide_viewed",

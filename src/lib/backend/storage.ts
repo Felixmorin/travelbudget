@@ -1,14 +1,8 @@
-export type BackendTable = "affiliate_clicks" | "analytics_events" | "email_leads";
+export type BackendTable = "affiliate_clicks" | "analytics_events" | "email_leads" | "trip_budget_leads";
 
-export type BackendRecord = Record<
-  string,
-  | string
-  | number
-  | boolean
-  | null
-  | undefined
-  | Record<string, string | number | boolean | null | undefined>
->;
+type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue | undefined };
+
+export type BackendRecord = Record<string, JsonValue | undefined>;
 
 type SupabaseConfig = {
   url: string;

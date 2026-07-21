@@ -19,9 +19,9 @@ import {
 } from "lucide-react";
 
 import { AnalyticsView } from "@/components/analytics/analytics-view";
-import { EmailCaptureForm } from "@/components/analytics/email-capture-form";
 import { TrackedFilterForm } from "@/components/analytics/tracked-form";
 import { TrackedLink } from "@/components/analytics/tracked-link";
+import { TripBudgetEmailCta } from "@/components/leads/trip-budget-email-cta";
 import { EstimateTransparency } from "@/components/site/estimate-transparency";
 import { Button } from "@/components/ui/button";
 import { buildAffiliateLink, type BuiltAffiliateLink } from "@/lib/affiliate/build-affiliate-link";
@@ -49,6 +49,7 @@ import {
   type ResultsSearchParams,
 } from "@/lib/results/filters";
 import { createResultsMetadata } from "@/lib/seo/metadata";
+import type { TripBudgetSnapshot } from "@/lib/leads/trip-budget-types";
 import { ResultsComparisonSection } from "./compare-selection";
 
 export const metadata = createResultsMetadata();
@@ -148,6 +149,7 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
   const originLabel = formatOriginLabel(parsedParams.origin);
   const styleLabel = formatStyleLabel(parsedParams.style);
   const summaryText = `${formattedBudget} · ${parsedParams.days} days · From ${originLabel} · ${styleLabel}`;
+  const tripBudgetLead = toTripBudgetSnapshot(recommendations, parsedParams, originLabel, styleLabel);
   const analyticsContext = {
     budget: parsedParams.budget,
     currency: parsedParams.currency,
@@ -189,6 +191,7 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
 
         <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
           <HeroSection
+            lead={tripBudgetLead}
             parsedParams={parsedParams}
             resultCount={recommendations.length}
             summaryText={summaryText}
@@ -216,7 +219,7 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
             <EmptyResultsState parsedParams={parsedParams} />
           )}
 
-          <EmailCaptureSection analyticsContext={analyticsContext} summaryText={summaryText} />
+          <EmailCaptureSection lead={tripBudgetLead} summaryText={summaryText} />
           <AffiliateBookingBox analyticsContext={analyticsContext} destination={featuredDestinations[0]} />
           <TrustModule />
           <SeoLinks budget={formattedBudget} origin={originLabel} destinations={featuredDestinations} />
@@ -270,10 +273,12 @@ function SearchSummaryBar({
 }
 
 function HeroSection({
+  lead,
   parsedParams,
   resultCount,
   summaryText,
 }: {
+  lead: TripBudgetSnapshot;
   parsedParams: ParsedSearchParams;
   resultCount: number;
   summaryText: string;
@@ -352,6 +357,11 @@ function HeroSection({
               <SlidersHorizontal className="size-4" />
             </Button>
           </TrackedFilterForm>
+          <TripBudgetEmailCta
+            lead={lead}
+            ctaLocation="results_hero"
+            className="h-11 rounded-xl bg-[#0B1D34] px-4 text-sm font-bold text-white hover:bg-[#0B1D34]"
+          />
         </div>
       </div>
     </section>
@@ -607,20 +617,10 @@ function TrustModule() {
 }
 
 function EmailCaptureSection({
-  analyticsContext,
+  lead,
   summaryText,
 }: {
-  analyticsContext: {
-    budget: number;
-    currency: string;
-    days: number;
-    month: string;
-    originCity: string;
-    originCode: string;
-    resultCount: number;
-    travelers: number;
-    travelStyle: string;
-  };
+  lead: TripBudgetSnapshot;
   summaryText: string;
 }) {
   return (
@@ -629,19 +629,12 @@ function EmailCaptureSection({
         <div>
           <h2 className="text-2xl font-semibold tracking-normal text-[#191c1e]">Send me this trip budget</h2>
           <p className="mt-2 text-sm leading-6 text-[#434655]">
-            Keep this search on file for {summaryText}. We will send the budget handoff when it is ready.
+            Keep this search on file for {summaryText}. We will send the same estimate shown here.
           </p>
         </div>
-        <EmailCaptureForm
-          buttonLabel="Send me this trip budget"
-          inputLabel="Email address for this trip budget"
-          eventProperties={{
-            page: "/results",
-            source: "results_email_capture",
-            ...analyticsContext,
-            tripLength: analyticsContext.days,
-          }}
-        />
+        <div className="flex justify-start md:justify-end">
+          <TripBudgetEmailCta lead={lead} ctaLocation="results_budget_detail" />
+        </div>
       </div>
     </section>
   );
@@ -904,6 +897,57 @@ function toResultDestination(
   };
 }
 
+function toTripBudgetSnapshot(
+  recommendations: DestinationRecommendation[],
+  parsedParams: ParsedSearchParams,
+  originLabel: string,
+  styleLabel: string
+): TripBudgetSnapshot {
+  const destinations = recommendations.slice(0, 6).map((recommendation) => ({
+    slug: recommendation.destination.slug,
+    title: getCityCountryLabel(recommendation.destination),
+    country: getDestinationCountryName(recommendation.destination),
+    estimatedTotal: Math.round(recommendation.estimatedTotal),
+    flightEstimate: Math.round(recommendation.costBreakdown.flights),
+    hotelEstimate: Math.round(recommendation.costBreakdown.hotel),
+    foodEstimate: Math.round(recommendation.costBreakdown.food),
+    transportEstimate: Math.round(recommendation.costBreakdown.transport),
+    activitiesEstimate: Math.round(recommendation.costBreakdown.activities),
+    bufferEstimate: Math.round(recommendation.costBreakdown.misc),
+    affiliateLinks: recommendation.destination.affiliateLinks
+      .map((link) => toResultAffiliateLink(recommendation.destination, link))
+      .filter((link): link is ResultAffiliateLink => Boolean(link))
+      .slice(0, 5)
+      .map((link) => ({
+        label: link.actionLabel,
+        href: link.href,
+        type: link.type,
+      })),
+  }));
+  const primaryDestination = destinations[0];
+
+  return {
+    origin: originLabel,
+    destination: destinations.map((destination) => destination.title).join(", ") || null,
+    budgetAmount: parsedParams.budget,
+    budgetCurrency: parsedParams.currency,
+    tripDurationDays: parsedParams.days,
+    travelStyle: styleLabel,
+    travelerCount: parsedParams.travelers,
+    estimatedTotal: primaryDestination?.estimatedTotal ?? 0,
+    flightEstimate: primaryDestination?.flightEstimate ?? 0,
+    hotelEstimate: primaryDestination?.hotelEstimate ?? 0,
+    foodEstimate: primaryDestination?.foodEstimate ?? 0,
+    transportEstimate: primaryDestination?.transportEstimate ?? 0,
+    activitiesEstimate: primaryDestination?.activitiesEstimate ?? 0,
+    bufferEstimate: primaryDestination?.bufferEstimate ?? 0,
+    sourcePage: "/results",
+    destinations,
+    budgetRange: getBudgetRange(parsedParams.budget),
+    month: parsedParams.month,
+  };
+}
+
 function toResultAffiliateLink(
   destination: DestinationRecommendation["destination"],
   link: AffiliateLink
@@ -986,6 +1030,26 @@ function formatFlightHours(hours: number, days: number) {
   }
 
   return days > 12 ? `${Math.max(hours, 7)}h` : `${hours}h`;
+}
+
+function getBudgetRange(budget: number) {
+  if (budget < 1000) {
+    return "under_1000";
+  }
+
+  if (budget < 1500) {
+    return "1000_1499";
+  }
+
+  if (budget < 2500) {
+    return "1500_2499";
+  }
+
+  if (budget < 4000) {
+    return "2500_3999";
+  }
+
+  return "4000_plus";
 }
 
 function getLatestDestinationUpdate(destinations: ResultDestination[]) {

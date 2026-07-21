@@ -13,6 +13,7 @@ The app currently uses curated country and city destination datasets with origin
 - Programmatic budget pages for destination budgets, trip durations, and `/from/[origin]/under-[budget]` combinations, kept out of the V1 sitemap until reviewed for indexing
 - Booking.com, Airalo, GetYourGuide, flight, and insurance partner link wiring
 - Analytics events for page views, searches, destination clicks, affiliate modules, and CTAs
+- "Send me this trip budget" email capture on result surfaces with explicit budget-email consent, optional marketing consent, Supabase lead storage, and Resend delivery
 - Optional GA4, Microsoft Clarity, Plausible, and PostHog script loading from production environment variables
 
 ## Tech Stack
@@ -168,6 +169,13 @@ Optional public environment variables:
 - `NEXT_PUBLIC_AVIASALES_FALLBACK_URL` - fallback flight affiliate URL, defaults to `https://aviasales.tpx.lu/59DXH0n1`
 - `NEXT_PUBLIC_TRAVELPAYOUTS_MARKER` - public Travelpayouts marker inserted into Aviasales search URLs as `marker`
 - `TRAVELPAYOUTS_API_TOKEN` and `TRAVELPAYOUTS_MARKER` - reserved server-only values for a future Partner Links API integration; never expose API tokens with `NEXT_PUBLIC_*`
+
+Trip budget email delivery:
+
+- Apply `docs/supabase/migrations/005_trip_budget_leads.sql`.
+- Set `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` server-side. Do not expose the service role key to the browser.
+- Verify a sender/domain in Resend, then set `RESEND_API_KEY` and `EMAIL_FROM_ADDRESS`.
+- Test locally by running `npm run dev`, opening `/results?budget=2500&currency=CAD&origin=YUL&days=10&month=october&travelers=1&style=balanced`, clicking `Send me this trip budget`, accepting the required budget email consent, and confirming the email arrives.
 
 ## Current Limitations
 

@@ -1,9 +1,10 @@
 "use client";
 
-import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowRight, Check, Mail, MapPin, Plane, Sparkles } from "lucide-react";
 
 import { AffiliateCTA } from "@/components/affiliate/AffiliateCTA";
+import { TripBudgetEmailCta } from "@/components/leads/trip-budget-email-cta";
 import { EstimateDisclaimer } from "@/components/site/estimate-disclaimer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ import { trackEvent } from "@/lib/analytics/track";
 import type { AffiliateContext } from "@/lib/affiliates/types";
 import { formatMoney } from "@/lib/format-money";
 import { getDepartureCityForInput, getPopularDepartureCities, normalizeDepartureCityCode } from "@/lib/data/departure-cities";
+import type { TripBudgetSnapshot } from "@/lib/leads/trip-budget-types";
 
 type BudgetRange = "under-1000" | "1000-1500" | "1500-2500" | "2500-4000" | "4000-plus";
 type TripLength = "weekend" | "5-7-days" | "8-10-days" | "2-weeks" | "flexible";
@@ -263,16 +265,14 @@ export function TravelBudgetCalculator() {
   const [answers, setAnswers] = useState<TripAnswers>(defaultAnswers);
   const [currentStep, setCurrentStep] = useState(0);
   const [showResults, setShowResults] = useState(false);
-  const [email, setEmail] = useState("");
-  const [emailSubmitted, setEmailSubmitted] = useState(false);
   const resultsRef = useRef<HTMLDivElement>(null);
-  const emailRef = useRef<HTMLInputElement>(null);
 
   const activeStep = steps[currentStep];
   const progress = ((currentStep + 1) / steps.length) * 100;
   const canContinue = isStepComplete(activeStep, answers);
   const matches = useMemo(() => getTripMatches(answers), [answers]);
   const summary = useMemo(() => getAnswerSummary(answers), [answers]);
+  const tripBudgetLead = useMemo(() => getCalculatorTripBudgetSnapshot(answers, matches, summary), [answers, matches, summary]);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
@@ -332,20 +332,6 @@ export function TravelBudgetCalculator() {
       resultCount: matches.length,
     });
     window.setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 80);
-  }
-
-  function handleEmailSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setEmailSubmitted(true);
-    trackEvent("email_capture", {
-      page: pagePath,
-      source: "trip_budget_test_email_capture",
-      emailDomain: getEmailDomain(email),
-    });
-  }
-
-  function focusEmailCapture() {
-    emailRef.current?.focus();
   }
 
   return (
@@ -481,7 +467,7 @@ export function TravelBudgetCalculator() {
                 key={match.destination}
                 match={match}
                 originCity={summary.origin}
-                onEmailClick={focusEmailCapture}
+                tripBudgetLead={tripBudgetLead}
               />
             ))}
           </div>
@@ -505,30 +491,9 @@ export function TravelBudgetCalculator() {
                   </div>
                 </div>
               </div>
-              <form className="grid gap-3" onSubmit={handleEmailSubmit}>
-                <Label htmlFor="trip-budget-email">Email address</Label>
-                <Input
-                  ref={emailRef}
-                  id="trip-budget-email"
-                  type="email"
-                  value={email}
-                  onChange={(event) => {
-                    setEmail(event.target.value);
-                    setEmailSubmitted(false);
-                  }}
-                  placeholder="you@example.com"
-                  className="h-11 rounded-xl bg-white"
-                />
-                <Button type="submit" className="h-11 rounded-xl bg-orange-500 text-white hover:bg-orange-600">
-                  Send me my trip budget
-                </Button>
-                {emailSubmitted ? (
-                  <p className="text-sm font-medium text-teal-700">
-                    Thanks - your trip budget is ready to send once email delivery is connected.
-                  </p>
-                ) : null}
-                {/* TODO: Connect this local email capture to the production email provider when delivery is configured. */}
-              </form>
+              <div className="flex justify-start lg:justify-end">
+                <TripBudgetEmailCta lead={tripBudgetLead} ctaLocation="calculator_results_panel" />
+              </div>
             </CardContent>
           </Card>
         </section>
@@ -742,11 +707,11 @@ function OptionGrid({
 function DestinationMatchCard({
   match,
   originCity,
-  onEmailClick,
+  tripBudgetLead,
 }: {
   match: TripMatch;
   originCity: string;
-  onEmailClick: () => void;
+  tripBudgetLead: TripBudgetSnapshot;
 }) {
   const breakdownItems = [
     ["Flight", match.breakdown.flight],
@@ -808,9 +773,11 @@ function DestinationMatchCard({
           <Button type="button" className="h-11 rounded-xl bg-[#0B1D34] text-white hover:bg-[#0B1D34]/90">
             View full budget breakdown
           </Button>
-          <Button type="button" variant="outline" className="h-11 rounded-xl" onClick={onEmailClick}>
-            Send me this trip budget
-          </Button>
+          <TripBudgetEmailCta
+            lead={tripBudgetLead}
+            ctaLocation="calculator_result_card"
+            className="h-11 rounded-xl border border-slate-200 bg-white px-4 font-semibold text-slate-950 hover:bg-slate-50"
+          />
         </div>
         <div className="grid min-h-8 gap-2 sm:grid-cols-2">
           <AffiliateCTA category="flights" context={{ ...affiliateContext, placement: "calculator_result_flights" }} variant="compact" />
@@ -837,6 +804,46 @@ function getMatchAffiliateContext(match: TripMatch, originCity: string): Affilia
     hasActivities: true,
     hasOvernightStay: true,
     internationalTrip: true,
+  };
+}
+
+function getCalculatorTripBudgetSnapshot(
+  answers: TripAnswers,
+  matches: TripMatch[],
+  summary: ReturnType<typeof getAnswerSummary>
+): TripBudgetSnapshot {
+  const destinations = matches.slice(0, 6).map((match) => ({
+    title: match.destination,
+    country: match.destination.split(",").at(1)?.trim(),
+    estimatedTotal: Math.round(match.estimatedTotal),
+    flightEstimate: Math.round(match.breakdown.flight),
+    hotelEstimate: Math.round(match.breakdown.stay),
+    foodEstimate: Math.round(match.breakdown.food),
+    transportEstimate: Math.round(match.breakdown.transport),
+    activitiesEstimate: Math.round(match.breakdown.activities),
+    bufferEstimate: Math.round(match.breakdown.buffer),
+  }));
+  const primaryDestination = destinations[0];
+
+  return {
+    origin: summary.origin,
+    destination: destinations.map((destination) => destination.title).join(", ") || null,
+    budgetAmount: getBudgetAmount(answers),
+    budgetCurrency: currency,
+    tripDurationDays: summary.days,
+    travelStyle: summary.style,
+    travelerCount: 1,
+    estimatedTotal: primaryDestination?.estimatedTotal ?? 0,
+    flightEstimate: primaryDestination?.flightEstimate ?? 0,
+    hotelEstimate: primaryDestination?.hotelEstimate ?? 0,
+    foodEstimate: primaryDestination?.foodEstimate ?? 0,
+    transportEstimate: primaryDestination?.transportEstimate ?? 0,
+    activitiesEstimate: primaryDestination?.activitiesEstimate ?? 0,
+    bufferEstimate: primaryDestination?.bufferEstimate ?? 0,
+    sourcePage: pagePath,
+    destinations,
+    budgetRange: answers.budgetRange || undefined,
+    month: answers.travelTiming || undefined,
   };
 }
 
@@ -964,9 +971,4 @@ function getAnswerSummary(answers: TripAnswers) {
 
 function formatCurrency(value: number) {
   return formatMoney(Math.round(value), currency);
-}
-
-function getEmailDomain(value: string) {
-  const domain = value.trim().split("@")[1];
-  return domain ? domain.toLowerCase().slice(0, 80) : undefined;
 }
