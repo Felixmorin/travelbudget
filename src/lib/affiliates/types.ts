@@ -11,6 +11,7 @@ export type AffiliateCategory =
 export type AffiliateProvider =
   | "aviasales"
   | "booking"
+  | "klook"
   | "getyourguide"
   | "airalo"
   | "discover_cars"

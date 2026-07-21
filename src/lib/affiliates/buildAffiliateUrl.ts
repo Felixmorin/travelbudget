@@ -5,6 +5,7 @@ import { buildAviasalesAffiliateUrl } from "@/lib/affiliates/aviasales";
 export function buildAffiliateUrl(provider: AffiliateProvider, context: AffiliateContext) {
   if (provider === "aviasales") return buildAviasalesUrl(context);
   if (provider === "booking") return buildBookingUrl(context);
+  if (provider === "klook") return buildKlookUrl(context);
   if (provider === "getyourguide") return buildGetYourGuideUrl(context);
   if (provider === "airalo") return buildAiraloUrl(context);
   if (provider === "discover_cars") return buildDiscoverCarsUrl(context);
@@ -31,6 +32,11 @@ export function buildAviasalesUrl(context: AffiliateContext) {
 export function buildBookingUrl(context: AffiliateContext) {
   void context;
   return getConfiguredGenericUrl("booking");
+}
+
+export function buildKlookUrl(context: AffiliateContext) {
+  void context;
+  return getConfiguredGenericUrl("klook");
 }
 
 export function buildGetYourGuideUrl(context: AffiliateContext) {

@@ -10,6 +10,7 @@ vi.mock("next/navigation", () => ({
 const configuredEnv = {
   NEXT_PUBLIC_TRAVELPAYOUTS_MARKER: "12345",
   NEXT_PUBLIC_BOOKING_AFFILIATE_URL: "https://www.booking.com/index.html?aid=booking-test",
+  NEXT_PUBLIC_KLOOK_AFFILIATE_URL: "https://klook.tpx.lu/KdkV1ZIa",
   NEXT_PUBLIC_GETYOURGUIDE_AFFILIATE_URL: "https://www.getyourguide.com/?partner_id=gyg-test",
   NEXT_PUBLIC_DISCOVER_CARS_AFFILIATE_URL: "https://www.discovercars.com/?a_aid=discover-test",
   NEXT_PUBLIC_OMIO_AFFILIATE_URL: "https://www.omio.com/?utm_source=gobybudget",
@@ -53,10 +54,10 @@ describe("affiliate recommendations", () => {
     expect(recommendation?.url).toContain("search.aviasales.com");
   });
 
-  it("shows Booking.com for hotels", async () => {
+  it("shows Klook for hotels", async () => {
     const { getAffiliateForCategory } = await import("@/lib/affiliates/getAffiliateRecommendation");
 
-    expect(getAffiliateForCategory("hotels", lisbonContext)?.provider).toBe("booking");
+    expect(getAffiliateForCategory("hotels", lisbonContext)?.provider).toBe("klook");
   });
 
   it("shows Airalo for international trips and hides it for domestic trips", async () => {
@@ -99,10 +100,10 @@ describe("affiliate recommendations", () => {
     ).toBe("discover_cars");
   });
 
-  it("shows Omio for Europe multi-city trips and hides it where rail is not relevant", async () => {
+  it("shows Klook for Europe multi-city transport and hides it where rail is not relevant", async () => {
     const { getAffiliateForCategory } = await import("@/lib/affiliates/getAffiliateRecommendation");
 
-    expect(getAffiliateForCategory("trains_buses", { ...lisbonContext, pageType: "multi_city" })?.provider).toBe("omio");
+    expect(getAffiliateForCategory("trains_buses", { ...lisbonContext, pageType: "multi_city" })?.provider).toBe("klook");
     expect(
       getAffiliateForCategory("trains_buses", {
         ...lisbonContext,
@@ -122,18 +123,18 @@ describe("affiliate recommendations", () => {
     expect(getAffiliateForCategory("activities", lisbonContext)?.provider).toBe("getyourguide");
   });
 
-  it("does not return broken links when an environment variable is absent", async () => {
+  it("uses the configured Klook fallback when the hotel environment variable is absent", async () => {
     vi.resetModules();
     vi.unstubAllEnvs();
     const { getAffiliateForCategory } = await import("@/lib/affiliates/getAffiliateRecommendation");
 
-    expect(getAffiliateForCategory("hotels", lisbonContext)).toBeNull();
+    expect(getAffiliateForCategory("hotels", lisbonContext)?.url).toBe("https://klook.tpx.lu/KdkV1ZIa");
   });
 
   it("hides placeholder partner links while preserving configured partners", async () => {
     vi.resetModules();
     vi.unstubAllEnvs();
-    vi.stubEnv("NEXT_PUBLIC_BOOKING_AFFILIATE_URL", "[[COLLE_ICI_TON_LIEN_BOOKING_COM]]");
+    vi.stubEnv("NEXT_PUBLIC_KLOOK_AFFILIATE_URL", "[[COLLE_ICI_TON_LIEN_KLOOK]]");
     vi.stubEnv("NEXT_PUBLIC_GETYOURGUIDE_AFFILIATE_URL", configuredEnv.NEXT_PUBLIC_GETYOURGUIDE_AFFILIATE_URL);
     const { getAffiliateForCategory, getAffiliateRecommendations } = await import("@/lib/affiliates/getAffiliateRecommendation");
 
@@ -180,7 +181,7 @@ describe("affiliate recommendations", () => {
     expect(props.target).toBe("_blank");
     expect(props.eventName).toBe("affiliate_click");
     expect(props.eventProperties).toMatchObject({
-      provider: "booking",
+      provider: "klook",
       category: "hotels",
       destination_city: "Lisbon",
       destination_country: "Portugal",
@@ -196,7 +197,7 @@ describe("affiliate recommendations", () => {
   it("uses generic fallback links where deep links are not configured", async () => {
     const { getAffiliateForCategory } = await import("@/lib/affiliates/getAffiliateRecommendation");
 
-    expect(getAffiliateForCategory("hotels", lisbonContext)?.url).toBe(configuredEnv.NEXT_PUBLIC_BOOKING_AFFILIATE_URL);
+    expect(getAffiliateForCategory("hotels", lisbonContext)?.url).toBe(configuredEnv.NEXT_PUBLIC_KLOOK_AFFILIATE_URL);
   });
 
   it("generates GetYourGuide destination searches while preserving affiliate parameters", async () => {

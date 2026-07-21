@@ -5,11 +5,11 @@ import type { AffiliateCategory, AffiliateContext, AffiliateProvider, AffiliateR
 
 const providerByCategory: Record<AffiliateCategory, AffiliateProvider> = {
   flights: "aviasales",
-  hotels: "booking",
+  hotels: "klook",
   activities: "getyourguide",
   esim: "airalo",
   car_rental: "discover_cars",
-  trains_buses: "omio",
+  trains_buses: "klook",
   travel_insurance: "travel_insurance",
   airport_transfer: "airport_transfer",
 };

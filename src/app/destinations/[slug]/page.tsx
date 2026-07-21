@@ -33,6 +33,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { buildAffiliateContextFromDestination } from "@/lib/affiliates/destinations";
+import type { AffiliateCategory } from "@/lib/affiliates/types";
 import {
   type Destination,
   formatMoney,
@@ -40,6 +41,12 @@ import {
   getDestinationTripEstimate,
   getOriginPricing,
 } from "@/lib/data/destinations";
+import {
+  getDestinationProfile,
+  getScenarioDaily,
+  getScenarioEstimate,
+  type DestinationProfile,
+} from "@/lib/data/destination-profiles";
 import {
   countryDestinations as destinations,
   getCityCountryLabel,
@@ -105,6 +112,7 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
   }
 
   const destinationLabel = getCityCountryLabel(destination);
+  const destinationProfile = getDestinationProfile(destination);
   const affiliateContext = buildAffiliateContextFromDestination(destination, {
     pageType: "destination",
     placement: "destination_sidebar_activity_boost",
@@ -240,7 +248,19 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
               </CardContent>
             </Card>
 
+            <DestinationVerdictSection destination={destination} destinationLabel={destinationLabel} profile={destinationProfile} />
+
+            <BudgetScenariosSection destination={destination} profile={destinationProfile} />
+
             <BudgetBreakdown destination={destination} />
+
+            <LocalCostsSection destination={destination} profile={destinationProfile} />
+
+            <NeighborhoodsSection destination={destination} profile={destinationProfile} />
+
+            <MonthlyInsightsSection destination={destination} profile={destinationProfile} />
+
+            <SavingsTipsSection destination={destination} profile={destinationProfile} />
 
             <EstimateTransparency
               currency={destination.currency}
@@ -315,7 +335,10 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
             <DayByDayItinerary
               activityHref={activityLink?.href}
               destination={destination}
+              itineraryPlans={destinationProfile.itinerary}
             />
+
+            <DestinationComparisonsSection destination={destination} profile={destinationProfile} />
 
             {destination.slug === "japan" ? (
               <JapanToursWidget destination={destination} affiliateContext={affiliateContext} />
@@ -444,6 +467,7 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
                 Planning links for flights, hotels, eSIM, activities, and insurance. Verify current prices before booking.
               </p>
             </div>
+            <BookingAdviceCard destination={destination} profile={destinationProfile} />
             {activityLink ? (
               <Card className="border-orange-200 bg-orange-50 shadow-sm">
                 <CardContent className="grid gap-4 pt-5">
@@ -465,11 +489,382 @@ export default async function DestinationPage({ params }: DestinationPageProps) 
             {destination.affiliateLinks.map((link) => (
               <AffiliateCard key={link.type} destination={destination} link={link} />
             ))}
+            <DataFreshnessCard profile={destinationProfile} />
           </aside>
         </section>
       </main>
       <CTASection />
     </>
+  );
+}
+
+function DestinationVerdictSection({
+  destination,
+  destinationLabel,
+  profile,
+}: {
+  destination: Destination;
+  destinationLabel: string;
+  profile: DestinationProfile;
+}) {
+  if (!profile.enabledModules.includes("editorialVerdict")) {
+    return null;
+  }
+
+  return (
+    <Card className="border-slate-200 bg-white shadow-lg shadow-slate-200/60">
+      <CardHeader>
+        <p className="text-sm font-semibold uppercase tracking-wide text-[#0B1D34]">Editorial verdict</p>
+        <CardTitle className="text-2xl text-slate-950">Is {destinationLabel} right for your trip?</CardTitle>
+        <p className="text-sm leading-6 text-slate-600">{profile.editorialVerdict.headline}</p>
+      </CardHeader>
+      <CardContent className="grid gap-5">
+        <p className="text-sm leading-6 text-slate-700">{profile.editorialVerdict.summary}</p>
+        <div className="grid gap-4 md:grid-cols-2">
+          <VerdictList title={`Choose ${destination.name} for`} items={profile.idealFor} tone="positive" />
+          <VerdictList title="Less ideal for" items={profile.notIdealFor} tone="caution" />
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          <CompactList title="Advantages" items={profile.editorialVerdict.advantages} />
+          <CompactList title="Tradeoffs" items={profile.editorialVerdict.tradeoffs} />
+          <div className="rounded-xl border border-orange-200 bg-orange-50 p-4">
+            <p className="text-sm font-semibold text-slate-950">Main budget risk</p>
+            <p className="mt-2 text-sm leading-6 text-slate-700">{profile.editorialVerdict.budgetRisk}</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function BudgetScenariosSection({ destination, profile }: { destination: Destination; profile: DestinationProfile }) {
+  if (!profile.enabledModules.includes("budgetScenarios")) {
+    return null;
+  }
+
+  return (
+    <Card className="border-slate-200 bg-white shadow-lg shadow-slate-200/60">
+      <CardHeader>
+        <CardTitle className="text-xl text-slate-950">Three realistic {destination.name} budget scenarios</CardTitle>
+        <p className="text-sm leading-6 text-slate-600">Each scenario uses the project cost model, then explains the actual trip style behind the number.</p>
+      </CardHeader>
+      <CardContent className="grid gap-4 lg:grid-cols-3">
+        {profile.tripScenarios.map((scenario) => (
+          <article key={scenario.key} className="grid gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <div>
+              <Badge className="bg-white text-[#0B1D34] ring-1 ring-slate-200">{scenario.title}</Badge>
+              <p className="mt-3 text-2xl font-semibold text-slate-950">{formatMoney(getScenarioEstimate(destination, scenario), destination.currency)}</p>
+              <p className="text-sm text-slate-500">{formatMoney(getScenarioDaily(destination, scenario), destination.currency)} per day before flights</p>
+            </div>
+            <dl className="grid gap-3 text-sm leading-6 text-slate-600">
+              <ScenarioLine label="Stay" value={scenario.stay} />
+              <ScenarioLine label="Meals" value={scenario.meals} />
+              <ScenarioLine label="Transport" value={scenario.transport} />
+              <ScenarioLine label="Activities" value={scenario.activities} />
+              <ScenarioLine label="Tradeoff" value={scenario.tradeoff} />
+              <ScenarioLine label="Best for" value={scenario.traveler} />
+            </dl>
+          </article>
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
+
+function LocalCostsSection({ destination, profile }: { destination: Destination; profile: DestinationProfile }) {
+  if (!profile.enabledModules.includes("localCosts") || profile.localCosts.length === 0) {
+    return null;
+  }
+
+  const context = buildAffiliateContextFromDestination(destination, {
+    pageType: "destination",
+    placement: "destination_local_costs",
+  });
+
+  return (
+    <Card className="border-slate-200 bg-white shadow-lg shadow-slate-200/60">
+      <CardHeader>
+        <CardTitle className="text-xl text-slate-950">Concrete local costs in {profile.name}</CardTitle>
+      </CardHeader>
+      <CardContent className="grid gap-3 md:grid-cols-2">
+        {profile.localCosts.map((cost) => {
+          const affiliateCategory = getLocalCostAffiliateCategory(cost.label);
+
+          return (
+          <div key={cost.label} className="rounded-xl bg-slate-50 p-4">
+            <p className="font-semibold text-slate-950">{cost.label}</p>
+            <p className="mt-1 text-lg font-semibold text-[#0B1D34]">{cost.estimate}</p>
+            <p className="mt-2 text-sm leading-6 text-slate-600">{cost.note}</p>
+            {affiliateCategory ? (
+              <div className="mt-3">
+                <AffiliateCTA
+                  category={affiliateCategory}
+                  context={{ ...context, category: affiliateCategory, placement: `local_cost_${cost.label}` }}
+                  variant="compact"
+                  label={getLocalCostAffiliateLabel(affiliateCategory)}
+                />
+              </div>
+            ) : null}
+          </div>
+          );
+        })}
+      </CardContent>
+    </Card>
+  );
+}
+
+function getLocalCostAffiliateCategory(label: string): AffiliateCategory | null {
+  const normalizedLabel = label.toLowerCase();
+
+  if (/(airport|transfer)/.test(normalizedLabel)) {
+    return "airport_transfer";
+  }
+
+  if (/(metro|train|bus|rail|tram|transport)/.test(normalizedLabel)) {
+    return "trains_buses";
+  }
+
+  return null;
+}
+
+function getLocalCostAffiliateLabel(category: AffiliateCategory) {
+  if (category === "airport_transfer") {
+    return "Check transfer prices";
+  }
+
+  if (category === "trains_buses") {
+    return "Check metro, train, or bus options";
+  }
+
+  return "Check current options";
+}
+
+function NeighborhoodsSection({ destination, profile }: { destination: Destination; profile: DestinationProfile }) {
+  if (!profile.enabledModules.includes("neighborhoods") || !profile.neighborhoods?.length) {
+    return null;
+  }
+
+  const context = buildAffiliateContextFromDestination(destination, { category: "hotels", placement: "destination_neighborhoods" });
+
+  return (
+    <Card className="border-slate-200 bg-white shadow-lg shadow-slate-200/60">
+      <CardHeader>
+        <CardTitle className="text-xl text-slate-950">Where to stay in {destination.name}</CardTitle>
+      </CardHeader>
+      <CardContent className="grid gap-4 md:grid-cols-3">
+        {profile.neighborhoods.map((neighborhood) => (
+          <article key={neighborhood.name} className="grid gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <div className="flex items-start justify-between gap-3">
+              <h3 className="font-semibold text-slate-950">{neighborhood.name}</h3>
+              <Badge className="bg-white text-[#0B1D34] ring-1 ring-slate-200">{neighborhood.relativeCost}</Badge>
+            </div>
+            <p className="text-sm leading-6 text-slate-600"><strong className="text-slate-950">Best for:</strong> {neighborhood.idealFor}</p>
+            <p className="text-sm leading-6 text-slate-600">{neighborhood.advantages}</p>
+            <p className="text-sm leading-6 text-slate-500">Tradeoff: {neighborhood.tradeoffs}</p>
+            <p className="text-sm leading-6 text-slate-500">Access: {neighborhood.access}</p>
+            <AffiliateCTA category="hotels" context={{ ...context, placement: `neighborhood_${neighborhood.name}` }} variant="compact" label={`See hotels in ${neighborhood.name}`} />
+          </article>
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
+
+function MonthlyInsightsSection({ destination, profile }: { destination: Destination; profile: DestinationProfile }) {
+  if (!profile.enabledModules.includes("monthlyInsights")) {
+    return null;
+  }
+
+  return (
+    <Card className="border-slate-200 bg-white shadow-lg shadow-slate-200/60">
+      <CardHeader>
+        <CardTitle className="text-xl text-slate-950">Cost and experience by month</CardTitle>
+        <p className="text-sm leading-6 text-slate-600">Relative planning signals for {destination.name}; verify exact prices before booking.</p>
+      </CardHeader>
+      <CardContent className="overflow-x-auto">
+        <table className="w-full min-w-[760px] text-left text-sm">
+          <thead className="text-xs uppercase tracking-wide text-slate-500">
+            <tr className="border-b border-slate-200">
+              <th className="py-3 pr-4">Month</th>
+              <th className="py-3 pr-4">Flights</th>
+              <th className="py-3 pr-4">Hotels</th>
+              <th className="py-3 pr-4">Crowds</th>
+              <th className="py-3 pr-4">Recommendation</th>
+              <th className="py-3">Seasonal factor</th>
+            </tr>
+          </thead>
+          <tbody>
+            {profile.monthlyInsights.map((month) => (
+              <tr key={month.month} className="border-b border-slate-100">
+                <td className="py-3 pr-4 font-semibold text-slate-950">{month.month}</td>
+                <td className="py-3 pr-4">{month.flights}</td>
+                <td className="py-3 pr-4">{month.hotels}</td>
+                <td className="py-3 pr-4">{month.crowds}</td>
+                <td className="py-3 pr-4 text-slate-600">{month.recommendation}</td>
+                <td className="py-3 text-slate-600">{month.factor}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </CardContent>
+    </Card>
+  );
+}
+
+function SavingsTipsSection({ destination, profile }: { destination: Destination; profile: DestinationProfile }) {
+  if (!profile.enabledModules.includes("savingsTips")) {
+    return null;
+  }
+
+  return (
+    <Card className="border-slate-200 bg-white shadow-lg shadow-slate-200/60">
+      <CardHeader>
+        <CardTitle className="text-xl text-slate-950">How to save on a trip to {destination.name}</CardTitle>
+      </CardHeader>
+      <CardContent className="grid gap-4 md:grid-cols-3">
+        {profile.savingsTips.map((tip) => (
+          <article key={tip.action} className="rounded-xl bg-slate-50 p-4">
+            <h3 className="font-semibold text-slate-950">{tip.action}</h3>
+            <p className="mt-2 text-sm leading-6 text-slate-600"><strong className="text-slate-950">Impact:</strong> {tip.impact}</p>
+            <p className="mt-2 text-sm leading-6 text-slate-600"><strong className="text-slate-950">Tradeoff:</strong> {tip.tradeoff}</p>
+            <p className="mt-2 text-sm leading-6 text-slate-500">Best for {tip.bestFor}</p>
+          </article>
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
+
+function DestinationComparisonsSection({ destination, profile }: { destination: Destination; profile: DestinationProfile }) {
+  if (!profile.enabledModules.includes("comparisons") || !profile.comparisons?.length) {
+    return null;
+  }
+
+  return (
+    <Card className="border-slate-200 bg-white shadow-lg shadow-slate-200/60">
+      <CardHeader>
+        <CardTitle className="text-xl text-slate-950">Compare {destination.name} with similar trips</CardTitle>
+      </CardHeader>
+      <CardContent className="grid gap-4 md:grid-cols-3">
+        {profile.comparisons.map((comparison) => (
+          <Link key={comparison.slug} href={comparison.href} className="grid gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 transition hover:border-[#14B8A6]">
+            <h3 className="font-semibold text-slate-950">{comparison.name}</h3>
+            <p className="text-sm leading-6 text-slate-600">{comparison.styleDifference}</p>
+            <p className="text-sm leading-6 text-slate-600">{comparison.costDifference}</p>
+            <p className="text-sm font-semibold text-[#0B1D34]">Choose {destination.name} if: {comparison.chooseCurrentIf}</p>
+            <p className="text-sm text-slate-600">Choose {comparison.name} if: {comparison.chooseAlternativeIf}</p>
+          </Link>
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
+
+function BookingAdviceCard({ destination, profile }: { destination: Destination; profile: DestinationProfile }) {
+  const context = buildAffiliateContextFromDestination(destination, { placement: "destination_booking_advice" });
+
+  return (
+    <Card className="border-slate-200 bg-white shadow-sm">
+      <CardHeader>
+        <CardTitle className="text-lg text-slate-950">Booking advice for {destination.name}</CardTitle>
+      </CardHeader>
+      <CardContent className="grid gap-4">
+        <AdviceCta category="flights" context={context} label="Check flights before hotel prices rise" text={profile.bookingAdvice.flights} />
+        <AdviceCta category="hotels" context={context} label="Compare best-value hotels" text={profile.bookingAdvice.hotels} />
+        <AdviceCta category="activities" context={context} label="See current activity prices" text={profile.bookingAdvice.activities} />
+        {profile.bookingAdvice.transport ? <AdviceCta category="trains_buses" context={context} label="Check transport options" text={profile.bookingAdvice.transport} /> : null}
+        {profile.bookingAdvice.esim ? <AdviceCta category="esim" context={context} label="Compare eSIM plans" text={profile.bookingAdvice.esim} /> : null}
+        {profile.bookingAdvice.insurance ? <AdviceCta category="travel_insurance" context={context} label="Review travel insurance" text={profile.bookingAdvice.insurance} /> : null}
+      </CardContent>
+    </Card>
+  );
+}
+
+function DataFreshnessCard({ profile }: { profile: DestinationProfile }) {
+  return (
+    <Card className="border-slate-200 bg-white shadow-sm">
+      <CardHeader>
+        <CardTitle className="text-lg text-slate-950">Freshness and confidence</CardTitle>
+      </CardHeader>
+      <CardContent className="grid gap-3 text-sm leading-6 text-slate-600">
+        <Badge className={getDataConfidenceClassName(profile.dataFreshness.confidence)}>
+          {formatDataConfidence(profile.dataFreshness.confidence)} confidence
+        </Badge>
+        <p>Last reviewed {profile.dataFreshness.lastUpdated}.</p>
+        <p>{profile.dataFreshness.flightSource}</p>
+        <p>{profile.dataFreshness.hotelSource}</p>
+        <p>{profile.dataFreshness.method}</p>
+        <p>{profile.dataFreshness.exchangeRate}</p>
+        <ul className="grid gap-1">
+          {profile.dataFreshness.limits.map((limit) => (
+            <li key={limit} className="flex gap-2">
+              <span className="mt-2 size-1.5 shrink-0 rounded-full bg-amber-600" />
+              <span>{limit}</span>
+            </li>
+          ))}
+        </ul>
+        <Button asChild variant="outline" className="h-9 rounded-xl bg-white">
+          <Link href="/contact">Report a price issue</Link>
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+function AdviceCta({
+  category,
+  context,
+  label,
+  text,
+}: {
+  category: Parameters<typeof AffiliateCTA>[0]["category"];
+  context: Parameters<typeof AffiliateCTA>[0]["context"];
+  label: string;
+  text: string;
+}) {
+  return (
+    <div className="grid gap-2 rounded-xl bg-slate-50 p-3">
+      <p className="text-sm leading-6 text-slate-600">{text}</p>
+      <AffiliateCTA category={category} context={{ ...context, category }} variant="compact" label={label} />
+    </div>
+  );
+}
+
+function VerdictList({ title, items, tone }: { title: string; items: string[]; tone: "positive" | "caution" }) {
+  return (
+    <div className={tone === "positive" ? "rounded-xl bg-[#14B8A6]/10 p-4" : "rounded-xl bg-orange-50 p-4"}>
+      <p className="font-semibold text-slate-950">{title}</p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {items.map((item) => (
+          <Badge key={item} className="bg-white text-[#0B1D34] ring-1 ring-slate-200">{item}</Badge>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function CompactList({ title, items }: { title: string; items: string[] }) {
+  return (
+    <div className="rounded-xl bg-slate-50 p-4">
+      <p className="text-sm font-semibold text-slate-950">{title}</p>
+      <ul className="mt-2 grid gap-2 text-sm leading-6 text-slate-600">
+        {items.map((item) => (
+          <li key={item} className="flex gap-2">
+            <span className="mt-2 size-1.5 shrink-0 rounded-full bg-[#0B1D34]" />
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function ScenarioLine({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <dt className="font-semibold text-slate-950">{label}</dt>
+      <dd>{value}</dd>
+    </div>
   );
 }
 

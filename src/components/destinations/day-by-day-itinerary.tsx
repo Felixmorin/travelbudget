@@ -18,13 +18,32 @@ export type DayByDayItineraryDestination = {
   itineraryPreview: string[];
 };
 
-type ItineraryLength = 7 | 10 | 12;
+export type DestinationItineraryLength = 3 | 5 | 7 | 10;
+
+export type DestinationItineraryPlanDay = {
+  title: string;
+  area: string;
+  activity: string;
+  estimatedCost: string;
+  freeOption: string;
+  paidOption: string;
+  logisticsTip: string;
+};
+
+export type DestinationItineraryPlans = Partial<Record<DestinationItineraryLength, DestinationItineraryPlanDay[]>>;
+
+type ItineraryLength = DestinationItineraryLength;
 
 type ItineraryDay = {
   day: number;
   title: string;
   description: string;
   pace: string;
+  area?: string;
+  estimatedCost?: string;
+  freeOption?: string;
+  paidOption?: string;
+  logisticsTip?: string;
 };
 
 type DayActivity = {
@@ -33,9 +52,9 @@ type DayActivity = {
   duration: string;
 };
 
-const itineraryLengths = [7, 10, 12] as const;
+const itineraryLengths = [3, 5, 7, 10] as const;
 
-const mexicoCityPlans: Record<ItineraryLength, Omit<ItineraryDay, "day">[]> = {
+const mexicoCityPlans: Record<7 | 10 | 12, Omit<ItineraryDay, "day">[]> = {
   7: [
     day("Arrival, Roma Norte, and first tacos", "Settle into Roma or Condesa, walk the neighborhood, and keep the first evening easy with taquerias and a low-pressure mezcal bar.", "Easy"),
     day("Historic Center and major murals", "Visit Zocalo, the cathedral area, Palacio de Bellas Artes, and Diego Rivera murals, then finish with a rooftop or cantina stop.", "Full"),
@@ -76,14 +95,18 @@ const mexicoCityPlans: Record<ItineraryLength, Omit<ItineraryDay, "day">[]> = {
 export function DayByDayItinerary({
   activityHref,
   destination,
+  itineraryPlans,
 }: {
   activityHref?: string;
   destination: DayByDayItineraryDestination;
+  itineraryPlans?: DestinationItineraryPlans;
 }) {
   const [selectedLength, setSelectedLength] = useState<ItineraryLength>(7);
   const [openDay, setOpenDay] = useState(1);
-  const plans = useMemo(() => getItineraryPlans(destination), [destination]);
-  const selectedPlan = plans[selectedLength];
+  const plans = useMemo(() => normalizeCustomPlans(itineraryPlans) ?? getItineraryPlans(destination), [destination, itineraryPlans]);
+  const availableLengths = itineraryLengths.filter((length) => plans[length]?.length);
+  const resolvedLength = availableLengths.includes(selectedLength) ? selectedLength : availableLengths[0] ?? 7;
+  const selectedPlan = plans[resolvedLength] ?? [];
   const destinationLabel = destination.cityName && destination.countryName
     ? `${destination.cityName}, ${destination.countryName}`
     : destination.name;
@@ -107,9 +130,9 @@ export function DayByDayItinerary({
               <Button
                 key={length}
                 type="button"
-                variant={selectedLength === length ? "default" : "ghost"}
+                variant={resolvedLength === length ? "default" : "ghost"}
                 className={`h-9 rounded-lg px-3 ${
-                  selectedLength === length ? "bg-[#0B1D34] text-white hover:bg-[#0B1D34]/90" : "text-slate-700"
+                  resolvedLength === length ? "bg-[#0B1D34] text-white hover:bg-[#0B1D34]/90" : "text-slate-700"
                 }`}
                 onClick={() => {
                   setSelectedLength(length);
@@ -124,7 +147,7 @@ export function DayByDayItinerary({
       </CardHeader>
       <CardContent className="grid gap-5">
         <div className="grid gap-3 rounded-xl border border-[#14B8A6]/20 bg-[#14B8A6]/10 p-4 sm:grid-cols-3">
-          <ItineraryStat icon={CalendarDays} label="Trip length" value={`${selectedLength} days`} />
+          <ItineraryStat icon={CalendarDays} label="Trip length" value={`${resolvedLength} days`} />
           <ItineraryStat icon={Route} label="Pace" value={getPaceLabel(selectedPlan)} />
           <ItineraryStat icon={Sparkles} label="Best for" value={destination.travelStyles.slice(0, 2).join(" + ") || "Flexible"} />
         </div>
@@ -150,6 +173,15 @@ export function DayByDayItinerary({
               {openDay === item.day ? (
                 <div className="grid gap-3 border-t border-slate-200 bg-white p-4">
                   <p className="text-sm font-semibold text-slate-950">Concrete activities for this day</p>
+                  {item.area || item.estimatedCost ? (
+                    <div className="grid gap-3 rounded-lg bg-slate-50 p-3 text-sm leading-6 text-slate-600 sm:grid-cols-2">
+                      {item.area ? <span><strong className="text-slate-950">Area:</strong> {item.area}</span> : null}
+                      {item.estimatedCost ? <span><strong className="text-slate-950">Planning cost:</strong> {item.estimatedCost}</span> : null}
+                      {item.freeOption ? <span><strong className="text-slate-950">Free option:</strong> {item.freeOption}</span> : null}
+                      {item.paidOption ? <span><strong className="text-slate-950">Paid option:</strong> {item.paidOption}</span> : null}
+                      {item.logisticsTip ? <span className="sm:col-span-2"><strong className="text-slate-950">Logistics:</strong> {item.logisticsTip}</span> : null}
+                    </div>
+                  ) : null}
                   <div className="grid gap-3 lg:grid-cols-3">
                     {getDayActivities(destination, item).map((activity) => (
                       <div key={activity.title} className="grid gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
@@ -382,22 +414,54 @@ function ItineraryStat({
 
 function getItineraryPlans(destination: DayByDayItineraryDestination): Record<ItineraryLength, ItineraryDay[]> {
   if (destination.slug === "mexico-city") {
-    return normalizePlanDays(mexicoCityPlans);
+    return normalizePlanDays({
+      3: mexicoCityPlans[7].slice(0, 3),
+      5: mexicoCityPlans[7].slice(0, 5),
+      7: mexicoCityPlans[7],
+      10: mexicoCityPlans[10],
+    });
   }
 
   return normalizePlanDays({
+    3: buildGenericPlan(destination, 3),
+    5: buildGenericPlan(destination, 5),
     7: buildGenericPlan(destination, 7),
     10: buildGenericPlan(destination, 10),
-    12: buildGenericPlan(destination, 12),
   });
 }
 
 function normalizePlanDays(plans: Record<ItineraryLength, Omit<ItineraryDay, "day">[] | ItineraryDay[]>): Record<ItineraryLength, ItineraryDay[]> {
   return {
+    3: plans[3].map((item, index) => ({ ...item, day: index + 1 })),
+    5: plans[5].map((item, index) => ({ ...item, day: index + 1 })),
     7: plans[7].map((item, index) => ({ ...item, day: index + 1 })),
     10: plans[10].map((item, index) => ({ ...item, day: index + 1 })),
-    12: plans[12].map((item, index) => ({ ...item, day: index + 1 })),
   };
+}
+
+function normalizeCustomPlans(plans: DestinationItineraryPlans | undefined): Record<ItineraryLength, ItineraryDay[]> | null {
+  if (!plans) {
+    return null;
+  }
+
+  const normalized = Object.fromEntries(
+    itineraryLengths.map((length) => [
+      length,
+      (plans[length] ?? []).map((item, index) => ({
+        day: index + 1,
+        title: item.title,
+        description: item.activity,
+        pace: item.estimatedCost.includes("100") || item.estimatedCost.includes("150") ? "Full" : "Moderate",
+        area: item.area,
+        estimatedCost: item.estimatedCost,
+        freeOption: item.freeOption,
+        paidOption: item.paidOption,
+        logisticsTip: item.logisticsTip,
+      })),
+    ])
+  ) as Record<ItineraryLength, ItineraryDay[]>;
+
+  return itineraryLengths.some((length) => normalized[length].length > 0) ? normalized : null;
 }
 
 function buildGenericPlan(destination: DayByDayItineraryDestination, length: ItineraryLength): Omit<ItineraryDay, "day">[] {
@@ -421,15 +485,6 @@ function buildGenericPlan(destination: DayByDayItineraryDestination, length: Iti
       day("Second neighborhood base", "Explore a different area to avoid making the trip feel like one long checklist.", "Easy"),
       day("Optional day trip", "Add a nearby city, nature route, beach, or wine/culture excursion if it fits the budget.", "Full"),
       day("Food and evening plan", "Reserve a stronger dinner, night market, show, or guided evening activity.", "Moderate")
-    );
-  }
-
-  if (length >= 12) {
-    plan.splice(
-      8,
-      0,
-      day("Rest and laundry buffer", "Protect the trip from feeling overpacked with a slower day and practical errands.", "Easy"),
-      day("Final highlight", "Use the last major activity slot for anything missed earlier or one higher-value guided experience.", "Full")
     );
   }
 

@@ -17,7 +17,7 @@ const rows: Array<
   { key: "food", label: "Food", icon: Utensils, colorClassName: "bg-orange-500" },
   { key: "localTransport", label: "Local transport", icon: Bus, colorClassName: "bg-slate-500", affiliateCategory: "trains_buses" },
   { key: "activities", label: "Activities", icon: Ticket, colorClassName: "bg-[#FF6B6B]", affiliateCategory: "activities" },
-  { key: "misc", label: "Misc", icon: Ticket, colorClassName: "bg-amber-500" },
+  { key: "misc", label: "Misc", icon: Ticket, colorClassName: "bg-amber-500", affiliateCategory: "esim" },
 ] as const;
 
 export function BudgetBreakdown({ destination }: { destination: Destination }) {

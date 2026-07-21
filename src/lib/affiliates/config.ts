@@ -24,6 +24,17 @@ export const affiliateConfig = {
     supportsSubId: false,
     deepLink: "generic",
   },
+  klook: {
+    provider: "klook",
+    category: "hotels",
+    enabled: true,
+    baseUrl: getConfiguredAffiliateUrl(process.env.NEXT_PUBLIC_KLOOK_AFFILIATE_URL, "https://klook.tpx.lu/KdkV1ZIa"),
+    label: "Klook",
+    partnerName: "Klook",
+    description: "Accommodation and transport partner.",
+    supportsSubId: false,
+    deepLink: "generic",
+  },
   getyourguide: {
     provider: "getyourguide",
     category: "activities",

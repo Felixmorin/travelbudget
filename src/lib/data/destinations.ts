@@ -977,11 +977,11 @@ const legacyTypeByCategory: Record<AffiliateCategory, AffiliateLink["type"]> = {
 
 const providerLabelByCategory: Record<AffiliateCategory, string> = {
   flights: "Aviasales",
-  hotels: "Booking.com",
+  hotels: "Klook",
   activities: "GetYourGuide",
   esim: "Airalo",
   car_rental: "Discover Cars",
-  trains_buses: "Omio",
+  trains_buses: "Klook",
   travel_insurance: "Travel insurance",
   airport_transfer: "Kiwitaxi",
 };
