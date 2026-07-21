@@ -45,14 +45,6 @@ export async function saveAffiliateClick(payload: AffiliateClickPayload) {
   return click;
 }
 
-export function listStoredAffiliateClicks() {
-  return [...getDevelopmentStore().affiliateClicks];
-}
-
-export function clearStoredAffiliateClicks() {
-  getDevelopmentStore().affiliateClicks.length = 0;
-}
-
 function getDevelopmentStore(): { affiliateClicks: StoredAffiliateClick[] } {
   const globalStore = globalThis as typeof globalThis & {
     __travelBudgetAffiliateClickStore?: { affiliateClicks: StoredAffiliateClick[] };

@@ -49,7 +49,6 @@ export const departureCities: DepartureCity[] = [
 ];
 
 export const activeDepartureCities = departureCities.filter((city) => city.status === "active");
-export const indexableDepartureCities = departureCities.filter((city) => city.indexable);
 
 export function getDepartureCityBySlug(slug: string) {
   return departureCities.find((city) => city.slug === slug.toLowerCase());
@@ -87,13 +86,6 @@ export function getDepartureCityForInput(value: string | null | undefined) {
 
 export function getPopularDepartureCities(limit = 9) {
   return [...activeDepartureCities].sort((a, b) => a.popularityRank - b.popularityRank).slice(0, limit);
-}
-
-export function getDepartureSearchText(city: DepartureCity) {
-  return [city.name, city.slug, city.country, city.region, ...city.airportCodes, ...city.searchAliases]
-    .filter(Boolean)
-    .join(" ")
-    .toLowerCase();
 }
 
 function createCity(

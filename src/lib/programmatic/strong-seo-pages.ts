@@ -985,11 +985,6 @@ export const strongSeoPages = [
   },
 ] satisfies StrongSeoPageConfig[];
 
-export function getStrongSeoPage(path: string) {
-  const config = strongSeoPages.find((page) => page.path === path);
-  return config ? hydrateStrongSeoPage(config) : null;
-}
-
 export function getStrongSeoPageByKindAndSlug(kind: StrongSeoPageKind, slug: string) {
   const config = strongSeoPages.find((page) => page.kind === kind && page.slug === slug);
   return config ? hydrateStrongSeoPage(config) : null;

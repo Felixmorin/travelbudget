@@ -1,5 +1,4 @@
 import {
-  formatMoney,
   getDailyCostTotal,
   getDestinationCostBreakdown,
   getDestinationTripEstimate,
@@ -8,7 +7,7 @@ import {
   type Destination,
   type TravelStyle,
 } from "@/lib/data/destinations";
-import { getCityCountryLabel, unifiedDestinations } from "@/lib/data/unified-destinations";
+import { unifiedDestinations } from "@/lib/data/unified-destinations";
 
 export type ProgrammaticOrigin = {
   slug: string;
@@ -36,12 +35,6 @@ export type BudgetDestination = {
   durationDays: number;
   budgetRemaining: number;
   costBreakdown: ReturnType<typeof getDestinationCostBreakdown>;
-};
-
-export type ComparisonPick = {
-  label: string;
-  destination: BudgetDestination;
-  detail: string;
 };
 
 export const programmaticOrigins: ProgrammaticOrigin[] = [
@@ -237,70 +230,4 @@ export function getMatchingBudgetDestinations(page: ProgrammaticBudgetPageConfig
     })
     .filter((item) => item.totalEstimate <= page.budget)
     .sort((a, b) => a.totalEstimate - b.totalEstimate || b.destination.score - a.destination.score);
-}
-
-export function getComparisonPicks(destinations: BudgetDestination[]): ComparisonPick[] {
-  if (destinations.length === 0) {
-    return [];
-  }
-
-  const cheapest = destinations[0];
-  const bestValue = [...destinations].sort(
-    (a, b) => b.destination.score / b.totalEstimate - a.destination.score / a.totalEstimate
-  )[0];
-  const stylePicks = ["Culture", "Beach", "Food", "Adventure"]
-    .map((style) => {
-      const destination = destinations.find((item) =>
-        item.destination.travelStyles.some((travelStyle) => {
-          const normalizedTravelStyle = travelStyle.toLowerCase();
-
-          if (style === "Beach") {
-            return normalizedTravelStyle === "beach" || normalizedTravelStyle === "coast";
-          }
-
-          return normalizedTravelStyle === style.toLowerCase();
-        })
-      );
-
-      return destination
-        ? {
-            label: `Best for ${style.toLowerCase()}`,
-            destination,
-            detail: `${getCityCountryLabel(destination.destination)} fits ${style.toLowerCase()}-focused trips in this budget set.`,
-          }
-        : null;
-    })
-    .filter((pick): pick is ComparisonPick => Boolean(pick));
-
-  return uniquePicks([
-    {
-      label: "Cheapest total estimate",
-      destination: cheapest,
-      detail: `${getCityCountryLabel(cheapest.destination)} has the lowest 10-day estimate at ${formatMoney(
-        cheapest.totalEstimate,
-        "CAD"
-      )}.`,
-    },
-    {
-      label: "Best value",
-      destination: bestValue,
-      detail: `${getCityCountryLabel(bestValue.destination)} balances budget fit with a strong destination score.`,
-    },
-    ...stylePicks,
-  ]);
-}
-
-function uniquePicks(picks: ComparisonPick[]) {
-  const seen = new Set<string>();
-
-  return picks.filter((pick) => {
-    const key = `${pick.label}-${pick.destination.destination.slug}`;
-
-    if (seen.has(key)) {
-      return false;
-    }
-
-    seen.add(key);
-    return true;
-  });
 }

@@ -3,7 +3,6 @@ import {
   getDestinationCostBreakdown,
   getDestinationTripEstimate,
   getFlightEstimate,
-  normalizeOriginCode,
   type Destination,
   type TravelStyle,
 } from "@/lib/data/destinations";
@@ -502,8 +501,4 @@ export function getBudgetAmountStaticParams() {
 
 export function getTripLengthStaticParams() {
   return pilotDurationDays.map((days) => ({ duration: `${days}-days` }));
-}
-
-export function getDisplayOriginCode(code: string) {
-  return normalizeOriginCode(code);
 }

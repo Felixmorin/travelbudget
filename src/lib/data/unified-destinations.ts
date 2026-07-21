@@ -51,10 +51,6 @@ export function getDestinationCountryName(destination: Pick<Destination, "name" 
   return destination.countryName ?? destination.name;
 }
 
-export function isCityDestination(destination: Pick<Destination, "destinationKind" | "cityName">) {
-  return destination.destinationKind === "city" || Boolean(destination.cityName);
-}
-
 function toDestinationFromCity(city: CityDestination): Destination {
   const country = getCountryFallbackForCity(city);
   const dailyCosts = buildCityDailyCosts(city);

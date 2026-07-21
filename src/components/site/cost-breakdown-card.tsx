@@ -45,17 +45,7 @@ type CostBreakdownListProps = {
   itemClassName?: string;
 };
 
-type CostBreakdownDonutProps = {
-  items: CostBreakdownItem[];
-  totalAmount?: number | null;
-  currency?: string;
-  centerLabel: string;
-  className?: string;
-};
-
 const minVisibleBarWidth = 4;
-const donutRadius = 44;
-const donutCircumference = 2 * Math.PI * donutRadius;
 
 function normalizeAmount(amount: number | null | undefined) {
   return typeof amount === "number" && Number.isFinite(amount) ? Math.max(amount, 0) : null;
@@ -216,63 +206,6 @@ export function CostBreakdownList({
           </div>
         );
       })}
-    </div>
-  );
-}
-
-export function CostBreakdownDonut({
-  items,
-  totalAmount,
-  currency = "CAD",
-  centerLabel,
-  className,
-}: CostBreakdownDonutProps) {
-  const total = normalizeAmount(totalAmount) ?? getCostBreakdownTotal(items);
-  const segments = items.reduce<{
-    currentOffset: number;
-    values: Array<{ key: string; color: string; dasharray: string; dashoffset: number }>;
-  }>(
-    (state, item, index) => {
-      const amount = normalizeAmount(item.amount) ?? 0;
-      const length = total > 0 ? (amount / total) * donutCircumference : 0;
-      const segment = {
-        key: getItemKey(item, index),
-        color: item.color ?? "#2563eb",
-        dasharray: `${length} ${donutCircumference}`,
-        dashoffset: -state.currentOffset,
-      };
-
-      return {
-        currentOffset: state.currentOffset + length,
-        values: [...state.values, segment],
-      };
-    },
-    { currentOffset: 0, values: [] },
-  ).values;
-
-  return (
-    <div className={cn("relative mx-auto grid size-56 place-items-center", className)}>
-      <svg viewBox="0 0 120 120" className="size-56 -rotate-90" aria-hidden="true">
-        <circle cx="60" cy="60" r={donutRadius} fill="none" stroke="#e8edf5" strokeWidth="16" />
-        {segments.map((segment) => (
-          <circle
-            key={segment.key}
-            cx="60"
-            cy="60"
-            r={donutRadius}
-            fill="none"
-            stroke={segment.color}
-            strokeDasharray={segment.dasharray}
-            strokeDashoffset={segment.dashoffset}
-            strokeLinecap="butt"
-            strokeWidth="16"
-          />
-        ))}
-      </svg>
-      <div className="absolute text-center">
-        <p className="text-3xl font-semibold text-[#191c1e]">{formatBreakdownAmount(total, currency)}</p>
-        <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-[#434655]">{centerLabel}</p>
-      </div>
     </div>
   );
 }
