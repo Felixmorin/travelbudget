@@ -46,6 +46,7 @@
     "vitest": "^3.2.6"
   },
   "overrides": {
+    "@hono/node-server": "2.0.5",
     "postcss": "8.5.15"
   }
 }
