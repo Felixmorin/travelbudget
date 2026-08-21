@@ -1,5 +1,5 @@
 GitHub integration is not connected yet.
 Prepared engineering execution artifact for the requested task.
-Task: Fix QA findings for Map GoByBudget revenue levers
-Expected impact: Unblock CEO merge approval after QA passes.
+Task: Map GoByBudget revenue levers
+Expected impact: Clarifies the first growth backlog.
 Next protected step: open/merge flow must create MERGE_PR approval before merge.
