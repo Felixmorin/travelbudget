@@ -30,7 +30,9 @@ export function EstimateTransparency({
             <Link href="/methodology">{title}</Link>
           </Button>
           <p className="mt-1 text-sm leading-6 text-slate-700">
-            Static planning estimate in {currency}. Last data update: {lastUpdated}. {exchangeRateNote}
+            Static planning estimate in {currency}, not live quotes, and does not guarantee price,
+            availability, baggage rules, hotel terms, or exchange rates. Last data update: {lastUpdated}.{" "}
+            {exchangeRateNote}
           </p>
         </div>
       </div>
